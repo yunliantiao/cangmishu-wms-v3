@@ -1,0 +1,249 @@
+<template>
+  <div class="categories-page">
+    <div class="row items-center q-mb-md">
+      <div class="text-h6">分类管理</div>
+      <q-space />
+      <q-btn
+        color="primary"
+        icon="add"
+        label="新增分类"
+        @click="handleAddCategory(null)"
+      />
+    </div>
+
+    <div class="row">
+      <!-- 分类树 -->
+      <div class="col-12">
+        <q-card flat bordered>
+          <q-card-section>
+            <div class="text-subtitle2 q-mb-sm">分类列表</div>
+            <q-tree
+              :nodes="categories"
+              node-key="id"
+              default-expand-all
+              v-model:selected="selectedCategory"
+              :loading="$store.state.btnLoading"
+            >
+              <template v-slot:default-header="prop">
+                <div class="row items-center full-width">
+                  <div>{{ prop.node.name }}</div>
+                  <q-space />
+                  <div
+                    class="row q-gutter-sm"
+                    v-if="prop.node.code !== 'uncategorized'"
+                  >
+                    <q-btn
+                      flat
+                      round
+                      dense
+                      color="primary"
+                      icon="add"
+                      size="sm"
+                      @click.stop="handleAddCategory(prop.node)"
+                    >
+                      <q-tooltip>添加子分类</q-tooltip>
+                    </q-btn>
+                    <q-btn
+                      flat
+                      round
+                      dense
+                      color="primary"
+                      icon="edit"
+                      size="sm"
+                      @click.stop="handleEditCategory(prop.node)"
+                    >
+                      <q-tooltip>编辑</q-tooltip>
+                    </q-btn>
+                    <q-btn
+                      flat
+                      round
+                      dense
+                      color="negative"
+                      icon="delete"
+                      size="sm"
+                      @click.stop="handleDeleteCategory(prop.node)"
+                    >
+                      <q-tooltip>删除</q-tooltip>
+                    </q-btn>
+                  </div>
+                </div>
+              </template>
+            </q-tree>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+
+    <!-- 添加/编辑分类对话框 -->
+    <q-dialog v-model="showDialog" persistent>
+      <q-card style="min-width: 350px">
+        <q-card-section class="row items-center">
+          <div class="text-h6">{{ isEdit ? "编辑分类" : "新增分类" }}</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-form @submit="handleSubmit" class="q-gutter-md">
+            <q-input
+              filled
+              v-model="form.name"
+              label="分类名称"
+              :rules="[(val) => !!val || '请输入分类名称']"
+            />
+            <div class="row justify-end q-mt-md">
+              <q-btn label="取消" color="primary" flat v-close-popup />
+              <q-btn
+                label="确定"
+                type="submit"
+                color="primary"
+                class="q-ml-sm"
+              />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <!-- 删除确认对话框 -->
+    <q-dialog v-model="showDeleteDialog" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <div class="text-h6">确认删除</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section>
+          确认删除分类？如该分类存在子分类，子分类数据将会被一并删除，且应用了该分类的商品将变成未分类！
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn flat label="取消" color="primary" v-close-popup />
+          <q-btn
+            flat
+            label="确定"
+            color="negative"
+            @click="confirmDelete"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive } from "vue";
+import { useQuasar } from "quasar";
+import categoriesApi from "@/api/categories";
+
+const $q = useQuasar();
+
+// 分类数据
+const categories = ref([
+//   {
+//     id: 1,
+//     label: "未分类",
+//     code: "uncategorized",
+//     children: [],
+//   },
+]);
+
+const getCategoryTree = async () => {
+  const res = await categoriesApi.getCategoryTree();
+  if (res.success) {
+    categories.value = res.data;
+  }
+};
+
+getCategoryTree();
+
+// 选中的分类
+const selectedCategory = ref(null);
+
+// 对话框控制
+const showDialog = ref(false);
+const showDeleteDialog = ref(false);
+const isEdit = ref(false);
+const currentNode = ref(null);
+
+// 表单数据
+const form = reactive({
+  name: "",
+});
+
+// 重置表单
+const resetForm = () => {
+  form.name = "";
+};
+
+// 添加分类
+const handleAddCategory = (node) => {
+  isEdit.value = false;
+  currentNode.value = node;
+  resetForm();
+  showDialog.value = true;
+};
+
+// 编辑分类
+const handleEditCategory = (node) => {
+  isEdit.value = true;
+  currentNode.value = node;
+  form.name = node.name;
+  showDialog.value = true;
+};
+
+// 删除分类
+const handleDeleteCategory = (node) => {
+  currentNode.value = node;
+  showDeleteDialog.value = true;
+};
+
+// 确认删除
+const confirmDelete = () => {
+  // TODO: 调用API删除分类
+  categoriesApi.deleteCategory(currentNode.value.id).then((res) => {
+    if (res.success) {
+      getCategoryTree();
+    }
+  });
+};
+
+// 提交表单
+const handleSubmit = async () => {
+  let data = {};
+  // TODO: 调用API保存分类
+  if (isEdit.value) {
+    // 编辑分类
+    data = await categoriesApi.updateCategory(currentNode.value.id, {
+      name: form.name,
+    });
+  } else {
+    data = await categoriesApi.createCategory({
+      name: form.name,
+    });
+  }
+
+  if (data.success) {
+    showDialog.value = false;
+    getCategoryTree();
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.categories-page {
+  .q-tree {
+    .q-tree__node-header {
+      padding: 8px;
+      border-radius: 4px;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.03);
+      }
+    }
+  }
+}
+</style>
+
