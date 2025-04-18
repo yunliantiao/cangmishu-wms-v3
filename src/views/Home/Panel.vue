@@ -449,7 +449,7 @@
             <q-icon name="email" size="xs" class="q-mr-sm" />
             <span>邮箱</span>
           </div>
-          <div>wms@dianxiaomi.com</div>
+          <!-- <div>wms@dianxiaomi.com</div> -->
         </div>
         <div>
           <div class="row items-center q-mb-xs">
@@ -547,8 +547,11 @@
                     outlined
                     dense
                     v-model="warehouseForm.country_code"
-                    :options="countryOptions"
-                    :option-value="(option) => option.code"
+                    :options="$store.state.countries"
+                    option-label="name"
+                    option-value="code"
+                    emit-value
+                    map-options
                     placeholder="请选择"
                   />
                 </div>
@@ -719,22 +722,6 @@
             </div>
           </div>
 
-          <div class="row q-mb-md">
-            <div class="col-12 col-sm-6">
-              <div class="form-item row items-center">
-                <div class="form-label col-sm-4">portCode</div>
-                <div class="form-input col-sm-8">
-                  <q-input
-                    outlined
-                    dense
-                    v-model="warehouseForm.portCode"
-                    placeholder="请输入"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div class="row">
             <div class="col-12">
               <div class="form-item row items-start">
@@ -813,10 +800,6 @@ export default {
     // getWarehouseList();
     // 下拉选项
     const warehouseTypes = ["标准仓"];
-    const countryOptions = [
-      { name: "中国", code: "CN" },
-      { name: "美国", code: "US" },
-    ];
     const timezoneOptions = ["UTC+8", "UTC+0", "UTC-5", "UTC-8"];
 
     const confirm = () => {
@@ -879,7 +862,6 @@ export default {
       warehouseOptions,
       warehouseForm,
       warehouseTypes,
-      countryOptions,
       timezoneOptions,
       dialogVisible,
       warehouseList,

@@ -19,7 +19,7 @@
     <div class="tabs-container q-pa-none">
       <div class="search-bar q-pa-md">
         <div class="row q-col-gutter-sm">
-          <div class="col-auto">
+          <!-- <div class="col-auto">
             <q-select
               outlined
               dense
@@ -28,14 +28,106 @@
               label="全部类目"
               class="select-width"
             />
+          </div> -->
+          <!-- <div class="col-auto">
+            <q-select
+              outlined
+              dense
+              v-model="pageParams.customer_id"
+              :options="customerList"
+              option-value="value"
+              option-label="label"
+              emit-value
+              map-options
+              clearable
+              label="客户"
+              class="select-width"
+            />
+          </div> -->
+          <div class="col-auto" v-if="currentTab == 'flow'">
+            <q-select
+              outlined
+              dense
+              v-model="logTypeFilter"
+              :options="logType"
+              option-value="value"
+              option-label="label"
+              emit-value
+              map-options
+              clearable
+              label="类型"
+              class="select-width"
+            />
+          </div>
+          <div class="row col-auto justify-center" v-if="currentTab == 'flow'">
+            <q-input
+              outlined
+              dense
+              clearable
+              readonly
+              v-model="start_date"
+              label="开始时间"
+              class="date-input start-date"
+            >
+              <template v-slot:append>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy
+                    cover
+                    transition-show="scale"
+                    transition-hide="scale"
+                  >
+                    <q-date
+                      v-model="start_date"
+                      mask="YYYY-MM-DD"
+                      class="date-picker"
+                      color="primary"
+                      today-btn
+                    />
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+            <div class="date-separator">~</div>
+            <q-input
+              outlined
+              dense
+              clearable
+              readonly
+              v-model="end_date"
+              label="结束时间"
+              class="date-input end-date"
+            >
+              <template v-slot:append>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy
+                    cover
+                    transition-show="scale"
+                    transition-hide="scale"
+                  >
+                    <q-date
+                      v-model="end_date"
+                      mask="YYYY-MM-DD"
+                      class="date-picker"
+                      color="primary"
+                      today-btn
+                    />
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
           </div>
           <div class="col-auto">
             <q-select
               outlined
               dense
-              v-model="customerFilter"
-              :options="customerOptions"
-              label="全部客户"
+              v-model="pageParams.search_type"
+              :options="searchType"
+              option-value="value"
+              option-label="label"
+              emit-value
+              map-options
+              clearable
+              label="搜索模式"
               class="select-width"
             />
           </div>
@@ -43,8 +135,10 @@
             <q-input
               outlined
               dense
-              v-model="skuFilter"
-              label="商品SKU"
+              v-model="pageParams.keywords"
+              label="关键字"
+              style="width: 250px"
+              clearable
               class="select-width"
             >
               <template v-slot:append>
@@ -53,14 +147,41 @@
             </q-input>
           </div>
           <div class="col-auto">
-            <q-btn color="primary" flat icon="search" label="精确搜索" />
+            <q-select
+              outlined
+              dense
+              v-model="pageParams.search_mode"
+              :options="searchTypeOptions"
+              clearable
+              map-options
+              emit-value
+              option-value="value"
+              label="搜索模式"
+              class="select-width"
+            />
+          </div>
+          <div class="col-auto">
+            <q-btn
+              outline
+              color="grey"
+              label="重置"
+              class="q-mr-sm"
+              @click="resetSearch"
+            />
+            <q-btn
+              color="primary"
+              :loading="$store.state.btnLoading"
+              icon="search"
+              label="搜索"
+              @click="search"
+            />
           </div>
         </div>
       </div>
 
       <q-tab-panels v-model="currentTab" animated>
         <q-tab-panel name="list" class="q-pa-none page_table_action">
-          <div class="tab-buttons q-py-xs">
+          <!-- <div class="tab-buttons q-py-xs">
             <q-tabs
               v-model="inventoryTab"
               dense
@@ -75,14 +196,14 @@
               <q-tab name="reserved" label="备货区" />
               <q-tab name="defective" label="不良品区" />
             </q-tabs>
-          </div>
+          </div> -->
 
           <!-- 操作按钮区域 -->
           <div class="action-bar q-px-sm page_table_action q-py-xs">
             <div class="row items-center justify-between">
               <div>
                 <span class="q-mr-sm">选择 {{ selectedInventory.length }}</span>
-                <q-btn
+                <!-- <q-btn
                   color="primary"
                   flat
                   icon="get_app"
@@ -95,7 +216,7 @@
                   icon="print"
                   label="打印标签"
                   class="q-ml-sm"
-                />
+                /> -->
               </div>
             </div>
           </div>
@@ -138,7 +259,7 @@
               </template>
 
               <template v-slot:body="props">
-                <q-tr :props="props">
+                <q-tr :props="props" class="inventory-row">
                   <q-td auto-width>
                     <q-checkbox v-model="props.selected" />
                   </q-td>
@@ -146,11 +267,11 @@
                     <div class="product-info">
                       <img :src="props.row.image" class="product-img" />
                       <div class="info-container">
-                        <div class="sku-code">编号：{{ props.row.sku }}</div>
                         <div class="sku-code">SKU：{{ props.row.sku }}</div>
                         <div class="product-name">
                           名称：{{ props.row.product_name }}
                         </div>
+                        <div class="sku-code">规格：{{ props.row.name }}</div>
                       </div>
                     </div>
                   </q-td>
@@ -158,16 +279,40 @@
                     {{ props.row.customer.name }}
                   </q-td>
                   <q-td key="in_transit_qty" :props="props">
-                    {{ props.row.in_transit_qty }}
+                    <div
+                      class="cursor-pointer hover-number"
+                      @click="showDrawer('in_transit', props.row)"
+                    >
+                      {{ props.row.in_transit_qty }}
+                      <q-icon name="arrow_drop_down" size="xs" class="hover-icon" />
+                    </div>
                   </q-td>
                   <q-td key="pending_receipt_qty" :props="props">
-                    {{ props.row.pending_receipt_qty }}
+                    <div
+                      class="cursor-pointer hover-number"
+                      @click="showDrawer('pending_receipt', props.row)"
+                    >
+                      {{ props.row.pending_receipt_qty }}
+                      <q-icon name="arrow_drop_down" size="xs" class="hover-icon" />
+                    </div>
                   </q-td>
                   <q-td key="pending_shelf_qty" :props="props">
-                    {{ props.row.pending_shelf_qty }}
+                    <div
+                      class="cursor-pointer hover-number"
+                      @click="showDrawer('pending_shelf', props.row)"
+                    >
+                      {{ props.row.pending_shelf_qty }}
+                      <q-icon name="arrow_drop_down" size="xs" class="hover-icon" />
+                    </div>
                   </q-td>
                   <q-td key="locked_qty" :props="props">
-                    {{ props.row.locked_qty }}
+                    <div
+                      class="cursor-pointer hover-number"
+                      @click="showDrawer('locked', props.row)"
+                    >
+                      {{ props.row.locked_qty }}
+                      <q-icon name="arrow_drop_down" size="xs" class="hover-icon" />
+                    </div>
                   </q-td>
                   <q-td
                     key="available_qty"
@@ -208,13 +353,13 @@
             <div class="row items-center justify-between">
               <div>
                 <span class="q-mr-sm">选择 {{ selectedFlow.length }}</span>
-                <q-btn
+                <!-- <q-btn
                   color="primary"
                   flat
                   icon="get_app"
                   label="导出"
                   class="q-ml-sm"
-                />
+                /> -->
               </div>
               <div>
                 <!-- <q-btn outline color="primary" icon="today" label="创建时间">
@@ -240,7 +385,7 @@
               :loading="$store.state.btnLoading"
               :pagination="{
                 page: flowParams.page,
-                rowsPerPage: 0
+                rowsPerPage: 0,
               }"
             >
               <template v-slot:header="props">
@@ -267,9 +412,7 @@
                         <div class="col-12 flex justify-between">
                           <div>
                             <span class="info-item q-mr-md"
-                              >客户: {{ props.row.customer.name }} [{{
-                                props.row.customer.code
-                              }}]</span
+                              >客户: {{ props.row.customer.name }}</span
                             >
                             <span class="info-item q-mr-md"
                               >类型: {{ props.row.type }}</span
@@ -295,7 +438,8 @@
                     <div>
                       <!-- 编号: {{ props.row.sku}}<br /> -->
                       SKU: {{ props.row.sku }}<br />
-                      名称: {{ props.row.product_name }}
+                      名称: {{ props.row.product_name }}<br />
+                      规格：{{ props.row.name }}
                     </div>
                   </q-td>
                   <q-td key="relevance_number" :props="props">
@@ -355,6 +499,90 @@
         </q-tab-panel>
       </q-tab-panels>
     </div>
+
+    <!-- 右侧弹出的对话框 -->
+    <q-dialog
+      v-model="dialogVisible"
+      position="right"
+      :maximized="$q.screen.lt.md"
+      transition-show="slide-left"
+      transition-hide="slide-right"
+      full-height
+    >
+      <q-card style="width: 30vw; max-width: 1400px">
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h6">{{ dialogTitle }}</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-separator class="q-mt-sm" />
+
+        <q-card-section class="dialog-content">
+          <div class="product-info q-mb-md">
+            <div class="row q-col-gutter-md">
+              <div class="col-12">
+                <div class="info-item">
+                  <span class="label">SKU：</span>
+                  <span class="info-value">{{ currentProduct?.sku }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 数量详情表格 -->
+          <div class="detail-table">
+            <q-table
+              :rows="detailData"
+              :columns="detailColumns"
+              row-key="id"
+              flat
+              bordered
+              :pagination="{ rowsPerPage: 0 }"
+              :loading="tableLoading"
+              class="detail-table-container"
+              :virtual-scroll="detailData.length > 20"
+              style="height: calc(100vh - 170px)"
+              hide-bottom
+            >
+              <template v-slot:body="props">
+                <q-tr :props="props">
+                  <q-td
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                  >
+                    {{ col.value }}
+                  </q-td>
+                </q-tr>
+              </template>
+              <template v-slot:no-data>
+                <div
+                  class="full-width row flex-center q-gutter-sm q-pa-md text-grey"
+                >
+                  <q-icon size="2em" name="inbox" />
+                  <span>暂无数据</span>
+                </div>
+              </template>
+              <template v-slot:loading>
+                <div class="full-width row flex-center q-pa-md">
+                  <q-spinner color="primary" size="2em" />
+                  <span class="q-ml-sm">加载中...</span>
+                </div>
+              </template>
+            </q-table>
+            <div class="q-pa-md">
+              <Pagination
+                :total-count="detailPageParams.total"
+                v-model:page="detailPageParams.page"
+                v-model:rows-per-page="detailPageParams.per_page"
+                @page-change="getStockDetail"
+              />
+            </div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -364,6 +592,7 @@ import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import inventoryApi from "@/api/inventory";
 import Pagination from "@/components/Pagination.vue";
+import customerApi from "@/api/customer";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -375,18 +604,59 @@ const inventoryTab = ref("all");
 // 库存清单筛选
 const categoryFilter = ref("全部类目");
 const categoryOptions = ["全部类目", "服装", "电子产品", "家居用品"];
-const customerFilter = ref("全部客户");
-const customerOptions = ["全部客户", "PJ", "test", "Freddie79"];
-const skuFilter = ref("");
+const searchType = ref([
+  {
+    label: "按SKU",
+    value: "sku",
+  },
+  {
+    label: "按名称",
+    value: "name",
+  },
+]);
 const hideEmpty = ref(false);
 
-// 库存流水筛选
-const typeFilterFlow = ref("全部类型");
-const typeOptions = ["全部类型", "入库", "出库", "盘点调整", "库存调整"];
-const startDate = ref("2025-04-01");
-const endDate = ref("2025-04-08");
-const skuFilterFlow = ref("");
+const searchTypeOptions = [
+  {
+    label: "精确搜索",
+    value: "exact",
+  },
+  {
+    label: "模糊搜索",
+    value: "like",
+  },
+  {
+    label: "前缀搜索",
+    value: "prefix",
+  },
+];
 
+// 库存流水筛选
+const start_date = ref("");
+const end_date = ref("");
+const logTypeFilter = ref("");
+const logType = ref([
+  {
+    label: "入库",
+    value: "inbound",
+  },
+  {
+    label: "出库",
+    value: "outbound",
+  },
+  {
+    label: "退货",
+    value: "return",
+  },
+  {
+    label: "调整库存",
+    value: "adjustment",
+  },
+  {
+    label: "初始库存",
+    value: "initial",
+  },
+]);
 // 选中行
 const selectedInventory = ref([]);
 const selectedFlow = ref([]);
@@ -423,9 +693,15 @@ const inventoryColumns = [
     field: "pending_shelf_qty",
     align: "center",
   },
+  // {
+  //   name: "locked_qty",
+  //   label: "不可用数",
+  //   field: "locked_qty",
+  //   align: "center",
+  // },
   {
     name: "locked_qty",
-    label: "不可用数",
+    label: "锁定库存",
     field: "locked_qty",
     align: "center",
   },
@@ -448,6 +724,29 @@ const inventoryColumns = [
     align: "center",
   },
 ];
+
+const search = () => {
+  if (currentTab.value == "list") {
+    getInventoryList();
+  } else {
+    getStockStatement();
+  }
+};
+const resetSearch = () => {
+  start_date.value = "";
+  end_date.value = "";
+  logTypeFilter.value = "";
+  pageParams.search_type = "name";
+  pageParams.search_mode = "exact";
+  pageParams.keywords = "";
+  search();
+};
+//
+const pageParams = reactive({
+  search_type: "name",
+  search_mode: "exact",
+  keywords: "",
+});
 // 模拟库存清单数据
 const inventoryList = ref([]);
 // 分页参数
@@ -457,12 +756,29 @@ const listParams = reactive({
   total: 0,
 });
 const getInventoryList = () => {
-  inventoryApi.getInventoryList(listParams).then((res) => {
-    if (res.success) {
-      inventoryList.value = res.data.items;
-      listParams.total = res.data.meta.total;
-    }
-  });
+  inventoryApi
+    .getInventoryList({
+      ...listParams,
+      ...pageParams,
+    })
+    .then((res) => {
+      if (res.success) {
+        inventoryList.value = res.data.items;
+        listParams.total = res.data.meta.total;
+      }
+    });
+};
+
+const customerList = ref([]);
+// 获取客户列表
+const getCustomerList = async () => {
+  const res = await customerApi.getCustomerAll();
+  if (res.success) {
+    customerList.value = res.data.map((item) => ({
+      label: item.name,
+      value: item.id,
+    }));
+  }
 };
 
 // 库存流水表格列定义
@@ -523,28 +839,7 @@ const flowColumns = [
   },
 ];
 // 库存流水数据
-const flowList = ref([
-  // {
-  //   id: "2304070001",
-  //   reference_number: "REF20250407001",
-  //   package_number: "PN3HB00006",
-  //   batch_number: "BO20250401001",
-  //   warehouse_location_code: "B-02-01",
-  //   orgin_stock: 40,
-  //   stock: -4,
-  //   batch_qty: 36,
-  //   stock_after: 36,
-  //   createdAt: "2025-04-07 02:32:41",
-  //   group_id: 1,
-  //   group_info: {
-  //     warehouse: "USC",
-  //     customer: "PJ",
-  //     customer_code: "CNO3HB00003",
-  //     type: "销售出库",
-  //     time: "2025-04-07 02:32",
-  //   },
-  // },
-]);
+const flowList = ref([]);
 
 const flowParams = reactive({
   page: 1,
@@ -553,12 +848,20 @@ const flowParams = reactive({
 });
 
 const getStockStatement = () => {
-  inventoryApi.getStockStatement(flowParams).then((res) => {
-    if (res.success) {
-      flowList.value = res.data.items;
-      flowParams.total = res.data.meta.total;
-    }
-  });
+  inventoryApi
+    .getStockStatement({
+      ...flowParams,
+      ...pageParams,
+      log_type: logTypeFilter.value,
+      start_date: start_date.value,
+      end_date: end_date.value,
+    })
+    .then((res) => {
+      if (res.success) {
+        flowList.value = res.data.items;
+        flowParams.total = res.data.meta.total;
+      }
+    });
 };
 
 // In the script section, add the following function near other methods (after the flowList declaration)
@@ -570,9 +873,150 @@ const showGroupHeader = (row, index) => {
   return prevRow && row.id !== prevRow.id;
 };
 
+// 弹窗控制
+const dialogVisible = ref(false);
+const dialogTitle = ref("");
+const currentProduct = ref(null);
+const detailData = ref([]);
+const detailColumns = ref([
+  {
+    name: "relation_number",
+    label: "关联单据号",
+    field: "relation_number",
+    align: "left",
+  },
+  {
+    name: "relation_type",
+    label: "类型",
+    field: (row) => {
+      return row.relation_type === "standard_inbound" ? "标准入库" : "--";
+    },
+    align: "center",
+  },
+  {
+    name: "relation_qty",
+    label: "数量",
+    field: "relation_qty",
+    align: "center",
+  },
+]);
+const tableLoading = ref(false);
+const detailPageParams = reactive({
+  page: 1,
+  per_page: 10,
+  total: 0,
+});
+
+// 当前操作的类型
+const currentType = ref('');
+
+// 获取详情数据
+const getStockDetail = () => {
+  tableLoading.value = true;
+  
+  if (!currentProduct.value) {
+    tableLoading.value = false;
+    return;
+  }
+  
+  switch (currentType.value) {
+    case "in_transit":
+      inventoryApi
+        .getStockDetail(currentProduct.value.id, {
+          ...detailPageParams,
+        })
+        .then((res) => {
+          if (res.success) {
+            detailData.value = res.data.items;
+            detailPageParams.total = res.data.meta.total;
+          }
+        })
+        .finally(() => {
+          tableLoading.value = false;
+        });
+      break;
+    case "pending_receipt":
+      inventoryApi
+        .getPendingInboundOrders(currentProduct.value.id, {
+          ...detailPageParams,
+        })
+        .then((res) => {
+          if (res.success) {
+            detailData.value = res.data.items;
+            detailPageParams.total = res.data.meta.total;
+          }
+        })
+        .finally(() => {
+          tableLoading.value = false;
+        });
+      break;
+    case "pending_shelf":
+      inventoryApi
+        .getPendingShelfOrders(currentProduct.value.id, {
+          ...detailPageParams,
+        })
+        .then((res) => {
+          if (res.success) {
+            detailData.value = res.data.items;
+            detailPageParams.total = res.data.meta.total;
+          }
+        })
+        .finally(() => {
+          tableLoading.value = false;
+        });
+      break;
+    case "locked":
+      inventoryApi
+        .getLockedStockOrders(currentProduct.value.id, {
+          ...detailPageParams,
+        })
+        .then((res) => {
+          if (res.success) {
+            detailData.value = res.data.items;
+            detailPageParams.total = res.data.meta.total;
+          }
+        })
+        .finally(() => {
+          tableLoading.value = false;
+        });
+      break;
+  }
+};
+
+const showDrawer = async (type, row) => {
+  detailData.value = [];
+  currentProduct.value = row;
+  currentType.value = type;  // 保存当前操作类型
+  dialogVisible.value = true;
+  
+  // 重置分页参数
+  detailPageParams.page = 1;
+  detailPageParams.per_page = 10;
+  detailPageParams.total = 0;
+  
+  switch (type) {
+    case "in_transit":
+      dialogTitle.value = "在途数详情";
+      break;
+    case "pending_receipt":
+      dialogTitle.value = "待收数详情";
+      break;
+    case "pending_shelf":
+      dialogTitle.value = "待上架详情";
+      break;
+    case "locked":
+      dialogTitle.value = "锁定库存详情";
+      break;
+  }
+  
+  // 调用统一的获取详情方法
+  getStockDetail();
+};
+
 onMounted(() => {
   getInventoryList();
   getStockStatement();
+  getCustomerList();
 });
 </script>
 
@@ -612,7 +1056,52 @@ onMounted(() => {
     }
 
     .date-input {
-      width: 150px;
+      width: 180px;
+      margin: 0 !important;
+
+      :deep(.q-field__control) {
+        height: 36px;
+        background: white;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+
+        &:hover {
+          border-color: var(--q-primary);
+        }
+
+        &:focus-within {
+          border-color: var(--q-primary);
+          box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+        }
+      }
+
+      :deep(.q-field__label) {
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.65);
+        top: 8px;
+      }
+
+      :deep(.q-icon) {
+        color: rgba(0, 0, 0, 0.45);
+        font-size: 20px;
+        padding: 4px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+
+        &:hover {
+          color: var(--q-primary);
+          background: rgba(0, 0, 0, 0.04);
+        }
+      }
+    }
+
+    .date-separator {
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      color: rgba(0, 0, 0, 0.45);
+      font-size: 14px;
+      user-select: none;
     }
   }
 
@@ -697,8 +1186,7 @@ onMounted(() => {
         }
 
         .product-name {
-          color: rgba(0, 0, 0, 0.6);
-          font-size: 12px;
+           color: rgba(0, 0, 0, 0.85);
         }
       }
     }
@@ -783,5 +1271,206 @@ onMounted(() => {
       margin: 0 8px;
     }
   }
+}
+
+:deep(.q-date) {
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+
+  .q-date__header {
+    background: var(--q-primary);
+    padding: 16px;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .q-date__content {
+    padding: 12px;
+  }
+
+  .q-date__calendar-item {
+    height: 32px;
+    width: 32px;
+
+    &:hover:not(.q-date__calendar-item--active) {
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    &.q-date__calendar-item--active {
+      background: var(--q-primary);
+      color: white;
+      font-weight: 500;
+    }
+  }
+
+  .q-date__today {
+    color: var(--q-primary);
+    font-weight: 500;
+  }
+
+  .q-date__navigation {
+    height: 36px;
+
+    .q-btn {
+      margin: 0 4px;
+      padding: 4px;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.04);
+      }
+    }
+  }
+}
+
+// 响应式布局优化
+@media (max-width: 600px) {
+  .inventory-page {
+    .search-bar {
+      .date-input {
+        width: 140px;
+      }
+
+      .date-separator {
+        padding: 0 4px;
+      }
+    }
+  }
+}
+
+.hover-number {
+  color: var(--q-primary);
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  
+  &:hover {
+    background: rgba(var(--q-primary), 0.1);
+  }
+  
+  .hover-icon {
+    opacity: 0;
+    margin-left: 2px;
+    transition: opacity 0.2s ease;
+  }
+}
+
+.inventory-row:hover {
+  .hover-number .hover-icon {
+    opacity: 1;
+  }
+}
+
+.info-item {
+  margin-bottom: 12px;
+  color: rgba(0, 0, 0, 0.85);
+  font-size: 14px;
+
+  .label {
+    color: rgba(0, 0, 0, 0.45);
+    margin-right: 12px;
+    display: inline-block;
+    width: 60px;
+  }
+
+  .info-value {
+    font-weight: 500;
+  }
+}
+
+.detail-table {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 4px;
+  overflow: hidden;
+
+  .detail-table-container {
+    flex: 1;
+
+    :deep(.q-table) {
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 4px;
+      height: 100%;
+
+      thead tr {
+        th {
+          font-weight: 500;
+          font-size: 13px;
+          color: rgba(0, 0, 0, 0.85);
+          background: #f5f7fa;
+          padding: 10px 12px;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+      }
+
+      tbody tr {
+        td {
+          font-size: 13px;
+          color: rgba(0, 0, 0, 0.65);
+          padding: 10px 12px;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.02);
+        }
+      }
+    }
+  }
+}
+
+.drawer-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.drawer-header {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  background: white;
+  position: relative;
+  z-index: 1;
+
+  .text-h6 {
+    font-size: 16px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.85);
+  }
+}
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  background: #f5f7fa;
+}
+
+.custom-backdrop {
+  display: none;
+}
+
+// 弹窗样式
+:deep(.q-dialog__inner) {
+  & > div {
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.dialog-content {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.product-info {
+  flex-shrink: 0;
 }
 </style> 

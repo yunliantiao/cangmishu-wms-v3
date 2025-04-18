@@ -56,7 +56,7 @@
               flat
               class="bg-grey-2"
             />
-            <q-btn
+            <!-- <q-btn
               color="primary"
               icon="print"
               label="打印上架单"
@@ -64,7 +64,17 @@
               :loading="$store.state.btnLoading"
               v-if="arrivalMethod == 'express_parcel'"
               @click="handlePrint"
+            /> -->
+            <q-btn
+              color="primary"
+              icon="content_paste_search"
+              label="新品维护"
+              outline
+              :loading="$store.state.btnLoading"
+              v-if="arrivalMethod == 'box' && currentProducts.length"
+              @click="handleNewSku"
             />
+
             <q-btn
               color="primary"
               icon="check_circle"
@@ -131,14 +141,16 @@
         @handle-box-click="handleBoxClick"
         ref="parcelReceiptRef"
       />
+      <NewProductDialog
+        v-model:visible="showNewSkuDialog"
+        :products="currentProducts"
+        :box-number="boxNumber"
+        :id="orderData.id"
+        @updateNewProducts="handleScan"
+        @update:products="handleUpdateProductsFromDialog"
+        @confirm="setSkuProducts"
+      />
     </div>
-    <NewProductDialog
-      v-model:visible="showNewSkuDialog"
-      :products="currentProducts"
-      :box-number="boxNumber"
-      @update:products="handleUpdateProductsFromDialog"
-      @confirm="handleConfirm"
-    />
   </div>
 </template>
 
@@ -150,8 +162,11 @@ import settingApi from "@/api/setting";
 import ReceivingParcel from "./components/ReceivingParcel.vue";
 import ParcelReceipt from "./components/ParcelReceipt.vue";
 import NewProductDialog from "./components/NewProductDialog.vue";
+import { useRoute, useRouter } from "vue-router";
 
 const $q = useQuasar();
+const route = useRoute();
+const router = useRouter();
 const arrivalMethod = ref("");
 // 状态变量
 const scanCode = ref("");
@@ -216,7 +231,6 @@ const getShelfLocationList = () => {
   });
 };
 getShelfLocationList();
-
 // 方法
 const handleScan = () => {
   if (!scanCode.value) return;
@@ -239,9 +253,20 @@ const handleScan = () => {
           products.value = items;
         } else {
           parcelData.value = res.data.boxes;
+          isNewSkuBoolean();
+          if (characteristic.value) {
+            handleConfirm();
+          }
         }
       }
     });
+};
+
+const characteristic = ref(false);
+//新品维护后则需要先扫描获取最新规格再确认收货
+const setSkuProducts = () => {
+  handleScan();
+  characteristic.value = true;
 };
 
 const handleProductScan = async () => {
@@ -310,9 +335,45 @@ const handlePrint = async () => {
   }
 };
 
-const handleConfirm = async () => {
-  console.log("......", arrivalMethod.value);
+const isNewSkuBoolean = () => {
+  currentProducts.value = []; // 清空当前商品列表
+  const skuMap = new Map(); // 用于记录已添加的SKU
+  // 创建一个Map来存储SKU和对应的箱子编号
+  const skuBoxMap = new Map(); // 用于记录SKU对应的箱子编号
+  parcelData.value.forEach((parcel) => {
+    // 这里是看有没有新品
+    //判断包裹中是否有新商品
+    parcel.items.forEach((item) => {
+      if (isNewSku(item)) {
+        // 如果SKU已存在，拼接箱子编号
+        if (skuMap.has(item.product_spec_sku)) {
+          // 获取已有的商品
+          const existingItem = currentProducts.value.find(
+            (p) => p.product_spec_sku === item.product_spec_sku
+          );
+          // 更新箱子编号信息
+          if (existingItem) {
+            existingItem.box_numbers = existingItem.box_numbers || [
+              skuBoxMap.get(item.product_spec_sku),
+            ];
+            if (!existingItem.box_numbers.includes(parcel.box_number)) {
+              existingItem.box_numbers.push(parcel.box_number);
+            }
+          }
+        } else {
+          // 新SKU，添加到Map和商品列表
+          skuMap.set(item.product_spec_sku, true);
+          skuBoxMap.set(item.product_spec_sku, parcel.box_number);
+          const newItem = JSON.parse(JSON.stringify(item));
+          newItem.box_numbers = [parcel.box_number];
+          currentProducts.value.push(newItem);
+        }
+      }
+    });
+  });
+};
 
+const handleConfirm = async () => {
   let parasm = {};
   // 1. 验证数据
   if (arrivalMethod.value == "box") {
@@ -333,41 +394,75 @@ const handleConfirm = async () => {
       });
       return;
     }
-    // 获取标准格式的产品数据
-    parasm = getProductsFromParcels();
+    isNewSkuBoolean();
+    // 箱子收货查看是否有新品
+    if (currentProducts.value.length) {
+      return openNewProductDialog();
+    } else {
+      parasm = getProductsFromParcels();
+      if (boxNumberList.value.length) {
+        $q.notify({
+          type: "warning",
+          message:
+            "以下箱子收货数量小于申报数量，同一个箱子不支持多次收货，请确认！",
+          html: true,
+          position: "center",
+          timeout: 0,
+          actions: [
+            { label: "取消", color: "white", handler: () => {} },
+            {
+              label: "确定",
+              color: "white",
+              handler: () => {
+                handleConfirmBox(parasm);
+              },
+            },
+          ],
+          caption: boxNumberList.value.join("，"),
+        });
+        return;
+      }
+    }
   } else if (arrivalMethod.value === "express_parcel") {
     // 快递收货模式
     parasm = getProductsFrom();
+    if (!parasm.length) {
+      return;
+    }
   } else {
     return $q.notify({
       type: "negative",
       message: "未知的收货方式",
     });
   }
-  // 执行提交逻辑
-  if (parasm.length) {
-    await inboundApi
-      .confirmReceive(orderData.value.id, { items: parasm })
-      .then((res) => {
-        if (res.success) {
-          resetOrder();
-        } else {
-          $q.notify({
-            type: "negative",
-            message: res.message || "确认失败，请重试",
+  handleConfirmBox(parasm);
+};
+const handleConfirmBox = (parasm) => {
+  inboundApi
+    .confirmReceive(orderData.value.id, { items: parasm })
+    .then((res) => {
+      if (res.success) {
+        if (route.query.number) {
+          router.push({
+            path: "/inbound/warehouseWarrant",
           });
+        } else {
+          resetOrder();
         }
-      })
-      .catch((err) => {
-        console.error("提交错误:", err);
+      } else {
         $q.notify({
           type: "negative",
-          message: "系统异常，请稍后再试",
+          message: res.message || "确认失败，请重试",
         });
+      }
+    })
+    .catch((err) => {
+      $q.notify({
+        type: "negative",
+        message: "系统异常，请稍后再试",
       });
-  }
+    });
 };
-
 // 实用方法
 const updateVolume = (row) => {
   if (row.length && row.width && row.height) {
@@ -384,6 +479,8 @@ const resetOrder = () => {
   productScanCode.value = "";
   scanCode.value = "";
   products.value = [];
+  characteristic.value = false;
+
 };
 
 const addShelfLocation = (row) => {
@@ -572,7 +669,23 @@ const updateExpressProducts = (updatedProducts) => {
 
 const handleBoxClick = (row) => {
   boxNumber.value = row.box_number;
-  currentProducts.value = row.items;
+  const skuMap = new Map(); // 用于记录已添加的SKU
+  currentProducts.value = [];
+
+  // 过滤重复的SKU
+  row.items.forEach((item) => {
+    if (!skuMap.has(item.product_spec_sku)) {
+      skuMap.set(item.product_spec_sku, true);
+      currentProducts.value.push(item);
+    }
+  });
+
+  showNewSkuDialog.value = true;
+};
+
+const handleNewSku = () => {
+  isNewSkuBoolean();
+  boxNumber.value = "NewSku";
   showNewSkuDialog.value = true;
 };
 
@@ -582,27 +695,28 @@ const openNewProductDialog = () => {
   showNewSkuDialog.value = true;
 };
 
+const boxNumberList = ref([]);
+
 // 添加从包裹数据中提取商品信息的方法
 const getProductsFromParcels = () => {
   const extractedProducts = [];
-  currentProducts.value = [];
+  boxNumberList.value = [];
   parcelData.value.forEach((parcel) => {
     parcel.items.forEach((item) => {
-      currentProducts.value.push(item);
-      if (isNewSku(item)) {
-        openNewProductDialog();
-        return;
-      }
       // 转换为标准产品格式以匹配系统其他部分的数据结构
-      extractedProducts.push({
-        id: item.id,
-        actual_length: item.product_spec_actual_length,
-        actual_width: item.product_spec_actual_width,
-        actual_height: item.product_spec_actual_height,
-        actual_weight: item.product_spec_actual_weight,
-        quantity: item.put_away_quantity || 0,
-        // 添加其他需要的字段
-      });
+      if (item.put_away_quantity) {
+        if (item.put_away_quantity < item.quantity) {
+          boxNumberList.value.push(parcel.box_number);
+        }
+        extractedProducts.push({
+          id: item.id,
+          actual_length: item.product_spec_actual_length,
+          actual_width: item.product_spec_actual_width,
+          actual_height: item.product_spec_actual_height,
+          actual_weight: item.product_spec_actual_weight,
+          quantity: item.put_away_quantity,
+        });
+      }
     });
   });
 
@@ -613,13 +727,24 @@ const getProductsFromParcels = () => {
 const getProductsFrom = () => {
   const extractedProducts = [];
   products.value.forEach((product) => {
+    if (
+      !product.size_length ||
+      !product.size_width ||
+      !product.size_height ||
+      !product.product_spec_actual_weight
+    ) {
+      return $q.notify({
+        type: "negative",
+        message: "请填写尺寸和重量",
+      });
+    }
     extractedProducts.push({
       id: product.id,
-      quantity: product.put_away_quantity,
-      actual_length: product.size_length,
-      actual_width: product.size_width,
-      actual_height: product.size_height,
-      actual_weight: product.product_spec_actual_weight,
+      quantity: product.put_away_quantity || 0,
+      actual_length: product.size_length || 0,
+      actual_width: product.size_width || 0,
+      actual_height: product.size_height || 0,
+      actual_weight: product.product_spec_actual_weight || 0,
       shelf_locations: screenShelfLocations(product),
     });
   });
@@ -652,6 +777,10 @@ onMounted(() => {
   nextTick(() => {
     scanInput.value.focus();
   });
+  if (route.query.number) {
+    scanCode.value = route.query.number;
+    handleScan();
+  }
 });
 </script>
 

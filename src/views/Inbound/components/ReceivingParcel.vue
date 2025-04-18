@@ -4,7 +4,7 @@
       <div class="row justify-between items-center q-mb-md">
         <div class="text-subtitle1 text-weight-medium">收货商品</div>
         <div style="width: 400px">
-          <q-input
+          <!-- <q-input
             outlined
             dense
             v-model="productScanCode"
@@ -41,7 +41,7 @@
                 </q-list>
               </q-btn-dropdown>
             </template>
-          </q-input>
+          </q-input> -->
         </div>
       </div>
 
@@ -161,7 +161,6 @@
                   outlined
                   type="number"
                   v-model="props.row.size_length"
-                  @update:model-value="updateVolume(props.row)"
                   class="input-spacing"
                 />
               </div>
@@ -172,7 +171,6 @@
                   outlined
                   type="number"
                   v-model="props.row.size_width"
-                  @update:model-value="updateVolume(props.row)"
                   class="input-spacing"
                 />
               </div>
@@ -183,7 +181,6 @@
                   outlined
                   type="number"
                   v-model="props.row.size_height"
-                  @update:model-value="updateVolume(props.row)"
                   class="input-spacing"
                 />
               </div>
@@ -198,7 +195,7 @@
               class="text-caption"
               :class="{ 'text-negative': hasVolumeDiff(props.row) }"
             >
-              体积: {{ props.row.calculatedVolume }}
+              体积: {{ updateVolume(props.row) }}
             </div>
           </q-td>
           <q-td key="weight" :props="props">
@@ -224,7 +221,7 @@
               {{ props.row.quantity }}
             </div>
             <div>
-              <span class="success_num">{{props.row.received_quantity }}</span>
+              <span class="success_num">{{ props.row.received_quantity }}</span>
               /{{ props.row.quantity }}
             </div>
           </q-td>
@@ -589,20 +586,18 @@ const handleProductScan = async () => {
   }
 };
 
+/**
+ * 更新商品体积计算的函数
+ *
+ * @param {Object} row - 商品数据行对象
+ */
 const updateVolume = (row) => {
-  if (row.size_length && row.size_width && row.size_height) {
-    row.calculatedVolume = `${(
-      (row.size_length * row.size_width * row.size_height) /
-      1000000
-    ).toFixed(3)} m³`;
-
-    // 同时更新实际尺寸字段
-    row.product_spec_actual_length = row.size_length;
-    row.product_spec_actual_width = row.size_width;
-    row.product_spec_actual_height = row.size_height;
-
-    emit("update-volume", row);
-  }
+  const volumeInCubicCm =
+    row.product_spec_size_length *
+    row.product_spec_size_width *
+    row.product_spec_size_height;
+  row.calculatedVolume = `${volumeInCubicCm.toFixed(2)} cm³`;
+  return row.calculatedVolume;
 };
 
 const checkWeightDiff = (row) => {
@@ -777,7 +772,7 @@ const applyBatchDimensions = () => {
         product.product_spec_actual_height = batchDimensions.height;
       }
     }
-    updateVolume(product);
+    // updateVolume(product);
   });
 
   // 通知父组件数据已更新
@@ -843,7 +838,7 @@ const fillAllQuantities = () => {
   updatedProducts.forEach((product) => {
     if (product.quantity > product.received_quantity) {
       product.put_away_quantity = product.quantity - product.received_quantity;
-    }else{
+    } else {
       product.put_away_quantity = 0;
     }
   });
@@ -860,7 +855,6 @@ const fillAllQuantities = () => {
 
 // 在fillAllQuantities方法下添加fillAllShelfQuantities方法
 const fillAllShelfQuantities = () => {
-    
   // 克隆数据避免直接修改props
   const updatedProducts = JSON.parse(JSON.stringify(props.products));
 
@@ -875,7 +869,9 @@ const fillAllShelfQuantities = () => {
     }
     // 如果有多个货架位，将收货数量均分
     else if (product.shelfLocations.length > 1) {
-      const avgQty = Math.floor(product.put_away_quantity / product.shelfLocations.length);
+      const avgQty = Math.floor(
+        product.put_away_quantity / product.shelfLocations.length
+      );
       let remainder = product.put_away_quantity % product.shelfLocations.length;
 
       product.shelfLocations.forEach((shelf, index) => {
@@ -918,7 +914,7 @@ const initializeProductData = (product) => {
     }
 
     // 更新体积计算
-    updateVolume(product);
+    // updateVolume(product);
   }
   return product;
 };

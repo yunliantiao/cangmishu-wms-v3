@@ -8,21 +8,12 @@
     full-height
     @hide="onDialogHide"
   >
-    <q-card
-      class="order-details-dialog"
-      style="width: 80vw; max-width: 1400px"
-    >
+    <q-card class="order-details-dialog" style="width: 80vw; max-width: 1400px">
       <!-- 对话框头部 -->
       <q-card-section class="dialog-header row items-center bg-white">
         <div class="text-subtitle1">包裹详情</div>
         <q-space />
-        <q-btn
-          flat
-          round
-          dense
-          icon="close"
-          @click="dialogVisible = false"
-        />
+        <q-btn flat round dense icon="close" @click="dialogVisible = false" />
       </q-card-section>
 
       <q-card-section class="q-pa-none">
@@ -126,7 +117,8 @@
                     <div class="row no-wrap items-center">
                       <img
                         :src="
-                          props.row.image || 'https://via.placeholder.com/50'
+                          props.row.sku_image ||
+                          'https://via.placeholder.com/50'
                         "
                         class="product-image q-mr-md"
                       />
@@ -143,6 +135,7 @@
                       </div>
                     </div>
                   </q-td>
+              
                 </template>
               </q-table>
             </div>
@@ -176,7 +169,7 @@
                     <div class="col-12 info-row">
                       <div class="info-label">物流方式</div>
                       <div class="info-value">
-                        {{ order?.shipping_method || "空运" }}
+                        {{ order?.shipping_method || "--" }}
                       </div>
                     </div>
                     <div class="col-12 info-row">
@@ -194,13 +187,19 @@
                     <div class="col-12 col-sm-6 info-row">
                       <div class="info-label">包裹体积</div>
                       <div class="info-value">
-                        {{ order?.package_volume || "--" }}
+                        {{
+                          order?.packages[0].size_length +
+                            "×" +
+                            order?.packages[0].size_width +
+                            "×" +
+                            order?.packages[0].size_height || "--"
+                        }}
                       </div>
                     </div>
                     <div class="col-12 col-sm-6 info-row">
                       <div class="info-label">包裹重量</div>
                       <div class="info-value">
-                        {{ order?.package_weight || "--" }}
+                        {{ order?.packages[0].actual_weight || "--" }}
                       </div>
                     </div>
                   </div>
@@ -289,12 +288,12 @@ const $q = useQuasar();
 const props = defineProps({
   visible: {
     type: Boolean,
-    default: false
+    default: false,
   },
   order: {
     type: Object,
-    default: () => ({})
-  }
+    default: () => ({}),
+  },
 });
 
 // Emits
@@ -304,9 +303,12 @@ const emit = defineEmits(["update:visible"]);
 const dialogVisible = ref(props.visible);
 
 // 监听visible属性变化
-watch(() => props.visible, (newVal) => {
-  dialogVisible.value = newVal;
-});
+watch(
+  () => props.visible,
+  (newVal) => {
+    dialogVisible.value = newVal;
+  }
+);
 
 // 监听dialogVisible变化，通知父组件
 watch(dialogVisible, (newVal) => {
@@ -359,26 +361,19 @@ const productDetailColumns = [
     label: "商品实际规格",
     align: "center",
     field: (row) =>
-      `${
-        row.product_spec_actual_length || row.product_spec_size_length || "--"
-      } × ${
-        row.product_spec_actual_width || row.product_spec_size_width || "--"
-      } × ${
-        row.product_spec_actual_height || row.product_spec_size_height || "--"
-      } cm`,
+      `${row.sku_size_length} × ${row.sku_size_width} × ${row.sku_size_height} cm`,
   },
   {
     name: "weight",
     label: "实际重量",
     align: "center",
-    field: (row) =>
-      `${row.product_spec_actual_weight || row.product_spec_weight || "--"} g`,
+    field: (row) => `${row.sku_weight || "--"} g`,
   },
   {
     name: "location",
     label: "货架位",
     align: "center",
-    field: (row) => row.location || row.storage_location || "--",
+    field: (row) => row?.stock_locations?.map(location => location.warehouse_location_code).join(', ') || "--",
   },
   {
     name: "quantity",
@@ -520,7 +515,6 @@ const onDialogHide = () => {
   }
 
   .info-row {
-
     .info-label {
       font-size: 13px;
       color: #757575;

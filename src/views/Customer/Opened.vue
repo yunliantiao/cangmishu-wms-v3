@@ -94,8 +94,14 @@
         <div>
           <!-- 左侧可能有其他操作按钮 -->
         </div>
-    <div>
-          <q-btn label="OMS地址" color="primary" flat class="q-mr-sm">
+        <div>
+          <q-btn
+            label="OMS地址"
+            color="primary"
+            @click="openOms(currentDomain)"
+            flat
+            class="q-mr-sm"
+          >
             <q-icon name="link" size="xs" class="q-ml-xs" />
           </q-btn>
           <q-btn
@@ -311,7 +317,7 @@
                 :options="phoneCodes"
                 placeholder="请选择"
                 class="col-4 q-pr-sm"
-                :rules="[(val) => !!val || '请选择国家代码']"
+                :rules="[(val) => !!val || '请选择']"
               />
               <q-input
                 outlined
@@ -353,7 +359,7 @@
               outlined
               dense
               v-model="formData.country_code"
-              :options="countryOptions"
+              :options="$store.state.countries"
               option-value="code"
               option-label="name"
               map-options
@@ -448,7 +454,7 @@
         </div>
       </q-form>
     </Dialog>
-    </div>
+  </div>
 </template>
 <script setup>
 import { ref, reactive } from "vue";
@@ -457,6 +463,7 @@ import customerApi from "@/api/customer";
 import Pagination from "@/components/Pagination.vue";
 import warehouseApi from "@/api/warehouse";
 import { useQuasar, Dialog as QuasarDialog } from "quasar";
+import { copyText } from "@/utils/common";
 
 const customerIdOptions = [
   { label: "客户代码", value: "code" },
@@ -487,10 +494,6 @@ const formData = reactive({
 // 表单选项
 const phoneCodes = ["+86"];
 const currencyOptions = ["USD", "CNY"];
-const countryOptions = [
-  { name: "中国", code: "CN" },
-  { name: "美国", code: "US" },
-];
 const billingOptions = [{ name: "标准计费", id: 1 }];
 
 const customers = ref([]);
@@ -502,6 +505,19 @@ const getWarehouseList = () => {
     }
   });
 };
+
+const currentDomain = ref("");
+const getCurrentDomain = () => {
+  customerApi.getCurrentDomain().then((res) => {
+    if (res.success) {
+      currentDomain.value = res.data;
+    }
+  });
+};
+const openOms = (domain) => {
+  window.open(domain, "_blank");
+};
+getCurrentDomain();
 // 分页配置
 const pageParams = reactive({
   page: 1,
@@ -550,12 +566,6 @@ const columns = [
     align: "left",
   },
   { name: "currency", label: "结算币种", field: "currency", align: "left" },
-  {
-    name: "warehouseCount",
-    label: "已分配仓库",
-    field: (row) => 1,
-    align: "center",
-  },
   { name: "created_at", label: "创建时间", field: "created_at", align: "left" },
   { name: "actions", label: "操作", field: (row) => row, align: "center" },
 ];
@@ -570,6 +580,9 @@ const handleEditCustomer = (row) => {
 };
 //开户
 const handleAddCustomer = () => {
+  Object.keys(formData).forEach((key) => {
+    formData[key] = "";
+  });
   editCustomerId.value = null;
   dialogVisible.value = true;
 };

@@ -139,7 +139,7 @@
             </div>
           </div>
 
-          <div class="row q-col-gutter-md">
+          <!-- <div class="row q-col-gutter-md">
             <div class="col-xs-12 col-sm-4">
               <div class="form-item">
                 <div class="form-label">拣货优先级</div>
@@ -152,9 +152,9 @@
                 />
               </div>
             </div>
-          </div>
+          </div> -->
 
-          <div class="row q-col-gutter-md q-mb-md">
+          <!-- <div class="row q-col-gutter-md q-mb-md">
             <div class="col-xs-12 col-sm-4">
               <div class="form-item">
                 <q-checkbox
@@ -192,7 +192,7 @@
                 </q-checkbox>
               </div>
             </div>
-          </div>
+          </div> -->
 
           <div class="row justify-center q-mt-lg items-center">
             <q-btn

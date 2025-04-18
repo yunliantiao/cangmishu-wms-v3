@@ -2,7 +2,7 @@
   <div class="product-sku">
     <!-- 编辑弹窗 -->
     <!-- <edit-sku-dialog ref="editDialog" @success="$emit('refresh')" /> -->
-    
+
     <!-- 打印标签弹窗 -->
     <!-- <print-label-dialog
       v-model="printDialogVisible"
@@ -21,10 +21,16 @@
       flat
       bordered
       :loading="loading"
+      :pagination="{
+        rowsPerPage: 0,
+      }"
     >
       <!-- 无数据时的显示 -->
       <template v-slot:no-data>
-        <div v-if="!loading && (!rows || rows.length === 0)" class="full-width row flex-center q-my-lg">
+        <div
+          v-if="!loading && (!rows || rows.length === 0)"
+          class="full-width row flex-center q-my-lg"
+        >
           <span class="text-grey">暂无数据</span>
         </div>
       </template>
@@ -49,29 +55,58 @@
           <q-td key="skuInfo">
             <div class="row no-wrap items-center">
               <div class="q-mr-sm">
-                <img 
-                  :src="props.row?.image" 
-                  style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;"
+                <img
+                  :src="props.row?.image"
+                  style="
+                    width: 50px;
+                    height: 50px;
+                    object-fit: cover;
+                    border-radius: 4px;
+                  "
                 />
               </div>
               <div class="ellipsis">
-                <div>SKU: {{ props.row?.sku || '-' }}</div>
-                <div class="ellipsis">{{ props.row?.product?.name || '-' }}</div>
-                <div>规格: {{ props.row?.name || '-' }}</div>
+                <div>SKU: {{ props.row?.sku || "-" }}</div>
+                <div class="ellipsis">
+                  {{ props.row?.product?.name || "-" }}
+                </div>
+                <div>规格: {{ props.row?.name || "-" }}</div>
               </div>
             </div>
           </q-td>
-          <q-td key="applySpec" class="text-center" style="white-space: pre-line">
-            {{ `${props.row?.size_length || 0}*${props.row?.size_width || 0}*${props.row?.size_height || 0} cm\n${props.row?.weight || 0} g` }}
+          <q-td key="customer" class="text-center">
+            {{ props.row?.customer?.name || "-" }}
           </q-td>
-          <q-td key="realSpec" class="text-center" style="white-space: pre-line">
-            {{ `${props.row?.warehouse_size_length || 0}*${props.row?.warehouse_size_width || 0}*${props.row?.warehouse_size_height || 0} cm\n${props.row?.warehouse_weight || 0} g` }}
+          <q-td
+            key="applySpec"
+            class="text-center"
+            style="white-space: pre-line"
+          >
+            {{
+              `${props.row?.size_length || 0}*${props.row?.size_width || 0}*${
+                props.row?.size_height || 0
+              } cm\n${props.row?.weight || 0} g`
+            }}
+          </q-td>
+
+          <q-td
+            key="realSpec"
+            class="text-center"
+            style="white-space: pre-line"
+          >
+            {{
+              `${props.row?.warehouse_size_length || 0}*${
+                props.row?.warehouse_size_width || 0
+              }*${props.row?.warehouse_size_height || 0} cm\n${
+                props.row?.warehouse_weight || 0
+              } g`
+            }}
           </q-td>
           <q-td key="timeInfo" class="text-center">
-            <div>创建: {{ props.row?.created_at || '-' }}</div>
-            <div>更新: {{ props.row?.updated_at || '-' }}</div>
+            <div>创建: {{ props.row?.created_at || "-" }}</div>
+            <div>更新: {{ props.row?.updated_at || "-" }}</div>
           </q-td>
-          <q-td key="operations" class="text-center">
+          <!-- <q-td key="operations" class="text-center">
             <q-btn
               flat
               round
@@ -80,7 +115,7 @@
               size="sm"
               @click="handleEdit(props.row)"
             />
-          </q-td>
+          </q-td> -->
         </q-tr>
       </template>
 
@@ -97,14 +132,15 @@
 <script setup>
 import { ref, defineProps, defineEmits, defineExpose } from "vue";
 import { useQuasar } from "quasar";
+import { useRouter } from "vue-router";
 // import { useI18n } from "vue-i18n";
 // import EditSkuDialog from './EditSkuDialog.vue';
 // import PrintLabelDialog from './PrintLabelDialog.vue';
-import api from '@/api/index';
+import api from "@/api/index";
 
 // const { t } = useI18n();
 const $q = useQuasar();
-
+const router = useRouter();
 const props = defineProps({
   rows: {
     type: Array,
@@ -120,8 +156,8 @@ const props = defineProps({
   },
   loading: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 });
 
 const emit = defineEmits([
@@ -132,7 +168,7 @@ const emit = defineEmits([
   "print",
   "import",
   "page-change",
-  "void"
+  "void",
 ]);
 
 // 表格数据
@@ -143,35 +179,48 @@ const columns = [
     required: true,
     label: "SKU信息",
     align: "left",
-    field: (row) => row?.sku || '',
-    style: "width: 25%"
+    field: (row) => row?.sku || "",
+    style: "width: 25%",
   },
-  { 
-    name: "applySpec", 
-    label: "申报规格", 
-    field: row => `${row.size_length || 0}*${row.size_width || 0}*${row.size_height || 0} cm\n${row.weight || 0} g`, 
+  {
+    name: "customer",
+    label: "客户信息",
+    field: (row) => row?.customer?.name || "",
     align: "center",
-    style: "width: 20%"
+    style: "width: 25%",
   },
-  { 
-    name: "realSpec", 
-    label: "实际规格", 
-    field: row => `${row.warehouse_size_length || 0}*${row.warehouse_size_width || 0}*${row.warehouse_size_height || 0} cm\n${row.warehouse_weight || 0} g`,
+  {
+    name: "applySpec",
+    label: "申报规格",
+    field: (row) =>
+      `${row.size_length || 0}*${row.size_width || 0}*${
+        row.size_height || 0
+      } cm\n${row.weight || 0} g`,
     align: "center",
-    style: "width: 20%"
+    style: "width: 20%",
   },
-  { 
-    name: "timeInfo", 
-    label: "时间", 
+  {
+    name: "realSpec",
+    label: "实际规格",
+    field: (row) =>
+      `${row.warehouse_size_length || 0}*${row.warehouse_size_width || 0}*${
+        row.warehouse_size_height || 0
+      } cm\n${row.warehouse_weight || 0} g`,
     align: "center",
-    style: "width: 25%"
+    style: "width: 20%",
   },
-  { 
-    name: "operations", 
-    label: "操作", 
+  {
+    name: "timeInfo",
+    label: "时间",
     align: "center",
-    style: "width: 10%"
-  }
+    style: "width: 25%",
+  },
+  // {
+  //   name: "operations",
+  //   label: "操作",
+  //   align: "center",
+  //   style: "width: 10%",
+  // },
 ];
 
 // 编辑弹窗引用
@@ -182,7 +231,13 @@ const printDialogVisible = ref(false);
 
 // 处理编辑按钮点击
 const handleEdit = (row) => {
-  editDialog.value.open(row.id);
+  // editDialog.value.open(row.id);
+  router.push({
+    name: 'edit',
+    params: {
+      id: row.id
+    }
+  });
 };
 
 // 处理删除
@@ -194,31 +249,31 @@ const handleDelete = async () => {
     });
     return;
   }
-  
+
   $q.dialog({
     title: "确认删除",
     message: `确定要删除选中的 ${selected.value.length} 个商品吗？`,
     cancel: {
-      label: '取消',
-      flat: true
+      label: "取消",
+      flat: true,
     },
     ok: {
-      label: '确认',
-      color: 'negative'
+      label: "确认",
+      color: "negative",
     },
     persistent: true,
   }).onOk(async () => {
     try {
       const response = await api.delSKU({
-        ids: selected.value.map(item => item.id)
+        ids: selected.value.map((item) => item.id),
       });
-      
+
       if (response.success) {
         selected.value = []; // 清空选中
         emit("refresh"); // 刷新列表
       }
     } catch (error) {
-      console.error('删除失败:', error);
+      console.error("删除失败:", error);
     }
   });
 };
@@ -232,9 +287,9 @@ const handleVoid = () => {
     });
     return;
   }
-  
-  console.log('选中的商品:', selected.value);
-  
+
+  console.log("选中的商品:", selected.value);
+
   $q.dialog({
     title: "确认作废",
     message: `确定要作废选中的 ${selected.value.length} 个商品吗？`,
@@ -249,7 +304,7 @@ const handleVoid = () => {
 const handlePrint = () => {
   if (selected.value.length === 0) {
     $q.notify({
-      message: t('请选择要打印的商品'),
+      message: t("请选择要打印的商品"),
       color: "warning",
     });
     return;
@@ -267,7 +322,7 @@ defineExpose({
   selected,
   handleDelete,
   handleEdit,
-  handlePrint
+  handlePrint,
 });
 </script>
 
@@ -279,8 +334,9 @@ defineExpose({
     table {
       table-layout: fixed;
     }
-    
-    .q-td, .q-th {
+
+    .q-td,
+    .q-th {
       padding: 8px;
       overflow: hidden;
     }

@@ -38,20 +38,20 @@
         <div class="row q-col-gutter-md">
           <div class="col-6 col-md-3">
             <div class="text-grey">客户</div>
-            <div>{{ scanData.customer }}</div>
+            <div>{{ scanData.customer?.name }}</div>
           </div>
           <div class="col-6 col-md-3">
             <div class="text-grey">入库单号</div>
-            <div>{{ scanData.tracking_number }}</div>
+            <div>{{ scanData.system_order_number }}</div>
           </div>
           <div class="col-6 col-md-3">
-            <div class="text-grey">ERP单号</div>
-            <div>{{ scanData.system_order_number }}</div>
+            <div class="text-grey">自定义单号</div>
+            <div>{{ scanData.custom_order_number }}</div>
           </div>
 
           <div class="col-6 col-md-3">
             <div class="text-grey">运单号</div>
-            <div>{{ scanData.trackingNo }}</div>
+            <div>{{ scanData.tracking_number }}</div>
           </div>
           <div class="col-6 col-md-3">
             <div class="text-grey">到仓方式</div>
@@ -61,19 +61,81 @@
               }}
             </div>
           </div>
+
           <div class="col-6 col-md-3">
-            <div class="text-grey">SKU件类</div>
-            <div>{{ scanData.skuCount }}</div>
+            <div class="text-grey">SKU种类</div>
+            <div>{{ itemList.length }}</div>
+          </div>
+          <div class="col-6 col-md-3" v-if="scanData.arrival_method == 'box'">
+            <div class="text-grey">箱数</div>
+            <div>{{ scanData.total_box_qty }}</div>
           </div>
           <div class="col-6 col-md-3">
             <div class="text-grey">商品数量</div>
-            <div>{{ scanData.items.length }}</div>
+            <div>{{ totalQuantity }}</div>
           </div>
 
           <div class="col-12">
             <div class="text-grey">商品信息</div>
             <div>{{ scanData.productInfo }}</div>
           </div>
+        </div>
+
+        <!-- 商品明细表格 -->
+        <div class="q-mt-md">
+          <div class="text-subtitle2 q-mb-sm">商品明细</div>
+          <q-table
+            :rows="itemList"
+            :columns="itemColumns"
+            row-key="id"
+            flat
+            bordered
+            dense
+            hide-pagination
+            :pagination="{ rowsPerPage: 0 }"
+            wrap-cells
+            class="no-scroll-x"
+          >
+            <template v-slot:body="props">
+              <q-tr :props="props">
+                <q-td key="product_spec_sku" :props="props">
+                  {{ props.row.product_spec_sku }}
+                </q-td>
+                <q-td
+                  key="product_name"
+                  :props="props"
+                  class="product-name-cell"
+                >
+                  <div class="product-info">
+                    <img
+                      :src="props.row.product_spec_image"
+                      class="product-img"
+                      @error="handleImgError"
+                    />
+                    <div class="product-text">
+                      <div class="product-title">
+                        {{ props.row.product_name }}
+                      </div>
+                      <div class="text-caption text-grey">
+                        {{ props.row.product_spec_name }}
+                      </div>
+                    </div>
+                  </div>
+                </q-td>
+                <q-td key="quantity" :props="props" class="text-center">
+                  {{ props.row.quantity }}
+                </q-td>
+                <q-td key="size" :props="props" class="text-center">
+                  {{ props.row.product_spec_size_length }}×{{
+                    props.row.product_spec_size_width
+                  }}×{{ props.row.product_spec_size_height }}
+                </q-td>
+                <q-td key="weight" :props="props" class="text-center">
+                  {{ props.row.product_spec_weight }}g
+                </q-td>
+              </q-tr>
+            </template>
+          </q-table>
         </div>
       </div>
     </div>
@@ -96,6 +158,48 @@ const scanData = ref({});
 const route = useRoute();
 const id = route.query.id;
 
+const itemList = ref([]);
+
+// 表格列定义
+const itemColumns = [
+  {
+    name: "product_spec_sku",
+    label: "SKU",
+    field: "product_spec_sku",
+    align: "left",
+    style: "width: 120px",
+  },
+  {
+    name: "product_name",
+    label: "商品信息",
+    field: "product_name",
+    align: "left",
+    style: "width: 300px; max-width: 300px",
+  },
+  {
+    name: "quantity",
+    label: "数量",
+    field: "quantity",
+    align: "center",
+    style: "width: 80px",
+  },
+  {
+    name: "size",
+    label: "尺寸(cm)",
+    field: (row) =>
+      `${row.product_spec_size_length}×${row.product_spec_size_width}×${row.product_spec_size_height}`,
+    align: "center",
+    style: "width: 120px",
+  },
+  {
+    name: "weight",
+    label: "重量(g)",
+    field: "product_spec_weight",
+    align: "center",
+    style: "width: 100px",
+  },
+];
+const totalQuantity = ref(0);
 // 处理扫描
 const handleScan = () => {
   if (!scanCode.value) return;
@@ -105,8 +209,16 @@ const handleScan = () => {
     })
     .then((res) => {
       if (res.success) {
+        let quantity = 0;
         scanData.value = res.data;
         scanSuccess.value = true;
+        // 转换回数组形式
+        res.data.items.forEach((item) => {
+          quantity += item.quantity;
+        });
+        const mergedItems = mergeSameSkuItems(res.data.items);
+        itemList.value = mergedItems;
+        totalQuantity.value = quantity;
         // 清空输入框，准备下一次扫描
         setTimeout(() => {
           scanCode.value = "";
@@ -119,17 +231,42 @@ const handleScan = () => {
     });
 };
 
+// 合并相同SKU的商品，汇总数量
+const mergeSameSkuItems = (items) => {
+  const skuMap = new Map();
+
+  // 遍历所有商品，按SKU分组
+  items.forEach((item) => {
+    const sku = item.product_spec_sku;
+    if (!sku) return;
+
+    if (!skuMap.has(sku)) {
+      // 首次遇到该SKU，直接添加到Map
+      skuMap.set(sku, { ...item });
+    } else {
+      // 已存在该SKU，累加数量
+      const existingItem = skuMap.get(sku);
+      existingItem.quantity =
+        (parseInt(existingItem.quantity) || 0) + (parseInt(item.quantity) || 0);
+    }
+  });
+
+  // 将Map转换回数组
+  return Array.from(skuMap.values());
+};
+
+// 处理图片加载错误
+const handleImgError = (e) => {
+  e.target.src = "/src/assets/no-image.png"; // 替换为默认图片路径
+};
+
 onMounted(() => {
   // 页面加载后自动聚焦到扫描输入框
   nextTick(() => {
     scanInput.value.focus();
-    if (id) {
-      inboundApi.inboundDdSign(id).then((res) => {
-        if (res.success) {
-          scanData.value = res.data;
-          scanSuccess.value = true;
-        }
-      });
+    if (route.query.number) {
+      scanCode.value = route.query.number;
+      handleScan();
     }
   });
 });
@@ -153,6 +290,55 @@ onMounted(() => {
     .text-grey {
       font-size: 0.85rem;
       margin-bottom: 4px;
+    }
+
+    .product-info {
+      display: flex;
+      align-items: center;
+
+      .product-img {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        border-radius: 4px;
+        margin-right: 8px;
+        object-fit: cover;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      .product-text {
+        width: 100%;
+
+        .product-title {
+          width: 100%;
+          word-break: break-word;
+          white-space: normal;
+          line-height: 1.4;
+          font-size: 13px;
+        }
+      }
+    }
+
+    .product-name-cell {
+      max-width: 280px;
+      width: 280px;
+      white-space: normal;
+    }
+
+    .no-scroll-x {
+      :deep(.q-table__container) {
+        overflow-x: hidden !important;
+      }
+
+      :deep(.q-table) {
+        table-layout: fixed;
+        width: 100%;
+
+        td {
+          white-space: normal;
+          word-break: break-word;
+        }
+      }
     }
   }
 }

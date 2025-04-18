@@ -311,11 +311,6 @@ defineExpose({
           valid = false;
           errorMessage = `包裹 ${parcel.box_number} 中的商品 ${item.product_spec_sku} 未填写收货数量`;
         }
-        // 检查实收数量是否合理
-        if (item.put_away_quantity > item.quantity) {
-          valid = false;
-          errorMessage = `包裹 ${parcel.box_number} 中的商品 ${item.product_spec_sku} 实收数量超过预期数量`;
-        }
       });
     });
 

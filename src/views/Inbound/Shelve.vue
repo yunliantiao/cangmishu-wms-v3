@@ -54,15 +54,15 @@
             flat
             class="bg-grey-2"
           />
-          <!-- <q-btn
+          <q-btn
             color="primary"
             icon="print"
             label="打印上架单"
             outline
             :loading="$store.state.btnLoading"
-            v-if="arrivalMethod == 'express_parcel'"
             @click="handlePrint"
-          /> -->
+            :disable="!isSuccess"
+          />
           <q-btn
             color="primary"
             icon="check_circle"
@@ -70,6 +70,7 @@
             unelevated
             :loading="$store.state.btnLoading"
             @click="handleConfirm"
+            :disable="isSuccess"
           />
         </div>
       </div>
@@ -95,7 +96,10 @@
       </div>
 
       <!-- 上架模式选择 -->
-      <div class="shelve-mode bg-white rounded-borders">
+      <div
+        class="shelve-mode bg-white rounded-borders"
+        v-if="orderData.arrival_method != 'express_parcel'"
+      >
         <div class="row">
           <q-radio
             v-model="arrivalMethod"
@@ -103,12 +107,14 @@
             label="按商品上架"
             class="q-mr-lg"
             @click="handleShelveMode"
+            :disable="ShelfMode"
           />
           <q-radio
             @click="handleShelveMode"
             v-model="arrivalMethod"
             val="box"
             label="按箱上架"
+            :disable="ShelfMode"
           />
         </div>
       </div>
@@ -211,6 +217,7 @@
                     :options="shelfOptions"
                     option-value="code"
                     option-label="code"
+                    :disable="isSuccess"
                     use-input
                     hide-selected
                     fill-input
@@ -230,6 +237,7 @@
                     icon="close"
                     size="xs"
                     padding="none"
+                    v-if="!isSuccess"
                     @click="removeShelfLocation(props.row, index)"
                   />
                 </div>
@@ -240,6 +248,7 @@
                     color="primary"
                     icon="add"
                     label="添加货架位"
+                    v-if="!isSuccess"
                     class="q-mt-xs"
                     @click="addShelfLocation(props.row)"
                     padding="xs"
@@ -258,6 +267,7 @@
                   color="primary"
                   class="all-btn"
                   label="全部"
+                  :disable="isSuccess"
                   @click="applyBatchProductQuantity"
                 />
               </q-th>
@@ -275,6 +285,14 @@
                     dense
                     v-model.number="location.quantity"
                     type="number"
+                    :disable="isSuccess"
+                    @update:model-value="
+                      handleShelfQtyUpdate(
+                        props.row,
+                        location.maxQuantity,
+                        index
+                      )
+                    "
                     class="quantity-input"
                     style="width: 70px"
                     placeholder="数量"
@@ -321,6 +339,9 @@
                 </template>
               </q-input>
             </div> -->
+            <div class="row items-center">
+              <span class="q-mr-sm">选择 {{ selectedProducts.length }} </span>
+            </div>
           </div>
 
           <!-- 箱子表格 -->
@@ -334,6 +355,8 @@
             no-data-label="暂无数据"
             binary-state-sort
             hide-bottom
+            v-model:selected="selectedProducts"
+            selection="multiple"
           >
             <!-- 箱子尺寸列 -->
 
@@ -368,6 +391,7 @@
                   :options="shelfOptions"
                   option-value="code"
                   option-label="code"
+                  :disable="isSuccess"
                   use-input
                   hide-selected
                   fill-input
@@ -421,10 +445,12 @@ import { useQuasar } from "quasar";
 import inboundApi from "@/api/inbound";
 import settingApi from "@/api/setting";
 import { useStore } from "vuex";
+import { useRoute, useRouter } from "vue-router";
 
 const $q = useQuasar();
 const store = useStore();
-
+const route = useRoute();
+const router = useRouter();
 // 基础状态
 const scanCode = ref("");
 const arrivalMethod = ref(""); //=上架方式
@@ -589,20 +615,66 @@ const filteredProducts = computed(() => {
       }
     });
   }
-
   return result;
 });
+
+const handleShelfQtyUpdate = (row, maxQuantity, index) => {
+  // 获取当前输入的数量
+  const inputQty = row.shelfLocations[index].quantity;
+
+  // 如果输入为空或负数，设置为0
+  if (!inputQty || inputQty < 0) {
+    row.shelfLocations[index].quantity = 0;
+    return;
+  }
+
+  // 计算除了当前货架位外，其他货架位已经使用的数量
+  const otherLocationsQty = row.shelfLocations.reduce((sum, loc, i) => {
+    if (i !== index && loc.quantity) {
+      return sum + loc.quantity;
+    }
+    return sum;
+  }, 0);
+
+  // 计算当前货架位可用的最大数量
+  const availableQty =
+    row.received_quantity - row.shelf_quantity - otherLocationsQty;
+
+  // 如果输入的数量超过可用数量，限制为最大可用数量
+  if (inputQty > availableQty) {
+    row.shelfLocations[index].quantity = availableQty;
+    $q.notify({
+      type: "warning",
+      message: `超出可上架数量，当前货架位最多可上架${availableQty}个`,
+      position: "top",
+    });
+  }
+
+  // 更新其他货架位的maxQuantity
+  row.shelfLocations.forEach((loc, i) => {
+    if (i !== index) {
+      const remainingQty =
+        row.received_quantity -
+        row.shelf_quantity -
+        row.shelfLocations.reduce((sum, l, j) => {
+          if (j !== i && l.quantity) {
+            return sum + l.quantity;
+          }
+          return sum;
+        }, 0);
+      loc.maxQuantity = remainingQty;
+    }
+  });
+};
 
 const filteredBoxes = computed(() => {
   if (!boxes.value) return [];
 
   let result = [...boxes.value];
-
   // 过滤已上架箱子
   if (!showShelfedBoxes.value) {
     result = result.filter((b) => !b.is_shelved);
   }
-
   // 搜索过滤
   if (boxSearchQuery.value) {
     const query = boxSearchQuery.value.toLowerCase();
@@ -617,11 +689,10 @@ const filteredBoxes = computed(() => {
       }
     });
   }
-
   return result;
 });
 
-// 方法
+const ShelfMode = ref(false);
 const handleScan = async () => {
   if (!scanCode.value) return;
   inboundApi
@@ -630,20 +701,68 @@ const handleScan = async () => {
     })
     .then((res) => {
       if (res.success) {
-        arrivalMethod.value = res.data.arrival_method;
-        orderData.value = res.data;
-        let items = res.data.boxes[0].items;
-        items.forEach((item) => {
-          item.receivedQty = 0;
-          item.shelfLocations = [{ location: null, quantity: null }];
-        });
-        if (res.data.arrival_method == "express_parcel") {
-          products.value = items;
-        } else {
-          boxes.value = res.data.boxes;
+        arrivalMethod.value = res.data.last_shelf_mode
+          ? res.data.last_shelf_mode == "sku"
+            ? "express_parcel"
+            : "box"
+          : res.data.arrival_method;
+
+        if (res.data.last_shelf_mode) {
+          ShelfMode.value = true;
         }
+        orderData.value = res.data;
+        let items = [];
+        res.data.boxes.forEach((box) => {
+          items.push(...box.items);
+        });
+        // 合并相同SKU的项目，汇总数量
+        let mergedItems = mergeSameSkuItems(items);
+        mergedItems.forEach((item) => {
+          item.receivedQty = 0;
+          item.shelfLocations = [
+            {
+              location: null,
+              quantity: null,
+              maxQuantity: item.received_quantity - item.shelf_quantity,
+            },
+          ];
+        });
+        boxes.value = res.data.boxes;
+        products.value = mergedItems;
       }
     });
+};
+
+// 合并相同SKU的商品，汇总数量
+const mergeSameSkuItems = (items) => {
+  const skuMap = new Map();
+
+  // 遍历所有商品，按SKU分组
+  items.forEach((item) => {
+    const sku = item.product_spec_sku;
+    if (!sku) return;
+
+    if (!skuMap.has(sku)) {
+      // 首次遇到该SKU，直接添加到Map
+      skuMap.set(sku, { ...item });
+    } else {
+      // 已存在该SKU，累加数量
+      const existingItem = skuMap.get(sku);
+      existingItem.quantity =
+        (parseInt(existingItem.quantity) || 0) + (parseInt(item.quantity) || 0);
+
+      existingItem.received_quantity =
+        (parseInt(existingItem.received_quantity) || 0) +
+        (parseInt(item.received_quantity) || 0);
+
+      existingItem.shelf_quantity =
+        (parseInt(existingItem.shelf_quantity) || 0) +
+        (parseInt(item.shelf_quantity) || 0);
+    }
+  });
+
+  // 将Map转换回数组
+  return Array.from(skuMap.values());
 };
 
 const resetOrder = () => {
@@ -654,31 +773,19 @@ const resetOrder = () => {
   scanCode.value = "";
   searchQuery.value = "";
   boxSearchQuery.value = "";
+  isSuccess.value = false;
+  ShelfMode.value = false;
 };
 
-const handlePrint = async () => {
-  if (loading.value) return;
-
-  loading.value = true;
-  try {
-    // 这里调用打印API
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    $q.notify({
-      type: "positive",
-      message: "打印上架单成功",
-    });
-  } catch (error) {
-    console.error("打印错误:", error);
-    $q.notify({
-      type: "negative",
-      message: "打印失败，请重试",
-    });
-  } finally {
-    loading.value = false;
-  }
+const handlePrint = () => {
+  inboundApi.inboundPrintShelf(batchId.value).then((res) => {
+    if (res.success) {
+      window.open(res.data.data);
+    }
+  });
 };
-
+const isSuccess = ref(false);
+const batchId = ref("");
 const handleConfirm = async () => {
   let parasm = {};
   if (arrivalMethod.value === "box") {
@@ -691,46 +798,56 @@ const handleConfirm = async () => {
     });
   }
   if (parasm.success) {
-    resetOrder();
+    isSuccess.value = true;
+    ShelfMode.value = true;
+    batchId.value = parasm.data.inbound_batch_number;
   }
 };
 
 const handleShelveMode = () => {
-  if (arrivalMethod.value === "box") {
-    boxes.value = orderData.value.boxes;
-  } else {
-    products.value = orderData.value.boxes[0].items;
-  }
+  selectedProducts.value = [];
+  // if (arrivalMethod.value === "box") {
+  //   boxes.value = orderData.value.boxes;
+  // } else {
+  //   // let items = [];
+  //   // orderData.value.boxes.forEach((box) => {
+  //   //   items.push(...box.items);
+  //   // });
+  //   // products.value = items;
+  // }
 };
 
 const getProductsFromParcels = () => {
   const result = [];
   boxes.value.forEach((box) => {
-    result.push({
-      box_number: box.box_number,
-      warehouse_location_code: box.shelf_location,
-    });
+    if (box.shelf_location) {
+      result.push({
+        box_number: box.box_number,
+        warehouse_location_code: box.shelf_location,
+      });
+    }
   });
   return result;
 };
 
 // 格式化商品上架数据
 const formatProductShelfData = () => {
-  const result = [];
+  let result = [];
   products.value.forEach((p) => {
-    result.push({
-      sku: p.product_spec_sku,
-      shelf_locations: screenShelfLocations(p),
-    });
+    if (screenShelfLocations(p).length) {
+      result.push({
+        sku: p.product_spec_sku,
+        shelf_locations: screenShelfLocations(p),
+      });
+    }
   });
-
   return result;
 };
 
 const screenShelfLocations = (item) => {
   const shelfLocations = [];
   item.shelfLocations.forEach((shelfLocation) => {
-    if (shelfLocation.location != null) {
+    if (shelfLocation.location != null && shelfLocation.quantity != null) {
       shelfLocations.push({
         warehouse_location_code: shelfLocation.location,
         quantity: shelfLocation.quantity,
@@ -833,6 +950,10 @@ onMounted(() => {
       scanInput.value.focus();
     }
   });
+  if (route.query.number) {
+    scanCode.value = route.query.number;
+    handleScan();
+  }
 });
 </script>
 

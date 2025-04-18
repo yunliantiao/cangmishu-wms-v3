@@ -108,21 +108,22 @@
                   outlined
                   dense
                   v-model="warehouseForm.country_code"
-                  :options="countryOptions"
+                  :options="$store.state.countries"
                   option-value="code"
                   option-label="name"
                   placeholder="请选择"
+                  map-options
                   emit-value
                 >
-                  <template v-slot:selected>
+                  <!-- <template v-slot:selected>
                     <span v-if="warehouseForm.country_code">
                       {{
-                        countryOptions.find(
+                        store.getters.countries.find(
                           (o) => o.code === warehouseForm.country_code
                         )?.name || "请选择"
                       }}
                     </span>
-                  </template>
+                  </template> -->
                 </q-select>
               </div>
             </div>
@@ -292,22 +293,6 @@
           </div>
         </div>
 
-        <div class="row q-mb-md">
-          <div class="col-12 col-sm-6">
-            <div class="form-item row items-center">
-              <div class="form-label col-sm-4">portCode</div>
-              <div class="form-input col-sm-8">
-                <q-input
-                  outlined
-                  dense
-                  v-model="warehouseForm.portCode"
-                  placeholder="请输入"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div class="row">
           <div class="col-12">
             <div class="form-item row items-start">
@@ -392,16 +377,11 @@ const warehouseForm = ref({
   contact_email: "",
   timezone: "",
   currency: "",
-  portCode: "",
   remark: "",
 });
 
 // 下拉选项
 const warehouseTypes = [{ name: "标准仓", type: 1 }];
-const countryOptions = [
-  { name: "中国", code: "CN" },
-  { name: "美国", code: "US" },
-];
 const timezoneOptions = ["UTC+8", "UTC+0", "UTC-5", "UTC-8"];
 
 // 表单提交
@@ -505,7 +485,6 @@ watch(
         contact_email: "",
         timezone: "",
         currency: "",
-        portCode: "",
         remark: "",
       };
     }

@@ -3,7 +3,7 @@
     <!-- 筛选区域 -->
     <div class="filter-section bg-white q-pa-md q-mb-md rounded-borders">
       <div class="row q-col-gutter-sm">
-        <div class="col-auto">
+        <!-- <div class="col-auto">
           <q-select
             outlined
             dense
@@ -12,14 +12,19 @@
             label="全部货区类型"
             class="select-width"
           />
-        </div>
+        </div> -->
         <div class="col-auto">
           <q-select
             outlined
             dense
-            v-model="statusFilter"
+            v-model="pageParams.status"
             :options="statusOptions"
-            label="全部状态"
+            label="状态"
+            option-label="label"
+            option-value="value"
+            emit-value
+            clearable
+            map-options
             class="select-width"
           />
         </div>
@@ -27,9 +32,14 @@
           <q-select
             outlined
             dense
-            v-model="locationFilter"
+            v-model="pageParams.search_type"
             :options="locationFilterOptions"
-            label="货架位编号"
+            clearable
+            option-value="value"
+            option-label="label"
+            emit-value
+            map-options
+            label="货架位"
             class="select-width"
           />
         </div>
@@ -37,7 +47,7 @@
           <q-input
             outlined
             dense
-            v-model="searchText"
+            v-model="pageParams.keywords"
             placeholder="请输入"
             class="select-width"
           >
@@ -50,9 +60,12 @@
           <q-select
             outlined
             dense
-            v-model="searchTypeFilter"
+            v-model="pageParams.search_mode"
             :options="searchTypeOptions"
-            label="精确搜索"
+            clearable
+            map-options
+            emit-value
+            label="搜索模式"
             class="select-width"
           />
         </div>
@@ -61,7 +74,7 @@
             color="primary"
             icon="search"
             label="搜索"
-            @click="handleSearch"
+            @click="getShelfLocationList"
           />
         </div>
       </div>
@@ -83,19 +96,22 @@
               <q-item clickable v-close-popup @click="handleImport">
                 <q-item-section>导入</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup @click="handleExport">
+              <q-item clickable v-close-popup @click="handleExport(true)">
                 <q-item-section>导出</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="handleExport(false)">
+                <q-item-section>筛选导出</q-item-section>
               </q-item>
             </q-list>
           </q-btn-dropdown>
-          <q-btn
+          <!-- <q-btn
             color="primary"
             label="删除"
             icon="delete"
             flat
             class="q-ml-sm"
             @click="confirmBatchDelete"
-          />
+          /> -->
           <q-btn
             color="primary"
             label="打印标签"
@@ -114,7 +130,7 @@
           /> -->
         </div>
 
-        <div>
+    <div>
           <!-- <q-btn
             outline
             color="primary"
@@ -167,8 +183,41 @@
                 {{ props.row.code }}
               </q-td>
               <q-td key="productInfo" :props="props">
-                <div v-if="props.row.productInfo">
-                  {{ props.row.productInfo }}
+                <div v-if="props.row.stock_items">
+                  <template v-if="props.row.stock_items.length <= 2">
+                    <div v-for="item in props.row.stock_items" :key="item.id">
+                      [{{ item.sku }}]
+                    </div>
+                  </template>
+                  <template v-else>
+                    <div
+                      v-for="(item, index) in props.row.stock_items.slice(0, 2)"
+                      :key="index"
+                    >
+                      [{{ item.sku }}]
+                    </div>
+                    <div
+                      class="text-blue cursor-pointer hover-container"
+                      @mouseenter="showTooltip($event, props.row.id)"
+                      @mouseleave="hideTooltip"
+                    >
+                      <span class="more-link">更多</span>
+                      <div
+                        v-show="tooltipVisible && activeRowId === props.row.id"
+                        class="custom-hover-tooltip"
+                        @mouseenter="keepTooltip"
+                        @mouseleave="hideTooltip"
+                      >
+                        <div
+                          v-for="item in props.row.stock_items"
+                          :key="item.id"
+                          class="tooltip-item"
+                        >
+                          [{{ item.sku }}]
+                        </div>
+                      </div>
+                    </div>
+                  </template>
                 </div>
                 <div v-else>-</div>
               </q-td>
@@ -194,7 +243,11 @@
                   :color="getStatusColor(props.row.status).bg"
                   :text-color="getStatusColor(props.row.status).text"
                 >
-                  {{ props.row.status === "idle" ? "空闲" : "已存放" }}
+                  {{
+                    statusOptions.find(
+                      (item) => item.value === props.row.status
+                    )?.label || "--"
+                  }}
                 </q-chip>
               </q-td>
               <q-td key="time" :props="props">
@@ -350,7 +403,7 @@
               </q-select>
             </div>
 
-            <div class="form-item">
+            <!-- <div class="form-item">
               <div class="form-label">拣货优先级</div>
               <q-input
                 outlined
@@ -393,7 +446,7 @@
                   >
                 </q-icon>
               </q-checkbox>
-            </div>
+            </div> -->
           </q-form>
         </q-card-section>
 
@@ -411,7 +464,18 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-  </div>
+    <import-dialog
+      ref="importDialogRef"
+      type="import_shelf"
+      @success="handleImportSuccess"
+    />
+    <print-label-dialog
+      v-model="printDialogVisible"
+      :sku-list="selectedLocations"
+      @success="handlePrintSuccess"
+      print-type="goods_allocation"
+    />
+    </div>
 </template>
 
 <script setup>
@@ -420,6 +484,8 @@ import { useQuasar, Dialog as QuasarDialog } from "quasar";
 import Pagination from "@/components/Pagination.vue";
 import settingApi from "@/api/setting";
 import { useRouter } from "vue-router";
+import ImportDialog from "@/components/ImportDialog.vue";
+import PrintLabelDialog from "@/components/PrintLabelDialog.vue";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -435,13 +501,51 @@ const areaTypeOptions = [
 const areaCodeOptions = ref([]);
 // 货架位
 const locationSpecOptions = ref([]);
-const statusFilter = ref("全部状态");
-const statusOptions = ["全部状态", "空闲", "已存放"];
+const statusOptions = ref([
+  {
+    label: "已占用",
+    value: "stored",
+  },
+  {
+    label: "空闲",
+    value: "idle",
+  },
+  {
+    label: "可清理",
+    value: "clearable",
+  },
+]);
 const locationFilter = ref("货架位编号");
-const locationFilterOptions = ["货架位编号", "货区编号"];
+const locationFilterOptions = [
+  {
+    label: "货位编号",
+    value: "code",
+  },
+  {
+    label: "SKU 编号",
+    value: "sku",
+  },
+  {
+    label: "货架位规格",
+    value: "shelf_spec",
+  },
+];
 const searchText = ref("");
 const searchTypeFilter = ref("精确搜索");
-const searchTypeOptions = ["精确搜索", "模糊搜索"];
+const searchTypeOptions = [
+  {
+    label: "精确搜索",
+    value: "exact",
+  },
+  {
+    label: "模糊搜索",
+    value: "like",
+  },
+  {
+    label: "前缀搜索",
+    value: "prefix",
+  },
+];
 
 // 表格数据与选择
 const selectedLocations = ref([]);
@@ -494,13 +598,13 @@ const columns = [
     field: "locationSpec",
     align: "center",
   },
-  {
-    name: "pickPriority",
-    label: "拣货优先级",
-    field: "pickPriority",
-    align: "center",
-    sortable: true,
-  },
+  // {
+  //   name: "pickPriority",
+  //   label: "拣货优先级",
+  //   field: "pickPriority",
+  //   align: "center",
+  //   sortable: true,
+  // },
   {
     name: "status",
     label: "状态",
@@ -528,7 +632,17 @@ const pageParams = ref({
   page: 1,
   per_page: 10,
   total: 0,
+  status: "",
+  search_type: "",
+  keywords: "",
+  search_mode: "",
 });
+
+const importDialogRef = ref(null);
+
+const handleImportSuccess = () => {
+  getShelfLocationList();
+};
 
 // 获取货架位列表
 const getShelfLocationList = () => {
@@ -550,19 +664,6 @@ const getStatusColor = (status) => {
     default:
       return { bg: "blue-1", text: "blue" };
   }
-};
-
-// 搜索方法
-const handleSearch = () => {
-  // 实际应用中这里会调用API搜索
-  console.log("搜索条件:", {
-    warehouse: warehouseFilter.value,
-    areaType: areaTypeFilter.value,
-    status: statusFilter.value,
-    searchField: locationFilter.value,
-    searchText: searchText.value,
-    searchType: searchTypeFilter.value,
-  });
 };
 
 // 表单显示
@@ -696,19 +797,29 @@ const confirmBatchDelete = () => {
 
 // 其他功能方法
 const handleImport = () => {
-  $q.notify({
-    message: "导入功能将在后续版本中提供",
-    color: "info",
-  });
+  importDialogRef.value.open();
 };
 
-const handleExport = () => {
-  $q.notify({
-    message: "导出功能将在后续版本中提供",
-    color: "info",
+const handleExport = async (bool) => {
+  if (bool) {
+    if (!selectedLocations.value.length) {
+      $q.notify({
+        message: "请先选择需要导出的货架位",
+        color: "warning",
+      });
+      return;
+    }
+  }
+  const response = await settingApi.exportLocations({
+    ids: bool ? selectedLocations.value.map((item) => item.id) : [],
+    keywords: pageParams.value.keywords,
+    search_type: pageParams.value.search_type,
+    status: pageParams.value.status,
+    search_mode: pageParams.value.search_mode,
   });
+  window.open(response.data, '_blank');
 };
-
+const printDialogVisible = ref(false);
 const handlePrintLabels = () => {
   if (selectedLocations.value.length === 0) {
     $q.notify({
@@ -718,10 +829,7 @@ const handlePrintLabels = () => {
     return;
   }
 
-  $q.notify({
-    message: "打印标签功能将在后续版本中提供",
-    color: "info",
-  });
+  printDialogVisible.value = true;
 };
 
 const handleCleanLocations = () => {
@@ -761,6 +869,33 @@ const handleSubmit = async () => {
     formVisible.value = false;
     getShelfLocationList();
   }
+};
+
+// 修改 tooltip 控制逻辑
+const tooltipVisible = ref(false);
+const activeRowId = ref(null);
+let tooltipTimer = null;
+
+const showTooltip = (event, rowId) => {
+  if (tooltipTimer) {
+    clearTimeout(tooltipTimer);
+  }
+  activeRowId.value = rowId;
+  tooltipVisible.value = true;
+};
+
+const keepTooltip = () => {
+  if (tooltipTimer) {
+    clearTimeout(tooltipTimer);
+  }
+  tooltipVisible.value = true;
+};
+
+const hideTooltip = () => {
+  tooltipTimer = setTimeout(() => {
+    tooltipVisible.value = false;
+    activeRowId.value = null;
+  }, 200);
 };
 </script>
 
@@ -829,6 +964,64 @@ const handleSubmit = async () => {
     .q-checkbox__bg {
       border-radius: 0;
     }
+  }
+}
+
+.hover-container {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-hover-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  padding: 8px 12px;
+  z-index: 1000;
+  min-width: 120px;
+
+  &:before {
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: 10%;
+    width: 8px;
+    height: 8px;
+    background: white;
+    transform: rotate(45deg);
+    box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.05);
+  }
+
+  .tooltip-item {
+    padding: 4px 0;
+    color: rgba(0, 0, 0, 0.85);
+    white-space: nowrap;
+    font-size: 13px;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.02);
+    }
+  }
+}
+
+.more-link {
+  color: var(--q-primary);
+  text-decoration: underline;
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 4px;
+
+  &:hover {
+    opacity: 0.8;
+    background: rgba(0, 0, 0, 0.04);
   }
 }
 </style>

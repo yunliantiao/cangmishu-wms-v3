@@ -1,6 +1,7 @@
 import { createStore } from 'vuex'
 import router from '../router'
 import { Notify } from 'quasar'
+import Api from '@/api/index'
 
 // 创建store实例
 export default createStore({
@@ -15,7 +16,17 @@ export default createStore({
       { label: "备货区", value: "staging" },
       { label: "不良品区", value: "defective" },
       { label: "转运区", value: "transit" },
-    ]
+    ],
+    countries: [
+      {
+        name: "中国",
+        code: "CN"
+      },
+      {
+        name: "美国",
+        code: "US"
+      }
+    ],
   },
   getters: {
     isLeftDrawerOpen: (state) => state.leftDrawerOpen,
@@ -51,6 +62,7 @@ export default createStore({
     CLEAR_TOKEN(state) {
       state.token = "";
       localStorage.removeItem('updateToken');
+      localStorage.removeItem('warehouseId')
     },
     // 清除用户信息
     CLEAR_USER_INFO(state) {
@@ -59,13 +71,17 @@ export default createStore({
     },
     DESTROY_TOKEN(state, data) {
       state.token = ''
-      localStorage.setItem('updateToken', '')
-      localStorage.setItem('updateUserInfo', '')
+      localStorage.removeItem('updateUserInfo')
+      localStorage.removeItem('updateToken')
+      localStorage.removeItem('warehouseId')
       Notify.create({
         message: '登录失败',
         color: 'negative',
       })
       router.push('/login')
+    },
+    SET_COUNTRIES(state, data) {
+      state.countries = data
     },
   },
   actions: {

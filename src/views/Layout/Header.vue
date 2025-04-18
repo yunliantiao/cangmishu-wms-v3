@@ -112,15 +112,30 @@ export default {
     const warehouseList = ref([]); //仓库列表
     const currentWarehouse = ref(null); //当前仓库
     const getWarehouseList = () => {
-      currentWarehouse.value = localStorage.getItem("warehouseId");
       warehouseApi.getWarehouseList().then((res) => {
         if (res.success) {
           warehouseList.value = res.data;
+          if (localStorage.getItem("warehouseId")) {
+            currentWarehouse.value = localStorage.getItem("warehouseId");
+            getCountries();
+          } else {
+            if (warehouseList.value.length) {
+              currentWarehouse.value = warehouseList.value[0].id;
+              localStorage.setItem("warehouseId", warehouseList.value[0].id);
+               getCountries();
+            }
+          }
+        }
+      });
+    };
+    const getCountries = () => {
+      api.getCountries().then((res) => {
+        if (res.success) {
+          store.commit("SET_COUNTRIES", res.data);
         }
       });
     };
     getWarehouseList();
-
     const logout = () => {
       Dialog.create({
         title: "退出确认",

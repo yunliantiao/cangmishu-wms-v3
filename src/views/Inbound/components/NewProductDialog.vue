@@ -1,20 +1,33 @@
 <template>
   <q-dialog v-model="isVisible">
-    <q-card style="max-width: 1200px; width: 80%">
+    <q-card
+      style="
+        max-width: 1200px;
+        width: 80%;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+      "
+    >
       <q-card-section class="row items-center">
-        <div class="text-h6" v-if="boxNumber">箱号:{{ boxNumber }}</div>
+        <div class="text-h6" v-if="boxNumber != 'NewSku'&&boxNumber">箱号:{{ boxNumber }}</div>
         <div class="text-h6" v-else>新品维护</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
 
-      <q-card-section>
+      <q-card-section class="scroll" style="flex: 1; overflow: auto">
         <!-- 商品尺寸和重量表格 -->
         <div class="table-container">
           <table class="custom-table">
             <thead>
               <tr>
                 <th width="25%">商品信息</th>
+                <th width="25%">
+                  <div v-if="!boxNumber" class="header-with-action">
+                    <div>箱子</div>
+                  </div>
+                </th>
                 <th width="30%" class="text-center">
                   <div>
                     <div>实际体积</div>
@@ -36,10 +49,7 @@
                             />
                           </div>
 
-                          <div
-                            class="row q-col-gutter-md q-mb-lg"
-                           
-                          >
+                          <div class="row q-col-gutter-md q-mb-lg">
                             <div class="col-4">
                               <q-input
                                 outlined
@@ -167,20 +177,6 @@
                     </q-btn>
                   </div>
                 </th>
-                <th width="25%">
-                  <div class="header-with-action">
-                    <div>收货/预报数量</div>
-                    <q-btn
-                      flat
-                      dense
-                      color="primary"
-                      class="all-btn"
-                      label="全部"
-                      size="sm"
-                      @click="applyFullQuantity"
-                    />
-                  </div>
-                </th>
               </tr>
             </thead>
             <tbody>
@@ -202,6 +198,15 @@
                         名称: {{ product.product_spec_name }}
                       </div>
                     </div>
+                  </div>
+                </td>
+                <td>
+                  <div
+                    class="quantity-display"
+                    v-for="box in product.box_numbers"
+                    :key="box"
+                  >
+                    <div>{{ box }};</div>
                   </div>
                 </td>
                 <td>
@@ -240,12 +245,12 @@
                     <div class="volume-display">
                       {{
                         calculateVolume(
-                          product.product_spec_actual_length,
-                          product.product_spec_actual_width,
-                          product.product_spec_actual_height
+                          product.product_spec_size_length,
+                          product.product_spec_size_width,
+                          product.product_spec_size_height
                         )
                       }}
-                      m³
+                      cm³
                     </div>
                   </div>
                 </td>
@@ -266,29 +271,15 @@
                     </div>
                   </div>
                 </td>
-                <td>
-                  <div class="quantity-display">
-                    <q-input
-                      outlined
-                      dense
-                      type="number"
-                      v-model="product.put_away_quantity"
-                      class="quantity-input"
-                    />
-                    <span class="quantity-separator"
-                      >/{{ product.quantity }}</span
-                    >
-                  </div>
-                </td>
               </tr>
             </tbody>
           </table>
         </div>
       </q-card-section>
 
-      <q-card-actions align="right">
+      <q-card-actions align="right" class="bg-white">
         <q-btn flat label="取消" color="grey-7" v-close-popup />
-        <q-btn unelevated label="确认" color="primary" @click="handleConfirm" />
+        <q-btn unelevated label="确认" :loading="$store.state.btnLoading" color="primary" @click="handleConfirm" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -297,6 +288,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, watch } from "vue";
 import { useQuasar } from "quasar";
+import inboundApi from "@/api/inbound";
 
 const props = defineProps({
   visible: {
@@ -311,9 +303,13 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  id: {
+    type: String,
+    default: "",
+  },
 });
 
-const emit = defineEmits(["update:visible", "update:products","confirm"]);
+const emit = defineEmits(["update:visible", "update:products", "confirm"]);
 
 const $q = useQuasar();
 const isVisible = computed({
@@ -338,10 +334,10 @@ const productColumns = [
     field: "quantity",
   },
   {
-    name: "received_quantity",
+    name: "box_numbers",
     align: "center",
-    label: "收货/预报数量",
-    field: (row) => `${row.put_away_quantity}/${row.quantity}`,
+    label: "箱子",
+    field: "box_numbers",
   },
 ];
 
@@ -364,8 +360,8 @@ const weight = ref(null);
 
 // 计算体积
 const calculateVolume = (length, width, height) => {
-  if (!length || !width || !height) return "0.000";
-  return ((length * width * height) / 1000000).toFixed(3);
+  if (!length || !width || !height) return "0.00";
+  return (length * width * height).toFixed(2);
 };
 
 // 初始化数据 - 当对话框打开时初始化
@@ -434,30 +430,48 @@ const applyBatchWeight = () => {
 // 应用全部预报数量作为收货数量
 const applyFullQuantity = () => {
   if (props.products.length === 0) return;
-  props.products.forEach(product => {
+  props.products.forEach((product) => {
     if (product.quantity > product.received_quantity) {
       product.put_away_quantity = product.quantity - product.received_quantity;
-    }else{
+    } else {
       product.put_away_quantity = 0;
     }
   });
-  
+
   $q.notify({
-    type: 'positive',
-    message: '已应用预报数量作为收货数量'
+    type: "positive",
+    message: "已应用预报数量作为收货数量",
   });
 };
 
 // 确认按钮处理
 const handleConfirm = () => {
-  // 发送更新
-  emit("update:products", props.products);
-  emit("confirm",props.products);
-  isVisible.value = false;
-  $q.notify({
-    type: "positive",
-    message: "商品信息已更新",
-  });
+  inboundApi
+    .updateNewProducts(props.id, {
+      items: props.products.map((item) => ({
+        sku: item.product_spec_sku,
+        actual_length: item.product_spec_actual_length,
+        actual_width: item.product_spec_actual_width,
+        actual_height: item.product_spec_actual_height,
+        actual_weight: item.product_spec_actual_weight,
+      })),
+    })
+    .then((res) => {
+      if (res.success) {
+        if (props.boxNumber) {
+          // 如是是改箱子里面的某个商品
+          emit("updateNewProducts");
+        } else {
+          // 如果是确认收货
+          emit("confirm");
+        }
+        isVisible.value = false;
+        $q.notify({
+          type: "positive",
+          message: "商品信息已更新",
+        });
+      }
+    });
 };
 
 defineExpose({
@@ -472,7 +486,6 @@ defineExpose({
 
 // 自定义表格样式
 .table-container {
-  overflow-x: auto;
   margin-top: 16px;
 }
 
@@ -506,6 +519,7 @@ defineExpose({
     padding: 12px 16px;
     border-bottom: 1px solid #eaeaea;
     vertical-align: top;
+    background-color: #fff;
   }
 }
 
@@ -547,7 +561,7 @@ defineExpose({
   margin-bottom: 8px;
 
   .dimension-input {
-    width: 60px;
+    width: 80px;
   }
 
   .dimension-separator {

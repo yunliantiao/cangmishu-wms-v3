@@ -222,6 +222,8 @@ const handleSubmit = async () => {
   } else {
     data = await categoriesApi.createCategory({
       name: form.name,
+      parent_id: currentNode.value?.id || null,
+      description:''
     });
   }
 

@@ -82,13 +82,13 @@
                 @click="loginType = 2"
               />
               <q-space />
-              <q-btn
+              <!-- <q-btn
                 flat
                 color="primary"
                 label="找回密码"
                 class="forgot-pwd-link"
                 @click="goToResetPassword"
-              />
+              /> -->
             </div>
           </q-form>
           <div v-show="loginType == 2" style="margin: auto">

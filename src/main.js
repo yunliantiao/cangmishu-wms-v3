@@ -38,7 +38,9 @@ app.use(Quasar, {
       positive: '#21BA45',
       negative: '#C10015',
       info: '#31CCEC',
-      warning: '#F2C037'
+      warning: '#F2C037',
+      green: '#00b42a',
+      gray: '#dcdfe6'
     }
   }
 }).use(router).use(store)

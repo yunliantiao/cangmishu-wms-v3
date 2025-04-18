@@ -33,7 +33,7 @@ function interceptorsRequestSuccess(config) {
     localStorage.getItem('updateToken') === null ? '' : localStorage.getItem('updateToken')
   config.headers.Authorization = `Bearer ${token}` || `Bearer ${store.state.token}`
 
-  config.headers['X-Warehouse-Id'] = localStorage.getItem('warehouseId') || 3
+  config.headers['X-Warehouse-Id'] = localStorage.getItem('warehouseId') || ''
   config.headers.Accept = 'application/json'
   return config
 }

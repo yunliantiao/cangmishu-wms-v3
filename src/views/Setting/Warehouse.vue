@@ -25,9 +25,9 @@
             <q-td key="warehouseName" :props="props">
               {{ props.row.name }}
             </q-td>
-            <q-td key="warehouseType" :props="props"> 1 </q-td>
+            <!-- <q-td key="warehouseType" :props="props"> 1 </q-td> -->
             <q-td key="country" :props="props">
-              {{ props.row.country_code == "CN" ? "中国" : "美国" }}
+              {{ $store.state.countries.find(item => item.code == props.row.country_code)?.name || "" }}
             </q-td>
             <q-td key="receiveStatus" :props="props">
               <q-chip
@@ -68,7 +68,7 @@
                     >{{ props.row.allow_inbound ? "暂停收货" : "允许收货" }}
                   </q-tooltip>
                 </q-btn>
-                    <q-btn
+                <q-btn
                   flat
                   round
                   color="grey-7"
@@ -135,12 +135,6 @@ const columns = [
     label: "仓库名称",
     field: "warehouseName",
     align: "left",
-  },
-  {
-    name: "warehouseType",
-    label: "仓库类型",
-    field: "warehouseType",
-    align: "center",
   },
   {
     name: "country",

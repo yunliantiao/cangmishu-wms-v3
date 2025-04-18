@@ -162,7 +162,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useQuasar } from "quasar";
 import ProductSku from "./components/ProductSku.vue";
 import ProductSpu from "./components/ProductSpu.vue";
@@ -175,6 +175,7 @@ import productApi from "@/api/product";
 
 const $q = useQuasar();
 const router = useRouter();
+const route = useRoute();
 
 // 加载状态
 const loading = ref(false);
@@ -184,9 +185,9 @@ const filters = ref({
   date_type: 'created_at',
   start_date: '',
   end_date: '',
-  search_type: 'name',
+  search_type: 'sku',
   keywords: '',
-  search_mode: 'exact'
+  search_mode: 'fuzzy'
 });
 
 // 日期类型选项
@@ -204,7 +205,7 @@ const searchTypeOptions = [
 // 搜索模式选项
 const searchModeOptions = [
   { label: '精确搜索', value: 'exact' },
-  { label: '模糊搜索', value: 'like' },
+  { label: '模糊搜索', value: 'fuzzy' },
   { label: '前缀搜索', value: 'prefix' }
 ];
 
@@ -246,9 +247,7 @@ const fetchData = async () => {
       keywords: filters.value.keywords,
       search_mode: filters.value.search_mode
     };
-    
-    console.log('请求参数:', params);
-    
+        
     let response;
     
     // 根据当前标签页选择不同的API
@@ -282,7 +281,11 @@ watch(tab, () => {
 
 // 组件挂载时执行一次数据获取
 onMounted(() => {
+    if (route.query.type) {
+    tab.value = route.query.type;
+  }
   fetchData();
+
 });
 
 
@@ -301,7 +304,6 @@ const handleCopyProduct = (product) => {
 
 // 处理分页变更
 const handlePageChange = ({ page, rowsPerPage }) => {
-  console.log("页码变更:", page, "每页条数:", rowsPerPage);
   pagination.value.page = parseInt(page) || 1;
   pagination.value.rowsPerPage = parseInt(rowsPerPage) || 50;
   fetchData();
