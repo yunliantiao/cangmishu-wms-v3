@@ -197,7 +197,7 @@
     <div class="row justify-between q-mb-sm page_table_action">
       <div class="row items-center">
         <span class="q-mr-sm">选择 {{ selectedRows.length }}</span>
-        <q-btn
+        <!-- <q-btn
           color="primary"
           label="设为待发货"
           icon="fact_check"
@@ -205,7 +205,7 @@
           class="q-ml-sm"
           @click="handleSetPendingShipment"
         >
-        </q-btn>
+        </q-btn> -->
         <!-- <q-btn-dropdown
           color="primary"
           label="导出"
@@ -324,17 +324,20 @@
                 <q-icon
                   name="print"
                   size="20px"
-                  :color="isPrint(props.row) ? 'green' : 'grey-7'"
+                  :color="
+                    isPrint(props.row, 'is_print_pick_label')
+                      ? 'green'
+                      : 'grey-7'
+                  "
                 />
               </div>
-              <div>{{ isPrint(props.row) ? "已打印" : "待打单" }}</div>
-              <!-- <q-chip
-                dense
-                :color="getStatusColor(props.row.label_type).bg"
-                :text-color="getStatusColor(props.row.label_type).text"
-              >
-                {{ props.row.label_type }}
-              </q-chip> -->
+              <div>
+                {{
+                  isPrint(props.row, "is_print_pick_label")
+                    ? "已打印"
+                    : "待打单"
+                }}
+              </div>
             </q-td>
             <q-td key="actions" :props="props">
               <div class="row justify-center q-gutter-xs">
@@ -343,20 +346,19 @@
                   round
                   color="grey-7"
                   @click="handlePicking(props.row)"
-                  icon="edit_calendar"
+                  icon="print"
                 >
                   <q-tooltip>打印拣货单</q-tooltip>
                 </q-btn>
-                <!-- <q-btn
+                <q-btn
                   flat
                   round
                   color="grey-7"
                   @click="handlePrint(props.row)"
-                  icon="print"
-                  size="sm"
+                  icon="edit_calendar"
                 >
                   <q-tooltip>打印面单</q-tooltip>
-                </q-btn> -->
+                </q-btn>
                 <q-btn
                   flat
                   round
@@ -540,14 +542,12 @@ const searchFieldOptions = [
   { label: "ERP单号", value: "erp_package_number" },
 ];
 
-const isPrint = (row) => {
+const isPrint = (row, type) => {
   let printBool = false;
   row.packages.forEach((item) => {
-    item.items.forEach((ele) => {
-      if (ele.is_print_pick_label) {
-        printBool = true;
-      }
-    });
+    if (item[type]) {
+      printBool = true;
+    }
   });
   return printBool;
 };
@@ -707,10 +707,12 @@ const handleSetPendingShipment = () => {
     });
     return;
   }
-  console.log(selectedRows.value);
+  let packageIds = selectedRows.value
+    .map((item) => item.packages.map((ele) => ele.id))
+    .flat();
   outApi
     .setPendingShipment({
-      package_ids: selectedRows.value.map((item) => item.id),
+      package_ids: packageIds,
       is_print_shipping_label: true,
     })
     .then((res) => {
@@ -745,16 +747,8 @@ const handleExport = (type) => {
   console.log(`导出${type === "selected" ? "选中" : "全部"}包裹`);
 };
 
-const handleSendOutboundOrder = (type) => {
-  outApi.shipments(type.id).then((res) => {
-    if (res.success) {
-      getOutboundOrder();
-    }
-  });
-};
-
-const handlePicking = (type) => {
-  outApi.getOutboundOrderPicking(type.packages[0].id).then((res) => {
+const handlePicking = (item) => {
+  outApi.getOutboundOrderPicking(item.id).then((res) => {
     if (res.success) {
       window.open(res.data.data, "_blank");
       $q.dialog({
@@ -772,7 +766,9 @@ const handlePicking = (type) => {
       }).onOk(() => {
         if (res.success) {
           outApi
-            .getOutboundOrderPickingResult(type.id, { is_printed: true })
+            .getOutboundOrderPickingResult(item.id, {
+              is_printed: true,
+            })
             .then((res) => {
               if (res.success) {
                 getOutboundOrder();
@@ -785,9 +781,40 @@ const handlePicking = (type) => {
 };
 
 const handlePrint = (type) => {
-  outApi.getOutboundOrderPrint(type.id).then((res) => {
-    console.log(res);
-  });
+  outApi
+    .getOutboundOrderPrint(type.packages[0].id, {
+      is_printed: true,
+    })
+    .then((res) => {
+      if (res.success) {
+        window.open(res.data.data, "_blank");
+        $q.dialog({
+          title: "提示",
+          message: "面单打印结果确认是否打印成功？",
+          ok: {
+            label: "是",
+            color: "primary",
+          },
+          cancel: {
+            label: "否",
+            color: "grey",
+          },
+          persistent: true,
+        }).onOk(() => {
+          if (res.success) {
+            outApi
+              .signExpressSheet(type.packages[0].id, {
+                is_printed: true,
+              })
+              .then((res) => {
+                if (res.success) {
+                  getOutboundOrder();
+                }
+              });
+          }
+        });
+      }
+    });
 };
 
 const toggleSortByTime = () => {

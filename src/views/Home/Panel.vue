@@ -468,279 +468,12 @@
       </div>
     </div>
 
-    <Dialog
+    <!-- 仓库表单组件 -->
+    <WarehouseForm
       v-model="dialogVisible"
-      :persistent="true"
       :cancelShow="false"
-      width="800px"
-      @confirm="confirm"
-      title="新建仓库"
-    >
-      <div class="warehouse-form q-pa-md">
-        <q-form @submit="confirm">
-          <div class="row q-mb-md">
-            <div class="col-12 col-sm-6">
-              <div class="form-item row items-center">
-                <div class="form-label col-sm-4 pb-20">
-                  仓库名称 <span class="required">*</span>
-                </div>
-                <div class="form-input col-sm-8">
-                  <q-input
-                    outlined
-                    dense
-                    v-model="warehouseForm.name"
-                    placeholder="请输入"
-                    :rules="[(val) => !!val || '请输入仓库名称']"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="col-12 col-sm-6">
-              <div class="form-item row items-center">
-                <div class="form-label col-sm-4 pb-20">
-                  仓库编号 <span class="required">*</span>
-                </div>
-                <div class="form-input col-sm-8">
-                  <q-input
-                    outlined
-                    dense
-                    v-model="warehouseForm.code"
-                    placeholder="请输入"
-                    :rules="[(val) => !!val || '请输入仓库编号']"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row q-mb-md">
-            <div class="col-12 col-sm-6">
-              <div class="form-item row items-center">
-                <div class="form-label col-sm-4 pb-20">
-                  域名 <span class="required">*</span>
-                </div>
-                <div class="form-input col-sm-8">
-                  <div class="row items-center domain-input-group">
-                    <div class="prefix text-grey-7">https://</div>
-                    <div class="input-wrapper">
-                      <q-input
-                        outlined
-                        dense
-                        v-model="warehouseForm.domain"
-                        placeholder="请输入仓库域名"
-                        class="domain-input"
-                        bg-color="white"
-                      />
-                    </div>
-                    <div class="suffix text-grey-7">.cangmishu.com</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-12 col-sm-6">
-              <div class="form-item row items-center">
-                <div class="form-label col-sm-4">
-                  国家/地区 <span class="required">*</span>
-                </div>
-                <div class="form-input col-sm-8">
-                  <q-select
-                    outlined
-                    dense
-                    v-model="warehouseForm.country_code"
-                    :options="$store.state.countries"
-                    option-label="name"
-                    option-value="code"
-                    emit-value
-                    map-options
-                    placeholder="请选择"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row q-mb-md">
-            <div class="col-12 col-sm-6">
-              <div class="form-item row items-center">
-                <div class="form-label col-sm-4">省</div>
-                <div class="form-input col-sm-8">
-                  <q-input
-                    outlined
-                    dense
-                    v-model="warehouseForm.province"
-                    placeholder="请输入"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="col-12 col-sm-6">
-              <div class="form-item row items-center">
-                <div class="form-label col-sm-4">市/州</div>
-                <div class="form-input col-sm-8">
-                  <q-input
-                    outlined
-                    dense
-                    v-model="warehouseForm.city"
-                    placeholder="请输入"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row q-mb-md">
-            <div class="col-12 col-sm-6">
-              <div class="form-item row items-center">
-                <div class="form-label col-sm-4">街道</div>
-                <div class="form-input col-sm-8">
-                  <q-input
-                    outlined
-                    dense
-                    v-model="warehouseForm.street"
-                    placeholder="请输入"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="col-12 col-sm-6">
-              <div class="form-item row items-center">
-                <div class="form-label col-sm-4">门牌号</div>
-                <div class="form-input col-sm-8">
-                  <q-input
-                    outlined
-                    dense
-                    v-model="warehouseForm.door_no"
-                    placeholder="请输入"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row q-mb-md">
-            <div class="col-12 col-sm-6">
-              <div class="form-item row items-center">
-                <div class="form-label col-sm-4">邮编</div>
-                <div class="form-input col-sm-8">
-                  <q-input
-                    outlined
-                    dense
-                    v-model="warehouseForm.postcode"
-                    placeholder="请输入"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="col-12 col-sm-6">
-              <div class="form-item row items-center">
-                <div class="form-label col-sm-4">时区</div>
-                <div class="form-input col-sm-8">
-                  <q-select
-                    outlined
-                    dense
-                    v-model="warehouseForm.timezone"
-                    :options="timezoneOptions"
-                    placeholder="请选择"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row q-mb-md">
-            <div class="col-12">
-              <div class="form-item row items-start">
-                <div class="form-label col-sm-2">地址</div>
-                <div class="form-input col-sm-10">
-                  <q-input
-                    outlined
-                    type="textarea"
-                    rows="3"
-                    v-model="warehouseForm.address"
-                    placeholder="请输入"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row q-mb-md">
-            <div class="col-12 col-sm-6">
-              <div class="form-item row items-center">
-                <div class="form-label col-sm-4">联系人</div>
-                <div class="form-input col-sm-8">
-                  <q-input
-                    outlined
-                    dense
-                    v-model="warehouseForm.contact_user"
-                    placeholder="请输入"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="col-12 col-sm-6">
-              <div class="form-item row items-center">
-                <div class="form-label col-sm-4">联系电话</div>
-                <div class="form-input col-sm-8">
-                  <q-input
-                    outlined
-                    dense
-                    v-model="warehouseForm.contact_phone"
-                    placeholder="请输入"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row q-mb-md">
-            <div class="col-12 col-sm-6">
-              <div class="form-item row items-center">
-                <div class="form-label col-sm-4">联系邮箱</div>
-                <div class="form-input col-sm-8">
-                  <q-input
-                    outlined
-                    dense
-                    v-model="warehouseForm.contact_email"
-                    placeholder="请输入"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="col-12 col-sm-6">
-              <div class="form-item row items-center">
-                <div class="form-label col-sm-4">币种</div>
-                <div class="form-input col-sm-8">
-                  <q-input
-                    outlined
-                    dense
-                    v-model="warehouseForm.currency"
-                    placeholder="请输入"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-12">
-              <div class="form-item row items-start">
-                <div class="form-label col-sm-2">备注</div>
-                <div class="form-input col-sm-10">
-                  <q-input
-                    outlined
-                    type="textarea"
-                    rows="3"
-                    v-model="warehouseForm.remark"
-                    placeholder="请输入"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </q-form>
-      </div>
-    </Dialog>
+      @created="handleWarehouseCreated"
+    />
   </div>
 </template>
 
@@ -748,123 +481,35 @@
 import { ref } from "vue";
 import Dialog from "@/components/Dialog.vue";
 import warehouseApi from "@/api/warehouse";
+import WarehouseForm from "@/components/WarehouseForm.vue";
 import { Notify } from "quasar";
 
 export default {
   name: "PanelPage",
   components: {
     Dialog,
+    WarehouseForm,
   },
   setup() {
-    const selectedWarehouse = ref("");
-    const warehouseOptions = ["全部仓库"];
-    const warehouseList = ref([]); //仓库列表
     const dialogVisible = ref(false);
     const isRegister = localStorage.getItem("isRegister"); //如果是注册，则需要建仓库选
     if (isRegister == "true") {
       dialogVisible.value = true;
     }
-    // 仓库表单数据
-    const warehouseForm = ref({
-      name: "",
-      type: "1",
-      code: "",
-      domain: "",
-      country_code: "CN",
-      city: "",
-      street: "",
-      province: "",
-      door_no: "",
-      postcode: "",
-      address: "",
-      contact_user: "",
-      contact_phone: "",
-      contact_email: "",
-      timezone: "",
-      currency: "",
-      remark: "",
-    });
-
-    // const getWarehouseList = () => {
-    //   warehouseApi.getWarehouseList().then((res) => {
-    //     if (res.success) {
-    //       warehouseList.value = res.data;
-    //       selectedWarehouse.value = res.data[0];
-    //       // localStorage.setItem("warehouseId", res.data[0].id);
-    //     }
-    //     if (res.data.length == 0) {
-    //       dialogVisible.value = true;
-    //     }
-    //   });
-    // };
-    // getWarehouseList();
-    // 下拉选项
-    const warehouseTypes = ["标准仓"];
-    const timezoneOptions = ["UTC+8", "UTC+0", "UTC-5", "UTC-8"];
-
-    const confirm = () => {
-      if (!warehouseForm.value.name) {
-        Notify.create({
-          message: "请输入仓库名称",
-          color: "negative",
-        });
-        return;
-      } else if (!warehouseForm.value.code) {
-        Notify.create({
-          message: "请输入仓库编号",
-          color: "negative",
-        });
-        return;
-      } else if (!warehouseForm.value.type) {
-        Notify.create({
-          message: "请选择仓库类型",
-          color: "negative",
-        });
-        return;
-      } else if (!warehouseForm.value.domain) {
-        Notify.create({
-          message: "请输入仓库域名",
-          color: "negative",
-        });
-        return;
-      } else if (!warehouseForm.value.country_code) {
-        Notify.create({
-          message: "请选择国家/地区",
-          color: "negative",
-        });
-        return;
-      }
-
-      warehouseApi
-        .checkDomain({
-          domain: warehouseForm.value.domain,
-        })
-        .then((res) => {
-          if (res.success) {
-            warehouseApi.createWarehouse(warehouseForm.value).then((res) => {
-              if (res.success) {
-                localStorage.setItem("isRegister", false); //建仓库后需要标记
-                localStorage.setItem("warehouseId", res.data.id);
-                dialogVisible.value = false;
-                Notify.create({
-                  message: "仓库创建成功",
-                  color: "positive",
-                });
-                window.location.reload();
-              }
-            });
-          }
-        });
+    const handleWarehouseCreated = (data) => {
+      localStorage.setItem("isRegister", false); //建仓库后需要标记
+      localStorage.setItem("warehouseId", data.id);
+      dialogVisible.value = false;
+      Notify.create({
+        message: "仓库创建成功",
+        color: "positive",
+      });
+      window.location.reload();
     };
 
     return {
-      selectedWarehouse,
-      warehouseOptions,
-      warehouseForm,
-      warehouseTypes,
-      timezoneOptions,
       dialogVisible,
-      warehouseList,
+      handleWarehouseCreated,
       confirm,
     };
   },
@@ -1099,17 +744,18 @@ export default {
   height: 36px;
   padding: 0;
   transition: all 0.3s ease;
-  
+
   &:hover {
     border-color: #c0c4cc;
   }
-  
+
   &:focus-within {
     border-color: var(--q-primary);
     box-shadow: 0 0 0 2px rgba(var(--q-primary), 0.1);
   }
-  
-  .prefix, .suffix {
+
+  .prefix,
+  .suffix {
     padding: 0 8px;
     font-size: 13px;
     color: #606266;
@@ -1119,23 +765,23 @@ export default {
     align-items: center;
     user-select: none;
   }
-  
+
   .prefix {
     border-right: 1px solid #e5e7eb;
     border-radius: 4px 0 0 4px;
   }
-  
+
   .suffix {
     border-left: 1px solid #e5e7eb;
     border-radius: 0 4px 4px 0;
   }
-  
+
   .input-wrapper {
     flex: 1;
-    
+
     :deep(.domain-input) {
       height: 34px;
-      
+
       .q-field__control {
         height: 34px;
         min-height: 34px;
@@ -1143,21 +789,22 @@ export default {
         background: transparent;
         box-shadow: none !important;
       }
-      
+
       .q-field__native {
         padding: 0;
       }
-      
+
       input {
         font-size: 13px;
         color: #2c3e50;
       }
-      
+
       &.q-field--outlined {
         .q-field__control {
           border: none;
-          
-          &:before, &:after {
+
+          &:before,
+          &:after {
             display: none;
           }
         }

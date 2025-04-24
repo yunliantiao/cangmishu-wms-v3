@@ -94,7 +94,7 @@
         <div>
           <!-- 左侧可能有其他操作按钮 -->
         </div>
-        <div>
+    <div>
           <q-btn
             label="OMS地址"
             color="primary"
@@ -192,6 +192,16 @@
               size="sm"
             >
               <q-tooltip>编辑客户信息</q-tooltip>
+            </q-btn>
+            <q-btn
+              flat
+              round
+              color="positive"
+              @click="handleGetTempOmsToken(props.row.id)"
+              icon="send"
+              size="sm"
+            >
+              <q-tooltip>跳转OMS登录</q-tooltip>
             </q-btn>
             <q-btn
               flat
@@ -359,14 +369,25 @@
               outlined
               dense
               v-model="formData.country_code"
-              :options="$store.state.countries"
+              :options="filteredCountries"
               option-value="code"
               option-label="name"
               map-options
               emit-value
-              placeholder="请选择"
+              use-input
+              input-debounce="300"
+              @filter="filterCountries"
+              placeholder="请选择或搜索"
               class="q-mt-xs"
-            />
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">
+                    未找到匹配的国家/地区
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
           </div>
           <!-- 仓库分配全宽度显示 -->
           <div class="col-12">
@@ -454,17 +475,19 @@
         </div>
       </q-form>
     </Dialog>
-  </div>
+    </div>
 </template>
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import Dialog from "@/components/Dialog.vue";
 import customerApi from "@/api/customer";
 import Pagination from "@/components/Pagination.vue";
 import warehouseApi from "@/api/warehouse";
 import { useQuasar, Dialog as QuasarDialog } from "quasar";
 import { copyText } from "@/utils/common";
+import { useStore } from "vuex";
 
+const store = useStore();
 const customerIdOptions = [
   { label: "客户代码", value: "code" },
   { label: "邮箱", value: "email" },
@@ -511,6 +534,16 @@ const getCurrentDomain = () => {
   customerApi.getCurrentDomain().then((res) => {
     if (res.success) {
       currentDomain.value = res.data;
+    }
+  });
+};
+const handleGetTempOmsToken = (id) => {
+  customerApi.getTempOmsToken(id).then((res) => {
+    if (res.success) {
+      window.open(
+        currentDomain.value + "/login?token=" + res.data.token,
+        "_blank"
+      );
     }
   });
 };
@@ -645,6 +678,28 @@ const onSubmit = () => {
     }
   });
 };
+
+const filteredCountries = ref([]);
+
+const filterCountries = (val, update) => {
+  if (!val || val === '') {
+    filteredCountries.value = store.state.countries;
+    update();
+    return;
+  }
+
+  const needle = val.toLowerCase();
+  filteredCountries.value = store.state.countries.filter(
+    v => v.name.toLowerCase().includes(needle) ||
+         v.code.toLowerCase().includes(needle)
+  );
+  update();
+};
+
+// Initialize filtered countries
+onMounted(() => {
+  filteredCountries.value = store.state.countries;
+});
 </script>
 
 <style scoped lang="scss">

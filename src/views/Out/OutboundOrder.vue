@@ -329,10 +329,26 @@
                 <q-icon
                   name="print"
                   size="20px"
-                  :color="isPrint(props.row) ? 'green' : 'grey-7'"
+                  :color="
+                    isPrint(props.row, 'is_print_pick_label')
+                      ? 'green'
+                      : 'grey-7'
+                  "
                 />
-                <q-icon name="receipt" size="20px" color="grey-7" />
-                <q-icon name="receipt_long" size="20px" color="grey-7" />
+                <q-icon
+                  name="receipt"
+                  size="20px"
+                  :color="
+                    isPrint(props.row, 'is_print_shipping_label')
+                      ? 'green'
+                      : 'grey-7'
+                  "
+                />
+                <q-icon
+                  name="receipt_long"
+                  size="20px"
+                  :color="props.row.status == 'shipped' ? 'green' : 'grey-7'"
+                />
               </div>
               <q-chip
                 dense
@@ -514,14 +530,6 @@ const orderStatusOptions = ref([
   {
     label: "待发货",
     value: "pending_shipment",
-  },
-  {
-    label: "拣货中",
-    value: "picking",
-  },
-  {
-    label: "已拣货",
-    value: "picked",
   },
   {
     label: "已发货",
@@ -709,14 +717,12 @@ const handlePicking = (type) => {
   });
 };
 
-const isPrint = (row) => {
+const isPrint = (row, type) => {
   let printBool = false;
   row.packages.forEach((item) => {
-    item.items.forEach((ele) => {
-      if (ele.is_print_pick_label) {
-        printBool = true;
-      }
-    });
+    if (item[type]) {
+      printBool = true;
+    }
   });
   return printBool;
 };

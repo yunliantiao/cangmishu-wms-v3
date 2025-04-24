@@ -178,7 +178,7 @@
               <q-td :props="props">
                 <div class="row items-start">
                   <img
-                    :src="props.row.product_spec_image"
+                    :src="props.row.product_spec_image||'https://testoms.cangmishu.com/api/uploads/52331320-d813-40d8-a6db-3cf28f4938b1'"
                     width="50"
                     height="50"
                     class="product-img q-mr-md"
@@ -436,7 +436,7 @@
         </div>
       </div>
     </template>
-  </div>
+    </div>
 </template>
 
 <script setup>

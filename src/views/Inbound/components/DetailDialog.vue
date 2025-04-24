@@ -110,7 +110,7 @@
                           <img
                             :src="
                               item.product_spec_image ||
-                              'https://placehold.co/80x80'
+                             'https://testoms.cangmishu.com/api/uploads/52331320-d813-40d8-a6db-3cf28f4938b1'
                             "
                             class="product-img"
                           />

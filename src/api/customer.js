@@ -7,4 +7,5 @@ export default {
   enableCustomer: (id) => PUT(`customers/${id}/activate`), // 启用客户
   getCustomerAll: () => GET(`customers/all`), // 获取所有客户
   getCurrentDomain: () => GET(`warehouses/current-domain`), // 获取当前域名
+  getTempOmsToken: (id) => POST(`customers/${id}/temp-oms-token`), // 获取临时OMS token
 };

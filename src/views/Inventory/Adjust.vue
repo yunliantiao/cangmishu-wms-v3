@@ -1,0 +1,420 @@
+<template>
+  <div class="adjust-page">
+    <div class="bg-white rounded-borders q-pa-md q-mb-md">
+      <div class="row q-col-gutter-sm">
+        <div class="col-auto">
+          <q-select
+            outlined
+            dense
+            v-model="pageParams.date_type"
+            :options="$store.state.dateTypeOptions"
+            label="创建时间"
+            class="select-width"
+            emit-value
+            map-options
+            option-value="value"
+            option-label="label"
+            clearable
+          />
+        </div>
+        <div class="col-auto">
+          <div class="row q-col-gutter-sm">
+            <div class="col-auto">
+              <q-input
+                outlined
+                dense
+                v-model="pageParams.start_date"
+                label="开始时间"
+                readonly
+                class="date-input"
+              >
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy
+                      cover
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-date
+                        v-model="pageParams.start_date"
+                        mask="YYYY-MM-DD"
+                      />
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+            </div>
+            <div class="col-auto self-center">To</div>
+            <div class="col-auto">
+              <q-input
+                outlined
+                dense
+                readonly
+                v-model="pageParams.end_date"
+                label="结束时间"
+                class="date-input"
+              >
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy
+                      cover
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-date v-model="pageParams.end_date" mask="YYYY-MM-DD" />
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+            </div>
+          </div>
+        </div>
+        <div class="col-auto">
+          <div class="row items-center no-wrap search-group q-ml-md">
+            <q-select
+              outlined
+              dense
+              v-model="pageParams.search_type"
+              :options="[
+                {
+                  label: '商品SKU',
+                  value: 'sku',
+                },
+                {
+                  label: '移货编号',
+                  value: 'system_order_number',
+                },
+                {
+                  label: '商品名称',
+                  value: 'name',
+                },
+              ]"
+              emit-value
+              map-options
+              option-value="value"
+              option-label="label"
+              class="search-type-select"
+            />
+            <q-input
+              outlined
+              dense
+              v-model="pageParams.keywords"
+              placeholder="批量搜索用逗号隔开"
+              class="keywords-input"
+              style="min-width: 200px"
+            />
+            <q-select
+              outlined
+              dense
+              v-model="pageParams.search_mode"
+              :options="$store.state.searchModeOptions"
+              emit-value
+              map-options
+              option-value="value"
+              option-label="label"
+              class="search-mode-select"
+            />
+          </div>
+        </div>
+        <div class="col-auto">
+          <q-btn
+            outline
+            color="grey"
+            label="重置"
+            class="q-mr-sm"
+            @click="resetSearch"
+          />
+          <q-btn
+            color="primary"
+            icon="search"
+            label="搜索"
+            :loading="$store.state.btnLoading"
+            @click="getAdjustList"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="q-pa-none page_table_action">
+      <!-- 操作按钮区域 -->
+      <div class="row justify-between q-mb-sm">
+        <div class="row items-center">
+           <span class="q-mr-sm">选择 {{ selectedRows.length }}</span>
+        </div>
+        <div>
+          <q-btn
+            color="primary"
+            label="创建调整单"
+            icon="add"
+            @click="createAdjust"
+            unelevated
+          />
+        </div>
+      </div>
+      <div>
+        <q-table
+          flat
+          :rows="adjustList"
+          :columns="columns"
+           v-model:selected="selectedRows"
+          row-key="id"
+          selection="multiple"
+          separator="horizontal"
+          :loading="$store.state.btnLoading"
+          hide-bottom
+          :pagination="{
+            rowsPerPage: 0,
+          }"
+        >
+          <!-- 自定义行 -->
+          <template v-slot:body="props">
+            <!-- 分组标题行 -->
+            <q-tr class="group-header-row">
+              <q-td colspan="7">
+                <div class="row group-header items-center">
+                  <div class="col-2">
+                    <q-checkbox v-model="props.selected" />
+                    <span class="info-item q-mr-md"
+                      >调整单号: {{ props.row.system_order_number }}</span
+                    >
+                  </div>
+                  <div class="col-9">备注：{{ props.row.remark || "-" }}</div>
+                </div>
+              </q-td>
+            </q-tr>
+            <!-- 商品行 -->
+            <template v-for="(item, index) in props.row.items" :key="index">
+              <q-tr>
+                <q-td auto-width class="text-center">
+                  <!-- <q-checkbox v-model="props.row.selected" /> -->
+                </q-td>
+                <q-td key="info" class="product-info-cell">
+                  <div class="product-info">
+                    <div>{{ item.product_spec_sku }}</div>
+                    <div>{{ item.product_spec_name }}</div>
+                    <div>{{ item.product_name }}</div>
+                  </div>
+                </q-td>
+                <q-td key="type">
+                  {{ props.row.type === "good" ? "良品调整" : "不良品调整" }}
+                </q-td>
+                <q-td key="location">
+                  <div
+                    v-for="(loc, locIndex) in item.locations"
+                    :key="locIndex"
+                  >
+                    {{ loc.location_code }}
+                  </div>
+                </q-td>
+                <q-td key="quantity" class="text-center">
+                  <div
+                    v-for="(loc, locIndex) in item.locations"
+                    :key="locIndex"
+                  >
+                    <span
+                      class="stock-number"
+                      :class="{
+                        'text-positive': loc.adjustment_qty > 0,
+                        'text-negative': loc.adjustment_qty < 0,
+                      }"
+                    >
+                      {{ loc.adjustment_qty > 0 ? "+" : ""
+                      }}{{ loc.adjustment_qty }}
+                    </span>
+                  </div>
+                </q-td>
+                <q-td key="operator">
+                  {{ props.row.created_by.name || "-" }}
+                </q-td>
+                <q-td key="created_at">
+                  {{ props.row.created_at }}
+                </q-td>
+              </q-tr>
+            </template>
+          </template>
+        </q-table>
+        <div class="q-mt-md">
+          <Pagination
+            :total-count="pageParams.total"
+            v-model:page="pageParams.page"
+            v-model:rows-per-page="pageParams.per_page"
+            @page-change="getAdjustList"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, watch } from "vue";
+import inventoryApi from "@/api/inventory";
+import { useRouter } from "vue-router";
+import Pagination from "@/components/Pagination.vue";
+
+const router = useRouter();
+const selectedRows = ref([]);
+const pageParams = ref({
+  page: 1,
+  per_page: 10,
+  total: 0,
+  keywords: "",
+  status: "",
+  date_type: "",
+  start_date: "",
+  end_date: "",
+  search_type: "sku",
+  search_mode: "fuzzy",
+});
+
+const adjustList = ref([]);
+
+// 表格列配置
+const columns = [
+  {
+    name: "info",
+    label: "商品信息/箱信息",
+    align: "left",
+    field: (row) => row,
+  },
+  {
+    name: "type",
+    label: "调整类型",
+    align: "left",
+    field: (row) => row.type,
+  },
+  {
+    name: "location",
+    label: "货架位",
+    align: "left",
+    field: (row) => row.items?.[0]?.locations?.[0]?.location_code,
+  },
+  {
+    name: "quantity",
+    label: "调整数量",
+    align: "center",
+    field: (row) => row.items?.[0]?.locations?.[0]?.adjustment_qty,
+  },
+  {
+    name: "operator",
+    label: "操作人",
+    align: "left",
+    field: (row) => row.operator,
+  },
+  {
+    name: "created_at",
+    label: "时间",
+    align: "left",
+    field: (row) => row.created_at,
+  },
+];
+
+// 选择相关
+const selectAll = ref(false);
+watch(selectAll, (val) => {
+  adjustList.value.forEach((item) => {
+    item.selected = val;
+  });
+});
+
+// 分页请求
+const onRequest = (props) => {
+  const { page, rowsPerPage } = props.pagination;
+  pageParams.value.page = page;
+  pageParams.value.per_page = rowsPerPage;
+  getAdjustList();
+};
+
+// 获取列表数据
+const getAdjustList = () => {
+  inventoryApi.getAdjustOrderList(pageParams.value).then((res) => {
+    if (res.success) {
+      adjustList.value = res.data.items.map((item) => ({
+        ...item,
+        selected: false,
+      }));
+      pageParams.value.total = res.data.meta.total;
+    }
+  });
+};
+
+// 重置搜索
+const resetSearch = () => {
+  pageParams.value = {
+    page: 1,
+    per_page: 10,
+    total: 0,
+    keywords: "",
+    status: "",
+    date_type: "",
+    start_date: "",
+    end_date: "",
+    search_type: "sku",
+    search_mode: "fuzzy",
+  };
+  getAdjustList();
+};
+
+const createAdjust = () => {
+  router.push({
+    name: "create-adjust",
+  });
+};
+// 添加 showGroupHeader 函数
+const showGroupHeader = (row, index) => {
+  // 第一行显示标题
+  if (index === 0) return true;
+
+  // 如果当前行的group_id与前一行不同，显示标题
+  const prevRow = adjustList.value[index - 1];
+  return prevRow && row.id !== prevRow.id;
+};
+
+getAdjustList();
+</script>
+
+<style lang="scss" scoped>
+.adjust-page {
+  :deep(.q-table) {
+    th {
+      font-weight: 500;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.85);
+    }
+
+    td {
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.75);
+    }
+  }
+  :deep(.q-table__card) {
+    box-shadow: none;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+  }
+  .group-header-row {
+    background-color: #f8fafc;
+
+    td {
+      padding: 8px 16px;
+      border-top: 1px solid #ebeef5;
+      border-bottom: 1px solid #ebeef5;
+    }
+  }
+
+  .select-width {
+    width: 150px;
+  }
+
+  .date-input {
+    width: 150px;
+  }
+
+  .search-group {
+    .search-type-select {
+      width: 120px;
+    }
+    .search-mode-select {
+      width: 120px;
+    }
+  }
+}
+</style>

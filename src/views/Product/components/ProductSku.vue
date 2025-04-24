@@ -56,7 +56,7 @@
             <div class="row no-wrap items-center">
               <div class="q-mr-sm">
                 <img
-                  :src="props.row?.image"
+                  :src="props.row?.image||'https://testoms.cangmishu.com/api/uploads/52331320-d813-40d8-a6db-3cf28f4938b1'"
                   style="
                     width: 50px;
                     height: 50px;

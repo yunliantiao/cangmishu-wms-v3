@@ -7,4 +7,5 @@ export default {
     updateProduct: (id, data) => PUT(`products/${id}`, data), // 更新商品
     customsTypes: () => GET("customs-types"), // 商品报关属性列表
     printSku: (data) => POST("products/labels/generate", data), // 打印 SKU 标签
+    getStocksLocations: (data) => GET("stocks-locations", data), // 获取库存地点列表
 }

@@ -265,7 +265,13 @@
                   </q-td>
                   <q-td key="product_info" :props="props">
                     <div class="product-info">
-                      <img :src="props.row.image" class="product-img" />
+                      <img
+                        :src="
+                          props.row.image ||
+                          'https://testoms.cangmishu.com/api/uploads/52331320-d813-40d8-a6db-3cf28f4938b1'
+                        "
+                        class="product-img"
+                      />
                       <div class="info-container">
                         <div class="sku-code">SKU：{{ props.row.sku }}</div>
                         <div class="product-name">
@@ -284,7 +290,11 @@
                       @click="showDrawer('in_transit', props.row)"
                     >
                       {{ props.row.in_transit_qty }}
-                      <q-icon name="arrow_drop_down" size="xs" class="hover-icon" />
+                      <q-icon
+                        name="arrow_drop_down"
+                        size="xs"
+                        class="hover-icon"
+                      />
                     </div>
                   </q-td>
                   <q-td key="pending_receipt_qty" :props="props">
@@ -293,7 +303,11 @@
                       @click="showDrawer('pending_receipt', props.row)"
                     >
                       {{ props.row.pending_receipt_qty }}
-                      <q-icon name="arrow_drop_down" size="xs" class="hover-icon" />
+                      <q-icon
+                        name="arrow_drop_down"
+                        size="xs"
+                        class="hover-icon"
+                      />
                     </div>
                   </q-td>
                   <q-td key="pending_shelf_qty" :props="props">
@@ -302,7 +316,11 @@
                       @click="showDrawer('pending_shelf', props.row)"
                     >
                       {{ props.row.pending_shelf_qty }}
-                      <q-icon name="arrow_drop_down" size="xs" class="hover-icon" />
+                      <q-icon
+                        name="arrow_drop_down"
+                        size="xs"
+                        class="hover-icon"
+                      />
                     </div>
                   </q-td>
                   <q-td key="locked_qty" :props="props">
@@ -311,7 +329,11 @@
                       @click="showDrawer('locked', props.row)"
                     >
                       {{ props.row.locked_qty }}
-                      <q-icon name="arrow_drop_down" size="xs" class="hover-icon" />
+                      <q-icon
+                        name="arrow_drop_down"
+                        size="xs"
+                        class="hover-icon"
+                      />
                     </div>
                   </q-td>
                   <q-td
@@ -436,7 +458,6 @@
                   </q-td>
                   <q-td key="product_info" style="width: 200px" :props="props">
                     <div>
-                      <!-- 编号: {{ props.row.sku}}<br /> -->
                       SKU: {{ props.row.sku }}<br />
                       名称: {{ props.row.product_name }}<br />
                       规格：{{ props.row.name }}
@@ -444,7 +465,6 @@
                   </q-td>
                   <q-td key="relevance_number" :props="props">
                     <div>
-                      <!-- 订单号: {{ props.row.}}<br /> -->
                       包裹号: {{ props.row.reference_number }}
                     </div>
                   </q-td>
@@ -461,13 +481,24 @@
                     {{ props.row.orgin_stock }}
                   </q-td>
                   <q-td key="stock_change" :props="props">
-                    <span
-                      :class="{
-                        'text-negative': props.row.type != 'inbound',
-                      }"
-                    >
-                      {{ props.row.type == "inbound" ? "+" : "-"
-                      }}{{ props.row.stock }}
+                    <span>
+                      <div
+                        v-if="props.row.type == 'adjustment'"
+                        :class="{
+                          'text-negative': props.row.stock < 0,
+                        }"
+                      >
+                        {{ props.row.stock }}
+                      </div>
+                      <div
+                        v-else
+                        :class="{
+                          'text-negative': props.row.type != 'inbound',
+                        }"
+                      >
+                        {{ props.row.type == "inbound" ? "+" : "-"
+                        }}{{ props.row.stock }}
+                      </div>
                     </span>
                   </q-td>
                   <q-td key="batch_qty" :props="props">
@@ -908,17 +939,17 @@ const detailPageParams = reactive({
 });
 
 // 当前操作的类型
-const currentType = ref('');
+const currentType = ref("");
 
 // 获取详情数据
 const getStockDetail = () => {
   tableLoading.value = true;
-  
+
   if (!currentProduct.value) {
     tableLoading.value = false;
     return;
   }
-  
+
   switch (currentType.value) {
     case "in_transit":
       inventoryApi
@@ -986,14 +1017,14 @@ const getStockDetail = () => {
 const showDrawer = async (type, row) => {
   detailData.value = [];
   currentProduct.value = row;
-  currentType.value = type;  // 保存当前操作类型
+  currentType.value = type; // 保存当前操作类型
   dialogVisible.value = true;
-  
+
   // 重置分页参数
   detailPageParams.page = 1;
   detailPageParams.per_page = 10;
   detailPageParams.total = 0;
-  
+
   switch (type) {
     case "in_transit":
       dialogTitle.value = "在途数详情";
@@ -1008,7 +1039,7 @@ const showDrawer = async (type, row) => {
       dialogTitle.value = "锁定库存详情";
       break;
   }
-  
+
   // 调用统一的获取详情方法
   getStockDetail();
 };
@@ -1186,7 +1217,7 @@ onMounted(() => {
         }
 
         .product-name {
-           color: rgba(0, 0, 0, 0.85);
+          color: rgba(0, 0, 0, 0.85);
         }
       }
     }
@@ -1344,11 +1375,11 @@ onMounted(() => {
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
-  
+
   &:hover {
     background: rgba(var(--q-primary), 0.1);
   }
-  
+
   .hover-icon {
     opacity: 0;
     margin-left: 2px;

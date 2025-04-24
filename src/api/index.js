@@ -4,4 +4,5 @@ export default {
     login: (data) => POST("auth/login", data), // 登录
     logout: (data) => DEL("auth/logout", data), // 退出
     getCountries: () => GET("countries"), // 国家/地区列表
+    getTimezones: () => GET("warehouses/timezones"), // 时区列表
 }

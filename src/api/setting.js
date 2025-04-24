@@ -18,4 +18,5 @@ export default {
     getPrintLabelTemplateList: (data) => GET("warehouses/locations/labels/templates", data), // 打印标签模板
     productsLabels: (data) => POST("warehouses/locations/labels/generate", data), // 打印标签
     exportLocations: (data) => POST("warehouses/locations/export", data), // 导出货架位
+    getStocksLocations:(data)=> GET("stocks-locations", data), //货位库存列表
 }

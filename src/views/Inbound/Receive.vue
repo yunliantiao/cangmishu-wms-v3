@@ -37,7 +37,7 @@
           </div>
         </div>
       </template>
-
+      
       <!-- 已扫描时显示标题和操作按钮 -->
       <template v-else>
         <div class="row justify-between items-center">
@@ -87,7 +87,7 @@
         </div>
       </template>
     </div>
-
+    
     <!-- 订单详情区域 -->
     <div
       v-if="orderData"
@@ -108,7 +108,7 @@
         </div>
       </div>
     </div>
-
+    
     <!-- 按箱收货 -->
     <div
       v-if="orderData && arrivalMethod == 'express_parcel'"
@@ -128,8 +128,8 @@
         @product-scan="handleProductScanFromComponent"
         @update-products="handleUpdateProducts"
         ref="receivingParcelRef"
-      />
-    </div>
+        />
+      </div>
     <!-- 包裹收货 -->
     <div
       v-if="orderData && arrivalMethod == 'box'"
@@ -804,8 +804,8 @@ onMounted(() => {
   border: 1px solid rgba(0, 0, 0, 0.12);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
-
-.order-info {
+  
+  .order-info {
   .info-label {
     color: rgba(0, 0, 0, 0.6);
     font-size: 0.875rem;
@@ -815,21 +815,21 @@ onMounted(() => {
   .info-value {
     font-size: 1rem;
     font-weight: 500;
+    }
   }
-}
-
-.products-section {
+  
+  .products-section {
   .section-header {
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   }
-}
-
+  }
+  
 // 表格和表单样式
 .q-table {
-  th {
-    font-weight: 500;
-    font-size: 14px;
-    color: rgba(0, 0, 0, 0.85);
+    th {
+      font-weight: 500;
+      font-size: 14px;
+      color: rgba(0, 0, 0, 0.85);
     padding: 12px;
     background-color: #f5f7fa;
     white-space: nowrap;

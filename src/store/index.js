@@ -17,16 +17,24 @@ export default createStore({
       { label: "不良品区", value: "defective" },
       { label: "转运区", value: "transit" },
     ],
-    countries: [
-      {
-        name: "中国",
-        code: "CN"
-      },
-      {
-        name: "美国",
-        code: "US"
-      }
+    countries: [],
+    // 搜索类型选项
+    searchTypeOptions: [
+      { label: '名字搜索', value: 'name' },
+      { label: 'SKU搜索', value: 'sku' }
     ],
+
+    // 搜索模式选项
+    searchModeOptions: [
+      { label: '精确搜索', value: 'exact' },
+      { label: '模糊搜索', value: 'fuzzy' },
+      { label: '前缀搜索', value: 'prefix' }
+    ],
+    dateTypeOptions:[
+      { label: '创建时间', value: 'created_at' },
+      { label: '更新时间', value: 'updated_at' }
+    ],
+    timezones:[]
   },
   getters: {
     isLeftDrawerOpen: (state) => state.leftDrawerOpen,
@@ -82,6 +90,9 @@ export default createStore({
     },
     SET_COUNTRIES(state, data) {
       state.countries = data
+    },
+    SET_TIMEZONES(state, data) {
+      state.timezones = data
     },
   },
   actions: {

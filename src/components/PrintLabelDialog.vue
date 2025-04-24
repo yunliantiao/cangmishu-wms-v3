@@ -533,11 +533,7 @@ const handleSubmit = async () => {
       });
     }
     if (response.success) {
-      if (props.printType == "goods_allocation") {
-        window.open(response.data, "_blank");
-      } else {
-        window.open(response.data.data, "_blank");
-      }
+      window.open(response.data.data, "_blank");
       dialogVisible.value = false;
       emit("success");
     }

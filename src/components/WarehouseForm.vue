@@ -108,22 +108,23 @@
                   outlined
                   dense
                   v-model="warehouseForm.country_code"
-                  :options="$store.state.countries"
+                  :options="filteredCountries"
                   option-value="code"
                   option-label="name"
-                  placeholder="请选择"
+                  placeholder="搜索"
                   map-options
                   emit-value
+                  use-input
+                  input-debounce="300"
+                  @filter="filterCountries"
                 >
-                  <!-- <template v-slot:selected>
-                    <span v-if="warehouseForm.country_code">
-                      {{
-                        store.getters.countries.find(
-                          (o) => o.code === warehouseForm.country_code
-                        )?.name || "请选择"
-                      }}
-                    </span>
-                  </template> -->
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        未找到匹配的国家/地区
+                      </q-item-section>
+                    </q-item>
+                  </template>
                 </q-select>
               </div>
             </div>
@@ -210,9 +211,23 @@
                   outlined
                   dense
                   v-model="warehouseForm.timezone"
-                  :options="timezoneOptions"
-                  placeholder="请选择"
-                />
+                  :options="filteredTimezones"
+                  option-value="value"
+                  option-label="label"
+                  emit-value
+                  placeholder="搜索"
+                  use-input
+                  input-debounce="300"
+                  @filter="filterTimezone"
+                >
+                  <template v-slot:no-option>
+                    <q-item>
+                      <q-item-section class="text-grey">
+                        未找到匹配的时区
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
               </div>
             </div>
           </div>
@@ -319,7 +334,10 @@ import { ref, reactive, defineProps, defineEmits, watch, computed } from "vue";
 import { useQuasar } from "quasar";
 import Dialog from "@/components/Dialog.vue";
 import warehouseApi from "@/api/warehouse";
+import { useStore } from "vuex";
+import api from "@/api";
 
+const store = useStore();
 const $q = useQuasar();
 const emit = defineEmits(["update:modelValue", "created", "updated"]);
 
@@ -381,8 +399,64 @@ const warehouseForm = ref({
 });
 
 // 下拉选项
-const warehouseTypes = [{ name: "标准仓", type: 1 }];
-const timezoneOptions = ["UTC+8", "UTC+0", "UTC-5", "UTC-8"];
+
+const filteredCountries = ref([]);
+const countries = ref([]);
+const filteredTimezones = ref([]);
+const timezoneOptions = ref([]);
+
+const filterCountries = (val, update) => {
+  if (!val || val === "") {
+    filteredCountries.value = countries.value;
+    update();
+    return;
+  }
+
+  const needle = val.toLowerCase();
+  filteredCountries.value = countries.value.filter(
+    (v) =>
+      v.name.toLowerCase().includes(needle) ||
+      v.code.toLowerCase().includes(needle)
+  );
+  update();
+};
+
+const filterTimezone = (val, update) => {
+  if (!val || val === "") {
+    filteredTimezones.value = timezoneOptions.value;
+    update();
+    return;
+  }
+
+  const needle = val.toLowerCase();
+  filteredTimezones.value = timezoneOptions.value.filter(
+    (v) =>
+      v.label.toLowerCase().includes(needle) ||
+      v.value.toLowerCase().includes(needle)
+  );
+  update();
+};
+
+const getCountries = () => {
+  api.getCountries().then((res) => {
+    if (res.success) {
+      store.commit("SET_COUNTRIES", res.data);
+      filteredCountries.value = res.data;
+      countries.value = res.data;
+    }
+  });
+};
+const getTimezones = () => {
+  api.getTimezones().then((res) => {
+    if (res.success) {
+      store.commit("SET_TIMEZONES", res.data);
+      filteredTimezones.value = res.data;
+      timezoneOptions.value = res.data;
+    }
+  });
+};
+getTimezones();
+getCountries();
 
 // 表单提交
 const handleSubmit = () => {
@@ -473,7 +547,7 @@ watch(
         name: "",
         type: "1",
         code: "",
-        country_code: "CN",
+        country_code: "",
         province: "",
         city: "",
         street: "",

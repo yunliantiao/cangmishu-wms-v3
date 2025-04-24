@@ -117,21 +117,12 @@ export default {
           warehouseList.value = res.data;
           if (localStorage.getItem("warehouseId")) {
             currentWarehouse.value = localStorage.getItem("warehouseId");
-            getCountries();
           } else {
             if (warehouseList.value.length) {
               currentWarehouse.value = warehouseList.value[0].id;
               localStorage.setItem("warehouseId", warehouseList.value[0].id);
-               getCountries();
             }
           }
-        }
-      });
-    };
-    const getCountries = () => {
-      api.getCountries().then((res) => {
-        if (res.success) {
-          store.commit("SET_COUNTRIES", res.data);
         }
       });
     };
