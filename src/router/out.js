@@ -1,6 +1,10 @@
 const Container = () => import(`../views/Layout/Container.vue`)
 const Simple = () => import(`../views/Out/Simple.vue`)
 const OutboundOrder = () => import(`../views/Out/OutboundOrder.vue`)
+const Wave = () => import(`../views/Out/Wave/Index.vue`)
+const WaveList = () => import(`../views/Out/Wave/List.vue`)
+const WaveInfo = () => import(`../views/Out/Wave/Info.vue`)
+const SortOut = () => import(`../views/Out/Wave/SortOut.vue`)
 
 export default [
     {
@@ -33,6 +37,52 @@ export default [
                     level: 2,
                     group: '出库管理',
                     name: '全部订单',
+                },
+            },
+            {
+                path: 'wave',
+                name: 'wave',
+                component: Wave,
+                id: 1003,
+                meta: {
+                    level: 2,
+                    group: '出库管理',
+                    name: '生成波次',
+                },
+            },
+            {
+                path: 'wave/list',
+                name: 'waveList',
+                component: WaveList,
+                id: 1004,
+                meta: {
+                    level: 2,
+                    group: '出库管理',
+                    name: '波次列表',
+                },
+            },
+            {
+                path: 'wave/sort/out',
+                name: 'SortOut',
+                component: SortOut,
+                id: 1005,
+                meta: {
+                    level: 2,
+                    group: '出库管理',
+                    name: '扫描出库',
+                },
+            },
+
+
+            {
+                path: 'wave/info',
+                name: 'waveInfo',
+                component: WaveInfo,
+                id: 1006,
+                meta: {
+                    level: 3,
+                    group: '出库管理',
+                    name: '波次详情',
                 },
             }
         ]

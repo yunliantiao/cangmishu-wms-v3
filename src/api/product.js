@@ -8,4 +8,11 @@ export default {
     customsTypes: () => GET("customs-types"), // 商品报关属性列表
     printSku: (data) => POST("products/labels/generate", data), // 打印 SKU 标签
     getStocksLocations: (data) => GET("stocks-locations", data), // 获取库存地点列表
+
+
+    // 标记
+    getTagList: (data) => GET("product-tags", data), // 获取标记列表
+    addTag: (data) => POST("product-tags", data), // 新增标记
+    updateTag: (id, data) => PUT(`product-tags/${id}`, data), // 更新标记
+    deleteTag: (id) => DEL(`product-tags/${id}`), // 删除标记
 }

@@ -62,6 +62,7 @@ function interceptorsResponse(config) {
     config.data &&
     config.data.success &&
     config.config.method !== "get"
+    && !config.config.notShowNotify
   ) {
     Notify.create({
       message: config.data.message,

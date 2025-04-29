@@ -9,4 +9,6 @@ export default {
     getShipments: (data) => GET(`orders/simple-prints`, data), // 获取发货单
     getOutboundOrderPickingResult: (id, data) => POST(`orders/${id}/print-pick-label`, data), // 包裹标记打印拣货单
     setPendingShipment: (data) => POST(`packages/batch-print-flags`, data), // 批量设置待发货
+
+    getOrderInfo: (id) => GET(`orders/${id}`), // 获取订单详情
 }

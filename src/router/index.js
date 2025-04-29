@@ -12,6 +12,8 @@ const Layout = () => import(`../App.vue`)
 const NotFound = loadonDemand('NotFound')
 const Login = loadonDemand('Login')
 
+
+
 export const routerMap = []
     .concat(Panel)
     .concat(Customer)
@@ -26,6 +28,11 @@ const constantRouterMap = [
         path: '/login',
         name: 'Login',
         component: Login,
+    },
+    {
+        path: '/partner/login',
+        name: 'PartnerLogin',
+        component: () => import('@/views/Partner/Login.vue'),
     },
     {
         path: '/:pathMatch(.*)*',
