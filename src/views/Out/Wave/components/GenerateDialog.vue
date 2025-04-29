@@ -108,13 +108,12 @@
                 <q-select
                   outlined
                   dense
-                  v-model="props.row.picker"
+                  v-model="props.row.picker_user_id"
                   :options="componentData.pickerOptions"
                   class="picker-select"
+                  emit-value
+                  map-options
                 >
-                  <template v-slot:selected>
-                    {{ props.row.picker_user_id }}
-                  </template>
                 </q-select>
               </q-td>
             </q-tr>
@@ -243,6 +242,7 @@ const getLabel = (value) => {
 // 生成波次
 const handleSearch = (params) => {
   componentData.params = params;
+  componentData.selectedRows = [];
   initList();
 };
 

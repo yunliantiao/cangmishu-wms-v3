@@ -784,7 +784,7 @@ const getParams = () => {
 
   if (skuMap.list?.length) {
     params.tags_sku_qty = skuMap.list.map((row) => {
-      return row.tags_sku_qty + row.quantity;
+      return row.tags_sku_qty;
     });
   }
   return params;
