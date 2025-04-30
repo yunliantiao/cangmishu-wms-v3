@@ -20,9 +20,9 @@
             <q-select
               outlined
               dense
-              @update:model-value="handleSearch"
               v-model="componentData.waveType"
-              :options="waveTypeOptions"
+              @update:model-value="handleWaveType"
+              :options="componentData.waveTypeOptions"
               label="全部波次类型"
               class="filter-select"
               emit-value
@@ -169,9 +169,9 @@ const componentData = reactive({
   params: null,
   waveTypeOptions: [
     { label: "全部波次类型", value: null },
-    { label: "单品单数", value: "single_unit" },
-    { label: "单品多数", value: "multi_products" },
-    { label: "多品混包", value: "multi_sku" },
+    { label: "单品单数", value: "single_item" },
+    { label: "单品多数", value: "multi_items" },
+    { label: "多品混包", value: "mixed_items" },
   ],
   logisticsGroupOptions: [
     { label: "全部物流组", value: null },
@@ -246,6 +246,21 @@ const handleSearch = (params) => {
   initList();
 };
 
+const handleWaveType = (e) => {
+  console.log("componentData.waveType", componentData.waveType);
+  if (componentData.waveType) {
+    componentData.params.package_types = [componentData.waveType];
+  } else {
+    componentData.params.package_types = [
+      "single_item",
+      "multi_items",
+      "mixed_items",
+    ];
+  }
+  componentData.selectedRows = [];
+  initList();
+};
+
 const initList = async () => {
   let params = {
     ...componentData.params,
@@ -260,6 +275,7 @@ const initList = async () => {
     });
     componentData.isOpen = true;
   } else {
+    componentData.list = [];
     q.notify({
       type: "negative",
       message: "没有可以预览的波次",
@@ -268,6 +284,24 @@ const initList = async () => {
 };
 
 const handleGenerate = async () => {
+  if (componentData.selectedRows.length == 0) {
+    q.notify({
+      type: "negative",
+      message: "请勾选包裹",
+    });
+    return;
+  }
+  let bool = true;
+  bool = componentData.selectedRows.every((row) => row.picker_user_id);
+  console.log("bool", bool);
+
+  if (!bool) {
+    q.notify({
+      type: "negative",
+      message: "需要勾选拣货员才能生成波次",
+    });
+    return;
+  }
   let params = {
     items: componentData.selectedRows.map((row) => {
       return { id: row.id, picker_user_id: row.picker_user_id };

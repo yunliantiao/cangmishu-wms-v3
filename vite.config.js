@@ -5,6 +5,9 @@ import { resolve } from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    port: 8888
+  },
   plugins: [
     vue({
       template: { transformAssetUrls }

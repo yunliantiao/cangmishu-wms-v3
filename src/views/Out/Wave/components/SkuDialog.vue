@@ -108,9 +108,10 @@ const onConfirm = () => {
 };
 
 const getList = async () => {
-  const { data } = await waveApi.getSkuNumList();
+  const { data } = await waveApi.getSkuNumList({
+    keywords: keyword.value,
+  });
   skuData.value = data.data.map((row) => {
-    // row.selected = false;
     return row;
   });
   // totalCount.value = data.meta.total;

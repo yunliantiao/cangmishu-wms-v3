@@ -3,7 +3,7 @@ import { GET, POST, DEL } from "./config.js";
 export default {
   getWaveList: (data) => GET("waves", data), // 获取出库单
 
-  previewWaveAndCount: (data) => POST("waves/count-preview", data),
+  previewWaveAndCount: (data) => POST("waves/count-preview", data, { notShowNotify: true }),
 
   // 创建波次 获取sku*数量
   getSkuNumList: (data) => GET("waves/skus-qty", data),

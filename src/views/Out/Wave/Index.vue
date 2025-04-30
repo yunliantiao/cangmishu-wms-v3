@@ -850,6 +850,7 @@ const handleSkuCountConfirm = (skus) => {
     })
     .join(",");
   skuMap.list = [...skus];
+  handleRefresh();
 };
 
 const showSkuDialog = () => {
