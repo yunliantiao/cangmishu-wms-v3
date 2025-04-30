@@ -90,23 +90,14 @@
                 outlined
                 dense
                 v-model="pageData.customerFilter"
-                :options="pageData.customerOptions"
+                multiple
+                clearable
+                :options="pageData.customerList"
+                @update:model-value="getWaveDetail"
                 label="全部客户"
                 class="filter-select"
-              />
-            </div>
-          </div>
-
-          <div class="row items-center q-mb-sm">
-            <div class="col-auto">
-              <span>选择 {{ pageData.selectedRows.length }}</span>
-            </div>
-            <div class="col-auto q-ml-md">
-              <q-btn
-                flat
-                color="primary"
-                @click="handleError"
-                label="标记异常"
+                emit-value
+                map-options
               />
             </div>
           </div>
@@ -116,7 +107,6 @@
             :rows="pageData.packageData"
             row-key="id"
             @refresh="refresh"
-            @handleErrorRow="handleErrorRow"
           />
         </q-tab-panel>
 
@@ -201,10 +191,6 @@
         </q-tab-panel>
       </q-tab-panels>
     </div>
-    <HandleError
-      ref="handleErrorRef"
-      @handleConfirm="confirmError"
-    ></HandleError>
   </div>
 </template>
 
@@ -216,13 +202,12 @@ import WaveApi from "@/api/wave";
 import NotifyUtils from "@/utils/message.js";
 import Process from "./components/Process.vue";
 import CustomTable from "./components/CustomTable.vue";
-import HandleError from "./components/HandleError.vue";
 
 const route = useRoute();
 const router = useRouter();
 const $q = useQuasar();
-const handleErrorRef = ref(null);
 const customTableRef = ref(null);
+import CustomerApi from "@/api/customer.js";
 
 // 所有数据都存储在pageData中
 const pageData = reactive({
@@ -234,6 +219,7 @@ const pageData = reactive({
   logisticsGroup: "-",
   warehouse: "USC",
   status_name: "",
+  customerList: [],
 
   // 进度状态
   step: 4, // 1: 待拣货, 2: 待包装, 3: 包装中, 4: 已结束
@@ -242,8 +228,7 @@ const pageData = reactive({
   activeTab: "packages",
 
   // 筛选选项
-  customerFilter: "全部客户",
-  customerOptions: ["全部客户", "客户A", "客户B"],
+  customerFilter: [],
 
   // 表格数据
   selectedRows: [],
@@ -334,7 +319,10 @@ const getStatusClass = (status) => {
 const getWaveDetail = async () => {
   try {
     pageData.loading = true;
-    const { data } = await WaveApi.waveInfo(pageData.waveId);
+    let params = {
+      customer_ids: pageData.customerFilter,
+    };
+    const { data } = await WaveApi.waveInfo(pageData.waveId, params);
     pageData.status_name = getStatusText(data.status);
 
     // 更新波次基本信息
@@ -426,7 +414,19 @@ onMounted(() => {
     getWaveDetail();
     getWaveLogs();
   }
+  getCustomerList();
 });
+
+const getCustomerList = async () => {
+  const { data } = await CustomerApi.getAllUser();
+  pageData.customerList = data.map((row) => {
+    return {
+      label: row.name,
+      value: row.id,
+    };
+  });
+  console.log("getCustomerList", data);
+};
 
 const refresh = () => {
   getWaveDetail();
@@ -472,25 +472,6 @@ const printPick = async () => {
     await WaveApi.waveUpdateIsPrint(pageData.waveId);
     getWaveDetail();
   });
-};
-
-const handleErrorRow = (row) => {
-  let ids = [row.id];
-  handleErrorRef.value.open(pageData.waveId, ids);
-};
-
-const handleError = () => {
-  let ids = customTableRef.value.getCheckedList();
-  if (ids.length) {
-    handleErrorRef.value.open(pageData.waveId, ids);
-  } else {
-    NotifyUtils.notify("请选择包裹");
-  }
-};
-
-const confirmError = () => {
-  getWaveDetail();
-  getWaveLogs();
 };
 </script>
 

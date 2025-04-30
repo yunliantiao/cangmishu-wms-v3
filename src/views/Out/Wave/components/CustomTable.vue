@@ -1,5 +1,14 @@
 <template>
   <div class="custom-table">
+    <div class="row items-center q-mb-sm">
+      <div class="col-auto">
+        <span>选择 {{ componentData.selectCount }}</span>
+      </div>
+      <div class="col-auto q-ml-md">
+        <q-btn flat color="primary" @click="handleError" label="标记异常" />
+      </div>
+    </div>
+
     <table>
       <thead>
         <tr>
@@ -103,7 +112,7 @@
             </td>
             <td>
               <q-btn
-                @click="handleError(row)"
+                @click="handleErrorRow(row)"
                 flat
                 round
                 color="grey-7"
@@ -131,18 +140,23 @@
       v-model:visible="componentData.showOrderDialog"
       :order="componentData.currentOrder"
     />
+
+    <HandleError ref="handleErrorRef" @handleConfirm="refresh"></HandleError>
   </div>
 </template>
 
 <script setup>
 import { reactive, ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import OrderDetailsDialog from "../../components/OrderDetailsDialog.vue";
 import outApi from "@/api/out";
+import HandleError from "./HandleError.vue";
 
 const componentData = reactive({
   showOrderDialog: false,
   currentOrder: null,
 });
+const handleErrorRef = ref(null);
 
 const props = defineProps({
   rows: {
@@ -159,9 +173,15 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["refresh", "handleErrorRow"]);
+// watch(
+//   () => props.rows,
+//   (newVal) => {},
+//   { deep: true }
+// );
 
-const selectedRows = ref([]);
+const route = useRoute();
+
+const emit = defineEmits(["refresh"]);
 const selectAll = ref(false);
 
 const showOrderDialog = async (row) => {
@@ -170,15 +190,23 @@ const showOrderDialog = async (row) => {
   componentData.showOrderDialog = true;
 };
 
-const handleError = (row) => {
-  emit("handleErrorRow", row);
-};
-
 // 全选/取消全选
 const toggleSelectAll = () => {
   props.rows.forEach((row) => {
     row.checked = selectAll.value;
   });
+
+  getSelectCount();
+};
+
+const getSelectCount = () => {
+  let num = 0;
+  props.rows.forEach((row) => {
+    if (row.checked) {
+      num += 1;
+    }
+  });
+  componentData.selectCount = num;
 };
 
 const selectRow = () => {
@@ -189,13 +217,7 @@ const selectRow = () => {
     }
   });
   selectAll.value = bool;
-};
-
-// 判断行是否被选中
-const isSelected = (row) => {
-  return selectedRows.value.some(
-    (item) => item[props.rowKey] === row[props.rowKey]
-  );
+  getSelectCount();
 };
 
 // 获取波次类型文本
@@ -240,9 +262,23 @@ const getCheckedList = () => {
   return ids;
 };
 
-defineExpose({
-  getCheckedList,
-});
+const handleError = () => {
+  let ids = getCheckedList();
+  if (ids.length) {
+    handleErrorRef.value.open(route.query.id, ids);
+  } else {
+    NotifyUtils.notify("请选择包裹");
+  }
+};
+
+const handleErrorRow = (row) => {
+  let ids = [row.id];
+  handleErrorRef.value.open(route.query.id, ids);
+};
+
+const refresh = () => {
+  emit("refresh");
+};
 </script>
 
 <style scoped>

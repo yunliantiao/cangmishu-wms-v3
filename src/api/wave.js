@@ -33,7 +33,7 @@ export default {
   exportWave: (data) => POST('waves/export', data),
 
   // 波次详情
-  waveInfo: (id) => GET(`waves/${id}`),
+  waveInfo: (id, params) => GET(`waves/${id}`, params),
 
   // 批量打印拣货单
   batchPrintPicking: (data) => POST('waves/print-labels', data),

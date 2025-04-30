@@ -8,4 +8,7 @@ export default {
   getCustomerAll: () => GET(`customers/all`), // 获取所有客户
   getCurrentDomain: () => GET(`warehouses/current-domain`), // 获取当前域名
   getTempOmsToken: (id) => POST(`customers/${id}/temp-oms-token`), // 获取临时OMS token
+
+  // 获取所有客户 不带分页
+  getAllUser: () => GET('customers/all')
 };
