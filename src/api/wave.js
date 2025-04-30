@@ -12,7 +12,7 @@ export default {
   previewWave: (data) => POST("waves/preview", data, { notShowNotify: true }),
 
   // 创建波次
-  createWave: (data) => POST("waves", data, { notShowNotify: true }),
+  createWave: (data) => POST("waves", data),
 
   // 批量分配拣货员
   batchAssignPickers: (data) => POST("waves/batch-assign-pickers", data),
@@ -43,4 +43,7 @@ export default {
 
   // 获取波次日志
   waveLogs: (id) => GET(`waves/${id}/logs`),
+
+  // 标记异常
+  removePackage: (id, params) => DEL(`waves/${id}/remove-exception-packages`, params),
 }

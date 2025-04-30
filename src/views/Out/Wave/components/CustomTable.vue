@@ -4,10 +4,9 @@
       <thead>
         <tr>
           <th class="selection-cell">
-            <input
-              type="checkbox"
+            <q-checkbox
               v-model="selectAll"
-              @change="toggleSelectAll"
+              @update:model-value="toggleSelectAll"
             />
           </th>
           <th>包裹信息</th>
@@ -17,12 +16,17 @@
           <th>操作</th>
         </tr>
       </thead>
+
       <tbody>
         <template v-for="(row, index) in rows" :key="row[rowKey]">
           <!-- 包裹行 -->
-          <tr class="package-row" :class="{ selected: isSelected(row) }">
+          <tr class="package-row">
             <td class="selection-cell">
-              <input type="checkbox" v-model="selectedRows" :value="row" />
+              <!-- <input type="checkbox" v-model="selectedRows" :value="row" /> -->
+              <q-checkbox
+                v-model="row.checked"
+                @update:model-value="selectRow(row)"
+              />
             </td>
             <td>
               <div>
@@ -33,11 +37,12 @@
             </td>
             <td>
               <div>
-                客户: {{ row.customer_name || "test" }} [{{
-                  row.customer_code || "CN03HB00002"
-                }}]
+                客户: {{ row.customer?.name }} [{{ row.customer?.code }}]
               </div>
             </td>
+            <td></td>
+            <td></td>
+            <td></td>
           </tr>
 
           <!-- 商品明细行 -->
@@ -62,29 +67,36 @@
                   </div>
                   <div class="product-info">
                     <div class="product-code">
-                      {{ product.code || product.sku_code || "3HB00001" }}
+                      {{ product.sku || "--" }}
+                      <span style="font-size: 18px; margin-left: 10px"
+                        >x{{ product.quantity }}</span
+                      >
                     </div>
                     <div class="product-name">
-                      {{ product.name || product.sku_name || "TEST01" }}
+                      {{ product.product_name || "--" }}
                     </div>
-                    <div class="product-sku">{{ product.sku || "TEST" }}</div>
-                  </div>
-                  <div class="product-quantity">
-                    x{{ product.quantity || 2 }}
+                    <div class="product-sku">
+                      {{ product.sku_name || "--" }}
+                    </div>
                   </div>
                 </div>
               </div>
             </td>
             <td>
-              <div>物流方式i暂时没有</div>
-              <div>{{ row.tracking_number }}</div>
-            </td>
-            <td>
-              <div>暂时没有</div>
+              <div>物流方式:{{ row.logistics_channels_name || "--" }}</div>
+              <div>单号:{{ row.tracking_number || "--" }}</div>
             </td>
             <td>
               <div>
-                {{ row.status }}
+                {{ row.receive_city || "--" }}
+              </div>
+              <div>
+                {{ row.receive_name || "--" }}
+              </div>
+            </td>
+            <td>
+              <div>
+                {{ getStatusDesc(row.status) }}
               </div>
               <div>创建:{{ row.created_at }}</div>
               <div>波次:{{ row.wave_at }}</div>
@@ -97,7 +109,7 @@
                 color="grey-7"
                 icon="report_gmailerrorred"
               >
-                <q-tooltip>标记异常-暂无</q-tooltip>
+                <q-tooltip>标记异常</q-tooltip>
               </q-btn>
 
               <q-btn
@@ -147,29 +159,36 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["refresh"]);
+const emit = defineEmits(["refresh", "handleErrorRow"]);
 
 const selectedRows = ref([]);
 const selectAll = ref(false);
 
 const showOrderDialog = async (row) => {
-  console.log("row", row);
   const { data } = await outApi.getOrderInfo(row.order_id);
-  console.log("data", data);
-
   componentData.currentOrder = data;
   componentData.showOrderDialog = true;
 };
 
-const handleError = () => {};
+const handleError = (row) => {
+  emit("handleErrorRow", row);
+};
 
 // 全选/取消全选
 const toggleSelectAll = () => {
-  if (selectAll.value) {
-    selectedRows.value = [...props.rows];
-  } else {
-    selectedRows.value = [];
-  }
+  props.rows.forEach((row) => {
+    row.checked = selectAll.value;
+  });
+};
+
+const selectRow = () => {
+  let bool = true;
+  props.rows.forEach((row) => {
+    if (!row.checked) {
+      bool = false;
+    }
+  });
+  selectAll.value = bool;
 };
 
 // 判断行是否被选中
@@ -189,6 +208,41 @@ const getWaveTypeText = (type) => {
   };
   return typeMap[type] || type || "单品多数";
 };
+
+const getStatusDesc = (status) => {
+  //   pending_transfer	订单进入WMS后，包裹内有商品在拣货区的库存不足
+  // pending_print	没有加入波次的包裹
+  // pending_pick	已加入波次但未打印拣货单
+  // pending_pack	所在波次成功打印拣货单后包裹状态置为待包装
+  // packing	所在波次开始进行扫描包装作业时，包裹状态为包装中
+  // pending_shipment	完成包装但没有手动点击发货或者是扫描发货
+  // shipped	完成手动点击发货或者是扫描发货
+  // exception	手动标记异常的包裹
+  // cancelled	发货前被取消的包裹
+
+  const statusMap = {
+    pending_transfer: "待调拨",
+    pending_print: "待加入波次",
+    pending_pick: "待拣货",
+    pending_pack: "待包装",
+    packing: "包装中",
+    pending_shipment: "待发货",
+    shipped: "已发货",
+    exception: "异常",
+    cancelled: "已取消",
+  };
+
+  return statusMap[status] || status || "未知状态";
+};
+
+const getCheckedList = () => {
+  let ids = props.rows.filter((row) => row.checked).map((row) => row.id);
+  return ids;
+};
+
+defineExpose({
+  getCheckedList,
+});
 </script>
 
 <style scoped>
@@ -276,7 +330,13 @@ td {
 }
 
 .product-name {
+  width: 200px;
   margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .product-sku {

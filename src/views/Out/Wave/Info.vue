@@ -36,7 +36,16 @@
               style="gap: 10px"
               v-if="pageData.waveInfo != 'cancelled'"
             >
-              <q-btn outline label="作废波次" @click="abandonWave" />
+              <q-btn
+                v-if="
+                  !['completed', 'cancelled'].includes(
+                    pageData.waveInfo?.status
+                  )
+                "
+                outline
+                label="作废波次"
+                @click="abandonWave"
+              />
               <q-btn color="primary" label="打印拣货单" @click="printPick" />
             </div>
           </div>
@@ -93,14 +102,21 @@
               <span>选择 {{ pageData.selectedRows.length }}</span>
             </div>
             <div class="col-auto q-ml-md">
-              <q-btn flat color="primary" label="标记异常" />
+              <q-btn
+                flat
+                color="primary"
+                @click="handleError"
+                label="标记异常"
+              />
             </div>
           </div>
 
           <CustomTable
+            ref="customTableRef"
             :rows="pageData.packageData"
             row-key="id"
             @refresh="refresh"
+            @handleErrorRow="handleErrorRow"
           />
         </q-tab-panel>
 
@@ -114,32 +130,44 @@
                   <div class="statics-item">
                     <div class="statics-label">初始包裹数量</div>
                     <div class="statics-value">
-                      {{ pageData.packageData.length }}
+                      {{ pageData.waveInfo.package_count || 0 }}
                     </div>
                   </div>
                   <div class="statics-item">
                     <div class="statics-label">待拣货&待包装</div>
-                    <div class="statics-value">1</div>
+                    <div class="statics-value">
+                      {{ pageData.waveInfo["package_count-picked_qty"] || 0 }}
+                    </div>
                   </div>
                   <div class="statics-item">
                     <div class="statics-label">已包装</div>
-                    <div class="statics-value">0</div>
+                    <div class="statics-value">
+                      {{ pageData.waveInfo.packed_qty || 0 }}
+                    </div>
                   </div>
                   <div class="statics-item">
-                    <div class="statics-label">被拆分</div>
-                    <div class="statics-value">0</div>
+                    <div class="statics-label">被释放</div>
+                    <div class="statics-value">
+                      {{ pageData.waveInfo.packed_qty || 0 }}
+                    </div>
                   </div>
                   <div class="statics-item error-item">
                     <div class="statics-label">异常</div>
-                    <div class="statics-value text-red">0</div>
+                    <div class="statics-value text-red">
+                      {{ pageData.waveInfo.abnormal_qty || 0 }}
+                    </div>
                   </div>
                   <div class="statics-item">
                     <div class="statics-label">SKU种类</div>
-                    <div class="statics-value">1</div>
+                    <div class="statics-value">
+                      {{ pageData.waveInfo.sku_type_count || 0 }}
+                    </div>
                   </div>
                   <div class="statics-item">
                     <div class="statics-label">商品数量</div>
-                    <div class="statics-value">2</div>
+                    <div class="statics-value">
+                      {{ pageData.waveInfo.item_count || 0 }}
+                    </div>
                   </div>
                 </div>
               </q-card>
@@ -163,7 +191,7 @@
                       {{ props.row.remark }}
                     </q-td>
                     <q-td key="user_id" :props="props">
-                      {{ props.row.user_id }}
+                      {{ props.row?.created_by?.name }}
                     </q-td>
                   </q-tr>
                 </template>
@@ -173,6 +201,10 @@
         </q-tab-panel>
       </q-tab-panels>
     </div>
+    <HandleError
+      ref="handleErrorRef"
+      @handleConfirm="confirmError"
+    ></HandleError>
   </div>
 </template>
 
@@ -184,10 +216,13 @@ import WaveApi from "@/api/wave";
 import NotifyUtils from "@/utils/message.js";
 import Process from "./components/Process.vue";
 import CustomTable from "./components/CustomTable.vue";
+import HandleError from "./components/HandleError.vue";
 
 const route = useRoute();
 const router = useRouter();
 const $q = useQuasar();
+const handleErrorRef = ref(null);
+const customTableRef = ref(null);
 
 // 所有数据都存储在pageData中
 const pageData = reactive({
@@ -300,7 +335,6 @@ const getWaveDetail = async () => {
   try {
     pageData.loading = true;
     const { data } = await WaveApi.waveInfo(pageData.waveId);
-    console.log("波次详情:", data);
     pageData.status_name = getStatusText(data.status);
 
     // 更新波次基本信息
@@ -331,6 +365,7 @@ const getWaveDetail = async () => {
       // 更新包裹数据
       if (data.packages && data.packages.length) {
         pageData.packageData = data.packages.map((row) => {
+          row.checked = false;
           row.statusTimes = [
             { label: "创建", time: row.created_at || "-" },
             { label: "波次", time: row.wave_at || "-" },
@@ -341,6 +376,8 @@ const getWaveDetail = async () => {
 
           return row;
         });
+      } else {
+        pageData.packageData = [];
       }
     }
   } catch (error) {
@@ -397,7 +434,6 @@ const refresh = () => {
 };
 
 const abandonWave = () => {
-  console.log("作废波次");
   $q.dialog({
     title: "确定要作废波次吗？",
     message: "波次状态将会置为已作废，波次中的包裹状态置为待生成",
@@ -436,6 +472,25 @@ const printPick = async () => {
     await WaveApi.waveUpdateIsPrint(pageData.waveId);
     getWaveDetail();
   });
+};
+
+const handleErrorRow = (row) => {
+  let ids = [row.id];
+  handleErrorRef.value.open(pageData.waveId, ids);
+};
+
+const handleError = () => {
+  let ids = customTableRef.value.getCheckedList();
+  if (ids.length) {
+    handleErrorRef.value.open(pageData.waveId, ids);
+  } else {
+    NotifyUtils.notify("请选择包裹");
+  }
+};
+
+const confirmError = () => {
+  getWaveDetail();
+  getWaveLogs();
 };
 </script>
 
