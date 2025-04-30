@@ -298,7 +298,7 @@ const handleGenerate = async () => {
   if (!bool) {
     q.notify({
       type: "negative",
-      message: "需要勾选拣货员才能生成波次",
+      message: "需要选择拣货员才能生成波次",
     });
     return;
   }
