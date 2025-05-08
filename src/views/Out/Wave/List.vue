@@ -13,7 +13,7 @@
       >
         <q-tab name="all" label="全部" />
         <q-tab name="pending" label="待拣货" />
-        <q-tab name="picking" label="拣货中" />
+        <q-tab name="picking" label="待包装" />
         <q-tab name="packing" label="包装中" />
         <q-tab name="completed" label="已完成" />
         <q-tab name="cancelled" label="已作废" />
@@ -168,6 +168,7 @@
         <q-btn
           color="primary"
           flat
+          v-if="!['all', 'cancelled'].includes(pageData.filterOptions.status)"
           label="打印拣货单"
           icon="print"
           class="q-mr-sm"
@@ -178,6 +179,7 @@
           color="primary"
           flat
           label="分配拣货员"
+          v-if="pageData.filterOptions.status == 'pending'"
           icon="person"
           class="q-mr-sm"
           @click="handleAssignPicker"
@@ -186,6 +188,7 @@
           color="primary"
           flat
           label="作废波次"
+          v-if="['pending', 'picking'].includes(pageData.filterOptions.status)"
           icon="delete"
           class="q-mr-sm"
           @click="handleCancelWave"
@@ -295,8 +298,8 @@
                 round
                 color="grey-7"
                 icon="token"
-                v-if="props.row.status == 'picking'"
-                @click="handleViewDetails(props.row)"
+                v-if="['packing', 'picking'].includes(props.row.status)"
+                @click="handlePack(props.row)"
               >
                 <q-tooltip>开始打包</q-tooltip>
               </q-btn>
@@ -324,17 +327,6 @@
                 >
                   <q-tooltip>打印</q-tooltip>
                 </q-btn>
-
-                <!-- <q-btn
-                  flat
-                  v-else
-                  round
-                  color="grey-7"
-                  icon="print_disabled"
-                  @click="handleCancelPrintPicking(props.row)"
-                >
-                  <q-tooltip>取消打印</q-tooltip>
-                </q-btn> -->
               </span>
 
               <q-btn
@@ -342,8 +334,9 @@
                 round
                 color="grey-7"
                 v-if="
-                  props.row.status != 'completed' &&
-                  props.row.status != 'cancelled'
+                  !['completed', 'cancelled', 'packing'].includes(
+                    props.row.status
+                  )
                 "
                 icon="no_sim"
                 @click="handleAbandon(props.row)"
@@ -490,6 +483,7 @@ const pageData = reactive({
     },
     { name: "picker", align: "center", label: "拣货员", field: "picker" },
     { name: "created_at", align: "center", label: "时间", field: "created_at" },
+    // { name: "picker", align: "center", label: "打包员", field: "picker" },
     { name: "status", align: "center", label: "状态", field: "status" },
     {
       name: "is_print_pick_label",
@@ -551,6 +545,7 @@ const onPageChange = () => {
 const handleSearch = () => {
   console.log("搜索条件:", pageData.filterOptions);
   pageData.pagination.page = 1;
+  pageData.selectedRows = [];
   initList();
 };
 
@@ -654,23 +649,25 @@ const handleExport = async (str) => {
 const handlePrint = async (row) => {
   const { data } = await WaveApi.printWave(row.id);
   window.open(data.data, "_blank");
-  $q.dialog({
-    title: "打印结果确认",
-    message: "波次:拣货单已成功生成。如果已成功打印，请点击 “标记为已打印”",
-    cancel: true,
-    persistent: true,
-    ok: {
-      label: "标记为已打印",
-      color: "primary",
-    },
-    cancel: {
-      label: "取消",
-      color: "grey-7",
-    },
-  }).onOk(async () => {
-    await WaveApi.waveUpdateIsPrint(row.id);
-    initList();
-  });
+  if (!row.is_print_pick_label) {
+    $q.dialog({
+      title: "打印结果确认",
+      message: "波次:拣货单已成功生成。如果已成功打印，请点击 “标记为已打印”",
+      cancel: true,
+      persistent: true,
+      ok: {
+        label: "标记为已打印",
+        color: "primary",
+      },
+      cancel: {
+        label: "取消",
+        color: "grey-7",
+      },
+    }).onOk(async () => {
+      await WaveApi.waveUpdateIsPrint(row.id);
+      initList();
+    });
+  }
 };
 
 // 取消打印
@@ -727,6 +724,22 @@ const handleViewDetails = (row) => {
     path: "/out/wave/info",
     query: { id: row.id },
   });
+};
+
+const handlePack = (row) => {
+  // 多品混包 需要分拣台
+  if (row.wave_type == "mixed_items") {
+    router.push({
+      path: "/out/wave/pigeonholes",
+    });
+  } else {
+    router.push({
+      path: "/out/wave/packaging",
+      query: {
+        wave_number: row.wave_number,
+      },
+    });
+  }
 };
 
 onMounted(() => {
@@ -795,7 +808,7 @@ const getTypeDesc = (type) => {
 const getStatusDesc = (status) => {
   const statusMap = {
     pending: "待拣货",
-    picking: "拣货中",
+    picking: "待包装",
     packing: "包装中",
     completed: "已完成",
     cancelled: "已作废",

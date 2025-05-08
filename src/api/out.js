@@ -11,4 +11,20 @@ export default {
     setPendingShipment: (data) => POST(`packages/batch-print-flags`, data), // 批量设置待发货
 
     getOrderInfo: (id) => GET(`orders/${id}`), // 获取订单详情
+
+    getOrderInfoByWaveOrder: (params) => GET('waves/detail', params), //根据波次号获取订单详情
+
+    // 包裹标记打印物流面单 传包材id
+    packageSetIsPrint: (id, data) => POST(`packages/${id}/print-shipping-label`, data),
+
+    //打印物流面单
+    printPackageOrder: (id) => GET(`packages/${id}/print-shipping-label`),
+
+    // 挂起波次
+    handUpWave: (id) => POST(`waves/${id}/suspend`),
+
+    packingWaveOver: (id) => POST(`waves/${id}/complete-packing`),
+
+    // 分拣完成 只支持多品混包
+    handEndWave: (id) => POST(`wms/waves/${id}/complete-packing`),
 }

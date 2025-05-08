@@ -8,5 +8,12 @@ export default {
 
 
     // ds跳转wms 拿到临时token后 调获取登录信息
-    quickLogin: (data) => POST('auth/auto-login', data)
+    quickLogin: (data) => POST('auth/auto-login', data),
+
+
+    //上传文件
+    uploadFile: (data) => $file.post('uploads', data),
+
+    // 获取货币列表
+    getCurrencies: () => GET("currencies"),
 }
