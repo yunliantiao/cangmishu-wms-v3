@@ -455,6 +455,7 @@ const printPick = async () => {
   const { data } = await WaveApi.printWave(pageData.waveId);
   window.open(data.data, "_blank");
   NotifyUtils.successMessage("打印拣货单成功");
+  if (pageData.waveInfo.is_print_pick_label) return;
   $q.dialog({
     title: "打印结果确认",
     message: "是否打印成功",

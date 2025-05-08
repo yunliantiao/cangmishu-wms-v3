@@ -5,6 +5,8 @@ const Wave = () => import(`../views/Out/Wave/Index.vue`)
 const WaveList = () => import(`../views/Out/Wave/List.vue`)
 const WaveInfo = () => import(`../views/Out/Wave/Info.vue`)
 const SortOut = () => import(`../views/Out/Wave/SortOut.vue`)
+const Pigeonholes = () => import(`../views/Out/Wave/Pigeonholes.vue`)
+const Packaging = () => import(`../views/Out/Wave/Packaging.vue`)
 
 export default [
     {
@@ -72,8 +74,6 @@ export default [
                     name: '扫描出库',
                 },
             },
-
-
             {
                 path: 'wave/info',
                 name: 'waveInfo',
@@ -84,7 +84,30 @@ export default [
                     group: '出库管理',
                     name: '波次详情',
                 },
-            }
+            },
+            {
+                path: 'wave/pigeonholes',
+                name: 'pigeonholes',
+                component: Pigeonholes,
+                id: 1007,
+                meta: {
+                    level: 3,
+                    group: '出库管理',
+                    name: '分拣台',
+                },
+            },
+            {
+                path: 'wave/packaging',
+                name: 'Packaging',
+                component: Packaging,
+                id: 1008,
+                meta: {
+                    level: 3,
+                    group: '出库管理',
+                    name: '扫描包装',
+                },
+            },
+
         ]
     }
 ]

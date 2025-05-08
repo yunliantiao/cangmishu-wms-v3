@@ -15,4 +15,17 @@ export default {
     addTag: (data) => POST("product-tags", data), // 新增标记
     updateTag: (id, data) => PUT(`product-tags/${id}`, data), // 更新标记
     deleteTag: (id) => DEL(`product-tags/${id}`), // 删除标记
+
+
+
+    // 包材
+    getMaterialsList: (data) => GET("packaging-materials", data), // 获取包材列表
+
+    createMaterial: (data) => POST("packaging-materials", data), // 新增包材
+
+    updateMaterial: (id, data) => PUT("packaging-materials/" + id, data), // 编辑包材
+
+    delMaterial: (id, data) => DEL("packaging-materials/" + id, data), // 删除包材
+
+
 }

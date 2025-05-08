@@ -11,6 +11,7 @@
           type="text"
           class="scan-input"
           placeholder="请扫描或输入波次号"
+          @keyup.enter="search"
           v-model="scanValue"
           ref="scanInput"
         />
@@ -25,15 +26,40 @@
 
 <script setup>
 import { ref, onMounted, nextTick } from "vue";
+import outApi from "@/api/out.js";
+import Message from "@/utils/message.js";
 
 const scanInput = ref(null);
-const scanValue = ref("");
+const scanValue = ref("WA0042E900011");
 
 onMounted(() => {
   nextTick(() => {
     scanInput.value.focus();
   });
 });
+
+const search = async () => {
+  // WA0042E900011
+  if (scanValue.value.length == 0) {
+    Message.notify("请扫描或输入波次号");
+    return;
+  }
+  const { data } = await outApi.getOrderInfoByWaveOrder({
+    number: scanValue.value,
+  });
+  console.log("data", data);
+  if (data.wave_type == '"mixed_items"') {
+    router.push({
+      path: "/out/wave/pigeonholes",
+      query: {
+        waveId: data.id,
+      },
+    });
+    return;
+  } else {
+    // 去往打包，选择包材页面
+  }
+};
 </script>
 
 <style scoped>
