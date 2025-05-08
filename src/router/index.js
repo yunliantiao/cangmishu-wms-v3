@@ -1,10 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import Customer from './customer.js'
+import Inbound from './inbound.js'
+import Inventory from './inventory.js'
+import Logistics from './logistics.js'
+import Out from './out.js'
 import Panel from './panel.js'
 import Product from './product.js'
-import Customer from './customer.js'
-import Out from './out.js'
-import Inventory from './inventory.js'
-import Inbound from './inbound.js'
 import Setting from './setting.js'
 
 import { loadonDemand } from '@/utils/common.js'
@@ -21,6 +22,7 @@ export const routerMap = []
     .concat(Inventory)
     .concat(Inbound)
     .concat(Out)
+    .concat(Logistics)
     .concat(Setting)
 
 const constantRouterMap = [
