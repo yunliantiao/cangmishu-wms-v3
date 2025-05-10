@@ -95,8 +95,8 @@ const form = reactive({
   channel_ids: [],
 });
 
-const channelList = ref([]);
-const filterChannelList = ref([]);
+const channelList = ref([]); // 全部渠道
+const filterChannelList = ref([]); // 回显过滤后的渠道
 
 // 选中项对应的完整对象
 const selectedProviders = computed(() => {
@@ -116,6 +116,8 @@ watch(
       } else {
         onReset();
       }
+    } else {
+      onReset();
     }
   }
 );
@@ -141,6 +143,7 @@ const onReset = () => {
   formRef.value?.reset();
   form.name = '';
   form.channel_ids = [];
+  getChannelList();
 };
 
 const onSubmit = async () => {
@@ -178,18 +181,18 @@ const onEdit = () => {
     .catch((err) => {});
 };
 
-const getProviderList = () => {
+const getChannelList = () => {
   logisticsApi
     .getChannelAllList({
       group_type: 'ungroup',
     })
     .then((res) => {
-      channelList.value = res.data.items.map((item) => ({
+      const data = res.data.map((item) => ({
         label: item.name,
         value: item.id,
       }));
+      channelList.value = data;
       filterChannelList.value = channelList.value;
-      console.log('filterChannelList.value::: ', JSON.parse(JSON.stringify(filterChannelList.value)));
     });
 };
 
@@ -197,11 +200,20 @@ const getProviderList = () => {
 const getGroupInfo = () => {
   logisticsApi.getGroupInfo(props.item.id).then((res) => {
     form.channel_ids = res.data.channels.map((item) => item.id);
+    const channels = res.data.channels.map((item) => {
+      return {
+        label: item.name,
+        value: item.id,
+      };
+    });
+    console.log(`channels -->`, channels);
+    channelList.value.unshift(...channels);
+    filterChannelList.value = channelList.value;
   });
 };
 
 onMounted(() => {
-  getProviderList();
+  getChannelList();
 });
 </script>
 

@@ -313,7 +313,7 @@ const getList = () => {
 };
 // 渠道列表
 const getChannelList = () => {
-  logisticsApi.getChannelList(providerId, pageParams).then((res) => {
+  logisticsApi.getChannelList(pageParams).then((res) => {
     channelList.value = res.data.items;
     total.value = res.data.meta.total;
   });
