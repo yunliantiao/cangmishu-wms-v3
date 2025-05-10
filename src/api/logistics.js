@@ -15,7 +15,8 @@ export default {
     PUT(`logistics/providers/${providerId}/channels/${channelId}`, data), // 修改物流渠道信息
 
   // 物流渠道管理
-  getChannelList: (data) => GET('logistics/providers/channels', data), // 获取物流商渠道全部列表
+  getChannelList: (data) => GET('logistics/providers/channels', data), // todo 获取物流商渠道全部列表 (带分页)
+  getChannelAllList: (data) => GET('logistics/providers/all-channels', data), // todo 获取物流商渠道全部列表 (无分页,带过滤)
   moveChannelGroup: (providerId, channelId, data) =>
     POST(`logistics/providers/${providerId}/channels/${channelId}/move-to-group`, data), // 移入物流组
   removeChannelGroup: (providerId, channelId) =>

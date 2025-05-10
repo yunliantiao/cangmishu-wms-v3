@@ -18,6 +18,7 @@
             clearable
           />
           <q-select
+            class="auto-grow-select"
             v-model="form.channel_ids"
             :options="filterChannelList"
             use-input
@@ -178,14 +179,18 @@ const onEdit = () => {
 };
 
 const getProviderList = () => {
-  logisticsApi.getChannelList().then((res) => {
-    channelList.value = res.data.items.map((item) => ({
-      label: item.name,
-      value: item.id,
-    }));
-    filterChannelList.value = channelList.value;
-    console.log('filterChannelList.value::: ', JSON.parse(JSON.stringify(filterChannelList.value)));
-  });
+  logisticsApi
+    .getChannelAllList({
+      group_type: 'ungroup',
+    })
+    .then((res) => {
+      channelList.value = res.data.items.map((item) => ({
+        label: item.name,
+        value: item.id,
+      }));
+      filterChannelList.value = channelList.value;
+      console.log('filterChannelList.value::: ', JSON.parse(JSON.stringify(filterChannelList.value)));
+    });
 };
 
 // 获取物流组信息,赋值物流商ids
@@ -203,5 +208,10 @@ onMounted(() => {
 <style scoped lang="scss">
 .column {
   min-width: 500px;
+
+  .auto-grow-select :deep(.q-field__prepend) {
+    height: auto;
+    padding: 10px 0;
+  }
 }
 </style>
