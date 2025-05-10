@@ -27,5 +27,6 @@ export default {
 
     delMaterial: (id, data) => DEL("packaging-materials/" + id, data), // 删除包材
 
+    printTags: (data) => POST("packaging-materials/print", data), // 打印标签
 
 }

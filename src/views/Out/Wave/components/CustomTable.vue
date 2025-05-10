@@ -40,7 +40,7 @@
             <td>
               <div>
                 包裹号: {{ row.package_number }} ({{
-                  getWaveTypeText(row.wave_type)
+                  getWaveTypeText(row.package_type)
                 }})
               </div>
             </td>
@@ -115,6 +115,14 @@
                 @click="handleErrorRow(row)"
                 flat
                 round
+                v-if="
+                  [
+                    'pending_transfer',
+                    'pending_print',
+                    'pending_pick',
+                    'pending_pack',
+                  ].includes(row.status)
+                "
                 color="grey-7"
                 icon="report_gmailerrorred"
               >
@@ -228,7 +236,7 @@ const getWaveTypeText = (type) => {
     mixed_items: "多品混包",
     hot_wave: "爆款包裹",
   };
-  return typeMap[type] || type || "单品多数";
+  return typeMap[type];
 };
 
 const getStatusDesc = (status) => {

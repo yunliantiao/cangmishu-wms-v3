@@ -28,9 +28,11 @@
 import { ref, onMounted, nextTick } from "vue";
 import outApi from "@/api/out.js";
 import Message from "@/utils/message.js";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const scanInput = ref(null);
-const scanValue = ref("WA0042E900011");
+const scanValue = ref("");
 
 onMounted(() => {
   nextTick(() => {
@@ -48,16 +50,23 @@ const search = async () => {
     number: scanValue.value,
   });
   console.log("data", data);
-  if (data.wave_type == '"mixed_items"') {
+
+  if (data.wave_type == "mixed_items") {
     router.push({
       path: "/out/wave/pigeonholes",
       query: {
-        waveId: data.id,
+        number: data.wave_number,
       },
     });
     return;
   } else {
     // 去往打包，选择包材页面
+    router.push({
+      path: "/out/wave/packaging",
+      query: {
+        wave_number: data.wave_number,
+      },
+    });
   }
 };
 </script>

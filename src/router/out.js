@@ -71,7 +71,7 @@ export default [
                 meta: {
                     level: 2,
                     group: '出库管理',
-                    name: '扫描出库',
+                    name: '扫描分拣',
                 },
             },
             {

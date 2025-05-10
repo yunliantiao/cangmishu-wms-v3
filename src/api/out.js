@@ -27,4 +27,10 @@ export default {
 
     // 分拣完成 只支持多品混包
     handEndWave: (id) => POST(`wms/waves/${id}/complete-packing`),
+
+    // 扫描分拣
+    scanSortOut: (data) => GET(`waves/sort`, data),
+
+    // 先捡后分完成
+    completePicking: (id, data) => POST(`waves/${id}/complete-sort`, data),
 }

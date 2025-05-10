@@ -425,7 +425,6 @@ const getCustomerList = async () => {
       value: row.id,
     };
   });
-  console.log("getCustomerList", data);
 };
 
 const refresh = () => {

@@ -313,12 +313,12 @@ const handleGenerate = async () => {
 };
 
 const getPikerUserList = async () => {
-  const { data } = await teamApi.getStaffList({ page: 1, per_page: 999 });
+  const { data } = await teamApi.getStaffListNoPage();
   console.log("getPikerUserList", data);
-  componentData.pickerOptions = data.data.map((row) => {
+  componentData.pickerOptions = data.map((row) => {
     return {
       label: row.fullname,
-      value: row.user_id,
+      value: row.id,
     };
   });
 };

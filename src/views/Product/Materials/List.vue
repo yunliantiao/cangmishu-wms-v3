@@ -35,8 +35,14 @@
 
     <!-- 操作栏 -->
     <div class="action-bar">
-      <span>选择 0</span>
-      <q-btn flat color="primary" class="ml-16" label="打印标签" />
+      <span>选择 {{ pageData.selectedRows.length }}</span>
+      <q-btn
+        flat
+        color="primary"
+        class="ml-16"
+        label="打印标签"
+        @click="printTags"
+      />
       <q-btn
         color="primary"
         class="float-right"
@@ -57,10 +63,27 @@
       :rows-per-page-options="[0]"
       :rows-per-page="0"
       :show-pagination="false"
+      selection="multiple"
+      v-model:selected="pageData.selectedRows"
       class="materials-table"
     >
+      <template v-slot:header="props">
+        <q-tr :props="props">
+          <q-th auto-width>
+            <q-checkbox v-model="props.selected" />
+          </q-th>
+          <q-th v-for="col in props.cols" :key="col.name" :props="props">
+            {{ col.label }}
+          </q-th>
+        </q-tr>
+      </template>
+
       <template v-slot:body="props">
         <q-tr :props="props">
+          <q-td auto-width>
+            <q-checkbox v-model="props.selected" />
+          </q-td>
+
           <q-td>
             <div class="row items-center">
               <img
@@ -122,6 +145,7 @@ const pageData = reactive({
     { name: "actions", label: "操作", field: "actions", align: "left" },
   ],
   rows: [],
+  selectedRows: [],
 });
 
 const formRef = ref(null);
@@ -135,6 +159,7 @@ const initList = async () => {
   let params = {
     ...pageData.search,
   };
+  pageData.selectedRows = [];
   const { data } = await ProductApi.getMaterialsList(params);
   pageData.rows = data.map((row) => {
     row.size = `${row.dimensions.length}*${row.dimensions.width}*${row.dimensions.height}`;
@@ -173,6 +198,13 @@ const del = (row) => {
 
 const add = () => {
   formRef.value.open();
+};
+
+const printTags = async () => {
+  let codes = pageData.selectedRows.map((row) => row.code);
+  const { data } = await ProductApi.printTags({ codes });
+  console.log("data", data);
+  window.open(data.data, "_blank");
 };
 </script>
 

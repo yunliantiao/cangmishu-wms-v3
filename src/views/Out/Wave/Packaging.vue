@@ -210,7 +210,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import OutApi from "@/api/out.js";
 import { useRoute, useRouter } from "vue-router";
 import ProductApi from "@/api/product.js";
@@ -250,6 +250,39 @@ const pageData = reactive({
 });
 
 const router = useRouter();
+
+watch(
+  () => pageData.rows,
+  () => {
+    let list = pageData.rows;
+    let bool = true;
+    list.forEach((row) => {
+      if (!row.is_print_shipping_label) {
+        bool = false;
+      }
+    });
+
+    if (bool) {
+      $q.dialog({
+        title: "包装作业已完成, 请结束作业",
+        message: "可前往“包裹管理”查看待发货的包裹",
+        cancel: true,
+        persistent: true,
+        ok: {
+          label: "结束作业",
+          color: "primary",
+        },
+        cancel: {
+          label: "取消",
+          color: "grey-7",
+        },
+      }).onOk(async () => {
+        handEndConfirm();
+      });
+    }
+  },
+  { deep: true }
+);
 
 onMounted(() => {
   pageData.wave_number = route.query.wave_number;
@@ -360,9 +393,12 @@ const handlePrint = async (row) => {
 };
 
 const setPrint = async (row, is_printed) => {
+  if (is_printed && !row.packaging_material.id) {
+    return Message.notify("请选择包材");
+  }
   // 标记为未打印 将包材设置为空
   let params = {
-    packaging_material_id: is_printed ? row.packaging_material.id : 0,
+    packaging_material_id: row.packaging_material.id,
     is_printed,
   };
   await OutApi.packageSetIsPrint(row.id, params);

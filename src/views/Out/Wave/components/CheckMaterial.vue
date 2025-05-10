@@ -19,7 +19,7 @@
       </q-card-section>
       <q-card-actions align="right">
         <q-btn flat label="取消" @click="close" />
-        <q-btn color="primary" label="确认" @click="handleConfirm" />
+        <q-btn color="primary" :label="confirmText" @click="handleConfirm" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -30,6 +30,13 @@ import { reactive } from "vue";
 import Message from "@/utils/message.js";
 
 const emit = defineEmits(["confirm"]);
+
+const props = defineProps({
+  confirmText: {
+    type: String,
+    default: "确认",
+  },
+});
 
 const componentData = reactive({
   visible: false,
