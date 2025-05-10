@@ -52,4 +52,19 @@ export default {
   updateGroup: (id, data) => PUT(`logistics/groups/${id}`, data), // 修改物流组
   delGroup: (id) => DEL(`logistics/groups/${id}`), // 删除物流组
   getGroupInfo: (id) => GET(`logistics/groups/${id}`), // 物流组详情
+
+  // todo 物流计费
+  // 物流计费策略
+  getStrategyList: (data) => GET(`shipping-fee-strategies`, data), // 策略列表
+  addStrategy: (data) => POST(`logistics/strategies`, data), // 添加策略
+  updateStrategy: (id, data) => PUT(`logistics/strategies/${id}`, data), // 修改策略
+  delStrategy: (id) => DEL(`logistics/strategies/${id}`), // 删除策略
+  getStrategyInfo: (id) => GET(`logistics/strategies/${id}`), // 策略详情
+
+  // 特殊计费
+  getSpecialList: (data) => GET(`logistics/special-rules`, data), // 特殊计费列表
+  addSpecial: (data) => POST(`logistics/special-rules`, data), // 添加特殊计费
+  updateSpecial: (id, data) => PUT(`logistics/special-rules/${id}`, data), // 修改特殊计费
+  delSpecial: (id) => DEL(`logistics/special-rules/${id}`), // 删除特殊计费
+  getSpecialInfo: (id) => GET(`logistics/special-rules/${id}`), // 特殊计费详情
 };

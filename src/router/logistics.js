@@ -4,7 +4,8 @@ const ProviderChannel = () => import(`../views/Logistics/Offline/ProviderChannel
 const RuleIndex = () => import(`../views/Logistics/Rule/Index.vue`); // 物流规则
 const RemoteForm = () => import(`../views/Logistics/Rule/RemoteForm.vue`); // 偏远地区表单
 const ZonesForm = () => import(`../views/Logistics/Rule/ZonesForm.vue`); // 分区规则表单
-
+const CostIndex = () => import(`../views/Logistics/Cost/Index.vue`); // 物流计费
+const StrategyForm = () => import(`../views/Logistics/Cost/StrategyForm.vue`); // 物流计费策略表单
 export default [
   {
     path: 'logistics',
@@ -73,6 +74,30 @@ export default [
           level: 3,
           group: '物流管理',
           name: '分区规则',
+          icon: 'store',
+        },
+      },
+      {
+        path: 'cost',
+        name: 'cost',
+        component: CostIndex,
+        id: 1006,
+        meta: {
+          level: 2,
+          group: '物流管理',
+          name: '物流计费',
+          icon: 'store',
+        },
+      },
+      {
+        path: 'cost/strategy',
+        name: 'cost/strategy',
+        component: StrategyForm,
+        id: 1006,
+        meta: {
+          level: 3,
+          group: '物流管理',
+          name: '物流计费策略',
           icon: 'store',
         },
       },

@@ -31,7 +31,7 @@
 import { onMounted, ref } from 'vue';
 import ChannelList from './ChannelList.vue'; // 物流商渠道列表
 import ProviderList from './ProviderList.vue'; // 物流商渠道详情
-const currentTab = ref('channel');
+const currentTab = ref('provider');
 
 // 初始化数据
 const initData = () => {};
