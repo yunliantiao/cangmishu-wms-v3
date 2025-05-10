@@ -20,13 +20,18 @@
     <div v-show="currentTab === 'provider'">
       <ProviderList />
     </div>
+    <div v-show="currentTab === 'channel'">
+      <ChannelList />
+    </div>
+    <div v-show="currentTab === 'client'"></div>
   </div>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue';
-import ProviderList from './ProviderList.vue';
-const currentTab = ref('provider');
+import ChannelList from './ChannelList.vue'; // 物流商渠道列表
+import ProviderList from './ProviderList.vue'; // 物流商渠道详情
+const currentTab = ref('channel');
 
 // 初始化数据
 const initData = () => {};

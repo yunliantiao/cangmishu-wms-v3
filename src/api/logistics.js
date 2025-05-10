@@ -8,12 +8,22 @@ export default {
   editProvider: (id, data) => PUT('logistics/providers/' + id, data), // 修改物流商
   delProvider: (id) => DEL('logistics/providers/' + id), // 删除物流商
   getProviderInfo: (providerId) => GET(`logistics/providers/${providerId}`), // 物流商详情
-  // 物流渠道
+  // 详情页面-物流渠道
   getProviderChannels: (providerId, data) => GET(`logistics/providers/${providerId}/channels`, data), // 获取物流商渠道
   updateChannelStatus: (providerId, data) => PUT(`logistics/providers/${providerId}/channels/batch-toggle`, data), // 修改物流渠道状态
   updateChannelInfo: (providerId, channelId, data) =>
     PUT(`logistics/providers/${providerId}/channels/${channelId}`, data), // 修改物流渠道信息
 
+  // 物流渠道管理
+  getChannelList: (data) => GET('logistics/providers/channels', data), // 获取物流商渠道全部列表
+  moveChannelGroup: (providerId, channelId, data) =>
+    POST(`logistics/providers/${providerId}/channels/${channelId}/move-to-group`, data), // 移入物流组
+  removeChannelGroup: (providerId, channelId) =>
+    DEL(`logistics/providers/${providerId}/channels/${channelId}/remove-to-group`), // 把渠道删除物流组
+
+  // 客户物流渠道管理
+
+  // TODO 物流规则
   // 燃油规则
   getFuelList: (data) => GET(`fuel-surcharges`, data), // 燃油列表
   addFuel: (data) => POST(`fuel-surcharges`, data), // 添加燃油

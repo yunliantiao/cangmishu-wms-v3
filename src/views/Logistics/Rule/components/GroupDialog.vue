@@ -17,35 +17,36 @@
             dense
             clearable
           />
-          {{ form.provider_ids }}
-
           <q-select
-            v-model="form.provider_ids"
-            :options="providerList"
-            menu-anchor="bottom start"
-            placeholder="请选择"
+            v-model="form.channel_ids"
+            :options="filterChannelList"
+            use-input
+            fill-input
+            hide-selected
             multiple
-            use-chips
-            stack-label
             emit-value
             map-options
-            outlined
             clearable
+            outlined
+            :placeholder="selectedProviders.length ? '' : '请选择'"
             @filter="onFilterProviders"
+            :input-debounce="0"
           >
-            <template v-slot:selected-item="scope">
-              <q-chip
-                removable
-                dense
-                @remove="scope.removeAtIndex(scope.index)"
-                :tabindex="scope.tabindex"
-                color="primary"
-                text-color="secondary"
-                class="q-ma-none"
-              >
-                <q-avatar color="secondary" text-color="white" :icon="scope.opt.icon" />
-                {{ scope.opt.label }}
-              </q-chip>
+            <!-- 显示已选项 -->
+            <template v-slot:prepend>
+              <div class="row items-center q-gutter-xs">
+                <q-chip
+                  v-for="(opt, index) in selectedProviders"
+                  :key="opt.value"
+                  dense
+                  removable
+                  color="primary-5"
+                  text-color="primary"
+                  @remove="removeProviderAt(index)"
+                >
+                  {{ opt.label }}
+                </q-chip>
+              </div>
             </template>
           </q-select>
         </q-form>
@@ -90,10 +91,18 @@ const formRef = ref(null);
 
 const form = reactive({
   name: '',
+  channel_ids: [],
 });
 
-const providerList = ref([]);
-const filterProviderList = ref([]);
+const channelList = ref([]);
+const filterChannelList = ref([]);
+
+// 选中项对应的完整对象
+const selectedProviders = computed(() => {
+  const ids = form.channel_ids;
+  if (!Array.isArray(ids)) return [];
+  return channelList.value.filter((opt) => form.channel_ids.includes(opt.value));
+});
 
 // 监听 dialogVisible 打开时初始化数据
 watch(
@@ -102,7 +111,7 @@ watch(
     if (val) {
       if (isEdit.value) {
         form.name = props.item.name || '';
-        form.provider_ids = props.item.provider_ids || [];
+        getGroupInfo();
       } else {
         onReset();
       }
@@ -115,16 +124,22 @@ const onFilterProviders = (val, update, abort) => {
   const needle = val.toLowerCase();
   update(() => {
     if (!needle) {
-      filterProviderList.value = providerList.value;
+      filterChannelList.value = channelList.value;
     } else {
-      filterProviderList.value = providerList.value.filter((opt) => opt.label.toLowerCase().includes(needle));
+      filterChannelList.value = channelList.value.filter((opt) => opt.label.toLowerCase().includes(needle));
     }
   });
+};
+
+// 删除某个选项
+const removeProviderAt = (index) => {
+  form.channel_ids.splice(index, 1);
 };
 
 const onReset = () => {
   formRef.value?.reset();
   form.name = '';
+  form.channel_ids = [];
 };
 
 const onSubmit = async () => {
@@ -163,13 +178,20 @@ const onEdit = () => {
 };
 
 const getProviderList = () => {
-  logisticsApi.getProviderList().then((res) => {
-    providerList.value = res.data.items.map((item) => ({
+  logisticsApi.getChannelList().then((res) => {
+    channelList.value = res.data.items.map((item) => ({
       label: item.name,
       value: item.id,
     }));
-    filterProviderList.value = providerList.value;
-    console.log('filterProviderList.value::: ', JSON.parse(JSON.stringify(filterProviderList.value)));
+    filterChannelList.value = channelList.value;
+    console.log('filterChannelList.value::: ', JSON.parse(JSON.stringify(filterChannelList.value)));
+  });
+};
+
+// 获取物流组信息,赋值物流商ids
+const getGroupInfo = () => {
+  logisticsApi.getGroupInfo(props.item.id).then((res) => {
+    form.channel_ids = res.data.channels.map((item) => item.id);
   });
 };
 
@@ -180,6 +202,6 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .column {
-  width: 500px;
+  min-width: 500px;
 }
 </style>

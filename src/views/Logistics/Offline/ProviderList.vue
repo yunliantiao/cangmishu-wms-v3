@@ -125,7 +125,7 @@
                 <q-tooltip anchor="top middle" :offset="[30, 30]">编辑</q-tooltip>
               </q-btn>
               <q-btn icon="description" color="primary" size="sm" flat round @click="onDetail(props.row)">
-                <q-tooltip anchor="top middle" :offset="[30, 30]">详情</q-tooltip>
+                <q-tooltip anchor="top middle" :offset="[30, 30]">渠道</q-tooltip>
               </q-btn>
               <q-btn icon="delete" color="negative" size="sm" flat round @click="onDelete(props.row)">
                 <q-tooltip anchor="top middle" :offset="[30, 30]">删除</q-tooltip>
@@ -172,7 +172,7 @@ const route = useRoute();
 const tabColumns = [
   {
     name: 'name',
-    label: '账号名称',
+    label: '自定义账号名称',
     align: 'left',
     sortable: false,
     style: 'width: 300px',

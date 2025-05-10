@@ -2,26 +2,6 @@
   <div class="logistics-fuel">
     <div class="search-bar bg-white rounded-borders q-pa-md q-mb-md">
       <div class="row q-col-gutter-sm">
-        <!-- <div class="col-auto">
-          <q-input
-            v-model="timeObj.result"
-            placeholder="时间范围"
-            class="q-mb-md"
-            outlined
-            dense
-            clearable
-            style="width: 260px"
-            @clear="onClearTime"
-          >
-            <template v-slot:append>
-              <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                  <q-date v-model="timeObj.time" mask="YYYY-MM-DD" range />
-                </q-popup-proxy>
-              </q-icon>
-            </template>
-          </q-input>
-        </div> -->
         <div class="col-auto">
           <q-input
             v-model="pageParams.keywords"
@@ -32,6 +12,24 @@
             clearable
             @keyup="(e) => e.key === 'Enter' && getList()"
           ></q-input>
+        </div>
+        <div class="col-auto">
+          <q-select
+            outlined
+            dense
+            v-model="pageParams.search_mode"
+            :options="searchModeOptions"
+            placeholder="搜索模式"
+            class="select-width"
+            option-label="label"
+            option-value="value"
+            map-options
+            emit-value
+            clearable
+            use-input
+            fill-input
+            hide-selected
+          />
         </div>
         <div class="col-auto">
           <q-btn outline color="grey" padding="sm md" label="重置" class="q-mr-sm" @click="onResetSearch" />
@@ -71,8 +69,8 @@
             <q-td key="name" :props="props">
               {{ props.row.name }}
             </q-td>
-            <q-td key="provider_count" :props="props">
-              {{ props.row.provider_count }}
+            <q-td key="channel_count" :props="props">
+              {{ props.row.channel_count }}
             </q-td>
 
             <q-td key="action" :props="props">
@@ -111,7 +109,7 @@
 import logisticsApi from '@/api/logistics';
 import Pagination from '@/components/Pagination.vue';
 import { useQuasar } from 'quasar';
-import { onMounted, reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import GroupDialog from './components/GroupDialog.vue';
 
@@ -122,21 +120,29 @@ const showForm = ref(false);
 const editItem = ref({});
 const groupList = ref([]);
 const total = ref(0);
-const timeObj = ref({
-  result: '',
-  time: {
-    form: '', // 开始时间
-    to: '', // 结束时间
-  },
-});
+
 // 分页参数
 const pageParams = reactive({
   page: 1,
   per_page: 10,
   keywords: '',
-  start_date: '',
-  end_date: '',
+  search_mode: '',
 });
+
+const searchModeOptions = [
+  {
+    label: '精确搜索',
+    value: 'exact',
+  },
+  {
+    label: '前缀搜索',
+    value: 'prefix',
+  },
+  {
+    label: '模糊搜索',
+    value: 'fuzzy',
+  },
+];
 
 const tabColumns = [
   {
@@ -146,7 +152,7 @@ const tabColumns = [
     sortable: false,
   },
   {
-    name: 'provider_count',
+    name: 'channel_count',
     label: '物流数量',
     align: 'center',
   },
@@ -156,42 +162,6 @@ const tabColumns = [
     align: 'center',
   },
 ];
-
-// 监听时间选择变化
-watch(
-  () => timeObj.value.time,
-  (newVal) => {
-    if (newVal.from && newVal.to) {
-      timeObj.value.result = `${newVal.from} ~ ${newVal.to}`;
-      pageParams.start_date = newVal.from;
-      pageParams.end_date = newVal.to;
-    } else {
-      timeObj.value.result = '';
-      pageParams.start_date = '';
-      pageParams.end_date = '';
-    }
-  },
-  { deep: true }
-);
-
-const resultMatch = (match_type) => {
-  if (match_type === 'postcode') {
-    return '邮编全匹配';
-  } else if (match_type === 'country') {
-    return '国家/地区匹配';
-  } else if (match_type === 'country_city') {
-    return '国家/地区+城市匹配';
-  } else {
-    return '-';
-  }
-};
-
-const onClearTime = () => {
-  timeObj.value.time = {
-    form: '',
-    to: '',
-  };
-};
 
 // 新增
 const onJumpAdd = () => {
@@ -239,14 +209,8 @@ const onDelete = (row) => {
 };
 
 const onResetSearch = () => {
-  // 重置时间选择器的值
-  Object.assign(timeObj.value, {
-    result: '',
-    time: { from: '', to: '' },
-  });
   pageParams.keywords = '';
-  pageParams.start_date = '';
-  pageParams.end_date = '';
+  pageParams.search_mode = '';
 };
 
 const getList = () => {

@@ -60,9 +60,8 @@
       <div class="header-operation q-mb-md">
         <div>
           <span class="q-mr-xs">选择 {{ selectedChannel.length }}</span>
-          <q-btn flat text-color="blue" label="批量开启" @click="onEditStatus(true)" />
+          <q-btn flat text-color="blue" label="新建物流组" @click="onCreateGroup()" />
         </div>
-        <q-btn icon="add" text-color="primary" padding="sm md" label="添加渠道" @click="onAdd"></q-btn>
       </div>
 
       <q-table
@@ -92,6 +91,12 @@
             <q-td key="name" :props="props">
               {{ props.row.name }}
             </q-td>
+            <q-td key="is_custom" :props="props">
+              {{ props.row.is_custom ? '自定义物流商' : '对接物流商' }}
+            </q-td>
+            <q-td key="group" :props="props">
+              {{ props.row.group && props.row.group.name }}
+            </q-td>
             <q-td key="is_enabled" :props="props">
               <q-toggle
                 v-model="props.row.is_enabled"
@@ -107,8 +112,11 @@
               /> -->
             </q-td>
             <q-td key="action" :props="props">
-              <q-btn icon="editor" color="primary" size="sm" flat round @click="onEdit(props.row)">
-                <q-tooltip anchor="top middle" :offset="[30, 30]">编辑</q-tooltip>
+              <q-btn v-if="!props.row.group" icon="add" color="primary" size="sm" flat round @click="onAdd(props.row)">
+                <q-tooltip anchor="top middle" :offset="[30, 30]">加入物流组</q-tooltip>
+              </q-btn>
+              <q-btn v-else icon="logout" color="primary" size="sm" flat round @click="onRemove(props.row)">
+                <q-tooltip anchor="top middle" :offset="[30, 30]">退出物流组</q-tooltip>
               </q-btn>
             </q-td>
           </q-tr>
@@ -134,13 +142,13 @@
       </div>
     </div>
 
-    <ChannelDialog
+    <ChannelGroupDialog
       v-model="showForm"
       :item="editItem"
       :providerInfo="providerInfo"
       @close="editItem = {}"
       @success="getList"
-    ></ChannelDialog>
+    ></ChannelGroupDialog>
   </div>
 </template>
 
@@ -150,7 +158,7 @@ import Pagination from '@/components/Pagination.vue';
 import { useQuasar } from 'quasar';
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import ChannelDialog from './components/ChannelDialog.vue'; // 渠道修改表单
+import ChannelGroupDialog from './components/ChannelGroupDialog.vue'; // 渠道组弹窗
 
 const $q = useQuasar();
 const route = useRoute();
@@ -185,7 +193,7 @@ const statusOptions = ref([
     value: '0',
   },
 ]);
-const searchTypeOptions = ref([
+const searchTypeOptions = [
   {
     label: '渠道名称',
     value: 'name',
@@ -194,7 +202,7 @@ const searchTypeOptions = ref([
     label: '渠道代码',
     value: 'code',
   },
-]);
+];
 
 const tabColumns = [
   {
@@ -206,8 +214,16 @@ const tabColumns = [
     name: 'name',
     label: '物流渠道名称',
     align: 'left',
-    sortable: false,
-    style: 'width: 300px',
+  },
+  {
+    name: 'is_custom',
+    label: '物流商类型',
+    align: 'center',
+  },
+  {
+    name: 'group',
+    label: '物流组',
+    align: 'center',
   },
   {
     name: 'is_enabled', // 是否启用
@@ -258,13 +274,38 @@ const onResetSearch = () => {
   pageParams.keywords = '';
 };
 
-const onAdd = () => {
+// 批量多个添加到物流组, 并且新建物流组
+const onCreateGroup = () => {
+  if (selectedChannel.value.length === 0) {
+    $q.notify({
+      type: 'warning',
+      message: '请先选择渠道',
+    });
+    return;
+  }
+  editItem.value = {
+    channels: selectedChannel.value,
+  };
   showForm.value = true;
 };
 
-const onEdit = (row) => {
+// 单个添加到物流组
+const onAdd = (row) => {
   editItem.value = row;
   showForm.value = true;
+};
+
+const onRemove = (row) => {
+  $q.dialog({
+    title: '提示',
+    message: '确定要将该渠道移出物流组吗？',
+    cancel: true,
+    persistent: true,
+  }).onOk(() => {
+    logisticsApi.removeChannelGroup(row.provider.id, row.id).then((res) => {
+      getList();
+    });
+  });
 };
 
 const getList = () => {
@@ -272,22 +313,15 @@ const getList = () => {
 };
 // 渠道列表
 const getChannelList = () => {
-  logisticsApi.getProviderChannels(providerId, pageParams).then((res) => {
+  logisticsApi.getChannelList(providerId, pageParams).then((res) => {
     channelList.value = res.data.items;
     total.value = res.data.meta.total;
-  });
-};
-// 物流商详情
-const getProviderInfo = () => {
-  logisticsApi.getProviderInfo(providerId).then((res) => {
-    providerInfo.value = res.data;
   });
 };
 
 // 生命周期钩子
 onMounted(() => {
   getList();
-  getProviderInfo();
 });
 </script>
 

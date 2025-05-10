@@ -1,7 +1,7 @@
 const Container = () => import(`../views/Layout/Container.vue`);
 const OfflineIndex = () => import(`../views/Logistics/Offline/Index.vue`); // 线下物流
+const ProviderChannel = () => import(`../views/Logistics/Offline/ProviderChannel.vue`); // 物流商渠道管理(物流商详情页)
 const RuleIndex = () => import(`../views/Logistics/Rule/Index.vue`); // 物流规则
-const ProviderChannel = () => import(`../views/Logistics/Offline/ProviderChannel.vue`); // 物流商渠道
 const RemoteForm = () => import(`../views/Logistics/Rule/RemoteForm.vue`); // 偏远地区表单
 const ZonesForm = () => import(`../views/Logistics/Rule/ZonesForm.vue`); // 分区规则表单
 
