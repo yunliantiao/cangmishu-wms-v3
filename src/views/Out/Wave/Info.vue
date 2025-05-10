@@ -26,7 +26,7 @@
             </div>
             <div
               class="text-subtitle2"
-              :class="getStatusClass(pageData.status_name)"
+              :class="getStatusClass(pageData.waveInfo?.status)"
             >
               {{ pageData.status_name }}
             </div>
@@ -107,6 +107,11 @@
             :rows="pageData.packageData"
             row-key="id"
             @refresh="refresh"
+            :show-error="
+              ['pending', 'picking', 'packing'].includes(
+                pageData.waveInfo?.status
+              )
+            "
           />
         </q-tab-panel>
 
@@ -298,17 +303,15 @@ const goBack = () => {
 // 获取状态样式类
 const getStatusClass = (status) => {
   switch (status) {
-    case "待拣货":
+    case "pending":
       return "text-orange";
-    case "拣货中":
+    case "picking":
       return "text-blue";
-    case "包装中":
+    case "packing":
       return "text-purple";
-    case "已完成":
+    case "completed":
       return "text-green";
-    case "已结束":
-      return "text-green";
-    case "已作废":
+    case "cancelled":
       return "text-red";
     default:
       return "";

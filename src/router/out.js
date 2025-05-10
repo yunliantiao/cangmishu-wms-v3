@@ -7,6 +7,7 @@ const WaveInfo = () => import(`../views/Out/Wave/Info.vue`)
 const SortOut = () => import(`../views/Out/Wave/SortOut.vue`)
 const Pigeonholes = () => import(`../views/Out/Wave/Pigeonholes.vue`)
 const Packaging = () => import(`../views/Out/Wave/Packaging.vue`)
+const ScanPacking = () => import(`../views/Out/Wave/ScanPacking.vue`)
 
 export default [
     {
@@ -72,6 +73,17 @@ export default [
                     level: 2,
                     group: '出库管理',
                     name: '扫描分拣',
+                },
+            },
+            {
+                path: 'wave/scan/packing',
+                name: 'ScanPacking',
+                component: ScanPacking,
+                id: 1009,
+                meta: {
+                    level: 2,
+                    group: '出库管理',
+                    name: '扫描包装',
                 },
             },
             {

@@ -220,7 +220,7 @@
     <!-- 数据表格 -->
     <q-table
       :rows="pageData.waveData"
-      :columns="pageData.columns"
+      :columns="columns"
       row-key="id"
       flat
       bordered
@@ -279,6 +279,10 @@
             >
             </q-select> -->
           </q-td>
+
+          <q-td key="pack_by" :props="props">
+            {{ props.row.pack_by?.name }}
+          </q-td>
           <q-td key="created_at" :props="props">
             <div>生成:{{ props.row.created_at }}</div>
             <!-- <div v-if="props.row.status != 'pending'">
@@ -298,6 +302,7 @@
                 round
                 color="grey-7"
                 icon="token"
+                :disable="!props.row.pack_by?.is_self"
                 v-if="['packing', 'picking'].includes(props.row.status)"
                 @click="handlePack(props.row)"
               >
@@ -359,8 +364,8 @@
         <div class="row items-center justify-between full-width">
           <div>Total: {{ pageData.pagination.rowsNumber }}</div>
           <div class="row items-center">
-            <span class="q-mr-sm"
-              >{{ pageData.pagination.page }}/{{
+            <span class="q-mr-sm">
+              {{ pageData.pagination.page }}/{{
                 Math.ceil(
                   pageData.pagination.rowsNumber /
                     pageData.pagination.rowsPerPage
@@ -405,7 +410,7 @@
 </template>
 
 <script setup>
-import { reactive, onMounted, ref } from "vue";
+import { reactive, onMounted, ref, computed } from "vue";
 import WaveApi from "@/api/wave";
 import teamApi from "@/api/team";
 import PickerUser from "./components/PickerUser.vue";
@@ -436,63 +441,11 @@ const pageData = reactive({
   selectedRows: [],
   pagination: {
     page: 1,
-    rowsPerPage: 50,
-    rowsNumber: 11,
+    rowsPerPage: 10,
+    rowsNumber: 10,
     sortBy: "time",
     descending: true,
   },
-
-  // 表格列定义
-  columns: [
-    {
-      name: "wave_number",
-      align: "left",
-      label: "波次号",
-      field: "wave_number",
-    },
-    // { name: "warehouse", align: "center", label: "仓库", field: "warehouse" },
-    {
-      name: "wave_type",
-      align: "center",
-      label: "波次类型",
-      field: "wave_type",
-    },
-    {
-      name: "logistics_group_ids",
-      align: "center",
-      label: "物流组",
-      field: "logistics_group_ids",
-    },
-    {
-      name: "package_count",
-      align: "center",
-      label: "包裹数量",
-      field: "package_count",
-    },
-    {
-      name: "sku_type_count",
-      align: "center",
-      label: "商品种类",
-      field: "sku_type_count",
-    },
-    {
-      name: "item_count",
-      align: "center",
-      label: "商品数量",
-      field: "item_count",
-    },
-    { name: "picker", align: "center", label: "拣货员", field: "picker" },
-    { name: "created_at", align: "center", label: "时间", field: "created_at" },
-    // { name: "picker", align: "center", label: "打包员", field: "picker" },
-    { name: "status", align: "center", label: "状态", field: "status" },
-    {
-      name: "is_print_pick_label",
-      align: "center",
-      label: "拣货单打印",
-      field: "is_print_pick_label",
-    },
-    { name: "actions", align: "center", label: "操作", field: "actions" },
-  ],
 
   // 下拉选项
   waveTypeOptions: [
@@ -531,6 +484,72 @@ const pageData = reactive({
 });
 
 const pickerUserRef = ref(null);
+// 表格列定义
+const columns = computed(() => {
+  let list = [
+    {
+      name: "wave_number",
+      align: "left",
+      label: "波次号",
+      field: "wave_number",
+    },
+    {
+      name: "wave_type",
+      align: "center",
+      label: "波次类型",
+      field: "wave_type",
+    },
+    {
+      name: "logistics_group_ids",
+      align: "center",
+      label: "物流组",
+      field: "logistics_group_ids",
+    },
+    {
+      name: "package_count",
+      align: "center",
+      label: "包裹数量",
+      field: "package_count",
+    },
+    {
+      name: "sku_type_count",
+      align: "center",
+      label: "商品种类",
+      field: "sku_type_count",
+    },
+    {
+      name: "item_count",
+      align: "center",
+      label: "商品数量",
+      field: "item_count",
+    },
+    { name: "picker", align: "center", label: "拣货员", field: "picker" },
+    {
+      name: "created_at",
+      align: "center",
+      label: "时间",
+      field: "created_at",
+    },
+    {
+      name: "is_print_pick_label",
+      align: "center",
+      label: "拣货单打印",
+      field: "is_print_pick_label",
+    },
+    { name: "actions", align: "center", label: "操作", field: "actions" },
+  ];
+
+  if (pageData.filterOptions.status == "packing") {
+    list.splice(6, 0, {
+      name: "pack_by",
+      align: "center",
+      label: "打包员",
+      field: "pack_by",
+    });
+  }
+
+  return list;
+});
 // 页面变化处理
 const onPageChange = () => {
   console.log(

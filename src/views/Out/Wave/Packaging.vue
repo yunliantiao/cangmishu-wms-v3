@@ -362,8 +362,10 @@ const getWaveInfo = async () => {
 const getDesc = (type) => {
   if (type == "single_item") {
     return "单品单数";
-  } else {
-    return "多品多数";
+  } else if (type == "multi_items") {
+    return "单品多件";
+  } else if (type == "mixed_items") {
+    return "多品混包";
   }
 };
 

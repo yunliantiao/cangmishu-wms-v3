@@ -28,6 +28,8 @@
           :hide-pagination="true"
           selection="multiple"
           v-model:selected="selected"
+          :pagination="{ rowsPerPage: 0 }"
+          :loading="loading"
         >
           <template v-slot:body="props">
             <q-tr :props="props">
@@ -72,6 +74,7 @@ const show = ref(false);
 const keyword = ref("");
 const selected = ref([]);
 const skuData = ref([]);
+const loading = ref(false);
 
 const emit = defineEmits(["skuConfirm"]);
 
@@ -108,12 +111,14 @@ const onConfirm = () => {
 };
 
 const getList = async () => {
+  loading.value = true;
   const { data } = await waveApi.getSkuNumList({
     keywords: keyword.value,
   });
   skuData.value = data.data.map((row) => {
     return row;
   });
+  loading.value = false;
   // totalCount.value = data.meta.total;
 };
 

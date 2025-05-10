@@ -4,7 +4,7 @@
       <div class="col-auto">
         <span>选择 {{ componentData.selectCount }}</span>
       </div>
-      <div class="col-auto q-ml-md">
+      <div class="col-auto q-ml-md" v-if="props.showError">
         <q-btn flat color="primary" @click="handleError" label="标记异常" />
       </div>
     </div>
@@ -12,7 +12,7 @@
     <table>
       <thead>
         <tr>
-          <th class="selection-cell">
+          <th class="selection-cell" v-if="props.showError">
             <q-checkbox
               v-model="selectAll"
               @update:model-value="toggleSelectAll"
@@ -30,7 +30,7 @@
         <template v-for="(row, index) in rows" :key="row[rowKey]">
           <!-- 包裹行 -->
           <tr class="package-row">
-            <td class="selection-cell">
+            <td class="selection-cell" v-if="props.showError">
               <!-- <input type="checkbox" v-model="selectedRows" :value="row" /> -->
               <q-checkbox
                 v-model="row.checked"
@@ -56,7 +56,7 @@
 
           <!-- 商品明细行 -->
           <tr class="product-row" v-if="row.items && row.items.length">
-            <td></td>
+            <td v-if="props.showError"></td>
 
             <td>
               <div class="product-details">
@@ -179,16 +179,13 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  showError: {
+    type: Boolean,
+    default: true,
+  },
 });
 
-// watch(
-//   () => props.rows,
-//   (newVal) => {},
-//   { deep: true }
-// );
-
 const route = useRoute();
-
 const emit = defineEmits(["refresh"]);
 const selectAll = ref(false);
 
