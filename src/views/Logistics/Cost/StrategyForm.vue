@@ -4,7 +4,7 @@
     <div class="bg-white rounded-borders q-pa-md q-mb-md">
       <div class="text-h6">
         <q-icon name="arrow_back" class="cursor-pointer" @click="router.back()"></q-icon>
-        新建偏远地区规则
+        新建物流计费策略
       </div>
     </div>
 
@@ -90,151 +90,169 @@
             :rules="[(val) => !!val || '必填']"
           />
         </div>
-        <!-- 燃油规则 -->
-        <div class="col-4">
-          <div>
-            燃油规则
-            <span class="text-red">*</span>
+        <template v-if="form.calculation_type === 'rule'">
+          <!-- 燃油规则 -->
+          <div class="col-4">
+            <div>
+              燃油规则
+              <span class="text-red">*</span>
+            </div>
+            <q-select
+              v-model="form.rule_settings.fuel_surcharge_id"
+              :options="filterFuelList"
+              menu-anchor="bottom start"
+              placeholder="请选择"
+              dense
+              emit-value
+              map-options
+              use-input
+              fill-input
+              hide-selected
+              outlined
+              clearable
+              :rules="[(val) => !!val || '必填']"
+              @filter="onFilterFuels"
+            />
           </div>
-          <q-select
-            v-model="form.rule_settings.fuel_surcharge_id"
-            :options="filterFuelList"
-            menu-anchor="bottom start"
-            placeholder="请选择"
-            dense
-            emit-value
-            map-options
-            use-input
-            fill-input
-            hide-selected
-            outlined
-            clearable
-            :rules="[(val) => !!val || '必填']"
-            @filter="onFilterFuels"
-          />
-        </div>
-        <!-- 重量/尺寸/体积(单位) -->
-        <div class="col-4">
-          <div>
-            重量/尺寸/体积(单位)
-            <span class="text-red">*</span>
+          <!-- 重量/尺寸/体积(单位) -->
+          <div class="col-4">
+            <div>
+              重量/尺寸/体积(单位)
+              <span class="text-red">*</span>
+            </div>
+            <q-select
+              v-model="form.rule_settings.unit_combination"
+              :options="unitList"
+              menu-anchor="bottom start"
+              placeholder="请选择"
+              dense
+              emit-value
+              map-options
+              use-input
+              fill-input
+              hide-selected
+              outlined
+              clearable
+              :rules="[(val) => !!val || '必填']"
+            />
           </div>
-          <q-select
-            v-model="form.rule_settings.unit_combination"
-            :options="unitList"
-            menu-anchor="bottom start"
-            placeholder="请选择"
-            dense
-            emit-value
-            map-options
-            use-input
-            fill-input
-            hide-selected
-            outlined
-            clearable
-            :rules="[(val) => !!val || '必填']"
-          />
-        </div>
-        <!-- 尺寸进位 -->
-        <div class="col-4">
-          <div>
-            尺寸进位
-            <span class="text-red">*</span>
+          <!-- 尺寸进位 -->
+          <div class="col-4">
+            <div>
+              尺寸进位
+              <span class="text-red">*</span>
+            </div>
+            <q-select
+              v-model="form.rule_settings.dimension_rounding"
+              :options="[
+                { label: '向上取整', value: 'round_up' },
+                { label: '不进位', value: 'round_none' },
+              ]"
+              menu-anchor="bottom start"
+              placeholder="请选择"
+              dense
+              emit-value
+              map-options
+              use-input
+              fill-input
+              hide-selected
+              outlined
+              clearable
+              :rules="[(val) => !!val || '必填']"
+            />
           </div>
-          <q-select
-            v-model="form.rule_settings.dimension_rounding"
-            :options="[
-              { label: '向上取整', value: 'round_up' },
-              { label: '不进位', value: 'round_none' },
-            ]"
-            menu-anchor="bottom start"
-            placeholder="请选择"
-            dense
-            emit-value
-            map-options
-            use-input
-            fill-input
-            hide-selected
-            outlined
-            clearable
-            :rules="[(val) => !!val || '必填']"
-          />
-        </div>
-        <!-- 重量进位 -->
-        <div class="col-4">
-          <div>
-            重量进位
-            <span class="text-red">*</span>
+          <!-- 重量进位 -->
+          <div class="col-4">
+            <div>
+              重量进位
+              <span class="text-red">*</span>
+            </div>
+            <q-select
+              v-model="form.rule_settings.weight_rounding"
+              :options="[
+                { label: '向上取整', value: 'round_up' },
+                { label: '不进位', value: 'round_none' },
+              ]"
+              menu-anchor="bottom start"
+              placeholder="请选择"
+              dense
+              emit-value
+              map-options
+              use-input
+              fill-input
+              hide-selected
+              outlined
+              clearable
+              :rules="[(val) => !!val || '必填']"
+            />
           </div>
-          <q-select
-            v-model="form.rule_settings.weight_rounding"
-            :options="[
-              { label: '向上取整', value: 'round_up' },
-              { label: '不进位', value: 'round_none' },
-            ]"
-            menu-anchor="bottom start"
-            placeholder="请选择"
-            dense
-            emit-value
-            map-options
-            use-input
-            fill-input
-            hide-selected
-            outlined
-            clearable
-            :rules="[(val) => !!val || '必填']"
-          />
-        </div>
-        <!-- 体积重计算公式 -->
-        <div class="col-4">
-          <div>
-            体积重计算公式
-            <span class="text-red">*</span>
+          <!-- 体积重计算公式 -->
+          <div class="col-4">
+            <div>
+              体积重计算公式
+              <span class="text-red">*</span>
+            </div>
+            <q-select
+              v-model="form.rule_settings.volume_weight_method"
+              :options="[
+                { label: '体积重系数', value: 'divide' },
+                { label: '不计算', value: 'none' },
+              ]"
+              menu-anchor="bottom start"
+              placeholder="请选择"
+              dense
+              emit-value
+              map-options
+              use-input
+              fill-input
+              hide-selected
+              outlined
+              clearable
+              :rules="[(val) => !!val || '必填']"
+            />
           </div>
-          <q-select
-            v-model="form.rule_settings.volume_weight_method"
-            :options="[
-              { label: '体积重系数', value: 'divide' },
-              { label: '不计算', value: 'none' },
-            ]"
-            menu-anchor="bottom start"
-            placeholder="请选择"
-            dense
-            emit-value
-            map-options
-            use-input
-            fill-input
-            hide-selected
-            outlined
-            clearable
-            :rules="[(val) => !!val || '必填']"
-          />
-        </div>
-        <!-- 体积重计算条件 -->
-        <div class="col-4">
-          <div>
-            体积重计算条件
-            <span class="text-red">*</span>
-          </div>
-          <q-select
-            v-model="form.rule_settings.volume_weight_condition"
-            :options="[
-              { label: '全部', value: 'all' },
-              { label: '大于1立方英尺', value: 'greater_than_1_cubic_foot' },
-            ]"
-            menu-anchor="bottom start"
-            placeholder="请选择"
-            dense
-            emit-value
-            map-options
-            use-input
-            fill-input
-            hide-selected
-            outlined
-            clearable
-            :rules="[(val) => !!val || '必填']"
-          />
-        </div>
+          <template v-if="form.rule_settings.volume_weight_method === 'divide'">
+            <!-- 体积重计算条件 -->
+            <div class="col-4">
+              <div>
+                体积重计算条件
+                <span class="text-red">*</span>
+              </div>
+              <q-select
+                v-model="form.rule_settings.volume_weight_condition"
+                :options="[
+                  { label: '全部', value: 'all' },
+                  { label: '大于1立方英尺', value: 'greater_than_1_cubic_foot' },
+                ]"
+                menu-anchor="bottom start"
+                placeholder="请选择"
+                dense
+                emit-value
+                map-options
+                use-input
+                fill-input
+                hide-selected
+                outlined
+                clearable
+                :rules="[(val) => !!val || '必填']"
+              />
+            </div>
+            <!-- 体积重系数 -->
+            <div class="col-4">
+              <div>
+                体积重系数
+                <span class="text-red">*</span>
+              </div>
+              <q-input
+                v-model="form.rule_settings.volume_weight_coefficient"
+                dense
+                outlined
+                placeholder="请输入"
+                :rules="[(val) => !!val || '必填']"
+              />
+            </div>
+          </template>
+        </template>
       </div>
       <!-- 备注 -->
       <div>
@@ -253,7 +271,7 @@
 
     <div class="rule-tip rounded-borders q-pa-md q-mb-md">若订单未匹配到以下设置的规则，则无法扣除物流费用</div>
 
-    <!-- 规则详情区域 -->
+    <!-- 分区规则 -->
     <div class="bg-white rounded-borders q-pa-md q-mb-md">
       <div class="q-mb-md">
         <div class="text-subtitle1">规则详情</div>
@@ -306,9 +324,62 @@
       </div> -->
     </div>
 
+    <!-- 运费计算 -->
+    <div v-if="form.calculation_type !== ''" class="bg-white rounded-borders q-pa-md q-mb-md">
+      <div class="q-mb-md">运费计算</div>
+      <!-- TODO: 按费率 rate -->
+      <div class="row" v-if="form.calculation_type === 'rate'">
+        <div class="q-mr-md">
+          计算公式
+          <span class="text-red">*</span>
+        </div>
+        <div class="row">
+          <div>物流费用</div>
+          <q-select
+            v-model="form.rate_rules.operator"
+            :options="[
+              { label: '加+', value: 'add' },
+              { label: '减-', value: 'subtract' },
+              { label: '乘×', value: 'multiply' },
+            ]"
+            menu-anchor="bottom start"
+            placeholder="请选择"
+            dense
+            emit-value
+            map-options
+            use-input
+            fill-input
+            hide-selected
+            outlined
+            clearable
+            :rules="[(val) => !!val || '必填']"
+            style="width: 200px"
+          />
+          <q-input
+            v-model="form.rate_rules.value"
+            dense
+            outlined
+            placeholder="请输入"
+            :rules="[(val) => !!val || '必填']"
+          />
+        </div>
+      </div>
+      <div class="row q-gutter-sx" v-if="form.calculation_type === 'rule'">
+        <span class="text-green">物流运费</span>
+        <span>=</span>
+        <u>重量段</u>
+        <span>+</span>
+        <u>燃油附加费</u>
+        <span>+</span>
+        <u>超长超重附加费</u>
+        <span>+</span>
+        <u>偏远地区附加费</u>
+      </div>
+    </div>
+
     <!-- 底部按钮区域 -->
     <div class="bg-white rounded-borders q-pa-md q-mb-md text-right">
-      <q-btn label="取消" padding="sm md" color="primary" outline @click="onCancel" />
+      <q-btn label="取消" padding="sm md" class="q-mr-md" color="primary" outline @click="onCancel" />
       <q-btn label="保存" padding="sm md" color="primary" @click="onSubmit" />
     </div>
   </div>
@@ -321,13 +392,13 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 const route = useRoute(); // 路由参数
 const router = useRouter();
-const remoteId = route.query.id; // 编辑时的策略id
+const strategyId = route.query.id; // 编辑时的策略id
 
 const $q = useQuasar();
 
 const form = reactive({
   name: '', // 策略名称
-  calculation_type: 'rule', // 计费方式: rate费率||rule规则
+  calculation_type: 'rate', // 计费方式: rate费率||rule规则
   logistics_channel_id: '', // 物流渠道id
   currency: '', // 币种 USD || CNY
   remarks: '', // 备注
@@ -338,7 +409,7 @@ const form = reactive({
   },
   // todo rule规则时
   rule_settings: {
-    unit_combination: '', // 单位组合: kg/cm/m³
+    unit_combination: 'kg/cm/m³', // 单位组合: kg/cm/m³
     dimension_rounding: '', // 尺寸进位: round_up向上||round_none不进位
     weight_rounding: '', // 重量进位 同上round
     volume_weight_method: '', // 体积重计算公式: divide体积重系数||none
@@ -402,7 +473,7 @@ const columns = [
 ];
 
 const isEdit = computed(() => {
-  return remoteId ? true : false;
+  return strategyId ? true : false;
 });
 
 // 搜索过滤物流渠道
@@ -432,7 +503,7 @@ const onCancel = () => {
 };
 
 const onSubmit = () => {
-  if (remoteId) {
+  if (strategyId) {
     getEditForm();
   } else {
     getAddForm();
@@ -468,32 +539,67 @@ const getFuelList = () => {
 };
 // 获取分区规则列表
 const getZonesList = () => {
-  logisticsApi.getZonesList(pageParams).then((res) => {
+  logisticsApi.getZonesList().then((res) => {
     zonesList.value = res.data.items;
   });
 };
 
 // 获取详情
 const getDetailForm = () => {
-  logisticsApi.getRemoteInfo(remoteId).then((res) => {
+  logisticsApi.getRemoteInfo(strategyId).then((res) => {
     form.value = res.data;
   });
 };
 // 提交新增
 const getAddForm = () => {
-  logisticsApi.addRemote(form.value).then((res) => {
-    router.back();
-  });
-};
-// 提交修改
-const getEditForm = () => {
-  logisticsApi.updateRemote(remoteId, form.value).then((res) => {
+  const formData = getFormToObj();
+  console.log('formData::: ', JSON.parse(JSON.stringify(formData)));
+  logisticsApi.addStrategy(formData).then((res) => {
     router.back();
   });
 };
 
+// 重组为策略费率对象
+const getFormToObj = () => {
+  let data = {};
+
+  if (form.calculation_type === 'rule') {
+    data = {
+      name: form.name,
+      calculation_type: form.calculation_type,
+      logistics_channel_id: form.logistics_channel_id,
+      currency: form.currency,
+      remarks: form.remarks,
+      rate_rules: {
+        operator: form.rate_rules.operator,
+        value: form.rate_rules.value,
+      },
+    };
+  } else if (form.calculation_type === 'rate') {
+    data = {
+      name: form.name,
+      calculation_type: form.calculation_type,
+      logistics_channel_id: form.logistics_channel_id,
+      currency: form.currency,
+      remarks: form.remarks,
+      rate_rules: {
+        operator: form.rate_rules.operator,
+        value: Number(form.rate_rules.value),
+      },
+    };
+  }
+  return data;
+};
+
+// 提交修改
+const getEditForm = () => {
+  // logisticsApi.updateRemote(strategyId, form.value).then((res) => {
+  //   router.back();
+  // });
+};
+
 onMounted(() => {
-  if (remoteId) {
+  if (strategyId) {
     getDetailForm();
   }
   getChannelList();
