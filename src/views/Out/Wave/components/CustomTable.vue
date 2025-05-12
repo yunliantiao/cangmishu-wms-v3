@@ -27,7 +27,7 @@
       </thead>
 
       <tbody>
-        <template v-for="(row, index) in rows" :key="row[rowKey]">
+        <template v-for="row in rows" :key="row[rowKey]">
           <!-- 包裹行 -->
           <tr class="package-row">
             <td class="selection-cell" v-if="props.showError">
@@ -286,6 +286,7 @@ const refresh = () => {
 };
 </script>
 
+
 <style scoped>
 .custom-table {
   width: 100%;
@@ -425,4 +426,4 @@ td {
 .action-btn:hover {
   background-color: rgba(25, 118, 210, 0.1);
 }
-</style> 
+</style>

@@ -1,0 +1,154 @@
+<template>
+  <div class="flex">
+    <div class="date-picker-new">
+      <q-select
+        outlined
+        dense
+        v-show="showSelect"
+        v-model="selectInfo.date_type"
+        :options="dateList"
+        option-value="value"
+        option-label="label"
+        emit-value
+        map-options
+        class="filter-select"
+      />
+      <div class="play-date-picker">
+        <img
+          class="date-select-icon"
+          src="@/assets/date-select/date.png"
+          alt=""
+        />
+        <div class="content-box">
+          <span>{{ getDate(0) }}</span>
+          <span>TO</span>
+          <span>{{ getDate(1) }}</span>
+        </div>
+        <q-popup-proxy
+          v-model="componentData.showDate"
+          cover
+          transition-show="scale"
+          transition-hide="scale"
+        >
+          <q-date
+            v-model="componentData.range"
+            range
+            @update:model-value="changeDate"
+          />
+        </q-popup-proxy>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { reactive, watch } from "vue";
+const selectInfo = defineModel("selectInfo", {
+  type: Object,
+  required: true,
+  default: () => {
+    return {
+      date_type: "created_at",
+      date_range: [],
+    };
+  },
+});
+
+const props = defineProps({
+  showSelect: {
+    type: Boolean,
+    default: true,
+  },
+  dateList: {
+    type: Array,
+    default: () => {
+      return [
+        { label: "创建时间", value: "created_at" },
+        { label: "更新时间", value: "updated_at" },
+      ];
+    },
+  },
+});
+
+const changeDate = (e) => {
+  componentData.showDate = false;
+};
+
+const componentData = reactive({
+  showDate: false,
+  date_type: "created_at",
+  range: {},
+});
+
+watch(
+  componentData,
+  () => {
+    if (componentData.range) {
+      let list = Object.values(componentData.range);
+      if (list.length) {
+        selectInfo.value.date_range = list;
+      } else {
+        selectInfo.value.date_range = [];
+      }
+    } else {
+      selectInfo.value.date_range = [];
+    }
+  },
+  { deep: true }
+);
+
+const getDate = (index) => {
+  let list = selectInfo.value.date_range;
+  if (index == 0) {
+    return list[0] || "开始时间";
+  } else {
+    return list[1] || "结束时间";
+  }
+};
+
+const changeSelect = (e) => {
+  selectInfo.value.date_type = componentData.date_type;
+};
+</script>
+
+<style scoped lang="scss">
+.date-picker-new {
+  border-radius: 9px;
+  height: 42px;
+  display: flex;
+  border: 1px solid #e6e6e6;
+  background: #ffffff;
+  .filter-select {
+    border-right: 1px solid #e6e6e6;
+
+    width: 132px;
+    :deep(.q-field__control:before) {
+      border: none;
+    }
+  }
+  .play-date-picker {
+    width: 254px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 12px;
+    padding-left: 14px;
+    .date-select-icon {
+      width: 16px;
+      height: 16px;
+    }
+    .content-box {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      align-items: center;
+      span {
+        &:nth-child(1),
+        &:nth-child(3) {
+          color: #999999;
+        }
+      }
+    }
+  }
+}
+</style>

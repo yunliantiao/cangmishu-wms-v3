@@ -591,7 +591,7 @@ const pageParams = reactive({
   date_type: "",
   start_date: "",
   end_date: "",
-  search_type: "",
+  search_type: "package_number",
   keywords: "",
 });
 
@@ -658,7 +658,7 @@ const handleStatusNav = (status) => {
 const resetSearch = () => {
   pageParams.start_date = "";
   pageParams.end_date = "";
-  pageParams.search_type = "";
+  pageParams.search_type = "package_number";
   pageParams.keywords = "";
   pageParams.source = "";
   pageParams.platform = "";

@@ -5,6 +5,7 @@ const Mange = () => import(`../views/Setting/Mange.vue`)
 const GoodsArea = () => import(`../views/Setting/GoodsArea.vue`)
 const BatchAdd = () => import(`../views/Setting/BatchAdd.vue`)
 const Categories = () => import(`../views/Setting/Categories.vue`)
+const PickCar = () => import(`../views/Setting/PickCar.vue`)
 
 export default [
     {
@@ -49,6 +50,17 @@ export default [
                     level: 2,
                     group: '设置',
                     name: '货区设置',
+                },
+            },
+            {
+                path: 'pickCar',
+                name: 'pickCar',
+                component: PickCar,
+                id: 1002,
+                meta: {
+                    level: 2,
+                    group: '设置',
+                    name: '拣货车设置',
                 },
             },
             {

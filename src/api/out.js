@@ -2,6 +2,7 @@ import { GET, POST } from "./config.js";
 
 export default {
     getOutboundOrder: (data) => GET("orders", data), // 获取出库单
+    getOrderInfoByNumber: (data) => GET(`orders/detail`, data), // 获取订单详情
     getOutboundOrderPrint: (id, data) => GET(`packages/${id}/print-shipping-label`, data), // 获取出库单打印
     signExpressSheet: (id, data) => POST(`packages/${id}/print-shipping-label`, data), // 包裹标记打印物流面单
     getOutboundOrderPicking: (id) => GET(`orders/${id}/pick-label`), // 获取出库单拣货单
@@ -33,4 +34,14 @@ export default {
 
     // 先捡后分完成
     completePicking: (id, data) => POST(`waves/${id}/complete-sort`, data),
+
+
+    // 验货
+    examineGoods: (id) => POST(`packages/${id}/inspection`),
+
+    // 扫描发货  pda接口
+    scanShipment: (data) => POST(`packages/ship`, data),
+
+    // 拍照记录
+    photoRecord: (data) => GET(`packages/ship-photos`, data),
 }
