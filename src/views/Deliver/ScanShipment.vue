@@ -1,7 +1,7 @@
 <template>
   <div class="scan-shipment-page">
     <!-- 顶部筛选栏 -->
-    <div class="filter-bar row items-center q-gutter-md">
+    <div class="filter-bar row items-center">
       <q-input
         outlined
         dense
@@ -10,31 +10,6 @@
         class="filter-input"
         style="width: 320px"
       />
-
-      <!-- <div class="row items-center no-wrap search-group q-ml-md">
-        <q-input
-          outlined
-          dense
-          v-model="pageData.weight"
-          label="称重"
-          class="keywords-input"
-          style="min-width: 200px"
-          type="number"
-          min="0"
-        />
-        <q-select
-          outlined
-          dense
-          v-model="pageData.weightUnit"
-          :options="pageData.weightUnitOptions"
-          emit-value
-          map-options
-          option-value="value"
-          option-label="label"
-          hide-bottom-space
-          class="search-mode-select"
-        />
-      </div> -->
 
       <q-btn color="primary" label="确定" @click="handleSearch" />
     </div>
@@ -50,7 +25,7 @@
 
     <!-- 表格 -->
     <div class="main-table q-mt-md">
-      <div class="table-header row items-center q-px-md q-py-sm">
+      <div class="table-header row items-center">
         <span class="text-h6">扫描记录</span>
         <q-space />
         <q-btn
@@ -66,8 +41,6 @@
         :columns="pageData.columns"
         row-key="id"
         flat
-        bordered
-        hide-bottom
         class="scan-table"
         :rows-per-page-options="[0]"
         :rows-per-page="0"
@@ -173,15 +146,12 @@ const handlePrint = () => {
 
 <style scoped lang="scss">
 .scan-shipment-page {
-  background: #f5f6fa;
-  min-height: 100vh;
-  padding: 0 0 24px 0;
-
   .filter-bar {
-    background: #fff;
-    border-radius: 0 0 8px 8px;
-    padding-bottom: 10px;
-    padding-left: 10px;
+    background: #ffffff;
+    box-shadow: 0px 1px 10px 1px rgba(102, 102, 102, 0.08);
+    border-radius: 16px 16px 16px 16px;
+    padding: 32px;
+    gap: 20px;
   }
   .filter-select,
   .filter-input {
@@ -191,10 +161,10 @@ const handlePrint = () => {
     min-height: 32px;
   }
   .main-table {
-    background: #fff;
-    border-radius: 8px;
-    margin: 24px 16px 0 16px;
-    padding: 10px;
+    box-shadow: 0px 1px 10px 1px rgba(102, 102, 102, 0.08);
+    border-radius: 16px 16px 16px 16px;
+    background: #ffffff;
+    padding: 32px;
 
     .table-header {
       border-bottom: 1px solid #f0f0f0;
@@ -208,7 +178,6 @@ const handlePrint = () => {
     .scan-table {
       margin-top: 0;
       :deep(.q-table th) {
-        background: #f5f6fa;
         font-weight: 500;
         font-size: 14px;
         color: #333;

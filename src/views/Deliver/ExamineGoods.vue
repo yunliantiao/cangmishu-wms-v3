@@ -1,15 +1,14 @@
 <template>
   <div class="examine-goods-page">
     <!-- 顶部筛选栏 -->
-    <div class="filter-bar row items-center q-gutter-md">
+    <div class="filter-bar">
       <q-select
         outlined
         dense
         label="物流组"
         v-model="pageData.group"
         :options="pageData.groupOptions"
-        class="filter-select"
-        style="width: 180px"
+        class="filter-item"
       />
       <q-input
         outlined
@@ -17,8 +16,7 @@
         v-model="pageData.packageNo"
         label="请扫描运单号/包裹号"
         @keyup.enter="search"
-        class="filter-input"
-        style="width: 320px"
+        class="filter-item"
       />
       <q-input
         outlined
@@ -27,12 +25,16 @@
         :disable="pageData.rows.length === 0"
         label="请扫描商品标签"
         @keyup.enter="examine"
-        class="filter-input"
-        style="width: 320px"
+        class="filter-item"
       />
-      <q-btn color="primary" label="重置" @click="resetFilter" />
+      <q-btn
+        color="primary"
+        class="filter-btn"
+        label="重置"
+        @click="resetFilter"
+      />
     </div>
-    <div class="tip-bar row items-center q-mt-xs q-ml-sm">
+    <div class="tip-bar row items-center q-mt-xs q-ml-sm q-mt-md">
       <q-icon name="info" color="grey-5" size="18px" class="q-mr-xs" />
       <span class="text-grey-6" style="font-size: 13px"
         >请先切换成EN输入法</span
@@ -40,19 +42,16 @@
     </div>
 
     <!-- 表格 -->
-    <div class="main-table q-mt-md">
+    <div class="main-table">
       <!-- <div class="table-header row items-center q-px-md q-py-sm">
         <q-space />
         <q-btn flat round icon="settings" />
       </div> -->
-      {{ pageData.rows.length }}
       <q-table
         :rows="pageData.rows"
         :columns="pageData.columns"
         row-key="id"
         flat
-        bordered
-        hide-bottom
         class="examine-table"
         :loading="pageData.loading"
         :rows-per-page-options="[0]"
@@ -219,14 +218,14 @@ const examine = async () => {
 
 <style scoped lang="scss">
 .examine-goods-page {
-  background: #f5f6fa;
-  min-height: 100vh;
-  padding: 0 0 24px 0;
-
   .filter-bar {
-    background: #fff;
-    padding: 24px 24px 24px 24px;
-    border-radius: 0 0 8px 8px;
+    background: #ffffff;
+    box-shadow: 0px 1px 10px 1px rgba(102, 102, 102, 0.08);
+    border-radius: 16px 16px 16px 16px;
+    padding: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
   }
   .filter-select,
   .filter-input {
@@ -236,11 +235,10 @@ const examine = async () => {
     min-height: 32px;
   }
   .main-table {
-    background: #fff;
-    border-radius: 8px;
-    margin: 16px 16px 0 16px;
-    padding-bottom: 24px;
-    padding: 10px;
+    background: #ffffff;
+    box-shadow: 0px 1px 10px 1px rgba(102, 102, 102, 0.08);
+    border-radius: 16px 16px 16px 16px;
+    padding: 32px;
     .table-header {
       border-bottom: 1px solid #f0f0f0;
       font-size: 14px;
@@ -256,7 +254,6 @@ const examine = async () => {
     .examine-table {
       margin-top: 0;
       :deep(.q-table th) {
-        background: #f5f6fa;
         font-weight: 500;
         font-size: 14px;
         color: #333;

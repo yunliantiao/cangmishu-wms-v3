@@ -1,16 +1,37 @@
 <template>
   <div class="photo-record-page">
-    <DatePickerNew
-      v-model:selectInfo="pageData.selectInfo"
-      :date-list="pageData.dateList"
-    ></DatePickerNew>
+    <div class="search-box">
+      <q-select
+        outlined
+        dense
+        v-model="pageData.customer_ids"
+        :options="pageData.customerOptions"
+        multiple
+        option-label="label"
+        option-value="value"
+        @update:model-value="handleRefresh"
+        map-options
+        emit-value
+        clearable
+        label="客户"
+        class="filter-item"
+      />
+      <DatePickerNew
+        v-model:selectInfo="pageData.selectInfo"
+        :show-select="false"
+      ></DatePickerNew>
+      <KeywordSearch
+        v-model:selectInfo="pageData.keywordInfo"
+        :showSearchMode="false"
+      ></KeywordSearch>
+      <q-btn color="primary" class="filter-btn" @click="getList">搜索</q-btn>
+    </div>
     <div class="main-table q-mt-md">
       <q-table
         :rows="pageData.rows"
         :columns="pageData.columns"
         row-key="id"
         flat
-        bordered
         hide-bottom
         class="photo-table"
         :loading="pageData.loading"
@@ -26,7 +47,7 @@
                 class="product-img"
                 :ratio="1"
                 spinner-color="primary"
-                style="width: 60px; height: 60px"
+                style="width: 70px; height: 70px"
                 :img-class="'object-fit-contain'"
                 :error-src="'/statics/img-not-found.png'"
               >
@@ -41,17 +62,13 @@
             </q-td>
             <q-td>{{ props.row.package_number }}</q-td>
             <!-- <q-td>{{ props.row.warehouse }}</q-td> -->
-            <q-td>{{ props.row.customer_id }}</q-td>
+            <q-td>{{ props.row.customer?.name }}</q-td>
             <q-td>
               <div>{{ props.row.logistics_providers_code }}</div>
-              <div class="text-grey-7" style="font-size: 12px">
+              <div class="text-grey-7">
                 {{ props.row.system_order_number }}
               </div>
-              <div
-                v-if="props.row.extra_logistics"
-                class="text-grey-7"
-                style="font-size: 12px"
-              >
+              <div v-if="props.row.extra_logistics" class="text-grey-7">
                 {{ props.row.extra_logistics }}
               </div>
             </q-td>
@@ -66,21 +83,24 @@
           </div>
         </template>
       </q-table>
+
+      <Pagination
+        :total-count="pageData.total"
+        v-model:page="pageData.page"
+        v-model:rows-per-page="pageData.per_page"
+        @page-change="getList"
+      />
     </div>
-    <Pagination
-      :total-count="pageData.total"
-      v-model:page="pageData.page"
-      v-model:rows-per-page="pageData.per_page"
-      @page-change="getList"
-    />
   </div>
 </template>
 
 <script setup>
 import { reactive, onMounted } from "vue";
 import outApi from "@/api/out";
+import customerApi from "@/api/customer";
 import Pagination from "@/components/Pagination.vue";
 import DatePickerNew from "@/components/DatePickerNew/Index.vue";
+import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 
 const pageData = reactive({
   loading: false,
@@ -90,7 +110,13 @@ const pageData = reactive({
   per_page: 10,
   selectInfo: {
     date_type: "created_at",
+    search_value: "",
     date_range: [],
+  },
+  keywordInfo: {
+    search_type: "tracking_number",
+    search_value: "",
+    search_mode: "",
   },
   columns: [
     {
@@ -135,13 +161,31 @@ const pageData = reactive({
 
 onMounted(() => {
   getList();
+  getCustomerList();
 });
+
+const getCustomerList = async () => {
+  const { data } = await customerApi.getCustomerList();
+  if (data?.items) {
+    pageData.customerOptions = data.items.map((row) => {
+      return {
+        label: row.name,
+        value: row.id,
+      };
+    });
+  }
+};
 
 const getList = async () => {
   pageData.loading = true;
   let params = {
     page: pageData.page,
     per_page: pageData.per_page,
+    customer_ids: pageData.customer_ids,
+    start_date: pageData.selectInfo?.date_range[0] || "",
+    end_date: pageData.selectInfo?.date_range[1] || "",
+    search_type: pageData.keywordInfo?.search_type || "",
+    keywords: pageData.keywordInfo?.search_value || "",
   };
   const { data } = await outApi.photoRecord(params);
   console.log("data", data);
@@ -154,19 +198,19 @@ const getList = async () => {
 
 <style scoped lang="scss">
 .photo-record-page {
-  background: #f5f6fa;
   min-height: 100vh;
   padding: 0 0 24px 0;
 
   .main-table {
     background: #fff;
-    border-radius: 8px;
-    margin: 24px 16px 0 16px;
-    padding-bottom: 24px;
+    padding: 32px;
+    box-shadow: 0px 1px 10px 1px rgba(102, 102, 102, 0.08);
+    border-radius: 16px 16px 16px 16px;
+
     .photo-table {
       margin-top: 0;
       :deep(.q-table th) {
-        background: #f5f6fa;
+        // background: #f5f6fa;
         font-weight: 500;
         font-size: 14px;
         color: #333;
@@ -188,5 +232,16 @@ const getList = async () => {
       background: #fafbfc;
     }
   }
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  background: #fff;
+  padding: 32px;
+  box-shadow: 0px 1px 10px 1px rgba(102, 102, 102, 0.08);
+  border-radius: 16px 16px 16px 16px;
 }
 </style>

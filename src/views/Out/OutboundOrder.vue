@@ -17,21 +17,6 @@
     <!-- 搜索过滤区域 - 第一行 -->
     <div class="search-bar bg-white rounded-borders q-pa-md q-mb-md">
       <div class="row q-col-gutter-sm">
-        <!-- <div class="col-auto">
-          <q-select
-            outlined
-            dense
-            v-model="pageParams.customer_id"
-            :options="customerList"
-            option-label="label"
-            option-value="value"
-            map-options
-            emit-value
-            clearable
-            label="用户"
-            class="select-width"
-          />
-        </div> -->
         <div class="col-auto">
           <q-select
             outlined
@@ -44,7 +29,7 @@
             emit-value
             clearable
             label="订单来源"
-            class="select-width"
+            class="filter-item"
           />
         </div>
         <div class="col-auto">
@@ -59,24 +44,9 @@
             emit-value
             clearable
             label="平台"
-            class="select-width"
+            class="filter-item"
           />
         </div>
-        <!-- <div class="col-auto">
-          <q-select
-            outlined
-            dense
-            option-label="label"
-            option-value="value"
-            map-options
-            emit-value
-            clearable
-            v-model="pageParams.order_status"
-            :options="orderStatusOptions"
-            label="订单状态"
-            class="select-width"
-          />
-        </div> -->
         <div class="col-auto">
           <q-select
             outlined
@@ -89,10 +59,14 @@
             emit-value
             clearable
             label="拦截状态"
-            class="select-width"
+            class="filter-item"
           />
         </div>
-        <div class="col-auto">
+        <DatePicker
+          v-model:selectInfo="componentData.selectInfo"
+          :dateList="timeFilterOptions"
+        ></DatePicker>
+        <!-- <div class="col-auto">
           <q-select
             outlined
             dense
@@ -104,7 +78,7 @@
             emit-value
             clearable
             label="创建时间"
-            class="select-width"
+            class="filter-item"
           />
         </div>
         <div class="col-auto">
@@ -158,19 +132,24 @@
               </q-input>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
 
       <!-- 搜索过滤区域 - 第三行 -->
       <div class="row q-col-gutter-sm q-mt-sm">
-        <div class="col-auto">
+        <KeywordSearch
+          v-model:selectInfo="componentData.keywordInfo"
+          :searchTypeList="searchFieldOptions"
+          :showSearchMode="false"
+        ></KeywordSearch>
+        <!-- <div class="col-auto">
           <q-select
             outlined
             dense
             v-model="pageParams.search_type"
             :options="searchFieldOptions"
             label="搜索模式"
-            class="select-width"
+            class="filter-item"
             option-label="label"
             option-value="value"
             map-options
@@ -184,20 +163,23 @@
             dense
             v-model="pageParams.keywords"
             placeholder="请输入关键字"
-            style="width: 300px"
+            class="filter-item"
           >
           </q-input>
-        </div>
+        </div> -->
         <div class="col-auto">
           <q-btn
             outline
             color="grey"
             label="重置"
-            class="q-mr-sm"
+            class="filter-btn"
             @click="resetSearch"
           />
+        </div>
+        <div class="col-auto">
           <q-btn
             color="primary"
+            class="filter-btn"
             icon="search"
             label="搜索"
             :loading="$store.state.btnLoading"
@@ -446,6 +428,8 @@ import Pagination from "@/components/Pagination.vue";
 import OrderDetailsDialog from "./components/OrderDetailsDialog.vue";
 import outApi from "@/api/out";
 import customerApi from "@/api/customer";
+import DatePicker from "@/components/DatePickerNew/Index.vue";
+import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -648,6 +632,18 @@ const statusColorMap = {
   shipped: { bg: "teal-1", text: "teal" },
   exception: { bg: "green-1", text: "green" },
 };
+
+const componentData = reactive({
+  selectInfo: {
+    date_type: "created_at",
+    date_range: [],
+  },
+  keywordInfo: {
+    search_type: "package_number",
+    search_value: "",
+  },
+});
+
 // 处理状态导航切换
 const handleStatusNav = (status) => {
   statusNav.value = status;
@@ -665,6 +661,15 @@ const resetSearch = () => {
   pageParams.order_status = "";
   pageParams.intercept_status = "";
   pageParams.date_type = "";
+
+  componentData.selectInfo = {
+    date_type: "created_at",
+    date_range: [],
+  };
+  componentData.keywordInfo = {
+    search_type: "package_number",
+    search_value: "",
+  };
   getOutboundOrder();
 };
 // 获取状态颜色
@@ -674,7 +679,15 @@ const getStatusColor = (status) => {
 
 const packages = ref([]);
 const getOutboundOrder = () => {
-  outApi.getOutboundOrder(pageParams).then((res) => {
+  let params = {
+    ...pageParams,
+    date_type: componentData.selectInfo?.date_type,
+    start_date: componentData.selectInfo?.date_range[0],
+    end_date: componentData.selectInfo?.date_range[1],
+    search_type: componentData.keywordInfo?.search_type,
+    keywords: componentData.keywordInfo?.search_value,
+  };
+  outApi.getOutboundOrder(params).then((res) => {
     if (res.success) {
       packages.value = res.data.items;
       pageParams.total = res.data.meta.total;

@@ -86,7 +86,9 @@ watch(
     if (componentData.range) {
       let list = Object.values(componentData.range);
       if (list.length) {
-        selectInfo.value.date_range = list;
+        selectInfo.value.date_range = list.map((item) => {
+          return item.replace(/\//g, "-");
+        });
       } else {
         selectInfo.value.date_range = [];
       }
@@ -98,7 +100,9 @@ watch(
 );
 
 const getDate = (index) => {
-  let list = selectInfo.value.date_range;
+  let list = selectInfo.value.date_range || [];
+  console.log("list", list);
+
   if (index == 0) {
     return list[0] || "开始时间";
   } else {
@@ -113,13 +117,13 @@ const changeSelect = (e) => {
 
 <style scoped lang="scss">
 .date-picker-new {
-  border-radius: 9px;
+  border-radius: 4px;
   height: 42px;
   display: flex;
-  border: 1px solid #e6e6e6;
+  border: 1px solid rgba(0, 0, 0, 0.24);
   background: #ffffff;
   .filter-select {
-    border-right: 1px solid #e6e6e6;
+    border-right: 1px solid rgba(0, 0, 0, 0.24);
 
     width: 132px;
     :deep(.q-field__control:before) {
