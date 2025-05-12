@@ -30,7 +30,7 @@
             clearable
             outlined
             :placeholder="selectedProviders.length ? '' : '请选择'"
-            @filter="onFilterProviders"
+            @filter="onFilterChannels"
             :input-debounce="0"
           >
             <!-- 显示已选项 -->
@@ -123,7 +123,7 @@ watch(
 );
 
 // 搜索过滤
-const onFilterProviders = (val, update, abort) => {
+const onFilterChannels = (val, update, abort) => {
   const needle = val.toLowerCase();
   update(() => {
     if (!needle) {
