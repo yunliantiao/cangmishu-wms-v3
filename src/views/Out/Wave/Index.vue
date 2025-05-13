@@ -1,461 +1,331 @@
 <template>
   <div class="">
     <!-- 筛选条件区域 -->
-    <q-card class="q-mb-md">
-      <q-card-section>
+    <div class="search-bar">
+      <div class="row q-col-gutter-md">
+        <!-- 包裹类型选择 -->
+        <div class="col-12">
+          <div class="row items-center">
+            <div class="text-subtitle2 q-mr-md">包裹类型</div>
+            <q-checkbox
+              v-model="packageTypes.allTypes"
+              @update:model-value="checkAll"
+              label="全部"
+            />
+            <q-checkbox
+              @update:model-value="(value) => otherBox(value, 'singleUnit')"
+              v-model="packageTypes.singleUnit"
+              label="单品单数"
+            />
+            <q-checkbox
+              @update:model-value="(value) => otherBox(value, 'multiProducts')"
+              v-model="packageTypes.multiProducts"
+              label="单品多数"
+            />
+            <q-checkbox
+              v-model="packageTypes.multiSku"
+              @update:model-value="(value) => otherBox(value, 'multiSku')"
+              label="多品混包"
+            />
+          </div>
+        </div>
+
+        <!-- 筛选条件第一行 -->
+        <div class="col-auto">
+          <q-select
+            outlined
+            dense
+            v-model="filterOptions.customer_ids"
+            :options="customerOptions"
+            multiple
+            option-label="label"
+            option-value="value"
+            @update:model-value="handleRefresh"
+            map-options
+            emit-value
+            clearable
+            label="客户"
+            class="filter-item"
+          />
+        </div>
+        <div class="col-auto">
+          <q-select
+            outlined
+            dense
+            v-model="filterOptions.platforms"
+            :multiple="true"
+            :options="platformOptions"
+            @update:model-value="handleRefresh"
+            option-label="label"
+            option-value="value"
+            map-options
+            emit-value
+            clearable
+            label="全部平台"
+            class="select-width"
+          />
+        </div>
+        <div class="col-auto">
+          <q-select
+            outlined
+            dense
+            v-model="filterOptions.sources"
+            :multiple="true"
+            :options="orderSourceOptions"
+            option-label="label"
+            option-value="value"
+            map-options
+            @update:model-value="handleRefresh"
+            emit-value
+            clearable
+            label="全部订单来源"
+            class="select-width"
+          />
+        </div>
+        <div class="col-auto">
+          <q-select
+            outlined
+            dense
+            v-model="filterOptions.product_tag_ids"
+            :multiple="true"
+            :options="productMarkOptions"
+            option-label="label"
+            option-value="value"
+            @update:model-value="handleRefresh"
+            map-options
+            emit-value
+            clearable
+            label="商品标记"
+            class="select-width"
+          />
+        </div>
+        <div class="col-auto">
+          <q-select
+            outlined
+            dense
+            v-model="filterOptions.category_ids"
+            :options="productCategoryOptions"
+            option-label="label"
+            option-value="value"
+            @update:model-value="handleRefresh"
+            map-options
+            :multiple="true"
+            emit-value
+            clearable
+            label="商品分类"
+            class="select-width"
+          />
+        </div>
+        <div class="col-auto">
+          <q-select
+            outlined
+            dense
+            v-model="filterOptions.warehouse_area_ids"
+            :options="regionOptions"
+            option-label="label"
+            option-value="value"
+            @update:model-value="handleRefresh"
+            map-options
+            emit-value
+            :multiple="true"
+            clearable
+            label="货区"
+            class="select-width"
+          />
+        </div>
+
+        <div class="col-auto relative-box">
+          <q-input
+            outlined
+            dense
+            v-model="skuMap.labels"
+            label="SKU*数量"
+            class="select-width"
+          >
+            <template v-slot:append>
+              <q-icon name="search" @click="showSkuDialog" />
+            </template>
+          </q-input>
+
+          <div class="absolute-top-right" @click="showSkuDialog"></div>
+        </div>
+
+        <!-- 筛选条件第二行 -->
         <div class="row q-col-gutter-md">
-          <!-- 包裹类型选择 -->
-          <div class="col-12">
-            <div class="row items-center">
-              <div class="text-subtitle2 q-mr-md">包裹类型</div>
-              <q-checkbox
-                v-model="packageTypes.allTypes"
-                @update:model-value="checkAll"
-                label="全部"
-              />
-              <q-checkbox
-                @update:model-value="(value) => otherBox(value, 'singleUnit')"
-                v-model="packageTypes.singleUnit"
-                label="单品单数"
-              />
-              <q-checkbox
-                @update:model-value="
-                  (value) => otherBox(value, 'multiProducts')
-                "
-                v-model="packageTypes.multiProducts"
-                label="单品多数"
-              />
-              <q-checkbox
-                v-model="packageTypes.multiSku"
-                @update:model-value="(value) => otherBox(value, 'multiSku')"
-                label="多品混包"
-              />
+          <div class="col-auto">
+            <DatePickerNew
+              v-model:selectInfo="pageData.selectInfo"
+              :dateList="timeOptions"
+            ></DatePickerNew>
+          </div>
+
+          <KeywordSearch
+            v-model:selectInfo="pageData.keywordSearch"
+            :searchTypeList="productSkuOptions"
+            :searchModeList="searchModeOptions"
+          ></KeywordSearch>
+          <div class="col-auto">
+            <q-btn
+              outline
+              color="grey"
+              label="重置"
+              class="filter-btn"
+              @click="resetFilters"
+            />
+          </div>
+
+          <div class="col-auto">
+            <q-btn
+              outline
+              color="primary"
+              label="查询"
+              class="filter-btn"
+              @click="initList"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-table">
+      <!-- 物流区域 -->
+      <div class="text-subtitle1 q-mb-md">物流</div>
+
+      <div class="row">
+        <div class="col-10 col-md-6">
+          <q-tree
+            :nodes="logisticsNodes"
+            node-key="id"
+            tick-strategy="leaf"
+            v-model:ticked="selectedLogistics"
+          />
+        </div>
+
+        <div class="col-14 col-md-5">
+          <div class="row q-col-gutter-md">
+            <div class="col-4 text-center">
+              <div class="text-subtitle2">包裹数量</div>
+              <div class="text-h4 text-primary">
+                {{ searchResult.total_package_count }}
+              </div>
             </div>
-          </div>
-
-          <!-- 筛选条件第一行 -->
-          <div class="col-auto">
-            <q-select
-              outlined
-              dense
-              v-model="filterOptions.customer_ids"
-              :options="customerOptions"
-              multiple
-              option-label="label"
-              option-value="value"
-              @update:model-value="handleRefresh"
-              map-options
-              emit-value
-              clearable
-              label="客户"
-              class="select-width"
-            />
-          </div>
-          <div class="col-auto">
-            <q-select
-              outlined
-              dense
-              v-model="filterOptions.platforms"
-              :multiple="true"
-              :options="platformOptions"
-              @update:model-value="handleRefresh"
-              option-label="label"
-              option-value="value"
-              map-options
-              emit-value
-              clearable
-              label="全部平台"
-              class="select-width"
-            />
-          </div>
-          <div class="col-auto">
-            <q-select
-              outlined
-              dense
-              v-model="filterOptions.sources"
-              :multiple="true"
-              :options="orderSourceOptions"
-              option-label="label"
-              option-value="value"
-              map-options
-              @update:model-value="handleRefresh"
-              emit-value
-              clearable
-              label="全部订单来源"
-              class="select-width"
-            />
-          </div>
-          <div class="col-auto">
-            <q-select
-              outlined
-              dense
-              v-model="filterOptions.product_tag_ids"
-              :multiple="true"
-              :options="productMarkOptions"
-              option-label="label"
-              option-value="value"
-              @update:model-value="handleRefresh"
-              map-options
-              emit-value
-              clearable
-              label="商品标记"
-              class="select-width"
-            />
-          </div>
-          <div class="col-auto">
-            <q-select
-              outlined
-              dense
-              v-model="filterOptions.category_ids"
-              :options="productCategoryOptions"
-              option-label="label"
-              option-value="value"
-              @update:model-value="handleRefresh"
-              map-options
-              :multiple="true"
-              emit-value
-              clearable
-              label="商品分类"
-              class="select-width"
-            />
-          </div>
-          <div class="col-auto">
-            <q-select
-              outlined
-              dense
-              v-model="filterOptions.warehouse_area_ids"
-              :options="regionOptions"
-              option-label="label"
-              option-value="value"
-              @update:model-value="handleRefresh"
-              map-options
-              emit-value
-              :multiple="true"
-              clearable
-              label="货区"
-              class="select-width"
-            />
-          </div>
-
-          <!-- 筛选条件第二行 -->
-          <div class="col-12 q-mt-sm">
-            <div class="row q-col-gutter-sm">
-              <div class="col-auto">
-                <q-input
-                  outlined
-                  dense
-                  readonly
-                  @click="showSkuDialog"
-                  v-model="skuMap.labels"
-                  label="SKU*数量"
-                  class="select-width"
-                >
-                  <template v-slot:append>
-                    <q-icon name="search" @click="showSkuDialog" />
-                  </template>
-                </q-input>
+            <div class="col-4 text-center">
+              <div class="text-subtitle2">商品种类</div>
+              <div class="text-h4 text-primary">
+                {{ searchResult.total_sku_count }}
               </div>
-              <div class="col-auto">
-                <q-select
-                  outlined
-                  @update:model-value="handleRefresh"
-                  dense
-                  v-model="filterOptions.date_type"
-                  :options="timeOptions"
-                  option-label="label"
-                  option-value="value"
-                  map-options
-                  emit-value
-                  label="时间类型"
-                  class="select-width"
-                >
-                  <template v-slot:append>
-                    <q-icon name="schedule" />
-                  </template>
-                </q-select>
-              </div>
-              <div class="col-auto">
-                <q-input
-                  outlined
-                  dense
-                  v-model="filterOptions.start_date"
-                  label="开始时间"
-                  @update:model-value="handleRefresh"
-                  readonly
-                  class="date-input"
-                >
-                  <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
-                      <q-popup-proxy
-                        cover
-                        transition-show="scale"
-                        transition-hide="scale"
-                      >
-                        <q-date
-                          v-model="filterOptions.start_date"
-                          mask="YYYY-MM-DD"
-                        />
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
-              </div>
-              <div class="col-auto self-center">To</div>
-              <div class="col-auto">
-                <q-input
-                  outlined
-                  dense
-                  v-model="filterOptions.end_date"
-                  label="结束时间"
-                  @update:model-value="handleRefresh"
-                  readonly
-                  class="date-input"
-                >
-                  <template v-slot:append>
-                    <q-icon name="event" class="cursor-pointer">
-                      <q-popup-proxy
-                        cover
-                        transition-show="scale"
-                        transition-hide="scale"
-                      >
-                        <q-date
-                          v-model="filterOptions.end_date"
-                          mask="YYYY-MM-DD"
-                        />
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
+            </div>
+            <div class="col-4 text-center">
+              <div class="text-subtitle2">商品数量</div>
+              <div class="text-h4 text-primary">
+                {{ searchResult.total_item_count }}
               </div>
             </div>
           </div>
 
-          <!-- 精确搜索区域 -->
-          <div class="col-12 q-mt-sm">
-            <div class="row q-col-gutter-sm">
-              <div class="col-auto">
-                <q-select
-                  outlined
-                  dense
-                  v-model="filterOptions.search_type"
-                  :options="productSkuOptions"
-                  option-label="label"
-                  option-value="value"
-                  map-options
-                  emit-value
-                  clearable
-                  @update:model-value="handleRefresh"
-                  label="搜索类型"
-                  class="select-width"
-                />
+          <div class="q-col-gutter-md setting">
+            <div class="col-md-6">
+              <div class="row items-center">
+                <div class="col-2 text-subtitle2">
+                  分类规则 <span class="text-red">*</span>
+                </div>
+                <div class="col-8 flex">
+                  <q-select
+                    outlined
+                    dense
+                    v-model="settings.wave_rule"
+                    :options="sortRuleOptions"
+                    option-label="label"
+                    option-value="value"
+                    map-options
+                    emit-value
+                    @update:model-value="ruleChange"
+                    label="分类规则"
+                    class="full-width"
+                  >
+                  </q-select>
+                </div>
+                <div class="col-2">
+                  <q-btn flat round icon="help_outline">
+                    <q-tooltip anchor="top middle" self="center middle">
+                      按系统规则分波即根据包裹类型分为单品波次和多品混包波次；按包裹汇总分波即为筛选的包裹合到一起分波，不按照包裹类型区分
+                    </q-tooltip>
+                  </q-btn>
+                </div>
               </div>
-              <div class="col-auto">
-                <q-input
-                  outlined
-                  dense
-                  @update:model-value="handleRefresh"
-                  v-model="filterOptions.keywords"
-                  label="批量搜索用逗号进行隔开"
-                  style="width: 300px"
-                >
-                </q-input>
-              </div>
+            </div>
 
-              <div class="col-auto">
-                <q-select
-                  outlined
-                  dense
-                  v-model="filterOptions.search_mode"
-                  :options="searchModeOptions"
-                  option-label="label"
-                  option-value="value"
-                  @update:model-value="handleRefresh"
-                  map-options
-                  emit-value
-                  clearable
-                  label="搜索模式"
-                  class="select-width"
-                />
+            <div class="col-md-6">
+              <div class="row items-center gap-20px">
+                <div class="col-2 text-subtitle2">
+                  包裹排序 <span class="text-red">*</span>
+                </div>
+                <div class="col-8">
+                  <q-select
+                    outlined
+                    dense
+                    v-model="settings.package_order"
+                    :options="packageOrderOptions"
+                    option-label="label"
+                    option-value="value"
+                    map-options
+                    emit-value
+                    label="排序"
+                    class="full-width"
+                  />
+                </div>
               </div>
+            </div>
 
-              <!-- <div class="col-auto">
-                <q-select
-                  outlined
-                  dense
-                  v-model="filterOptions.template"
-                  :options="templateOptions"
-                  option-label="label"
-                  option-value="value"
-                  map-options
-                  emit-value
-                  clearable
-                  label="筛选模板"
-                  class="select-width"
-                />
-              </div> -->
-              <div class="col-auto">
-                <q-btn
-                  outline
-                  color="primary"
-                  label="查询"
-                  class="q-mr-sm"
-                  @click="initList"
-                />
-                <q-btn
-                  outline
-                  color="grey"
-                  label="重置"
-                  class="q-mr-sm"
-                  @click="resetFilters"
-                />
+            <div class="col-md-6" v-if="settings.showOtherRules">
+              <div class="row items-center gap-20px">
+                <div class="col-2 text-subtitle2">
+                  包裹数量上限 <span class="text-red">*</span>
+                </div>
+                <div class="col-8">
+                  <q-input
+                    outlined
+                    :rules="[(val) => val > 0]"
+                    dense
+                    v-model="settings.package_limit"
+                    label="请输入"
+                  >
+                  </q-input>
+                </div>
               </div>
+            </div>
+
+            <div
+              class="col-md-6"
+              style="padding-top: 0 !important"
+              v-if="settings.showOtherRules"
+            >
+              <div class="row items-center gap-20px">
+                <div class="col-2 text-subtitle2"></div>
+                <div class="col-8">
+                  <q-checkbox
+                    v-model="settings.package_limit_not_enough"
+                    label="数量不足上线的包裹生成尾波"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row q-mt-md">
+            <div class="col-12">
+              <q-btn
+                color="primary"
+                icon="done"
+                label="生成"
+                @click="generateWave"
+              />
+              <div class="q-mt-sm text-grey-7">前往设置波次规则 ></div>
             </div>
           </div>
         </div>
-      </q-card-section>
-    </q-card>
-
-    <!-- 物流区域 -->
-    <q-card class="q-mb-md">
-      <q-card-section>
-        <div class="text-subtitle1 q-mb-md">物流</div>
-
-        <div class="row">
-          <div class="col-10 col-md-6">
-            <q-tree
-              :nodes="logisticsNodes"
-              node-key="id"
-              tick-strategy="leaf"
-              v-model:ticked="selectedLogistics"
-            />
-          </div>
-
-          <div class="col-14 col-md-5">
-            <div class="row q-col-gutter-md">
-              <div class="col-4 text-center">
-                <div class="text-subtitle2">包裹数量</div>
-                <div class="text-h4 text-primary">
-                  {{ searchResult.total_package_count }}
-                </div>
-              </div>
-              <div class="col-4 text-center">
-                <div class="text-subtitle2">商品种类</div>
-                <div class="text-h4 text-primary">
-                  {{ searchResult.total_sku_count }}
-                </div>
-              </div>
-              <div class="col-4 text-center">
-                <div class="text-subtitle2">商品数量</div>
-                <div class="text-h4 text-primary">
-                  {{ searchResult.total_item_count }}
-                </div>
-              </div>
-            </div>
-
-            <div class="q-col-gutter-md setting">
-              <div class="col-md-6">
-                <div class="row items-center">
-                  <div class="col-2 text-subtitle2">
-                    分类规则 <span class="text-red">*</span>
-                  </div>
-                  <div class="col-8 flex">
-                    <q-select
-                      outlined
-                      dense
-                      v-model="settings.wave_rule"
-                      :options="sortRuleOptions"
-                      option-label="label"
-                      option-value="value"
-                      map-options
-                      emit-value
-                      @update:model-value="ruleChange"
-                      label="分类规则"
-                      class="full-width"
-                    >
-                    </q-select>
-                  </div>
-                  <div class="col-2">
-                    <q-btn flat round icon="help_outline">
-                      <q-tooltip anchor="top middle" self="center middle">
-                        按系统规则分波即根据包裹类型分为单品波次和多品混包波次；按包裹汇总分波即为筛选的包裹合到一起分波，不按照包裹类型区分
-                      </q-tooltip>
-                    </q-btn>
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-6">
-                <div class="row items-center gap-20px">
-                  <div class="col-2 text-subtitle2">
-                    包裹排序 <span class="text-red">*</span>
-                  </div>
-                  <div class="col-8">
-                    <q-select
-                      outlined
-                      dense
-                      v-model="settings.package_order"
-                      :options="packageOrderOptions"
-                      option-label="label"
-                      option-value="value"
-                      map-options
-                      emit-value
-                      label="排序"
-                      class="full-width"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div class="col-md-6" v-if="settings.showOtherRules">
-                <div class="row items-center gap-20px">
-                  <div class="col-2 text-subtitle2">
-                    包裹数量上限 <span class="text-red">*</span>
-                  </div>
-                  <div class="col-8">
-                    <q-input
-                      outlined
-                      :rules="[(val) => val > 0]"
-                      dense
-                      v-model="settings.package_limit"
-                      label="请输入"
-                    >
-                    </q-input>
-                  </div>
-                </div>
-              </div>
-
-              <div
-                class="col-md-6"
-                style="padding-top: 0 !important"
-                v-if="settings.showOtherRules"
-              >
-                <div class="row items-center gap-20px">
-                  <div class="col-2 text-subtitle2"></div>
-                  <div class="col-8">
-                    <q-checkbox
-                      v-model="settings.package_limit_not_enough"
-                      label="数量不足上线的包裹生成尾波"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="row q-mt-md">
-              <div class="col-12">
-                <q-btn
-                  color="primary"
-                  icon="done"
-                  label="生成"
-                  @click="generateWave"
-                />
-                <div class="q-mt-sm text-grey-7">前往设置波次规则 ></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </q-card-section>
-    </q-card>
+      </div>
+    </div>
 
     <SkuDialog
       ref="skuDialogRef"
@@ -478,6 +348,8 @@ import SkuDialog from "./components/SkuDialog.vue";
 import waveApi from "@/api/wave.js";
 import GenerateWave from "./components/GenerateDialog.vue";
 import { getTodayDate, getThirtyDaysAgoDate } from "@/utils/common.js";
+import DatePickerNew from "@/components/DatePickerNew/Index.vue";
+import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 
 import { useQuasar } from "quasar";
 const q = useQuasar();
@@ -575,6 +447,17 @@ const resetFilters = () => {
   for (const key in packageTypes) {
     packageTypes[key] = true;
   }
+
+  pageData.keywordSearch = {
+    search_type: "product_spec_sku",
+    search_value: "",
+    search_mode: "exact",
+  };
+
+  pageData.selectInfo = {
+    date_type: "created_at",
+    date_range: [getThirtyDaysAgoDate(), getTodayDate()],
+  };
 };
 
 // 下拉选项
@@ -682,9 +565,19 @@ const searchModeOptions = ref([
   },
 ]);
 
+const pageData = reactive({
+  selectInfo: {
+    date_type: "created_at",
+    date_range: [getThirtyDaysAgoDate(), getTodayDate()],
+  },
+  keywordSearch: {
+    search_type: "product_spec_sku",
+    search_value: "",
+    search_mode: "exact",
+  },
+});
+
 onMounted(() => {
-  filterOptions.start_date = getThirtyDaysAgoDate();
-  filterOptions.end_date = getTodayDate();
   getCustomerList();
   getTagList();
   getCategoryList();
@@ -765,7 +658,19 @@ const getParams = () => {
     package_order: "created_at_sort",
     ...settings,
     package_types: [],
-    tags_sku_qty: [],
+    category_ids: filterOptions.category_ids,
+    product_tag_ids: filterOptions.product_tag_ids || [],
+    category_ids: filterOptions.category_ids || [],
+    sources: filterOptions.sources || [],
+    platforms: filterOptions.platforms || [],
+    customer_ids: filterOptions.customer_ids || [],
+    warehouse_area_ids: filterOptions.warehouse_area_ids || [],
+    date_type: pageData.selectInfo.date_type,
+    start_date: pageData.selectInfo.date_range[0],
+    end_date: pageData.selectInfo.date_range[1],
+    search_type: pageData.keywordSearch.search_type,
+    keywords: pageData.keywordSearch.search_value,
+    search_mode: pageData.keywordSearch.search_mode,
   };
 
   // 包裹类型映射 为true则push到筛选数组里面
@@ -877,7 +782,7 @@ const handleRefresh = () => {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .text-red {
   color: red;
 }
@@ -897,4 +802,16 @@ const handleRefresh = () => {
   margin-left: 10px;
   cursor: pointer;
 }
+.relative-box {
+  position: relative;
+  .absolute-top-right {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    cursor: pointer;
+  }
+}
 </style>
+

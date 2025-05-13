@@ -1,7 +1,7 @@
 <template>
   <div class="goods-area-page">
     <!-- 筛选区域 -->
-    <div class="filter-section bg-white q-pa-md q-mb-md rounded-borders">
+    <div class="search-bar">
       <div class="row q-col-gutter-sm">
         <div class="col-auto">
           <q-select
@@ -10,13 +10,17 @@
             v-model="pageParams.area_type"
             :options="areaTypeOptionsForm"
             label="货区类型"
-            class="select-width"
+            class="filter-item"
             emit-value
             clearable
           >
             <template v-slot:selected>
               <div>
-                {{ areaTypeOptionsForm.find(item => item.value === pageParams.area_type)?.label || '请选择' }}
+                {{
+                  areaTypeOptionsForm.find(
+                    (item) => item.value === pageParams.area_type
+                  )?.label
+                }}
               </div>
             </template>
           </q-select>
@@ -25,6 +29,7 @@
           <q-btn
             label="查询"
             color="primary"
+            class="filter-btn"
             icon="search"
             @click="fetchAreaList"
           />
@@ -32,15 +37,13 @@
       </div>
     </div>
 
-    <div class="page_table_action">
+    <div class="main-table">
       <!-- 操作按钮区域 -->
       <div class="row justify-end q-mb-sm">
-        <q-btn
-          color="primary"
-          label="新建"
-          icon="add"
-          @click="showCreateForm"
-        />
+        <q-btn color="primary" class="filter-btn" @click="showCreateForm">
+          <img src="@/assets/images/add.png" class="add-icon" />
+          新建货区
+        </q-btn>
       </div>
 
       <!-- 货区列表 -->
@@ -50,7 +53,6 @@
           :columns="columns"
           row-key="id"
           flat
-          bordered
           separator="horizontal"
           :loading="$store.state.btnLoading"
           class="area-table"
@@ -251,7 +253,7 @@ const pageParams = ref({
   page: 1,
   per_page: 10,
   total: 0,
-  area_type:""
+  area_type: "",
 });
 // 获取货区列表
 const fetchAreaList = async () => {
@@ -299,8 +301,8 @@ const handleDelete = (row) => {
       label: "取消",
       color: "grey-7",
     },
-  }).onOk( () => {
-     settingApi.deleteGoodsArea(row.id).then((res) => {
+  }).onOk(() => {
+    settingApi.deleteGoodsArea(row.id).then((res) => {
       if (res.success) {
         $q.notify({
           message: "删除成功",
@@ -412,5 +414,9 @@ const handleSubmit = async () => {
       min-height: 100px;
     }
   }
+}
+
+.mt-50 {
+  margin-top: 50px;
 }
 </style>

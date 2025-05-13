@@ -1,52 +1,57 @@
 <template>
   <div class="wave-list-page">
     <!-- 顶部标签页 -->
-    <div class="q-mb-md">
-      <q-tabs
-        v-model="pageData.filterOptions.status"
-        class="text-grey"
-        active-color="primary"
-        @update:model-value="handleSearch"
-        indicator-color="primary"
-        align="left"
-        narrow-indicator
-      >
-        <q-tab name="all" label="全部" />
-        <q-tab name="pending" label="待拣货" />
-        <q-tab name="picking" label="待包装" />
-        <q-tab name="packing" label="包装中" />
-        <q-tab name="completed" label="已完成" />
-        <q-tab name="cancelled" label="已作废" />
-      </q-tabs>
-    </div>
+    <div class="search-bar" style="padding-top: 10px">
+      <div class="q-mb-md">
+        <q-tabs
+          v-model="pageData.filterOptions.status"
+          class="text-grey"
+          active-color="primary"
+          @update:model-value="handleSearch"
+          indicator-color="primary"
+          align="left"
+          narrow-indicator
+        >
+          <q-tab name="all" label="全部" />
+          <q-tab name="pending" label="待拣货" />
+          <q-tab name="picking" label="待包装" />
+          <q-tab name="packing" label="包装中" />
+          <q-tab name="completed" label="已完成" />
+          <q-tab name="cancelled" label="已作废" />
+        </q-tabs>
+      </div>
 
-    <!-- 筛选条件区域 -->
-    <div class="row q-col-gutter-sm q-mb-md">
-      <div class="col-auto">
-        <q-select
-          outlined
-          dense
-          v-model="pageData.filterOptions.wave_type"
-          :options="pageData.waveTypeOptions"
-          label="拣货单类型"
-          class="filter-select"
-          emit-value
-          map-options
-        />
-      </div>
-      <div class="col-auto">
-        <q-select
-          outlined
-          dense
-          v-model="pageData.filterOptions.logistics_group_ids"
-          :options="pageData.logisticsGroupOptions"
-          label="物流组没有"
-          class="filter-select"
-          emit-value
-          map-options
-        />
-      </div>
-      <div class="col-auto">
+      <!-- 筛选条件区域 -->
+      <div class="row q-col-gutter-sm q-mb-md">
+        <div class="col-auto">
+          <q-select
+            outlined
+            dense
+            v-model="pageData.filterOptions.wave_type"
+            :options="pageData.waveTypeOptions"
+            label="拣货单类型"
+            class="filter-select"
+            emit-value
+            map-options
+          />
+        </div>
+        <div class="col-auto">
+          <q-select
+            outlined
+            dense
+            v-model="pageData.filterOptions.logistics_group_ids"
+            :options="pageData.logisticsGroupOptions"
+            label="物流组没有"
+            class="filter-select"
+            emit-value
+            map-options
+          />
+        </div>
+        <DatePickerNew
+          v-model:selectInfo="pageData.selectInfo"
+          :dateList="pageData.timeTypeOptions"
+        ></DatePickerNew>
+        <!-- <div class="col-auto">
         <q-select
           outlined
           dense
@@ -112,22 +117,27 @@
             </q-icon>
           </template>
         </q-input>
+      </div> -->
+        <div class="col-auto">
+          <q-select
+            outlined
+            dense
+            v-model="pageData.filterOptions.pick_print_status"
+            :options="pageData.printStatusOptions"
+            label="拣货单打印"
+            class="filter-select"
+            emit-value
+            map-options
+          />
+        </div>
       </div>
-      <div class="col-auto">
-        <q-select
-          outlined
-          dense
-          v-model="pageData.filterOptions.pick_print_status"
-          :options="pageData.printStatusOptions"
-          label="拣货单打印"
-          class="filter-select"
-          emit-value
-          map-options
-        />
-      </div>
-    </div>
-    <div class="row q-col-gutter-sm q-mb-md">
-      <div class="col-auto">
+      <div class="row q-col-gutter-sm q-mb-md">
+        <KeywordSearch
+          v-model:selectInfo="pageData.keywordSearch"
+          :searchTypeList="pageData.waveNumberOptions"
+          :searchModeList="pageData.searchModeOptions"
+        ></KeywordSearch>
+        <!-- <div class="col-auto">
         <q-select
           outlined
           dense
@@ -147,23 +157,20 @@
           label="请输入"
           class="search-input"
         />
-      </div>
-      <div class="col-auto">
-        <q-btn
-          color="primary"
-          icon="search"
-          label="精确搜索"
-          class="q-ml-sm"
-          @click="handleSearch"
-        />
+      </div> -->
+        <div class="col-auto">
+          <q-btn
+            color="primary"
+            icon="search"
+            label="搜索"
+            class="filter-btn"
+            @click="handleSearch"
+          />
+        </div>
       </div>
     </div>
-
     <!-- 操作按钮区域 -->
-    <div class="row q-mb-sm items-center">
-      <div class="col-auto">
-        <span class="q-mr-sm">选择 {{ pageData.selectedRows.length }}</span>
-      </div>
+    <div class="main-table">
       <div class="col-auto">
         <q-btn
           color="primary"
@@ -204,72 +211,58 @@
           </q-list>
         </q-btn-dropdown>
       </div>
-      <div class="col-grow text-right">
-        <!-- <q-btn
-          color="primary"
-          outline
-          label="生成时间"
-          icon="schedule"
-          @click="toggleSortByTime"
-        >
-          <q-icon name="arrow_downward" size="xs" class="q-ml-xs" />
-        </q-btn> -->
-      </div>
-    </div>
+      <q-table
+        :rows="pageData.waveData"
+        :columns="columns"
+        row-key="id"
+        flat
+        separator="horizontal"
+        selection="multiple"
+        v-model:selected="pageData.selectedRows"
+        class="global-mt"
+        :pagination="pageData.pagination"
+        :loading="pageData.loading"
+      >
+        <template v-slot:header="props">
+          <q-tr :props="props">
+            <q-th auto-width>
+              <q-checkbox v-model="props.selected" />
+            </q-th>
+            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+              {{ col.label }}
+            </q-th>
+          </q-tr>
+        </template>
 
-    <!-- 数据表格 -->
-    <q-table
-      :rows="pageData.waveData"
-      :columns="columns"
-      row-key="id"
-      flat
-      bordered
-      separator="horizontal"
-      selection="multiple"
-      v-model:selected="pageData.selectedRows"
-      :pagination="pageData.pagination"
-      :loading="pageData.loading"
-    >
-      <template v-slot:header="props">
-        <q-tr :props="props">
-          <q-th auto-width>
-            <q-checkbox v-model="props.selected" />
-          </q-th>
-          <q-th v-for="col in props.cols" :key="col.name" :props="props">
-            {{ col.label }}
-          </q-th>
-        </q-tr>
-      </template>
-
-      <template v-slot:body="props">
-        <q-tr :props="props">
-          <q-td auto-width>
-            <q-checkbox v-model="props.selected" />
-          </q-td>
-          <q-td key="wave_number" :props="props">
-            {{ props.row.wave_number }}
-          </q-td>
-          <!-- <q-td key="warehouse" :props="props">
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td auto-width>
+              <q-checkbox v-model="props.selected" />
+            </q-td>
+            <q-td key="wave_number" :props="props">
+              {{ props.row.wave_number }}
+            </q-td>
+            <!-- <q-td key="warehouse" :props="props">
             {{ props.row.warehouse }}
           </q-td> -->
-          <q-td key="wave_type" :props="props">
-            {{ getTypeDesc(props.row.wave_type) }}
-          </q-td>
-          <q-td key="logistics_group_ids" :props="props">
-            {{ props.row.logistics_group_ids }}暂无
-          </q-td>
-          <q-td key="package_count" :props="props">
-            {{ props.row.package_count }}
-          </q-td>
-          <q-td key="sku_type_count" :props="props">
-            {{ props.row.sku_type_count }}
-          </q-td>
-          <q-td key="item_count" :props="props">
-            {{ props.row.item_count }}
-          </q-td>
-          <q-td key="picker" :props="props">
-            {{ props.row.pick_by?.name }}
-            <!-- <q-select
+            <q-td key="wave_type" :props="props">
+              {{ getTypeDesc(props.row.wave_type) }}
+            </q-td>
+            <q-td key="logistics_group_ids" :props="props">
+              {{ props.row.logistics_group_ids }}暂无
+            </q-td>
+            <q-td key="package_count" :props="props">
+              {{ props.row.package_count }}
+            </q-td>
+            <q-td key="sku_type_count" :props="props">
+              {{ props.row.sku_type_count }}
+            </q-td>
+            <q-td key="item_count" :props="props">
+              {{ props.row.item_count }}
+            </q-td>
+            <q-td key="picker" :props="props">
+              {{ props.row.pick_by?.name }}
+              <!-- <q-select
               outlined
               dense
               @change="handlePickerChange(props.row)"
@@ -278,116 +271,116 @@
               class="picker-select"
             >
             </q-select> -->
-          </q-td>
+            </q-td>
 
-          <q-td key="pack_by" :props="props">
-            {{ props.row.pack_by?.name }}
-          </q-td>
-          <q-td key="created_at" :props="props">
-            <div>生成:{{ props.row.created_at }}</div>
-            <!-- <div v-if="props.row.status != 'pending'">
+            <q-td key="pack_by" :props="props">
+              {{ props.row.pack_by?.name }}
+            </q-td>
+            <q-td key="created_at" :props="props">
+              <div>生成:{{ props.row.created_at }}</div>
+              <!-- <div v-if="props.row.status != 'pending'">
               拣货:{{ props.row.updated_at }}
             </div> -->
-          </q-td>
-          <q-td key="status" :props="props">
-            {{ getStatusDesc(props.row.status) }}
-          </q-td>
-          <q-td key="is_print_pick_label" :props="props">
-            {{ props.row.is_print_pick_label ? "已打印" : "未打印" }}
-          </q-td>
-          <q-td key="actions" :props="props">
-            <div class="row justify-center q-gutter-xs">
-              <q-btn
-                flat
-                round
-                color="grey-7"
-                icon="token"
-                :disable="!props.row.pack_by?.is_self"
-                v-if="['packing', 'picking'].includes(props.row.status)"
-                @click="handlePack(props.row)"
-              >
-                <q-tooltip>开始打包</q-tooltip>
-              </q-btn>
-              <q-btn
-                flat
-                round
-                color="grey-7"
-                icon="description"
-                @click="handleViewDetails(props.row)"
-              >
-                <q-tooltip>查看详情</q-tooltip>
-              </q-btn>
-
-              <span>
+            </q-td>
+            <q-td key="status" :props="props">
+              {{ getStatusDesc(props.row.status) }}
+            </q-td>
+            <q-td key="is_print_pick_label" :props="props">
+              {{ props.row.is_print_pick_label ? "已打印" : "未打印" }}
+            </q-td>
+            <q-td key="actions" :props="props">
+              <div class="row justify-center q-gutter-xs">
                 <q-btn
                   flat
                   round
-                  v-if="
-                    props.row.status != 'completed' &&
-                    props.row.status != 'cancelled'
-                  "
                   color="grey-7"
-                  icon="print"
-                  @click="handlePrint(props.row)"
+                  icon="token"
+                  :disable="!props.row.pack_by?.is_self"
+                  v-if="['packing', 'picking'].includes(props.row.status)"
+                  @click="handlePack(props.row)"
                 >
-                  <q-tooltip>打印</q-tooltip>
+                  <q-tooltip>开始打包</q-tooltip>
                 </q-btn>
-              </span>
+                <q-btn
+                  flat
+                  round
+                  color="grey-7"
+                  icon="description"
+                  @click="handleViewDetails(props.row)"
+                >
+                  <q-tooltip>查看详情</q-tooltip>
+                </q-btn>
 
-              <q-btn
-                flat
-                round
-                color="grey-7"
-                v-if="
-                  !['completed', 'cancelled', 'packing'].includes(
-                    props.row.status
+                <span>
+                  <q-btn
+                    flat
+                    round
+                    v-if="
+                      props.row.status != 'completed' &&
+                      props.row.status != 'cancelled'
+                    "
+                    color="grey-7"
+                    icon="print"
+                    @click="handlePrint(props.row)"
+                  >
+                    <q-tooltip>打印</q-tooltip>
+                  </q-btn>
+                </span>
+
+                <q-btn
+                  flat
+                  round
+                  color="grey-7"
+                  v-if="
+                    !['completed', 'cancelled', 'packing'].includes(
+                      props.row.status
+                    )
+                  "
+                  icon="no_sim"
+                  @click="handleAbandon(props.row)"
+                >
+                  <q-tooltip>作废</q-tooltip>
+                </q-btn>
+              </div>
+            </q-td>
+          </q-tr>
+        </template>
+
+        <template v-slot:no-data>
+          <div class="full-width row flex-center q-gutter-sm q-pa-lg">
+            <q-icon size="2em" name="sentiment_dissatisfied" />
+            <span>无数据</span>
+          </div>
+        </template>
+
+        <template v-slot:bottom>
+          <div class="row items-center justify-between full-width">
+            <div>Total: {{ pageData.pagination.rowsNumber }}</div>
+            <div class="row items-center">
+              <span class="q-mr-sm">
+                {{ pageData.pagination.page }}/{{
+                  Math.ceil(
+                    pageData.pagination.rowsNumber /
+                      pageData.pagination.rowsPerPage
+                  )
+                }}</span
+              >
+              <q-pagination
+                v-model="pageData.pagination.page"
+                :max="
+                  Math.ceil(
+                    pageData.pagination.rowsNumber /
+                      pageData.pagination.rowsPerPage
                   )
                 "
-                icon="no_sim"
-                @click="handleAbandon(props.row)"
-              >
-                <q-tooltip>作废</q-tooltip>
-              </q-btn>
+                :max-pages="6"
+                boundary-links
+                direction-links
+                @update:model-value="onPageChange"
+              />
             </div>
-          </q-td>
-        </q-tr>
-      </template>
-
-      <template v-slot:no-data>
-        <div class="full-width row flex-center q-gutter-sm q-pa-lg">
-          <q-icon size="2em" name="sentiment_dissatisfied" />
-          <span>无数据</span>
-        </div>
-      </template>
-
-      <template v-slot:bottom>
-        <div class="row items-center justify-between full-width">
-          <div>Total: {{ pageData.pagination.rowsNumber }}</div>
-          <div class="row items-center">
-            <span class="q-mr-sm">
-              {{ pageData.pagination.page }}/{{
-                Math.ceil(
-                  pageData.pagination.rowsNumber /
-                    pageData.pagination.rowsPerPage
-                )
-              }}</span
-            >
-            <q-pagination
-              v-model="pageData.pagination.page"
-              :max="
-                Math.ceil(
-                  pageData.pagination.rowsNumber /
-                    pageData.pagination.rowsPerPage
-                )
-              "
-              :max-pages="6"
-              boundary-links
-              direction-links
-              @update:model-value="onPageChange"
-            />
-          </div>
-          <div>
-            <!-- <q-select
+            <div>
+              <!-- <q-select
               v-model="pageData.pagination.rowsPerPage"
               :options="[10, 20, 50, 100]"
               label="每页行数"
@@ -397,10 +390,14 @@
               style="width: 120px"
               @update:model-value="onPageChange"
             /> -->
+            </div>
           </div>
-        </div>
-      </template>
-    </q-table>
+        </template>
+      </q-table>
+    </div>
+
+    <!-- 数据表格 -->
+
     <PickerUser
       ref="pickerUserRef"
       :pickerOptions="pageData.pickerOptions"
@@ -417,6 +414,9 @@ import PickerUser from "./components/PickerUser.vue";
 import { useQuasar } from "quasar";
 import NotifyUtils from "@/utils/message.js";
 import { useRouter } from "vue-router";
+import DatePickerNew from "@/components/DatePickerNew/Index.vue";
+import KeywordSearch from "@/components/KeywordSearch/Index.vue";
+import Message from "@/utils/message.js";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -434,6 +434,15 @@ const pageData = reactive({
     pick_print_status: null,
     search_type: "wave_number",
     keywords: "",
+  },
+  selectInfo: {
+    date_type: "created_at",
+    date_range: [],
+  },
+  keywordSearch: {
+    search_type: "wave_number",
+    search_value: "",
+    search_mode: "exact",
   },
 
   // 表格相关
@@ -481,6 +490,8 @@ const pageData = reactive({
 
   // 列表数据
   waveData: [],
+
+  searchModeOptions: [{ label: "精确查询", value: "exact" }],
 });
 
 const pickerUserRef = ref(null);
@@ -578,7 +589,7 @@ const toggleSortByTime = () => {
 // 打印拣货单
 const handlePrintPicking = async () => {
   if (pageData.selectedRows.length === 0) {
-    alert("请选择要打印的波次");
+    Message.notify("请选择波次");
     return;
   }
   console.log("打印拣货单:", pageData.selectedRows);
@@ -587,7 +598,6 @@ const handlePrintPicking = async () => {
     ids,
   };
   const { data } = await WaveApi.batchPrintPicking(params);
-  console.log("打印拣货单--1:", data);
   window.open(data.data, "_blank");
 
   $q.dialog({

@@ -1,76 +1,71 @@
 <template>
   <div class="categories-page">
-    <div class="row items-center q-mb-md">
-      <div class="text-h6">分类管理</div>
-      <q-space />
+    <div class="row justify-end">
       <q-btn
         color="primary"
-        icon="add"
-        label="新增分类"
+        class="filter-btn"
         @click="handleAddCategory(null)"
-      />
+      >
+        <img src="@/assets/images/add.png" class="add-icon" />
+        新增分类
+      </q-btn>
     </div>
 
-    <div class="row">
+    <div class="main-table">
       <!-- 分类树 -->
       <div class="col-12">
-        <q-card flat bordered>
-          <q-card-section>
-            <div class="text-subtitle2 q-mb-sm">分类列表</div>
-            <q-tree
-              :nodes="categories"
-              node-key="id"
-              default-expand-all
-              v-model:selected="selectedCategory"
-              :loading="$store.state.btnLoading"
-            >
-              <template v-slot:default-header="prop">
-                <div class="row items-center full-width">
-                  <div>{{ prop.node.name }}</div>
-                  <q-space />
-                  <div
-                    class="row q-gutter-sm"
-                    v-if="prop.node.code !== 'uncategorized'"
-                  >
-                    <q-btn
-                      flat
-                      round
-                      dense
-                      color="primary"
-                      icon="add"
-                      size="sm"
-                      @click.stop="handleAddCategory(prop.node)"
-                    >
-                      <q-tooltip>添加子分类</q-tooltip>
-                    </q-btn>
-                    <q-btn
-                      flat
-                      round
-                      dense
-                      color="primary"
-                      icon="edit"
-                      size="sm"
-                      @click.stop="handleEditCategory(prop.node)"
-                    >
-                      <q-tooltip>编辑</q-tooltip>
-                    </q-btn>
-                    <q-btn
-                      flat
-                      round
-                      dense
-                      color="negative"
-                      icon="delete"
-                      size="sm"
-                      @click.stop="handleDeleteCategory(prop.node)"
-                    >
-                      <q-tooltip>删除</q-tooltip>
-                    </q-btn>
-                  </div>
-                </div>
-              </template>
-            </q-tree>
-          </q-card-section>
-        </q-card>
+        <q-tree
+          :nodes="categories"
+          node-key="id"
+          default-expand-all
+          v-model:selected="selectedCategory"
+          :loading="$store.state.btnLoading"
+        >
+          <template v-slot:default-header="prop">
+            <div class="row items-center full-width">
+              <div>{{ prop.node.name }}</div>
+              <q-space />
+              <div
+                class="row q-gutter-sm"
+                v-if="prop.node.code !== 'uncategorized'"
+              >
+                <q-btn
+                  flat
+                  round
+                  dense
+                  color="primary"
+                  icon="add"
+                  size="sm"
+                  @click.stop="handleAddCategory(prop.node)"
+                >
+                  <q-tooltip>添加子分类</q-tooltip>
+                </q-btn>
+                <q-btn
+                  flat
+                  round
+                  dense
+                  color="primary"
+                  icon="edit"
+                  size="sm"
+                  @click.stop="handleEditCategory(prop.node)"
+                >
+                  <q-tooltip>编辑</q-tooltip>
+                </q-btn>
+                <q-btn
+                  flat
+                  round
+                  dense
+                  color="negative"
+                  icon="delete"
+                  size="sm"
+                  @click.stop="handleDeleteCategory(prop.node)"
+                >
+                  <q-tooltip>删除</q-tooltip>
+                </q-btn>
+              </div>
+            </div>
+          </template>
+        </q-tree>
       </div>
     </div>
 
@@ -142,12 +137,12 @@ const $q = useQuasar();
 
 // 分类数据
 const categories = ref([
-//   {
-//     id: 1,
-//     label: "未分类",
-//     code: "uncategorized",
-//     children: [],
-//   },
+  //   {
+  //     id: 1,
+  //     label: "未分类",
+  //     code: "uncategorized",
+  //     children: [],
+  //   },
 ]);
 
 const getCategoryTree = async () => {
@@ -223,7 +218,7 @@ const handleSubmit = async () => {
     data = await categoriesApi.createCategory({
       name: form.name,
       parent_id: currentNode.value?.id || null,
-      description:''
+      description: "",
     });
   }
 
@@ -236,6 +231,9 @@ const handleSubmit = async () => {
 
 <style lang="scss" scoped>
 .categories-page {
+  .search-bar {
+    margin-top: 50px;
+  }
   .q-tree {
     .q-tree__node-header {
       padding: 8px;

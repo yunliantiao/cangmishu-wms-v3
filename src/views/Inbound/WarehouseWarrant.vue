@@ -1,12 +1,12 @@
 <template>
   <div class="warehouse-warrant">
     <!-- 状态筛选导航 -->
-    <div class="status-nav bg-white rounded-borders q-pa-sm q-mb-md">
+    <div class="search-bar">
       <div class="row q-gutter-x-md">
         <q-btn
           v-for="status in statusOptions"
           :key="status.value"
-          flat
+          :flat="statusNav != status.value"
           :color="statusNav === status.value ? 'primary' : 'grey-7'"
           :label="status.label"
           class="status-btn"
@@ -16,7 +16,7 @@
     </div>
 
     <!-- 搜索过滤区域 -->
-    <div class="search-bar bg-white rounded-borders q-pa-md q-mb-md">
+    <div class="search-bar global-mt">
       <div class="row q-col-gutter-sm">
         <div
           v-for="filter in filterOptions"
@@ -29,13 +29,13 @@
             v-model="filterValues[filter.field]"
             :options="filter.options"
             :label="filter.label"
-            class="select-width"
+            class="filter-item"
             clearable
             emit-value
             map-options
           />
         </div>
-        <div class="col-auto">
+        <!-- <div class="col-auto">
           <div class="row q-col-gutter-sm">
             <div class="col">
               <q-input
@@ -44,7 +44,7 @@
                 v-model="dateRange.start"
                 :label="dateRange.startLabel"
                 readonly
-                class="date-input"
+                class="filter-item"
                 clearable
                 @clear="dateRange.start = ''"
               >
@@ -87,11 +87,21 @@
               </q-input>
             </div>
           </div>
-        </div>
+        </div> -->
+
+        <DatePicker
+          v-model:selectInfo="pageData.selectInfo"
+          :dateList="pageData.dateOptions"
+        />
       </div>
 
       <div class="row q-col-gutter-sm q-mt-sm">
-        <div class="col-auto">
+        <KeywordSearch
+          v-model:selectInfo="pageData.keywordInfo"
+          :searchTypeList="searchFieldOptions"
+          :searchModeList="searchTypeOptions"
+        />
+        <!-- <div class="col-auto">
           <q-select
             outlined
             dense
@@ -99,7 +109,7 @@
             :options="searchFieldOptions"
             label="搜索字段"
             placeholder="请选择搜索字段"
-            class="search-select"
+            class="filter-item"
             emit-value
             map-options
             clearable
@@ -119,7 +129,7 @@
             dense
             v-model="searchConfig.keywords"
             placeholder="请输入关键词"
-            class="search-input"
+            class="filter-item"
             style="width: 310px"
             @keyup.enter="handleSearch"
             clearable
@@ -137,7 +147,7 @@
             :options="searchTypeOptions"
             label="搜索模式"
             placeholder="请选择搜索模式"
-            class="search-select"
+            class="filter-item"
             emit-value
             map-options
             clearable
@@ -150,18 +160,22 @@
               </q-item>
             </template>
           </q-select>
-        </div>
+        </div> -->
         <div class="col-auto">
           <q-btn
             outline
             color="grey"
             label="重置"
-            class="q-mr-sm"
+            class="filter-btn"
             @click="resetSearch"
           />
+        </div>
+
+        <div class="col-auto">
           <q-btn
             color="primary"
             label="查询"
+            class="filter-btn"
             icon="search"
             :loading="$store.state.btnLoading"
             @click="handleSearch"
@@ -170,7 +184,7 @@
       </div>
     </div>
 
-    <div class="page_table_action">
+    <div class="main-table">
       <!-- 操作按钮区域 -->
       <div class="row justify-between q-mb-sm">
         <!-- <div class="row items-center">
@@ -195,7 +209,6 @@
           :loading="$store.state.btnLoading"
           row-key="id"
           flat
-          bordered
           separator="horizontal"
           selection="multiple"
           v-model:selected="selectedRows"
@@ -389,14 +402,24 @@
                     )?.label || props.row.status
                   }}
                 </q-chip>
-                <div v-if="props.row.status != 'reported' && props.row.status != 'in_transit'">
+                <div
+                  v-if="
+                    props.row.status != 'reported' &&
+                    props.row.status != 'in_transit'
+                  "
+                >
                   {{
                     filterOptions[1].options.find(
                       (item) => item.value === props.row.receive_status
                     )?.label || props.row.receive_status
                   }}
                 </div>
-                <div v-if="props.row.status != 'reported' && props.row.status != 'in_transit'">
+                <div
+                  v-if="
+                    props.row.status != 'reported' &&
+                    props.row.status != 'in_transit'
+                  "
+                >
                   {{
                     filterOptions[2].options.find(
                       (item) => item.value === props.row.shelf_status
@@ -685,6 +708,8 @@ import DetailDialog from "./components/DetailDialog.vue";
 import inboundApi from "@/api/inbound";
 import customerApi from "@/api/customer";
 import PrintLabelDialog from "@/components/PrintLabelDialog.vue";
+import DatePicker from "@/components/DatePickerNew/Index.vue";
+import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -698,6 +723,36 @@ const statusOptions = [
   { label: "入库中", value: "inbound_processing" },
   { label: "已完成", value: "shelved" },
 ];
+
+const pageData = reactive({
+  selectInfo: {
+    date_type: "created_at",
+    date_range: [],
+  },
+  keywordInfo: {
+    search_type: "tracking_number",
+    search_value: "",
+    search_mode: "exact",
+  },
+  dateOptions: [
+    {
+      label: "创建时间",
+      value: "created_at",
+    },
+    {
+      label: "签收时间",
+      value: "sign_at",
+    },
+    {
+      label: "首次上架时间",
+      value: "first_shelf_at",
+    },
+    {
+      label: "完成时间",
+      value: "completed_at",
+    },
+  ],
+});
 
 // 筛选器配置
 const filterOptions = [
@@ -742,28 +797,28 @@ const filterOptions = [
       },
     ],
   },
-  {
-    field: "date_type",
-    label: "创建时间",
-    options: [
-      {
-        label: "创建时间",
-        value: "created_at",
-      },
-      {
-        label: "签收时间",
-        value: "sign_at",
-      },
-      {
-        label: "首次上架时间",
-        value: "first_shelf_at",
-      },
-      {
-        label: "完成时间",
-        value: "completed_at",
-      },
-    ],
-  },
+  // {
+  //   field: "date_type",
+  //   label: "创建时间",
+  //   options: [
+  //     {
+  //       label: "创建时间",
+  //       value: "created_at",
+  //     },
+  //     {
+  //       label: "签收时间",
+  //       value: "sign_at",
+  //     },
+  //     {
+  //       label: "首次上架时间",
+  //       value: "first_shelf_at",
+  //     },
+  //     {
+  //       label: "完成时间",
+  //       value: "completed_at",
+  //     },
+  //   ],
+  // },
 ];
 
 // 搜索字段选项
@@ -1130,12 +1185,16 @@ const getList = async () => {
   const params = {
     ...pageParams,
     ...filterValues,
-    keywords: searchParams.keywords,
-    search_type: searchParams.search_type,
-    search_mode: searchParams.search_mode,
+
+    keywords: pageData.keywordInfo.search_value,
+    search_type: pageData.keywordInfo.search_type,
+    search_mode: pageData.keywordInfo.search_mode,
+
+    date_type: pageData.selectInfo.date_type,
+    start_date: pageData.selectInfo.date_range[0],
+    end_date: pageData.selectInfo.date_range[1],
+
     inbound_status: searchParams.inbound_status,
-    start_date: dateRange.start || "",
-    end_date: dateRange.end || "",
   };
   const res = await inboundApi.getWarehouseWarrant(params);
   if (res.success) {
@@ -1158,6 +1217,17 @@ const resetSearch = () => {
   searchConfig.type = null; // 重置为不选中
   dateRange.start = "";
   dateRange.end = "";
+
+  pageData.selectInfo = {
+    date_type: "created_at",
+    date_range: [],
+  };
+
+  pageData.keywordInfo = {
+    search_type: "tracking_number",
+    search_value: "",
+    search_mode: "exact",
+  };
 
   resetPage();
   getList();
@@ -1208,7 +1278,7 @@ const printLabel = (row) => {
           allItems.push(...box.items);
         }
       });
-      selectedLocations.value = mergeSameSkuItems(allItems);//去重
+      selectedLocations.value = mergeSameSkuItems(allItems); //去重
       labelVisible.value = true;
       console.log(allItems);
     }

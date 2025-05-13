@@ -13,7 +13,7 @@
           placeholder="查询SKU"
           outlined
           dense
-          class="q-mb-md"
+          class="filter-item"
           style="width: 200px"
         >
           <template v-slot:append>
@@ -25,6 +25,8 @@
           :rows="skuData"
           :columns="columns"
           row-key="tags_sku_qty"
+          hide-bottom
+          flat
           :hide-pagination="true"
           selection="multiple"
           v-model:selected="selected"
@@ -33,7 +35,7 @@
         >
           <template v-slot:body="props">
             <q-tr :props="props">
-              <q-td auto-width>
+              <q-td auto-width align="center">
                 <q-checkbox v-model="props.selected" />
               </q-td>
               <q-td key="tags_sku_qty" :props="props">
@@ -46,17 +48,6 @@
           </template>
         </q-table>
       </q-card-section>
-
-      <!-- <q-card-section class="row items-center justify-between q-pa-md">
-        <div>Total {{ totalCount }}</div>
-        <div class="row items-center">
-          <q-pagination
-            v-model="pagination.page"
-            :max="maxPage"
-            direction-links
-          />
-        </div>
-      </q-card-section> -->
 
       <q-card-actions align="right" class="bg-white text-primary">
         <q-btn flat label="取消" v-close-popup />

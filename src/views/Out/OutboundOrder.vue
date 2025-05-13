@@ -1,12 +1,12 @@
 <template>
   <div class="simple-print-page">
     <!-- 状态筛选导航 -->
-    <div class="status-nav bg-white rounded-borders q-pa-sm q-mb-md">
+    <div class="search-bar top-status-nav">
       <div class="row q-gutter-x-md">
         <q-btn
           v-for="status in orderStatusOptions"
           :key="status.value"
-          flat
+          :flat="statusNav != status.value"
           :color="statusNav === status.value ? 'primary' : 'grey-7'"
           :label="status.label"
           class="status-btn"
@@ -15,7 +15,7 @@
       </div>
     </div>
     <!-- 搜索过滤区域 - 第一行 -->
-    <div class="search-bar bg-white rounded-borders q-pa-md q-mb-md">
+    <div class="search-bar">
       <div class="row q-col-gutter-sm">
         <div class="col-auto">
           <q-select
@@ -189,17 +189,10 @@
       </div>
     </div>
 
-    <!-- 操作按钮区域 -->
-    <div class="row justify-between q-mb-sm page_table_action">
-      <div class="row items-center">
-        <span class="q-mr-sm">选择 {{ selectedRows.length }}</span>
-        <q-btn-dropdown
-          color="primary"
-          label="导出"
-          icon="get_app"
-          flat
-          class="q-ml-sm"
-        >
+    <!-- 数据表格 -->
+    <div class="main-table">
+      <div class="btn-group">
+        <q-btn-dropdown color="primary" label="导出" class="filter-btn">
           <q-list>
             <q-item clickable v-close-popup @click="handleExport('selected')">
               <q-item-section>导出选中</q-item-section>
@@ -210,16 +203,12 @@
           </q-list>
         </q-btn-dropdown>
       </div>
-    </div>
 
-    <!-- 数据表格 -->
-    <div class="bg-white rounded-borders page_table_action">
       <q-table
         :rows="packages"
         :columns="columns"
         row-key="id"
         flat
-        bordered
         separator="horizontal"
         selection="multiple"
         v-model:selected="selectedRows"
@@ -255,7 +244,7 @@
 
           <!-- 数据行 -->
           <q-tr :props="props">
-            <q-td auto-width>
+            <q-td auto-width align="center">
               <q-checkbox v-model="props.selected" />
             </q-td>
             <q-td key="packageInfo" :props="props">
@@ -899,5 +888,17 @@ onMounted(() => {
     }
   }
 }
+.top-status-nav {
+  margin-bottom: 16px;
+}
+.main-table {
+  background: #ffffff;
+  box-shadow: 0px 1px 10px 1px rgba(102, 102, 102, 0.08);
+  border-radius: 16px 16px 16px 16px;
+  padding: 32px;
+}
+.btn-group {
+  display: flex;
+  justify-content: flex-end;
+}
 </style>
-

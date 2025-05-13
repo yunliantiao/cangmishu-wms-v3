@@ -71,6 +71,9 @@ const props = defineProps({
 });
 
 const changeDate = (e) => {
+  if (!e) {
+    return;
+  }
   componentData.showDate = false;
 };
 

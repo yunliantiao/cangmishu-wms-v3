@@ -106,7 +106,6 @@
         :columns="columns"
         row-key="id"
         flat
-        bordered
         separator="horizontal"
         selection="multiple"
         v-model:selected="selectedRows"
@@ -735,16 +734,6 @@ onMounted(() => {
 
 <style lang="scss">
 .simple-print-page {
-  .search-bar {
-    background: #ffffff;
-    box-shadow: 0px 1px 10px 1px rgba(102, 102, 102, 0.08);
-    border-radius: 16px 16px 16px 16px;
-    padding: 32px;
-
-    .date-input {
-      width: 150px;
-    }
-  }
   .main-table {
     background: #ffffff;
     box-shadow: 0px 1px 10px 1px rgba(102, 102, 102, 0.08);

@@ -1,17 +1,18 @@
 <template>
   <div class="warehouse-page">
-    <div class="row justify-between q-mb-md">
-      <div class="text-h6">仓库管理</div>
-      <q-btn color="primary" label="新建" icon="add" @click="showCreateForm" />
+    <div class="row justify-end">
+      <q-btn color="primary" class="filter-btn" @click="showCreateForm">
+        <img src="@/assets/images/add.png" class="add-icon" />
+        新建
+      </q-btn>
     </div>
 
-    <div class="bg-white rounded-borders">
+    <div class="main-table">
       <q-table
         :rows="warehouseList"
         :columns="columns"
         row-key="id"
         flat
-        bordered
         separator="horizontal"
         class="warehouse-table"
         hide-bottom
@@ -27,7 +28,11 @@
             </q-td>
             <!-- <q-td key="warehouseType" :props="props"> 1 </q-td> -->
             <q-td key="country" :props="props">
-              {{ $store.state.countries.find(item => item.code == props.row.country_code)?.name || "" }}
+              {{
+                $store.state.countries.find(
+                  (item) => item.code == props.row.country_code
+                )?.name || ""
+              }}
             </q-td>
             <q-td key="receiveStatus" :props="props">
               <q-chip
@@ -273,6 +278,9 @@ getWarehouseList();
 
 <style lang="scss" scoped>
 .warehouse-page {
+  .search-bar {
+    margin-top: 50px;
+  }
   .warehouse-table {
     .q-table th {
       font-weight: 500;

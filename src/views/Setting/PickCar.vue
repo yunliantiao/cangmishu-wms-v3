@@ -1,22 +1,21 @@
 <template>
   <div class="warehouse-page">
-    <div class="row justify-between q-mb-md">
-      <div class="text-h6">拣货车管理</div>
-      <q-btn color="primary" label="新建" icon="add" @click="showCreateForm" />
+    <div class="row justify-end">
+      <q-btn color="primary" class="filter-btn" @click="showCreateForm">
+        <img src="@/assets/images/add.png" class="add-icon" />
+        新建拣货车
+      </q-btn>
     </div>
 
-    <div class="select-box">
-      选择 {{ pageData.selectedRows.length }}
-      <q-btn color="primary" label="打印" flat @click="handlePrint" />
-    </div>
-
-    <div class="bg-white rounded-borders">
+    <div class="main-table">
+      <div class="row justify-end q-mb-md">
+        <q-btn color="primary" label="打印" @click="handlePrint" />
+      </div>
       <q-table
         :rows="pageData.list"
         :columns="columns"
         row-key="id"
         flat
-        bordered
         separator="horizontal"
         class="warehouse-table"
         hide-bottom

@@ -27,7 +27,7 @@
         dense
         v-show="showSearchMode"
         v-model="selectInfo.search_mode"
-        :options="searchTypeOptions"
+        :options="searchModeList"
         option-value="value"
         option-label="label"
         emit-value
@@ -45,7 +45,7 @@ const selectInfo = defineModel("selectInfo", {
   required: true,
   default: () => {
     return {
-      date_type: "",
+      search_type: "",
       search_value: "",
       search_mode: "",
     };
@@ -71,7 +71,7 @@ const props = defineProps({
       ];
     },
   },
-  searchTypeOptions: {
+  searchModeList: {
     type: Array,
     default: () => {
       return [
@@ -81,15 +81,6 @@ const props = defineProps({
       ];
     },
   },
-});
-
-const changeDate = (e) => {
-  componentData.showDate = false;
-};
-
-const componentData = reactive({
-  showDate: false,
-  date_type: "created_at",
 });
 </script>
 

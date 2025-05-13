@@ -1,18 +1,8 @@
 <template>
   <div class="shelf-location-page">
     <!-- 筛选区域 -->
-    <div class="filter-section bg-white q-pa-md q-mb-md rounded-borders">
+    <div class="search-bar">
       <div class="row q-col-gutter-sm">
-        <!-- <div class="col-auto">
-          <q-select
-            outlined
-            dense
-            v-model="areaTypeFilter"
-            :options="areaTypeOptions"
-            label="全部货区类型"
-            class="select-width"
-          />
-        </div> -->
         <div class="col-auto">
           <q-select
             outlined
@@ -25,54 +15,19 @@
             emit-value
             clearable
             map-options
-            class="select-width"
+            class="filter-item"
           />
         </div>
-        <div class="col-auto">
-          <q-select
-            outlined
-            dense
-            v-model="pageParams.search_type"
-            :options="locationFilterOptions"
-            clearable
-            option-value="value"
-            option-label="label"
-            emit-value
-            map-options
-            label="货架位"
-            class="select-width"
-          />
-        </div>
-        <div class="col-auto">
-          <q-input
-            outlined
-            dense
-            v-model="pageParams.keywords"
-            placeholder="请输入"
-            class="select-width"
-          >
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </div>
-        <div class="col-auto">
-          <q-select
-            outlined
-            dense
-            v-model="pageParams.search_mode"
-            :options="searchTypeOptions"
-            clearable
-            map-options
-            emit-value
-            label="搜索模式"
-            class="select-width"
-          />
-        </div>
+        <KeywordSearch
+          v-model:selectInfo="pageData.keywordInfo"
+          :searchModeList="searchTypeOptions"
+          :searchTypeList="locationFilterOptions"
+        ></KeywordSearch>
         <div class="col-auto">
           <q-btn
             color="primary"
             icon="search"
+            class="filter-btn"
             label="搜索"
             @click="getShelfLocationList"
           />
@@ -80,17 +35,15 @@
       </div>
     </div>
 
-    <div class="page_table_action">
+    <div class="main-table">
       <!-- 操作按钮区域 -->
       <div class="row justify-between q-mb-sm">
         <div class="row items-center">
-          <span class="q-mr-sm">选择 {{ selectedLocations.length }}</span>
           <q-btn-dropdown
             color="primary"
+            class="filter-btn"
             label="导入/导出"
-            icon="file_upload"
-            flat
-            class="q-ml-sm"
+            style="margin-right: 10px"
           >
             <q-list>
               <q-item clickable v-close-popup @click="handleImport">
@@ -116,7 +69,6 @@
             color="primary"
             label="打印标签"
             icon="print"
-            flat
             class="q-ml-sm"
             @click="handlePrintLabels"
           />
@@ -130,7 +82,7 @@
           /> -->
         </div>
 
-    <div>
+        <div>
           <!-- <q-btn
             outline
             color="primary"
@@ -141,17 +93,21 @@
           /> -->
           <q-btn
             color="primary"
-            label="单个新建"
-            icon="add"
-            class="q-mr-sm"
             @click="showCreateForm"
-          />
+            class="filter-btn"
+            style="margin-right: 10px"
+          >
+            <img src="@/assets/images/add.png" class="add-icon" />
+            单个新建
+          </q-btn>
           <q-btn
             color="primary"
-            label="批量新建"
-            icon="add"
             @click="showBatchCreateForm"
-          />
+            class="filter-btn"
+          >
+            <img src="@/assets/images/add.png" class="add-icon" />
+            批量新建
+          </q-btn>
         </div>
       </div>
 
@@ -162,7 +118,6 @@
           :columns="columns"
           row-key="id"
           flat
-          bordered
           separator="horizontal"
           selection="multiple"
           v-model:selected="selectedLocations"
@@ -475,17 +430,18 @@
       @success="handlePrintSuccess"
       print-type="goods_allocation"
     />
-    </div>
+  </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, reactive } from "vue";
 import { useQuasar, Dialog as QuasarDialog } from "quasar";
 import Pagination from "@/components/Pagination.vue";
 import settingApi from "@/api/setting";
 import { useRouter } from "vue-router";
 import ImportDialog from "@/components/ImportDialog.vue";
 import PrintLabelDialog from "@/components/PrintLabelDialog.vue";
+import KeywordSearch from "@/components/KeywordSearch/index.vue";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -625,6 +581,14 @@ const columns = [
   },
 ];
 
+const pageData = reactive({
+  keywordInfo: {
+    search_type: "code",
+    search_value: "",
+    search_mode: "exact",
+  },
+});
+
 // 货架位数据
 const shelfLocations = ref([]);
 
@@ -646,7 +610,13 @@ const handleImportSuccess = () => {
 
 // 获取货架位列表
 const getShelfLocationList = () => {
-  settingApi.getShelfLocationList(pageParams.value).then((res) => {
+  let params = {
+    ...pageParams.value,
+    search_type: pageData.keywordInfo.search_type,
+    keywords: pageData.keywordInfo.search_value,
+    search_mode: pageData.keywordInfo.search_mode,
+  };
+  settingApi.getShelfLocationList(params).then((res) => {
     if (res.success) {
       shelfLocations.value = res.data.items;
       pageParams.value.total = res.data.meta.total;
@@ -817,7 +787,7 @@ const handleExport = async (bool) => {
     status: pageParams.value.status,
     search_mode: pageParams.value.search_mode,
   });
-  window.open(response.data, '_blank');
+  window.open(response.data, "_blank");
 };
 const printDialogVisible = ref(false);
 const handlePrintLabels = () => {

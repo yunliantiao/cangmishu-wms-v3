@@ -1,17 +1,18 @@
 <template>
   <div class="shelf-page">
-    <div class="row justify-between q-mb-md">
-      <div class="text-h6">货架规格管理</div>
-      <q-btn color="primary" label="新建" icon="add" @click="showCreateForm" />
+    <div class="row justify-end">
+      <q-btn color="primary" @click="showCreateForm">
+        <img src="@/assets/images/add.png" class="add-icon" />
+        新建
+      </q-btn>
     </div>
 
-    <div class="bg-white rounded-borders">
+    <div class="main-table">
       <q-table
         :rows="shelfSizeList"
         :columns="columns"
         row-key="id"
         flat
-        bordered
         separator="horizontal"
         class="shelf-table"
         hide-bottom
@@ -170,7 +171,13 @@
         <q-separator />
         <q-card-actions align="right">
           <q-btn flat label="取消" color="grey-7" v-close-popup />
-          <q-btn unelevated label="确定" color="primary" @click="handleSubmit" :loading="$store.state.btnLoading" />
+          <q-btn
+            unelevated
+            label="确定"
+            color="primary"
+            @click="handleSubmit"
+            :loading="$store.state.btnLoading"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>

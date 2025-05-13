@@ -23,7 +23,7 @@ export const routerMap = []
     .concat(Inventory)
     .concat(Inbound)
     .concat(Out)
-    .concat(Logistics)
+    // .concat(Logistics)
     .concat(Deliver)
     .concat(Setting)
 
