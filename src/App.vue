@@ -22,4 +22,8 @@
   max-width: 500px;
   margin: 0 auto;
 }
+
+.filter-btn {
+  height: 40px;
+}
 </style>

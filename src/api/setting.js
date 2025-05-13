@@ -1,4 +1,4 @@
-import { POST, GET, PUT, DEL,$file } from "./config.js";
+import { POST, GET, PUT, DEL, $file } from "./config.js";
 export default {
     addShelfSpec: (data) => POST("warehouses/shelf-specs", data), // 添加货架规格
     getShelfSpecList: () => GET("warehouses/shelf-specs"), // 获取货架规格列表
@@ -14,9 +14,17 @@ export default {
     deleteShelfLocation: (id) => DEL(`warehouses/locations/${id}`), // 删除货位
     batchCreateShelfLocation: (data) => POST("warehouses/locations/batch", data), // 批量创建货位
     importTemplates: (data) => $file.post("warehouses/locations/import", data, { responseType: 'blob' }), // 导入货位
-    downloadTemplate: (data) => GET("templates", data,{ responseType: 'blob' }), // 下载模版
+    downloadTemplate: (data) => GET("templates", data, { responseType: 'blob' }), // 下载模版
     getPrintLabelTemplateList: (data) => GET("warehouses/locations/labels/templates", data), // 打印标签模板
     productsLabels: (data) => POST("warehouses/locations/labels/generate", data), // 打印标签
     exportLocations: (data) => POST("warehouses/locations/export", data), // 导出货架位
-    getStocksLocations:(data)=> GET("stocks-locations", data), //货位库存列表
+    getStocksLocations: (data) => GET("stocks-locations", data), //货位库存列表
+
+    // 拣货车
+    getPickCarList: (data) => GET("warehouses/picking-carts", data), // 获取拣货车列表
+    createPickCar: (data) => POST("warehouses/picking-carts", data), // 创建拣货车
+    updatePickCar: (id, data) => PUT(`warehouses/picking-carts/${id}`, data), // 更新拣货车
+    deletePickCar: (id) => DEL(`warehouses/picking-carts/${id}`), // 删除拣货车
+    printPickCarLabel: (data) => POST("warehouses/picking-carts/print", data), // 打印拣货车标签
+
 }

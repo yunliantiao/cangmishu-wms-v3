@@ -7,6 +7,7 @@ import Out from './out.js'
 import Panel from './panel.js'
 import Product from './product.js'
 import Setting from './setting.js'
+import Deliver from './deliver.js'
 
 import { loadonDemand } from '@/utils/common.js'
 const Layout = () => import(`../App.vue`)
@@ -23,6 +24,7 @@ export const routerMap = []
     .concat(Inbound)
     .concat(Out)
     .concat(Logistics)
+    .concat(Deliver)
     .concat(Setting)
 
 const constantRouterMap = [

@@ -3,21 +3,6 @@
     <!-- 搜索过滤区域 - 第一行 -->
     <div class="search-bar bg-white rounded-borders q-pa-md q-mb-md">
       <div class="row q-col-gutter-sm">
-        <!-- <div class="col-auto">
-          <q-select
-            outlined
-            dense
-            v-model="pageParams.customer_id"
-            :options="customerList"
-            option-label="label"
-            option-value="value"
-            map-options
-            emit-value
-            clearable
-            label="用户"
-            class="select-width"
-          />
-        </div> -->
         <div class="col-auto">
           <q-select
             outlined
@@ -30,7 +15,7 @@
             emit-value
             clearable
             label="订单来源"
-            class="select-width"
+            class="filter-item"
           />
         </div>
         <div class="col-auto">
@@ -45,7 +30,7 @@
             emit-value
             clearable
             label="平台"
-            class="select-width"
+            class="filter-item"
           />
         </div>
         <div class="col-auto">
@@ -60,7 +45,7 @@
             v-model="pageParams.order_status"
             :options="orderStatusOptions"
             label="订单状态"
-            class="select-width"
+            class="filter-item"
           />
         </div>
         <div class="col-auto">
@@ -75,116 +60,37 @@
             emit-value
             clearable
             label="拦截状态"
-            class="select-width"
+            class="filter-item"
           />
         </div>
         <div class="col-auto">
-          <q-select
-            outlined
-            dense
-            v-model="pageParams.date_type"
-            :options="timeFilterOptions"
-            option-label="label"
-            option-value="value"
-            map-options
-            emit-value
-            clearable
-            label="创建时间"
-            class="select-width"
-          />
-        </div>
-        <div class="col-auto">
-          <div class="row q-col-gutter-sm">
-            <div class="col-auto">
-              <q-input
-                outlined
-                dense
-                v-model="pageParams.start_date"
-                label="开始时间"
-                readonly
-                class="date-input"
-              >
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy
-                      cover
-                      transition-show="scale"
-                      transition-hide="scale"
-                    >
-                      <q-date
-                        v-model="pageParams.start_date"
-                        mask="YYYY-MM-DD"
-                      />
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
-            </div>
-            <div class="col-auto self-center">To</div>
-            <div class="col-auto">
-              <q-input
-                outlined
-                dense
-                v-model="pageParams.end_date"
-                label="结束时间"
-                readonly
-                class="date-input"
-              >
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy
-                      cover
-                      transition-show="scale"
-                      transition-hide="scale"
-                    >
-                      <q-date v-model="pageParams.end_date" mask="YYYY-MM-DD" />
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
-            </div>
-          </div>
+          <DatePickerNew
+            :selectInfo="componentData.selectInfo"
+            :dateList="timeFilterOptions"
+          ></DatePickerNew>
         </div>
       </div>
 
       <!-- 搜索过滤区域 - 第三行 -->
       <div class="row q-col-gutter-sm q-mt-sm">
-        <div class="col-auto">
-          <q-select
-            outlined
-            dense
-            v-model="pageParams.search_type"
-            :options="searchFieldOptions"
-            label="搜索模式"
-            class="select-width"
-            option-label="label"
-            option-value="value"
-            map-options
-            emit-value
-            clearable
-          />
-        </div>
-        <div class="col-auto">
-          <q-input
-            outlined
-            dense
-            v-model="pageParams.keywords"
-            placeholder="请输入关键字"
-            style="width: 300px"
-          >
-          </q-input>
-        </div>
+        <KeywordSearch
+          :selectInfo="componentData.keywordInfo"
+          :showSearchMode="false"
+          :searchTypeList="searchFieldOptions"
+        ></KeywordSearch>
+
         <div class="col-auto">
           <q-btn
             outline
             color="grey"
             label="重置"
-            class="q-mr-sm"
+            class="q-mr-sm filter-btn"
             @click="resetSearch"
           />
           <q-btn
             color="primary"
             icon="search"
+            class="filter-btn"
             label="搜索"
             :loading="$store.state.btnLoading"
             @click="getOutboundOrder"
@@ -408,6 +314,8 @@ import { useRouter } from "vue-router";
 import Pagination from "@/components/Pagination.vue";
 import OrderDetailsDialog from "./components/OrderDetailsDialog.vue";
 import outApi from "@/api/out";
+import DatePickerNew from "@/components/DatePickerNew/Index.vue";
+import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -552,6 +460,17 @@ const isPrint = (row, type) => {
   return printBool;
 };
 
+const componentData = reactive({
+  selectInfo: {
+    date_type: "created_at",
+    date_range: [],
+  },
+  keywordInfo: {
+    search_type: "sku",
+    search_value: "",
+  },
+});
+
 // 选中行
 const selectedRows = ref([]);
 
@@ -682,6 +601,9 @@ const resetSearch = () => {
   pageParams.order_status = "";
   pageParams.intercept_status = "";
   pageParams.date_type = "";
+
+  componentData.keywordInfo = { search_type: "sku", search_value: "" };
+  componentData.selectInfo = { date_type: "created_at", date_range: [] };
   getOutboundOrder();
 };
 
@@ -689,7 +611,15 @@ const resetSearch = () => {
 const packages = ref([]);
 
 const getOutboundOrder = () => {
-  outApi.getShipments(pageParams).then((res) => {
+  let params = {
+    ...pageParams,
+    date_type: componentData.selectInfo.date_type,
+    start_date: componentData.selectInfo?.date_range[0] || "",
+    end_date: componentData.selectInfo?.date_range[1] || "",
+    search_type: componentData.keywordInfo.search_type,
+    keywords: componentData.keywordInfo.search_value,
+  };
+  outApi.getShipments(params).then((res) => {
     if (res.success) {
       packages.value = res.data.items;
       pageParams.total = res.data.meta.total;
