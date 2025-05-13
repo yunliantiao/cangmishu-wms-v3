@@ -41,7 +41,7 @@
       </div>
     </div>
 
-    <div class="total-list row q-col-gutter-md q-mb-md">
+    <div class="total-list row q-col-gutter-lg q-mb-md">
       <div class="col-12 col-sm-6 col-md-2" v-for="item in totalList" :key="item.label">
         <q-card class="common-card b-rd-16">
           <q-card-section class="p-20">
@@ -52,20 +52,23 @@
       </div>
     </div>
 
-    <!-- 单量图表+公告列表 -->
+    <!-- 单量图表+公告列表+下载pda -->
     <div class="chart-box row q-col-gutter-xl q-mb-md">
       <div class="col-12 col-xs-12 col-sm-8 col-md-8">
-        <q-card class="common-card b-rd-16">
-          <q-card-section class="header-section">
+        <q-card class="common-card b-rd-16 p-20">
+          <q-card-section class="p-0 m-b-16">
             <div class="row items-center justify-between">
               <div>
                 <span class="text-h6 font-bold">单量统计</span>
                 <span class="text-grey-7">(单)</span>
               </div>
-              <div class="btn-group">
-                <q-btn-toggle
+
+              <!-- <q-btn-toggle
                   v-model="timeRange"
-                  toggle-color="primary"
+                  color="brown"
+                  text-color="white"
+                  toggle-color="orange"
+                  toggle-text-color="black"
                   :options="[
                     { label: '今日', value: 'today' },
                     { label: '本周', value: 'week' },
@@ -75,12 +78,22 @@
                   spread
                   no-caps
                   unelevated
-                  class="bg-grey-2"
-                />
+                /> -->
+              <div class="time-range-group">
+                <div class="time-range-list">
+                  <div
+                    v-for="(item, index) in timeOptions"
+                    :key="index"
+                    :class="['time-range-item', { active: timeRange === item.value }]"
+                    @click="timeRange = item.value"
+                  >
+                    {{ item.label }}
+                  </div>
+                </div>
               </div>
             </div>
           </q-card-section>
-          <q-card-section>
+          <q-card-section class="p-0 m-b-20">
             <div class="row type-btn q-col-gutter-sm">
               <div>
                 <div class="item item-1 col-12 col-sm-4 col-md-3">
@@ -96,54 +109,39 @@
               </div>
             </div>
           </q-card-section>
-          <q-card-section class="chart-section">
+          <q-card-section class="p-0">
             <div id="order-chart" style="width: 100%; height: 320px"></div>
           </q-card-section>
         </q-card>
       </div>
       <div class="col-12 col-xs-12 col-sm-4 col-md-4">
-        <q-card class="common-card b-rd-16 q-mb-md">
-          <q-card-section class="header-section">
+        <q-card class="common-card b-rd-16 notice-box">
+          <q-card-section class="p-20">
             <div class="flex-between-center">
               <div class="text-subtitle1 font-bold">帮助中心</div>
               <q-btn flat color="primary" size="sm" icon="chevron_right" dense />
             </div>
-            <q-list class="notice-list">
-              <q-item clickable v-ripple v-for="item in noticeList" :key="item.label">
-                <q-item-section>{{ item.label }}</q-item-section>
-              </q-item>
-            </q-list>
+            <q-scroll-area class="notice-list">
+              <div v-for="item in noticeList" :key="item.label" class="notice-item">
+                <div class="title text-overflow-1">{{ item.label }}</div>
+                <div class="time">{{ item.time }}</div>
+              </div>
+            </q-scroll-area>
           </q-card-section>
         </q-card>
 
-        <q-card class="common-card b-rd-16">
-          <q-card-section class="header-section">
+        <q-card class="common-card b-rd-16 p-20 down-box">
+          <q-card-section class="p-0 m-b-20">
             <div class="text-subtitle1 font-bold">下载PDA</div>
           </q-card-section>
-          <q-card-section>
-            <div class="row q-col-gutter-md">
-              <div class="col-12">
-                <q-btn
-                  unelevated
-                  class="full-width q-mb-md"
-                  style="background: #fff; color: #000; border: 1px solid #ddd"
-                >
-                  <div class="row items-center full-width">
-                    <q-icon name="img:/src/assets/images/home/apple.png" size="24px" class="q-mr-md" />
-                    <div class="text-left">
-                      <div class="text-subtitle2">App Store</div>
-                    </div>
-                  </div>
-                </q-btn>
-                <q-btn unelevated class="full-width" style="background: #fff; color: #000; border: 1px solid #ddd">
-                  <div class="row items-center full-width">
-                    <q-icon name="img:/src/assets/images/home/android.png" size="24px" class="q-mr-md" />
-                    <div class="text-left">
-                      <div class="text-subtitle2">Android</div>
-                    </div>
-                  </div>
-                </q-btn>
-              </div>
+          <q-card-section class="down-list p-0">
+            <div class="item">
+              <q-icon name="img:/src/assets/images/home/apple.png" size="24px" class="q-mr-sm" />
+              <div class="text-subtitle2">App Store</div>
+            </div>
+            <div class="item">
+              <q-icon name="img:/src/assets/images/home/android.png" size="24px" class="q-mr-sm" />
+              <div class="text-subtitle2">Android</div>
             </div>
           </q-card-section>
         </q-card>
@@ -151,15 +149,16 @@
     </div>
 
     <!-- 库存图表+问题 -->
-    <div class="capacity-statistics row q-col-gutter-xl q-mb-md">
+    <div class="row q-col-gutter-xl q-mb-md">
       <div class="col-12 col-xs-12 col-sm-7 col-md-7">
-        <q-card class="common-card b-rd-16">
-          <q-card-section class="header-section">
-            <div class="row items-center justify-between">
+        <q-card class="capacity-box common-card b-rd-16 p-20">
+          <q-card-section class="p-0 q-mb-md">
+            <div class="flex-between-center">
               <span class="text-h6 font-bold">库容</span>
               <q-select
                 v-model="selectedOption"
                 :options="[{ label: 'SKU数量', value: 'sku' }]"
+                outlined
                 flat
                 dense
                 emit-value
@@ -168,35 +167,35 @@
             </div>
           </q-card-section>
 
-          <q-card-section>
+          <q-card-section class="p-0">
             <div class="row">
               <div class="col-12 col-xs-12 col-sm-4 col-md-4">
                 <div class="statistic-label q-mb-md">在库总数(个)</div>
-                <div class="text-h6 q-mb-md">123</div>
+                <div class="text-h5 font-bold q-mb-md">123</div>
 
                 <div class="capacity-item capacity-item-1">商品库存</div>
                 <div class="capacity-item capacity-item-2">B2B库存</div>
                 <div class="capacity-item capacity-item-3">FBA退货库存</div>
               </div>
               <div class="col-12 col-xs-12 col-sm-8 col-md-8">
-                <div id="capacity-chart" style="width: 100%; height: 300px"></div>
+                <div id="capacity-chart" style="width: 100%; height: 200px"></div>
               </div>
             </div>
           </q-card-section>
         </q-card>
       </div>
       <div class="col-12 col-xs-12 col-sm-5 col-md-5">
-        <q-card class="common-card b-rd-16">
-          <q-card-section class="header-section">
-            <div class="flex-between-center">
+        <q-card class="help-box common-card b-rd-16 p-20">
+          <q-card-section class="p-0">
+            <div class="flex-between-center q-mb-md">
               <div class="text-subtitle1 font-bold">帮助中心</div>
               <q-btn flat color="primary" size="sm" icon="chevron_right" dense />
             </div>
-            <q-list class="notice-list">
-              <q-item clickable v-ripple v-for="item in noticeList" :key="item.label">
-                <q-item-section>{{ item.label }}</q-item-section>
-              </q-item>
-            </q-list>
+            <q-scroll-area class="help-list">
+              <div v-for="item in noticeList" :key="item.label" class="help-item">
+                <div>{{ item.label }}</div>
+              </div>
+            </q-scroll-area>
           </q-card-section>
         </q-card>
       </div>
@@ -847,29 +846,42 @@ export default {
       {
         label: '如何设置仓库/货区/货位',
         desc: '如何设置仓库/货区/货位',
+        time: '2022-07-01 12:00:00',
       },
       {
         label: '如何设置仓租策略',
         desc: '如何设置仓租策略',
+        time: '2022-07-01 12:00:00',
       },
       {
         label: '如何在操作中再及操作库策略',
         desc: '如何在操作中再及操作库策略',
+        time: '2022-07-01 12:00:00',
       },
       {
         label: '如何设置计费模板',
         desc: '如何设置计费模板',
+        time: '2022-07-01 12:00:00',
       },
       {
         label: '如何创建客户',
         desc: '如何创建客户',
+        time: '2022-07-01 12:00:00',
       },
       {
         label: '其他问题',
         desc: '其他问题',
+        time: '2022-07-01 12:00:00',
       },
     ]);
-
+    // 时间选项
+    const timeOptions = [
+      { label: '昨天', value: 'yesterday' },
+      { label: '今天', value: 'today' },
+      { label: '星期', value: 'week' },
+      { label: '月', value: 'month' },
+      { label: '年', value: 'year' },
+    ];
     onMounted(() => {
       nextTick(() => {
         initChart();
@@ -889,6 +901,7 @@ export default {
       totalList,
       timeRange,
       noticeList,
+      timeOptions,
       selectedOption,
       handleWarehouseCreated,
       confirm,
@@ -959,6 +972,8 @@ export default {
         border-radius: 9px;
         position: relative;
         min-width: 150px;
+        height: 80px;
+        box-sizing: border-box;
         &::before {
           content: '';
           position: absolute;
@@ -992,15 +1007,110 @@ export default {
         }
       }
     }
+    .time-range-group {
+      .time-range-list {
+        display: flex;
+        border-radius: 4px;
+        overflow: hidden;
+
+        .time-range-item {
+          padding: 6px 16px;
+          font-size: 14px;
+          color: #606266;
+          cursor: pointer;
+          background: #fff;
+          border: 1px solid #dcdfe6;
+          margin-left: -1px; // 边框重叠效果
+          position: relative; // 用于选中时边框层级
+
+          &:first-child {
+            margin-left: 0;
+            border-radius: 4px 0 0 4px;
+          }
+          &:last-child {
+            border-radius: 0 4px 4px 0;
+          }
+
+          &:hover {
+            color: var(--q-primary);
+            z-index: 1;
+          }
+
+          &.active {
+            color: var(--q-primary);
+            border-color: var(--q-primary);
+            z-index: 2; // 确保选中项的边框在最上层
+          }
+        }
+      }
+    }
   }
 
   // 5 公告
-  .notice-list {
+  .notice-box {
+    height: 250px;
+    box-sizing: border-box;
+    margin-bottom: 50px;
+    .notice-list {
+      overflow-y: auto;
+      height: 180px;
+      .notice-item {
+        padding: 10px 0;
+        border-bottom: 1px solid #e6e6e6;
+        .title {
+          cursor: pointer;
+          font-size: 14px;
+          color: #1f1f1f;
+          line-height: 18px;
+          margin-bottom: 6px;
+          &:hover {
+            color: $primary;
+          }
+        }
+        .time {
+          color: #666666;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+  // 6下载
+  .down-box {
+    height: 200px;
+    box-sizing: border-box;
+    .down-list {
+      .item {
+        height: 50px;
+        box-sizing: border-box;
+        padding: 12px 0;
+        border: 1px solid #e6e6e6;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        transition: all 0.3s;
+        &:not(:last-child) {
+          margin-bottom: 20px;
+        }
+        &:hover {
+          cursor: pointer;
+          color: $primary;
+          border-color: $primary;
+          background-color: rgba($color: $primary, $alpha: 0.1);
+        }
+      }
+    }
   }
   // 6 库存
-  .capacity-statistics {
+  .capacity-box {
+    height: 290px;
+    box-sizing: border-box;
     .capacity-item {
       text-indent: 20px;
+      &:not(:last-child) {
+        margin-bottom: 20px;
+      }
       &::before {
         content: '';
         display: inline-block;
@@ -1022,6 +1132,26 @@ export default {
       &-3 {
         &::before {
           background: #409eff;
+        }
+      }
+    }
+  }
+  // 7 帮助中心
+  .help-box {
+    height: 290px;
+    box-sizing: border-box;
+    .help-list {
+      height: 200px;
+      .help-item {
+        &:not(:last-child) {
+          margin-bottom: 16px;
+        }
+        cursor: pointer;
+        font-size: 14px;
+        color: #1f1f1f;
+        line-height: 18px;
+        &:hover {
+          color: $primary;
         }
       }
     }
