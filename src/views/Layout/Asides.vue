@@ -33,9 +33,9 @@
             class="route-item"
             active-class="q-item--active"
           >
-            <q-item-section avatar class="submenu-icon">
+            <!-- <q-item-section avatar class="submenu-icon">
               <q-icon name="circle" size="xs" />
-            </q-item-section>
+            </q-item-section> -->
             <q-item-section class="submenu-title">
               <q-item-label>{{ childRoute.meta?.name || childRoute.name }}</q-item-label>
             </q-item-section>
@@ -195,7 +195,7 @@ export default {
   .route-item {
     padding: 6px 12px 6px 16px;
     min-height: 40px;
-    margin: 5px 0;
+    margin: 10px 0;
     border-radius: 6px;
     transition: background-color 0.2s ease;
     &:last-child {
@@ -212,7 +212,7 @@ export default {
 
     .submenu-title {
       font-size: 13px;
-      letter-spacing: 0.2px;
+      text-indent: 20px;
       color: #555;
       white-space: nowrap;
       overflow: hidden;
@@ -277,7 +277,7 @@ export default {
   }
 
   .menu-header {
-    background-color: rgba(0, 31, 77, 0.03);
+    // background-color: rgba(0, 31, 77, 0.03);
     min-height: 40px;
     border-radius: 6px;
   }
@@ -285,6 +285,10 @@ export default {
 
 .q-expansion-item {
   margin-bottom: 20px;
+  // 去掉父级菜单展开显示的上下边框
+  :deep(.q-expansion-item__border) {
+    opacity: 0 !important;
+  }
 }
 /* 隐藏默认的展开图标 - 让整个标题区域可点击 */
 :deep(.q-focusable) {

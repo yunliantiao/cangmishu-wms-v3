@@ -1,8 +1,24 @@
 <template>
   <div class="customer-page">
+    <!-- 操作栏 -->
+    <div class="action-bar flex-between-center m-b-50">
+      <div class="text-h5 font-bold">
+        <!-- 左侧可能有其他操作按钮 -->
+        已开户
+      </div>
+      <div>
+        <q-btn label="OMS地址" color="primary" outline class="q-mr-sm" @click="openOms(currentDomain)">
+          <q-icon name="link" size="xs" class="q-ml-xs" />
+        </q-btn>
+        <q-btn label="开户" color="primary" icon="add" unelevated @click="handleAddCustomer">
+          <q-tooltip>创建新客户账户</q-tooltip>
+        </q-btn>
+      </div>
+    </div>
+
     <!-- 搜索栏 -->
-    <div class="search-bar q-mb-md">
-      <div class="row q-col-gutter-md">
+    <div class="search-bar">
+      <div class="row q-col-gutter-sm">
         <div class="col-auto">
           <q-select
             outlined
@@ -19,14 +35,16 @@
           >
             <template v-slot:selected>
               <div v-if="pageParams.warehouse_id">
-                {{
-                  warehouseList.find((o) => o.id === pageParams.warehouse_id)
-                    ?.name || "请选择"
-                }}
+                {{ warehouseList.find((o) => o.id === pageParams.warehouse_id)?.name || '请选择' }}
               </div>
             </template>
           </q-select>
         </div>
+        <KeywordSearch
+          v-model:selectInfo="pageParams.keywordInfo"
+          :searchTypeList="customerIdOptions"
+          :showSearchMode="false"
+        ></KeywordSearch>
         <div class="col-auto">
           <q-select
             outlined
@@ -43,23 +61,13 @@
           >
             <template v-slot:selected>
               <div v-if="pageParams.search_type">
-                {{
-                  customerIdOptions.find(
-                    (o) => o.value === pageParams.search_type
-                  )?.label || "请选择"
-                }}
+                {{ customerIdOptions.find((o) => o.value === pageParams.search_type)?.label || '请选择' }}
               </div>
             </template>
           </q-select>
         </div>
         <div class="col-auto">
-          <q-input
-            outlined
-            dense
-            v-model="pageParams.keywords"
-            placeholder="请输入"
-            style="width: 200px"
-          />
+          <q-input outlined dense v-model="pageParams.keywords" placeholder="请输入" style="width: 200px" />
         </div>
         <div class="col-auto">
           <q-btn
@@ -73,7 +81,7 @@
         </div>
       </div>
     </div>
-    <div class="container">
+    <div class="main-table">
       <!-- 标签页 -->
       <div class="tabs-section q-mb-md">
         <q-tabs
@@ -88,40 +96,12 @@
           <q-tab name="used" label="已停用" />
         </q-tabs>
       </div>
-
-      <!-- 操作栏 -->
-      <div class="action-bar row justify-between q-mb-md">
-        <div>
-          <!-- 左侧可能有其他操作按钮 -->
-        </div>
-    <div>
-          <q-btn
-            label="OMS地址"
-            color="primary"
-            @click="openOms(currentDomain)"
-            flat
-            class="q-mr-sm"
-          >
-            <q-icon name="link" size="xs" class="q-ml-xs" />
-          </q-btn>
-          <q-btn
-            label="开户"
-            color="primary"
-            icon="add"
-            unelevated
-            @click="handleAddCustomer"
-          >
-            <q-tooltip>创建新客户账户</q-tooltip>
-          </q-btn>
-        </div>
-      </div>
       <!-- 数据表格 -->
       <q-table
         :rows="customers"
         :columns="columns"
         row-key="id"
         flat
-        bordered
         separator="horizontal"
         hide-pagination
         :loading="$store.state.btnLoading"
@@ -135,97 +115,72 @@
         <template v-slot:no-data="{ icon, filter }">
           <div class="full-width row flex-center q-gutter-sm">
             <q-icon size="2em" name="sentiment_dissatisfied" />
-            <span> 无数据 </span>
+            <span>无数据</span>
             <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
           </div>
         </template>
-        <template v-slot:body-cell-customerId="props">
-          <q-td :props="props">
-            <div class="customer-info">
-              <span class="customer-id">{{ props.value.code || "--" }}</span>
-              <span class="customer-name text-grey-8">
-                {{ props.value.name || "--" }}
-              </span>
-            </div>
-          </q-td>
-        </template>
-        <template v-slot:body-cell-contactWay="props">
-          <q-td :props="props">
-            <div class="contact-info">
-              <div class="email-row">
-                <q-icon name="email" size="xs" class="q-mr-xs text-blue-7" />
-                {{ props.value.email || "--" }}
+        <!-- TODO: -->
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td key="customerId" :props="props">
+              <div class="customer-info">
+                <div class="customer-id">{{ props.row.code || '--' }}</div>
+                <div class="customer-name text-grey-8">
+                  {{ props.row.name || '--' }}
+                </div>
               </div>
-              <div v-if="props.row.phone_number" class="phone-row">
-                <q-icon name="phone" size="xs" class="q-mr-xs text-green-7" />
-                {{ props.value.phone_prefix }}
-                {{ props.value.phone_number || "--" }}
+            </q-td>
+            <q-td key="contactWay" :props="props">
+              <div class="contact-info">
+                <div class="email-row">
+                  <q-icon name="email" size="xs" class="q-mr-xs" color="black" />
+                  {{ props.row.email || '--' }}
+                </div>
+                <div v-if="props.row.phone_number" class="phone-row">
+                  <q-icon name="phone" size="xs" class="q-mr-xs" color="black" />
+                  {{ props.row.phone_prefix }}
+                  {{ props.row.phone_number || '--' }}
+                </div>
               </div>
-            </div>
-          </q-td>
-        </template>
+            </q-td>
+            <q-td key="name" :props="props">
+              <div>{{ props.row.name }}</div>
+            </q-td>
+            <q-td key="currency" :props="props">
+              <div>{{ props.row.currency }}</div>
+            </q-td>
+            <q-td key="created_at" :props="props">
+              <div>{{ props.row.created_at }}</div>
+            </q-td>
+            <q-td key="actions" :props="props" class="text-center">
+              <div class="flex-center-center gap-20">
+                <div @click="handleEditCustomer(props.row)">
+                  <img
+                    src="@/assets/images/customer/edit-icon.png"
+                    class="cursor-pointer w-20 h-20"
+                    alt="编辑客户信息"
+                  />
+                  <q-tooltip>编辑客户信息</q-tooltip>
+                </div>
+                <div @click="handleGetTempOmsToken(props.row.id)">
+                  <img
+                    src="@/assets/images/customer/share-icon.png"
+                    class="cursor-pointer w-20 h-20"
+                    alt="跳转OMS登录"
+                  />
+                  <q-tooltip>跳转OMS登录</q-tooltip>
+                </div>
+                <div v-if="activeTab !== 'used'" @click="handleDisableCustomer(props.row.id)">
+                  <img src="@/assets/images/customer/close-icon.png" class="cursor-pointer w-20 h-20" alt="停用客户" />
+                  <q-tooltip>停用客户</q-tooltip>
+                </div>
+                <div v-if="activeTab === 'used'" @click="handleEnableCustomer(props.row.id)">
+                  <img src="@/assets/images/customer/check-icon.png" class="cursor-pointer w-20 h-20" alt="启用客户" />
+                  <q-tooltip>启用客户</q-tooltip>
+                </div>
+              </div>
 
-        <template v-slot:body-cell-email="props">
-          <q-td :props="props">
-            <div class="contact-info">
-              <div class="email-row">
-                <q-icon name="email" size="xs" class="q-mr-xs text-blue-7" />
-                {{ props.value || "--" }}
-              </div>
-              <div v-if="props.row.phone_number" class="phone-row">
-                <q-icon name="phone" size="xs" class="q-mr-xs text-green-7" />
-                {{ props.row.phone_prefix }}
-                {{ props.row.phone_number || "--" }}
-              </div>
-            </div>
-          </q-td>
-        </template>
-
-        <template v-slot:body-cell-actions="props">
-          <q-td :props="props" class="text-center">
-            <q-btn
-              flat
-              round
-              color="primary"
-              @click="handleEditCustomer(props.row)"
-              icon="edit"
-              size="sm"
-            >
-              <q-tooltip>编辑客户信息</q-tooltip>
-            </q-btn>
-            <q-btn
-              flat
-              round
-              color="positive"
-              @click="handleGetTempOmsToken(props.row.id)"
-              icon="send"
-              size="sm"
-            >
-              <q-tooltip>跳转OMS登录</q-tooltip>
-            </q-btn>
-            <q-btn
-              flat
-              round
-              color="negative"
-              @click="handleDisableCustomer(props.row.id)"
-              icon="block"
-              size="sm"
-              v-if="activeTab == 'approved'"
-            >
-              <q-tooltip>停用客户</q-tooltip>
-            </q-btn>
-            <q-btn
-              flat
-              round
-              color="positive"
-              @click="handleEnableCustomer(props.row.id)"
-              icon="check"
-              size="sm"
-              v-if="activeTab == 'used'"
-            >
-              <q-tooltip>启用客户</q-tooltip>
-            </q-btn>
-            <!-- <q-btn flat round color="grey-7" icon="more_horiz" size="sm">
+              <!-- <q-btn flat round color="grey-7" icon="more_horiz" size="sm">
               <q-menu>
                 <q-list style="min-width: 120px">
                   <q-item clickable v-close-popup>
@@ -240,8 +195,10 @@
                 </q-list>
               </q-menu>
             </q-btn> -->
-          </q-td>
+            </q-td>
+          </q-tr>
         </template>
+        <!-- TODO: -->
       </q-table>
       <!-- 分页 -->
       <div class="q-pa-md">
@@ -292,9 +249,7 @@
               class="q-mt-xs"
               :rules="[
                 (val) => !!val || '邮箱不能为空',
-                (val) =>
-                  /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(val) ||
-                  '请输入有效的邮箱地址',
+                (val) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(val) || '请输入有效的邮箱地址',
               ]"
             />
           </div>
@@ -304,13 +259,7 @@
             <div class="row items-center form-label">
               <div class="text-subtitle2">公司名称</div>
             </div>
-            <q-input
-              outlined
-              dense
-              v-model="formData.name"
-              placeholder="请输入"
-              class="q-mt-xs"
-            />
+            <q-input outlined dense v-model="formData.name" placeholder="请输入" class="q-mt-xs" />
           </div>
 
           <!-- 右侧列 -->
@@ -335,10 +284,7 @@
                 v-model="formData.phone_number"
                 placeholder="请输入"
                 class="col-8"
-                :rules="[
-                  (val) => !!val || '手机号不能为空',
-                  (val) => /^\d+$/.test(val) || '请输入有效的手机号',
-                ]"
+                :rules="[(val) => !!val || '手机号不能为空', (val) => /^\d+$/.test(val) || '请输入有效的手机号']"
               />
             </div>
           </div>
@@ -382,9 +328,7 @@
             >
               <template v-slot:no-option>
                 <q-item>
-                  <q-item-section class="text-grey">
-                    未找到匹配的国家/地区
-                  </q-item-section>
+                  <q-item-section class="text-grey">未找到匹配的国家/地区</q-item-section>
                 </q-item>
               </template>
             </q-select>
@@ -395,20 +339,11 @@
               <div class="text-subtitle2 q-mr-sm">分配仓库</div>
             </div>
             <div class="row items-center q-mb-xs">
-              <q-icon
-                name="info_outline"
-                size="16px"
-                color="grey-7"
-                class="q-mr-xs"
-              />
-              <div class="text-grey-7 text-caption">
-                至少选择开启一个仓库并选择该仓库的计费策略
-              </div>
+              <q-icon name="info_outline" size="16px" color="grey-7" class="q-mr-xs" />
+              <div class="text-grey-7 text-caption">至少选择开启一个仓库并选择该仓库的计费策略</div>
             </div>
             <div class="warehouse-table">
-              <div
-                class="warehouse-header row items-center bg-grey-2 q-px-md q-py-xs"
-              >
+              <div class="warehouse-header row items-center bg-grey-2 q-px-md q-py-xs">
                 <div class="col-4 text-subtitle2">计费模板</div>
                 <!-- <div class="col-4 text-subtitle2">开启/关闭</div>
                 <div class="col-4 text-subtitle2">
@@ -424,9 +359,7 @@
                   </div>
                 </div> -->
               </div>
-              <div
-                class="warehouse-row row items-center q-px-md q-py-sm border-bottom"
-              >
+              <div class="warehouse-row row items-center q-px-md q-py-sm border-bottom">
                 <div class="col-4">
                   <q-select
                     outlined
@@ -447,77 +380,60 @@
             <div class="row items-center form-label">
               <div class="text-subtitle2">备注</div>
             </div>
-            <q-input
-              outlined
-              v-model="formData.remark"
-              placeholder="请输入"
-              type="textarea"
-              rows="2"
-              class="q-mt-xs"
-            />
+            <q-input outlined v-model="formData.remark" placeholder="请输入" type="textarea" rows="2" class="q-mt-xs" />
           </div>
         </div>
 
         <div class="row justify-end q-gutter-sm q-py-sm">
-          <q-btn
-            label="取消"
-            color="grey-7"
-            flat
-            @click="dialogVisible = false"
-          />
-          <q-btn
-            label="确认"
-            :loading="$store.state.btnLoading"
-            type="submit"
-            color="primary"
-            unelevated
-          />
+          <q-btn label="取消" color="grey-7" flat @click="dialogVisible = false" />
+          <q-btn label="确认" :loading="$store.state.btnLoading" type="submit" color="primary" unelevated />
         </div>
       </q-form>
     </Dialog>
-    </div>
+  </div>
 </template>
 <script setup>
-import { ref, reactive, onMounted } from "vue";
-import Dialog from "@/components/Dialog.vue";
-import customerApi from "@/api/customer";
-import Pagination from "@/components/Pagination.vue";
-import warehouseApi from "@/api/warehouse";
-import { useQuasar, Dialog as QuasarDialog } from "quasar";
-import { copyText } from "@/utils/common";
-import { useStore } from "vuex";
+import { ref, reactive, onMounted } from 'vue';
+import Dialog from '@/components/Dialog.vue';
+import customerApi from '@/api/customer';
+import Pagination from '@/components/Pagination.vue';
+import warehouseApi from '@/api/warehouse';
+import { useQuasar, Dialog as QuasarDialog } from 'quasar';
+import { copyText } from '@/utils/common';
+import KeywordSearch from '@/components/KeywordSearch/Index.vue';
+import { useStore } from 'vuex';
 
 const store = useStore();
 const customerIdOptions = [
-  { label: "客户代码", value: "code" },
-  { label: "邮箱", value: "email" },
-  { label: "手机号", value: "phone_number" },
-  { label: "客户姓名", value: "name" },
-  { label: "公司名称", value: "company" },
+  { label: '客户代码', value: 'code' },
+  { label: '邮箱', value: 'email' },
+  { label: '手机号', value: 'phone_number' },
+  { label: '客户姓名', value: 'name' },
+  { label: '公司名称', value: 'company' },
 ];
 
 const dialogVisible = ref(false);
 // 标签页
-const activeTab = ref("approved");
+const activeTab = ref('approved');
 
 // 表单数据
 const formData = reactive({
-  name: "",
-  code: "",
-  email: "",
-  country_code: "",
-  city: "",
-  remark: "",
-  phone_prefix: "",
-  phone_number: "",
-  currency: "",
-  billing_template_id: "",
+  name: '',
+  code: '',
+  email: '',
+  country_code: '',
+  city: '',
+  remark: '',
+  phone_prefix: '',
+  phone_number: '',
+  currency: '',
+  billing_template_id: '',
 });
 
 // 表单选项
-const phoneCodes = ["+86"];
-const currencyOptions = ["USD", "CNY"];
-const billingOptions = [{ name: "标准计费", id: 1 }];
+const phoneCodes = ['+86'];
+const currencyOptions = ['USD', 'CNY'];
+const billingOptions = [{ name: '标准计费', id: 1 }];
 
 const customers = ref([]);
 const warehouseList = ref([]);
@@ -529,7 +445,7 @@ const getWarehouseList = () => {
   });
 };
 
-const currentDomain = ref("");
+const currentDomain = ref('');
 const getCurrentDomain = () => {
   customerApi.getCurrentDomain().then((res) => {
     if (res.success) {
@@ -540,15 +456,12 @@ const getCurrentDomain = () => {
 const handleGetTempOmsToken = (id) => {
   customerApi.getTempOmsToken(id).then((res) => {
     if (res.success) {
-      window.open(
-        currentDomain.value + "/login?token=" + res.data.token,
-        "_blank"
-      );
+      window.open(currentDomain.value + '/login?token=' + res.data.token, '_blank');
     }
   });
 };
 const openOms = (domain) => {
-  window.open(domain, "_blank");
+  window.open(domain, '_blank');
 };
 getCurrentDomain();
 // 分页配置
@@ -556,14 +469,19 @@ const pageParams = reactive({
   page: 1,
   per_page: 10,
   total: 0,
-  warehouse_id: "",
+  warehouse_id: '',
   is_active: 1,
-  keywords: "",
-  search_type: "",
+  keywords: '',
+  search_type: '',
+  keywordInfo: {
+    search_type: 'code',
+    search_value: '',
+    search_mode: '',
+  },
 });
 // 获取客户列表
 const getCustomerList = () => {
-  pageParams.is_active = activeTab.value == "used" ? 0 : 1;
+  pageParams.is_active = activeTab.value == 'used' ? 0 : 1;
   customerApi.getCustomerList(pageParams).then((res) => {
     if (res.success) {
       customers.value = res.data.items;
@@ -576,31 +494,33 @@ getWarehouseList();
 // 表格配置
 const columns = [
   {
-    name: "customerId",
-    label: "客户代码/姓名",
+    name: 'customerId',
+    label: '客户代码/姓名',
     field: (row) => ({ id: row.id, code: row.code, name: row.name }),
-    align: "left",
+    align: 'center',
+    style: 'width:200px',
   },
   {
-    name: "contactWay",
-    label: "联系方式",
+    name: 'contactWay',
+    label: '联系方式',
     field: (row) => ({
       id: row.id,
       email: row.email,
       phone_prefix: row.phone_prefix,
       phone_number: row.phone_number,
     }),
-    align: "left",
+    align: 'center',
+    style: 'width:200px',
   },
   {
-    name: "name",
-    label: "公司名称",
-    field: "name",
-    align: "left",
+    name: 'name',
+    label: '公司名称',
+    field: 'name',
+    align: 'center',
   },
-  { name: "currency", label: "结算币种", field: "currency", align: "left" },
-  { name: "created_at", label: "创建时间", field: "created_at", align: "left" },
-  { name: "actions", label: "操作", field: (row) => row, align: "center" },
+  { name: 'currency', label: '结算币种', field: 'currency', align: 'center' },
+  { name: 'created_at', label: '创建时间', field: 'created_at', align: 'center' },
+  { name: 'actions', label: '操作', field: (row) => row, align: 'center' },
 ];
 const editCustomerId = ref(null);
 //编辑
@@ -614,7 +534,7 @@ const handleEditCustomer = (row) => {
 //开户
 const handleAddCustomer = () => {
   Object.keys(formData).forEach((key) => {
-    formData[key] = "";
+    formData[key] = '';
   });
   editCustomerId.value = null;
   dialogVisible.value = true;
@@ -622,16 +542,16 @@ const handleAddCustomer = () => {
 
 const handleEnableCustomer = (id) => {
   QuasarDialog.create({
-    title: "启用客户",
-    message: "确定启用该客户吗？",
+    title: '启用客户',
+    message: '确定启用该客户吗？',
     cancel: true,
     ok: {
-      label: "确认",
-      color: "primary",
+      label: '确认',
+      color: 'primary',
     },
     cancel: {
-      label: "取消",
-      color: "grey-8",
+      label: '取消',
+      color: 'grey-8',
     },
   }).onOk(() => {
     customerApi.enableCustomer(id).then((res) => {
@@ -643,16 +563,16 @@ const handleEnableCustomer = (id) => {
 };
 const handleDisableCustomer = (id) => {
   QuasarDialog.create({
-    title: "停用客户",
-    message: "确定停用该客户吗？",
+    title: '停用客户',
+    message: '确定停用该客户吗？',
     cancel: true,
     ok: {
-      label: "确认",
-      color: "primary",
+      label: '确认',
+      color: 'primary',
     },
     cancel: {
-      label: "取消",
-      color: "grey-8",
+      label: '取消',
+      color: 'grey-8',
     },
   }).onOk(() => {
     customerApi.disableCustomer(id).then((res) => {
@@ -672,7 +592,7 @@ const onSubmit = () => {
       dialogVisible.value = false;
       //   // 重置表单数据
       Object.keys(formData).forEach((key) => {
-        formData[key] = "";
+        formData[key] = '';
       });
       getCustomerList();
     }
@@ -690,8 +610,7 @@ const filterCountries = (val, update) => {
 
   const needle = val.toLowerCase();
   filteredCountries.value = store.state.countries.filter(
-    v => v.name.toLowerCase().includes(needle) ||
-         v.code.toLowerCase().includes(needle)
+    (v) => v.name.toLowerCase().includes(needle) || v.code.toLowerCase().includes(needle)
   );
   update();
 };
@@ -704,85 +623,57 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .customer-page {
-  border-radius: 8px;
-}
-.container {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
-}
-.search-bar {
-  background-color: #fff;
-  padding: 16px 16px 12px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-
-  .q-select,
-  .q-input {
-    .q-field__control {
-      height: 36px;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    }
-  }
-
-  .q-btn {
-    height: 36px;
-    width: 36px;
-  }
-}
-
-.tabs-section {
-  justify-content: flex-start;
-
-  .q-tabs {
-    &__content {
+  // 1.顶部
+  .action-bar {
+    .q-btn {
       height: 40px;
-    }
-    &__tab {
       font-weight: 500;
-      letter-spacing: 0.5px;
     }
   }
-}
-
-.action-bar {
-  .q-btn {
-    &--unelevated {
-      height: 36px;
-      font-weight: 500;
-      &:hover {
-        opacity: 0.9;
-      }
-    }
-    &--flat {
-      font-weight: 500;
-      &:hover {
-        background: rgba(25, 118, 210, 0.05);
-      }
-    }
-  }
-}
-
-.customer-info {
-  .customer-id {
-    color: #1976d2;
-    font-size: 14px;
-    margin-right: 4px;
-  }
-  .customer-name {
-    font-size: 13px;
-    margin-top: 4px;
-  }
-}
-
-.contact-info {
-  .email-row,
-  .phone-row {
+  // 2.tab切换
+  .tabs-section {
     display: flex;
-    align-items: center;
-    font-size: 13px;
+    justify-content: flex-start;
+    border-bottom: 1px solid #e6e6e6;
+    .q-tabs {
+      &__content {
+        height: 40px;
+      }
+      &__tab {
+        font-weight: 500;
+        letter-spacing: 0.5px;
+      }
+      .q-tab {
+        padding: 0;
+        &:not(:last-child) {
+          margin-right: 50px;
+        }
+      }
+    }
   }
-  .phone-row {
-    margin-top: 4px;
+  // 3.表格(客户代码/姓名)
+  .customer-info {
+    font-size: 14px;
+    line-height: 16px;
+    .customer-id {
+      color: $primary;
+      margin-bottom: 10px;
+    }
+    .customer-name {
+      color: #1f1f1f;
+    }
+  }
+  // 4.表格(联系方式)
+  .contact-info {
+    .email-row,
+    .phone-row {
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+    }
+    .phone-row {
+      margin-top: 4px;
+    }
   }
 }
 
@@ -796,49 +687,47 @@ onMounted(() => {
   }
 }
 
-.q-table {
-  border-radius: 4px;
-  margin: 8px 16px 16px;
+// :deep .q-table {
+//   border-radius: 4px;
+//   thead tr {
+//     // background-color: rgba(0, 0, 0, 0.02);
+//   }
 
-  thead tr {
-    background-color: rgba(0, 0, 0, 0.02);
-  }
+//   th {
+//     font-weight: 500;
+//     font-size: 14px;
+//     color: rgba(0, 0, 0, 0.85);
+//     padding: 20px 16px;
+//   }
 
-  th {
-    font-weight: 500;
-    font-size: 14px;
-    color: rgba(0, 0, 0, 0.85);
-    padding: 12px 16px;
-  }
+//   td {
+//     font-size: 14px;
+//     padding: 32px 16px;
+//     color: rgba(0, 0, 0, 0.75);
+//     white-space: nowrap;
+//     border-bottom: 1px solid #e6e6e6;
+//   }
 
-  td {
-    font-size: 14px;
-    padding: 12px 16px;
-    color: rgba(0, 0, 0, 0.75);
-    white-space: nowrap;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  }
+//   tbody tr {
+//     transition: background-color 0.3s;
 
-  tbody tr {
-    transition: background-color 0.3s;
+//     &:hover {
+//       background-color: rgba(0, 0, 0, 0.03);
+//     }
 
-    &:hover {
-      background-color: rgba(0, 0, 0, 0.03);
-    }
+//     .q-btn {
+//       opacity: 0.7;
+//       &:hover {
+//         opacity: 1;
+//       }
+//     }
+//   }
 
-    .q-btn {
-      opacity: 0.7;
-      &:hover {
-        opacity: 1;
-      }
-    }
-  }
-
-  &__bottom {
-    padding: 8px 16px;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-  }
-}
+//   &__bottom {
+//     padding: 8px 16px;
+//     border-top: 1px solid rgba(0, 0, 0, 0.05);
+//   }
+// }
 
 .q-select {
   .q-field__marginal {
