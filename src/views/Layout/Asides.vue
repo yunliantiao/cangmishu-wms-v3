@@ -142,7 +142,7 @@ export default {
   width: 240px;
   height: calc(100vh - 50px);
   background-color: white;
-  z-index: 100;
+  z-index: 2000;
   overflow-y: auto;
   border-right: 1px solid rgba(0, 31, 77, 0.06);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
