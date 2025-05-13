@@ -1,13 +1,13 @@
 import { createApp } from 'vue'
-import './style.css'
-import router from './router'
-import store from './store'
 import App from './App.vue'
 import './assets/global.scss'
+import router from './router'
+import store from './store'
+import './style.css'
 import Message from './utils/message'
 
 // Import Quasar
-import { Quasar, Notify, Dialog } from 'quasar'
+import { Dialog, Notify, Quasar } from 'quasar'
 
 // Import Quasar CSS
 import 'quasar/dist/quasar.css'
@@ -33,7 +33,7 @@ app.use(Quasar, {
       actions: [{ icon: 'close', color: 'white' }]
     },
     brand: {
-      primary: '#001f4d',
+      primary: '#5745C5',
       secondary: '#26A69A',
       accent: '#9C27B0',
       dark: '#1d1d1d',

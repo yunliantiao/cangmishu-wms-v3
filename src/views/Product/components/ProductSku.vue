@@ -19,7 +19,6 @@
       selection="multiple"
       hide-pagination
       flat
-      bordered
       :loading="loading"
       :pagination="{
         rowsPerPage: 0,
@@ -27,20 +26,17 @@
     >
       <!-- 无数据时的显示 -->
       <template v-slot:no-data>
-        <div
-          v-if="!loading && (!rows || rows.length === 0)"
-          class="full-width row flex-center q-my-lg"
-        >
+        <div v-if="!loading && (!rows || rows.length === 0)" class="full-width row flex-center q-my-lg">
           <span class="text-grey">暂无数据</span>
         </div>
       </template>
 
       <template v-slot:header="props">
         <q-tr :props="props">
-          <q-th auto-width style="padding: 0 8px">
+          <q-th style="padding: 0 8px">
             <q-checkbox color="primary" v-model="props.selected" />
           </q-th>
-          <q-th v-for="col in props.cols" :key="col.name" :props="props">
+          <q-th v-for="col in props.cols" :key="col.name" :props="props" class="font-bold font-14">
             {{ col.label }}
           </q-th>
         </q-tr>
@@ -52,59 +48,47 @@
             <q-checkbox color="primary" v-model="props.selected" />
           </q-td>
           <!-- SKU信息 -->
-          <q-td key="skuInfo">
+          <q-td key="skuInfo" :props="props">
             <div class="row no-wrap items-center">
               <div class="q-mr-sm">
                 <img
-                  :src="props.row?.image||'https://testoms.cangmishu.com/api/uploads/52331320-d813-40d8-a6db-3cf28f4938b1'"
-                  style="
-                    width: 50px;
-                    height: 50px;
-                    object-fit: cover;
-                    border-radius: 4px;
+                  :src="
+                    props.row?.image || 'https://testoms.cangmishu.com/api/uploads/52331320-d813-40d8-a6db-3cf28f4938b1'
                   "
+                  class="w-50 h-50 b-rd-4"
+                  style="object-fit: cover"
                 />
               </div>
-              <div class="ellipsis">
-                <div>SKU: {{ props.row?.sku || "-" }}</div>
-                <div class="ellipsis">
-                  {{ props.row?.product?.name || "-" }}
+              <div class="ellipsis flex-c-start-start gap-10">
+                <div class="text-primary">SKU: {{ props.row?.sku || '-' }}</div>
+                <div class="ellipsis font-bold">
+                  {{ props.row?.product?.name || '-' }}
                 </div>
-                <div>规格: {{ props.row?.name || "-" }}</div>
+                <div>规格: {{ props.row?.name || '-' }}</div>
               </div>
             </div>
           </q-td>
           <q-td key="customer" class="text-center">
-            {{ props.row?.customer?.name || "-" }}
+            {{ props.row?.customer?.name || '-' }}
           </q-td>
-          <q-td
-            key="applySpec"
-            class="text-center"
-            style="white-space: pre-line"
-          >
+          <q-td key="applySpec" class="text-center" style="white-space: pre-line">
             {{
-              `${props.row?.size_length || 0}*${props.row?.size_width || 0}*${
-                props.row?.size_height || 0
-              } cm\n${props.row?.weight || 0} g`
-            }}
-          </q-td>
-
-          <q-td
-            key="realSpec"
-            class="text-center"
-            style="white-space: pre-line"
-          >
-            {{
-              `${props.row?.warehouse_size_length || 0}*${
-                props.row?.warehouse_size_width || 0
-              }*${props.row?.warehouse_size_height || 0} cm\n${
-                props.row?.warehouse_weight || 0
+              `${props.row?.size_length || 0}*${props.row?.size_width || 0}*${props.row?.size_height || 0} cm\n${
+                props.row?.weight || 0
               } g`
             }}
           </q-td>
+
+          <q-td key="realSpec" class="text-center" style="white-space: pre-line">
+            {{
+              `${props.row?.warehouse_size_length || 0}*${props.row?.warehouse_size_width || 0}*${
+                props.row?.warehouse_size_height || 0
+              } cm\n${props.row?.warehouse_weight || 0} g`
+            }}
+          </q-td>
           <q-td key="timeInfo" class="text-center">
-            <div>创建: {{ props.row?.created_at || "-" }}</div>
-            <div>更新: {{ props.row?.updated_at || "-" }}</div>
+            <div>创建: {{ props.row?.created_at || '-' }}</div>
+            <div>更新: {{ props.row?.updated_at || '-' }}</div>
           </q-td>
           <!-- <q-td key="operations" class="text-center">
             <q-btn
@@ -130,13 +114,13 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits, defineExpose } from "vue";
-import { useQuasar } from "quasar";
-import { useRouter } from "vue-router";
+import { ref, defineProps, defineEmits, defineExpose } from 'vue';
+import { useQuasar } from 'quasar';
+import { useRouter } from 'vue-router';
 // import { useI18n } from "vue-i18n";
 // import EditSkuDialog from './EditSkuDialog.vue';
 // import PrintLabelDialog from './PrintLabelDialog.vue';
-import api from "@/api/index";
+import api from '@/api/index';
 
 // const { t } = useI18n();
 const $q = useQuasar();
@@ -160,60 +144,43 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits([
-  "add",
-  "edit",
-  "copy",
-  "delete",
-  "print",
-  "import",
-  "page-change",
-  "void",
-]);
+const emit = defineEmits(['add', 'edit', 'copy', 'delete', 'print', 'import', 'page-change', 'void']);
 
 // 表格数据
 const selected = ref([]);
 const columns = [
   {
-    name: "skuInfo",
+    name: 'skuInfo',
     required: true,
-    label: "SKU信息",
-    align: "left",
-    field: (row) => row?.sku || "",
-    style: "width: 25%",
+    label: 'SKU信息',
+    align: 'left',
+    field: (row) => row?.sku || '',
   },
   {
-    name: "customer",
-    label: "客户信息",
-    field: (row) => row?.customer?.name || "",
-    align: "center",
-    style: "width: 25%",
+    name: 'customer',
+    label: '客户信息',
+    field: (row) => row?.customer?.name || '',
+    align: 'center',
   },
   {
-    name: "applySpec",
-    label: "申报规格",
+    name: 'applySpec',
+    label: '申报规格',
+    field: (row) => `${row.size_length || 0}*${row.size_width || 0}*${row.size_height || 0} cm\n${row.weight || 0} g`,
+    align: 'center',
+  },
+  {
+    name: 'realSpec',
+    label: '实际规格',
     field: (row) =>
-      `${row.size_length || 0}*${row.size_width || 0}*${
-        row.size_height || 0
-      } cm\n${row.weight || 0} g`,
-    align: "center",
-    style: "width: 20%",
+      `${row.warehouse_size_length || 0}*${row.warehouse_size_width || 0}*${row.warehouse_size_height || 0} cm\n${
+        row.warehouse_weight || 0
+      } g`,
+    align: 'center',
   },
   {
-    name: "realSpec",
-    label: "实际规格",
-    field: (row) =>
-      `${row.warehouse_size_length || 0}*${row.warehouse_size_width || 0}*${
-        row.warehouse_size_height || 0
-      } cm\n${row.warehouse_weight || 0} g`,
-    align: "center",
-    style: "width: 20%",
-  },
-  {
-    name: "timeInfo",
-    label: "时间",
-    align: "center",
-    style: "width: 25%",
+    name: 'timeInfo',
+    label: '时间',
+    align: 'center',
   },
   // {
   //   name: "operations",
@@ -235,8 +202,8 @@ const handleEdit = (row) => {
   router.push({
     name: 'edit',
     params: {
-      id: row.id
-    }
+      id: row.id,
+    },
   });
 };
 
@@ -244,22 +211,22 @@ const handleEdit = (row) => {
 const handleDelete = async () => {
   if (selected.value.length === 0) {
     $q.notify({
-      message: "请选择要删除的商品",
-      color: "warning",
+      message: '请选择要删除的商品',
+      color: 'warning',
     });
     return;
   }
 
   $q.dialog({
-    title: "确认删除",
+    title: '确认删除',
     message: `确定要删除选中的 ${selected.value.length} 个商品吗？`,
     cancel: {
-      label: "取消",
+      label: '取消',
       flat: true,
     },
     ok: {
-      label: "确认",
-      color: "negative",
+      label: '确认',
+      color: 'negative',
     },
     persistent: true,
   }).onOk(async () => {
@@ -270,10 +237,10 @@ const handleDelete = async () => {
 
       if (response.success) {
         selected.value = []; // 清空选中
-        emit("refresh"); // 刷新列表
+        emit('refresh'); // 刷新列表
       }
     } catch (error) {
-      console.error("删除失败:", error);
+      console.error('删除失败:', error);
     }
   });
 };
@@ -282,21 +249,21 @@ const handleDelete = async () => {
 const handleVoid = () => {
   if (selected.value.length === 0) {
     $q.notify({
-      message: "请选择要作废的商品",
-      color: "warning",
+      message: '请选择要作废的商品',
+      color: 'warning',
     });
     return;
   }
 
-  console.log("选中的商品:", selected.value);
+  console.log('选中的商品:', selected.value);
 
   $q.dialog({
-    title: "确认作废",
+    title: '确认作废',
     message: `确定要作废选中的 ${selected.value.length} 个商品吗？`,
     cancel: true,
     persistent: true,
   }).onOk(() => {
-    emit("void", selected.value);
+    emit('void', selected.value);
   });
 };
 
@@ -304,8 +271,8 @@ const handleVoid = () => {
 const handlePrint = () => {
   if (selected.value.length === 0) {
     $q.notify({
-      message: t("请选择要打印的商品"),
-      color: "warning",
+      message: t('请选择要打印的商品'),
+      color: 'warning',
     });
     return;
   }
@@ -330,32 +297,32 @@ defineExpose({
 .product-sku {
   width: 100%;
 
-  :deep(.q-table) {
-    table {
-      table-layout: fixed;
-    }
+  // :deep(.q-table) {
+  //   table {
+  //     table-layout: fixed;
+  //   }
 
-    .q-td,
-    .q-th {
-      padding: 8px;
-      overflow: hidden;
-    }
+  //   .q-td,
+  //   .q-th {
+  //     padding: 8px;
+  //     overflow: hidden;
+  //   }
 
-    .q-table__top {
-      padding: 0;
-    }
+  //   .q-table__top {
+  //     padding: 0;
+  //   }
 
-    thead tr th {
-      position: relative;
-      background: #f5f5f5;
-    }
-  }
+  //   thead tr th {
+  //     position: relative;
+  //     background: #f5f5f5;
+  //   }
+  // }
 
   .ellipsis {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 400px;
+    max-width: 300px;
   }
 }
 
@@ -371,4 +338,4 @@ defineExpose({
 .text-red {
   color: #ff0000;
 }
-</style> 
+</style>
