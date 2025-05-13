@@ -72,20 +72,22 @@
             <q-btn
               flat
               round
-              color="grey-7"
-              icon="token"
+              class="table-icon"
+              size="sm"
               @click="handlePack(props.row)"
             >
+              <img src="@/assets/images/package.png" />
               <q-tooltip>开始打包</q-tooltip>
             </q-btn>
 
             <q-btn
               flat
               round
-              color="grey-7"
-              icon="print"
+              class="table-icon"
+              size="sm"
               @click="handlePrint(props.row)"
             >
+              <img src="@/assets/images/print.png" />
               <q-tooltip>打印</q-tooltip>
             </q-btn>
           </q-td>

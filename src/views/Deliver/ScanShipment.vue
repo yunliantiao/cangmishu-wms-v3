@@ -24,7 +24,7 @@
     </div>
 
     <!-- 表格 -->
-    <div class="main-table q-mt-md">
+    <div class="main-table">
       <div class="table-header row items-center">
         <span class="text-h6">扫描记录</span>
         <q-space />
@@ -178,6 +178,7 @@ const handlePrint = async () => {
     min-height: 32px;
   }
   .main-table {
+    padding-top: 20px;
     .table-header {
       border-bottom: 1px solid #f0f0f0;
       font-size: 14px;

@@ -126,7 +126,9 @@
               <q-td colspan="8">
                 <div class="row group-header items-center">
                   <div class="col-12">
-                    <span class="info-item q-mr-md"
+                    <span
+                      class="info-item q-mr-md hover-copy"
+                      @click="$copy(props.row.system_order_number)"
                       >包裹号: {{ props.row.system_order_number }}</span
                     >
                     <span class="info-item q-mr-md"
@@ -196,28 +198,27 @@
             </q-td>
             <q-td key="status" :props="props">
               <div class="q-pa-sm">
-                <q-icon
-                  name="print"
-                  size="20px"
-                  :color="
-                    isPrint(props.row, 'is_print_pick_label')
-                      ? 'green'
-                      : 'grey-7'
-                  "
-                />
-              </div>
-              <div>
-                {{
-                  isPrint(props.row, "is_print_pick_label")
-                    ? "已打印"
-                    : "待打单"
-                }}
+                <span class="table-icon">
+                  <img
+                    src="@/assets/images/print-success.png"
+                    v-if="isPrint(props.row, 'is_print_pick_label')"
+                  />
+                  <img src="@/assets/images/print.png" v-else />
+                </span>
+                <div>
+                  {{
+                    isPrint(props.row, "is_print_pick_label")
+                      ? "已打印"
+                      : "待打单"
+                  }}
+                </div>
               </div>
             </q-td>
             <q-td key="actions" :props="props">
               <div class="row justify-center q-gutter-xs">
                 <q-btn
                   flat
+                  size="sm"
                   round
                   class="table-icon"
                   @click="handlePicking(props.row)"
@@ -229,6 +230,7 @@
                 <q-btn
                   flat
                   round
+                  size="sm"
                   @click="handlePrint(props.row)"
                   class="table-icon"
                 >
@@ -239,6 +241,7 @@
                 <q-btn
                   flat
                   round
+                  size="sm"
                   @click="handleOrderDetails(props.row)"
                   class="table-icon"
                 >

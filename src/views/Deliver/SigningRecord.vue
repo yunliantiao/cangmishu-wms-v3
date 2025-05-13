@@ -50,10 +50,11 @@
               <q-btn
                 flat
                 round
-                icon="print"
                 @click="handlePrint(props.row)"
                 size="sm"
+                class="table-icon"
               >
+                <img src="@/assets/images/print.png" />
                 <q-tooltip>打印</q-tooltip>
               </q-btn>
             </q-td>

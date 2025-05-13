@@ -508,15 +508,14 @@
                       props.row.receive_status != 'fully_received'
                     "
                   >
-                    <img src="@/assets/images/sign.png" />
+                    <img src="@/assets/images/take.png" />
                     <q-tooltip>收货</q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
                     round
                     size="sm"
-                    color="grey-7"
-                    icon="event_note"
+                    class="table-icon"
                     @click="putaway(props.row)"
                     v-if="
                       props.row.status != 'reported' &&
@@ -525,6 +524,7 @@
                       props.row.shelf_status != 'fully_shelved'
                     "
                   >
+                    <img src="@/assets/images/grounding.png" />
                     <q-tooltip>上架</q-tooltip>
                   </q-btn>
                   <q-btn flat round color="grey-7" class="table-icon" size="sm">

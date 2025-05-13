@@ -35,7 +35,7 @@
         </template>
 
         <template v-slot:body="props">
-          <q-tr :props="props">
+          <q-tr :props="props" align="center">
             <q-td auto-width>
               <q-checkbox v-model="props.selected" />
             </q-td>
@@ -67,19 +67,21 @@
                 <q-btn
                   flat
                   round
-                  color="grey-7"
-                  icon="edit"
+                  size="sm"
+                  class="table-icon"
                   @click="showEditForm(props.row)"
                 >
+                  <img src="@/assets/images/edit.png" />
                   <q-tooltip>编辑</q-tooltip>
                 </q-btn>
                 <q-btn
                   flat
                   round
-                  color="grey-7"
-                  icon="delete"
+                  size="sm"
+                  class="table-icon"
                   @click="confirmDelete(props.row)"
                 >
+                  <img src="@/assets/images/del.png" />
                   <q-tooltip>删除</q-tooltip>
                 </q-btn>
               </div>

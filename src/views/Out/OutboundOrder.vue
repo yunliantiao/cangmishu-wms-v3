@@ -229,7 +229,9 @@
               <q-td colspan="8">
                 <div class="row group-header items-center">
                   <div class="col-12">
-                    <span class="info-item q-mr-md"
+                    <span
+                      class="info-item q-mr-md hover-copy"
+                      @click="$copy(props.row.system_order_number)"
                       >包裹号: {{ props.row.system_order_number }}</span
                     >
                     <span class="info-item q-mr-md"
@@ -298,16 +300,31 @@
               </div>
             </q-td>
             <q-td key="status" :props="props">
-              <div class="q-pa-sm">
-                <q-icon
-                  name="print"
-                  size="20px"
-                  :color="
-                    isPrint(props.row, 'is_print_pick_label')
-                      ? 'green'
-                      : 'grey-7'
-                  "
-                />
+              <div class="icons">
+                <span class="table-icon">
+                  <img
+                    src="@/assets/images/print-success.png"
+                    v-if="isPrint(props.row, 'is_print_pick_label')"
+                  />
+                  <img src="@/assets/images/print.png" v-else />
+                </span>
+
+                <span class="table-icon">
+                  <img
+                    src="@/assets/images/sign-success.png"
+                    v-if="isPrint(props.row, 'is_print_shipping_label')"
+                  />
+                  <img src="@/assets/images/sign-not.png" v-else />
+                </span>
+
+                <span class="table-icon">
+                  <img
+                    src="@/assets/images/shipped-success.png"
+                    v-if="isPrint(props.row, 'shipped')"
+                  />
+                  <img src="@/assets/images/shipped-not.png" v-else />
+                </span>
+                <!--                 
                 <q-icon
                   name="receipt"
                   size="20px"
@@ -316,12 +333,12 @@
                       ? 'green'
                       : 'grey-7'
                   "
-                />
-                <q-icon
+                /> -->
+                <!-- <q-icon
                   name="receipt_long"
                   size="20px"
                   :color="props.row.status == 'shipped' ? 'green' : 'grey-7'"
-                />
+                /> -->
               </div>
               <q-chip
                 dense
@@ -362,10 +379,11 @@
                   round
                   color="grey-7"
                   v-if="props.row.status != 'shipped'"
+                  class="table-icon"
                   @click="handleSendOutboundOrder(props.row)"
-                  icon="send"
                   size="sm"
                 >
+                  <img src="@/assets/images/send.png" />
                   <q-tooltip>发货</q-tooltip>
                 </q-btn>
                 <q-btn
@@ -373,9 +391,10 @@
                   round
                   color="grey-7"
                   @click="handleOrderDetails(props.row)"
-                  icon="library_books"
                   size="sm"
+                  class="table-icon"
                 >
+                  <img src="@/assets/images/detail.png" />
                   <q-tooltip>详情</q-tooltip>
                 </q-btn>
               </div>
@@ -874,5 +893,11 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
   padding-top: 20px;
+}
+.icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
 }
 </style>

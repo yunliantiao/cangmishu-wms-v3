@@ -238,7 +238,7 @@
         </template>
 
         <template v-slot:body="props">
-          <q-tr :props="props">
+          <q-tr :props="props" align="center">
             <q-td auto-width>
               <q-checkbox v-model="props.selected" />
             </q-td>
@@ -296,21 +296,23 @@
                 <q-btn
                   flat
                   round
-                  color="grey-7"
-                  icon="token"
+                  size="sm"
+                  class="table-icon"
                   :disable="!props.row.pack_by?.is_self"
                   v-if="['packing', 'picking'].includes(props.row.status)"
                   @click="handlePack(props.row)"
                 >
+                  <img src="@/assets/images/package.png" />
                   <q-tooltip>开始打包</q-tooltip>
                 </q-btn>
                 <q-btn
                   flat
                   round
-                  color="grey-7"
-                  icon="description"
+                  size="sm"
+                  class="table-icon"
                   @click="handleViewDetails(props.row)"
                 >
+                  <img src="@/assets/images/detail.png" />
                   <q-tooltip>查看详情</q-tooltip>
                 </q-btn>
 
@@ -322,10 +324,11 @@
                       props.row.status != 'completed' &&
                       props.row.status != 'cancelled'
                     "
-                    color="grey-7"
-                    icon="print"
+                    size="sm"
+                    class="table-icon"
                     @click="handlePrint(props.row)"
                   >
+                    <img src="@/assets/images/print.png" />
                     <q-tooltip>打印</q-tooltip>
                   </q-btn>
                 </span>
@@ -334,6 +337,7 @@
                   flat
                   round
                   color="grey-7"
+                  size="sm"
                   v-if="
                     !['completed', 'cancelled', 'packing'].includes(
                       props.row.status
@@ -878,5 +882,8 @@ const getStatusDesc = (status) => {
 
 :deep(.q-table tbody tr:hover) {
   background-color: rgba(0, 0, 0, 0.03);
+}
+.main-table {
+  padding-top: 20px;
 }
 </style>
