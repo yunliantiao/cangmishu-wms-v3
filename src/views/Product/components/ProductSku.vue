@@ -60,7 +60,9 @@
                 />
               </div>
               <div class="ellipsis flex-c-start-start gap-10">
-                <div class="text-primary">SKU: {{ props.row?.sku || '-' }}</div>
+                <div class="text-primary hover-copy" @click="$copy(props.row.sku)">
+                  SKU: {{ props.row?.sku || '-' }}
+                </div>
                 <div class="ellipsis font-bold">
                   {{ props.row?.product?.name || '-' }}
                 </div>

@@ -41,40 +41,18 @@
           </q-select>
         </div>
         <KeywordSearch
-          v-model:selectInfo="pageParams.keywordInfo"
+          v-model:search_type="pageParams.search_type"
+          v-model:search_value="pageParams.keywords"
           :searchTypeList="customerIdOptions"
           :showSearchMode="false"
         ></KeywordSearch>
-        <div class="col-auto">
-          <q-select
-            outlined
-            dense
-            v-model="pageParams.search_type"
-            :options="customerIdOptions"
-            option-value="value"
-            option-label="label"
-            emit-value
-            clearable
-            label="搜索类型"
-            class="customer-select"
-            style="width: 150px"
-          >
-            <template v-slot:selected>
-              <div v-if="pageParams.search_type">
-                {{ customerIdOptions.find((o) => o.value === pageParams.search_type)?.label || '请选择' }}
-              </div>
-            </template>
-          </q-select>
-        </div>
-        <div class="col-auto">
-          <q-input outlined dense v-model="pageParams.keywords" placeholder="请输入" style="width: 200px" />
-        </div>
+
         <div class="col-auto">
           <q-btn
             color="primary"
             label="查询"
             icon="search"
-            class="full-width"
+            class="h-40"
             :loading="$store.state.btnLoading"
             @click="getCustomerList"
           />
@@ -472,12 +450,7 @@ const pageParams = reactive({
   warehouse_id: '',
   is_active: 1,
   keywords: '',
-  search_type: '',
-  keywordInfo: {
-    search_type: 'code',
-    search_value: '',
-    search_mode: '',
-  },
+  search_type: 'code',
 });
 // 获取客户列表
 const getCustomerList = () => {
@@ -686,48 +659,6 @@ onMounted(() => {
     align-items: center;
   }
 }
-
-// :deep .q-table {
-//   border-radius: 4px;
-//   thead tr {
-//     // background-color: rgba(0, 0, 0, 0.02);
-//   }
-
-//   th {
-//     font-weight: 500;
-//     font-size: 14px;
-//     color: rgba(0, 0, 0, 0.85);
-//     padding: 20px 16px;
-//   }
-
-//   td {
-//     font-size: 14px;
-//     padding: 32px 16px;
-//     color: rgba(0, 0, 0, 0.75);
-//     white-space: nowrap;
-//     border-bottom: 1px solid #e6e6e6;
-//   }
-
-//   tbody tr {
-//     transition: background-color 0.3s;
-
-//     &:hover {
-//       background-color: rgba(0, 0, 0, 0.03);
-//     }
-
-//     .q-btn {
-//       opacity: 0.7;
-//       &:hover {
-//         opacity: 1;
-//       }
-//     }
-//   }
-
-//   &__bottom {
-//     padding: 8px 16px;
-//     border-top: 1px solid rgba(0, 0, 0, 0.05);
-//   }
-// }
 
 .q-select {
   .q-field__marginal {
