@@ -246,10 +246,6 @@ const examine = async () => {
     min-height: 32px;
   }
   .main-table {
-    background: #ffffff;
-    box-shadow: 0px 1px 10px 1px rgba(102, 102, 102, 0.08);
-    border-radius: 16px 16px 16px 16px;
-    padding: 32px;
     .table-header {
       border-bottom: 1px solid #f0f0f0;
       font-size: 14px;

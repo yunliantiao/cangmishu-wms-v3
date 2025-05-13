@@ -219,28 +219,30 @@
                 <q-btn
                   flat
                   round
-                  color="grey-7"
+                  class="table-icon"
                   @click="handlePicking(props.row)"
-                  icon="print"
                 >
+                  <img src="@/assets/images/print.png" />
+
                   <q-tooltip>打印拣货单</q-tooltip>
                 </q-btn>
                 <q-btn
                   flat
                   round
-                  color="grey-7"
                   @click="handlePrint(props.row)"
-                  icon="edit_calendar"
+                  class="table-icon"
                 >
+                  <img src="@/assets/images/print.png" />
+
                   <q-tooltip>打印面单</q-tooltip>
                 </q-btn>
                 <q-btn
                   flat
                   round
-                  color="grey-7"
                   @click="handleOrderDetails(props.row)"
-                  icon="library_books"
+                  class="table-icon"
                 >
+                  <img src="@/assets/images/detail.png" />
                   <q-tooltip>详情</q-tooltip>
                 </q-btn>
               </div>
@@ -718,13 +720,6 @@ onMounted(() => {
 
 <style lang="scss">
 .simple-print-page {
-  .main-table {
-    background: #ffffff;
-    box-shadow: 0px 1px 10px 1px rgba(102, 102, 102, 0.08);
-    border-radius: 16px 16px 16px 16px;
-    padding: 32px;
-    margin-top: 20px;
-  }
   .status-progress {
     position: relative;
     margin-top: 32px;

@@ -198,11 +198,6 @@ const getList = async () => {
   padding: 0 0 24px 0;
 
   .main-table {
-    background: #fff;
-    padding: 32px;
-    box-shadow: 0px 1px 10px 1px rgba(102, 102, 102, 0.08);
-    border-radius: 16px 16px 16px 16px;
-
     .photo-table {
       margin-top: 0;
       :deep(.q-table th) {

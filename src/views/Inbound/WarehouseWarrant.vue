@@ -237,7 +237,15 @@
                       >{{ props.row.system_order_number }}</span
                     >
                   </div>
-                  <div>自定义单号: {{ props.row.custom_order_number }}</div>
+                  <div>
+                    自定义单号:
+                    <span
+                      class="hover-copy"
+                      @click="$copy(props.row.custom_order_number)"
+                    >
+                      {{ props.row.custom_order_number }}
+                    </span>
+                  </div>
                 </div>
               </q-td>
               <q-td key="customer" :props="props">
@@ -245,7 +253,11 @@
               </q-td>
               <q-td key="trackingNumber" :props="props">
                 <div class="text-primary">
-                  {{ props.row.tracking_number || "--" }}
+                  <span
+                    class="hover-copy"
+                    @click="$copy(props.row.tracking_number)"
+                    >{{ props.row.tracking_number || "--" }}</span
+                  >
                 </div>
               </q-td>
               <q-td key="arrivalMethod" :props="props">
@@ -462,31 +474,33 @@
                 </div>
               </q-td>
               <q-td key="actions" :props="props">
-                <div class="row justify-center q-gutter-xs">
+                <div class="row justify-center">
                   <q-btn
                     flat
                     round
-                    color="grey-7"
-                    icon="list_alt"
+                    size="sm"
+                    class="table-icon"
                     @click="viewDetails(props.row)"
                   >
+                    <img src="@/assets/images/detail.png" />
                     <q-tooltip>详情</q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
                     round
-                    color="grey-7"
-                    icon="add_box"
+                    size="sm"
+                    class="table-icon"
                     @click="signFor(props.row)"
                     v-if="props.row.status === 'in_transit'"
                   >
+                    <img src="@/assets/images/sign.png" />
                     <q-tooltip>签收</q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
                     round
-                    color="grey-7"
-                    icon="fact_check"
+                    size="sm"
+                    class="table-icon"
                     @click="putWay(props.row)"
                     v-if="
                       props.row.status != 'reported' &&
@@ -494,11 +508,13 @@
                       props.row.receive_status != 'fully_received'
                     "
                   >
+                    <img src="@/assets/images/sign.png" />
                     <q-tooltip>收货</q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
                     round
+                    size="sm"
                     color="grey-7"
                     icon="event_note"
                     @click="putaway(props.row)"
@@ -511,7 +527,8 @@
                   >
                     <q-tooltip>上架</q-tooltip>
                   </q-btn>
-                  <q-btn flat round color="grey-7" icon="more_horiz" size="sm">
+                  <q-btn flat round color="grey-7" class="table-icon" size="sm">
+                    <img src="@/assets/images/more.png" />
                     <q-menu>
                       <q-list style="min-width: 120px">
                         <q-item

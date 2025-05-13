@@ -869,14 +869,10 @@ onMounted(() => {
 .top-status-nav {
   margin-bottom: 16px;
 }
-.main-table {
-  background: #ffffff;
-  box-shadow: 0px 1px 10px 1px rgba(102, 102, 102, 0.08);
-  border-radius: 16px 16px 16px 16px;
-  padding: 32px;
-}
+
 .btn-group {
   display: flex;
   justify-content: flex-end;
+  padding-top: 20px;
 }
 </style>
