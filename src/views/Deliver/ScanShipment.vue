@@ -80,14 +80,14 @@
             </q-td>
 
             <q-td key="estimated_weight" :props="props">
-              {{ props.row.estimated_weight || "--" }}
+              {{ props.row.estimated_weight }}
             </q-td>
 
             <q-td key="actual_weight" :props="props">
-              {{ props.row.actual_weight || "--" }}
+              {{ props.row.actual_weight }}
             </q-td>
             <q-td key="diff_weight" :props="props">
-              {{ props.row.actual_weight - props.row.estimated_weight || "--" }}
+              {{ props.row.actual_weight - props.row.estimated_weight }}
             </q-td>
           </q-tr>
         </template>
@@ -150,8 +150,14 @@ const handleSearch = async () => {
   pageData.rows = [data];
 };
 
-const handlePrint = () => {
+const handlePrint = async () => {
   // 打印签单逻辑
+  let ids = pageData.rows.map((item) => item.id);
+  console.log("ids", ids);
+  const { data } = await outApi.printShipment({
+    package_ids: ids,
+  });
+  window.open(data.data, "_blank");
 };
 </script>
 
