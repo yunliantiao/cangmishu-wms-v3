@@ -43,6 +43,16 @@
   }
 }
 
+.hover-copy {
+  cursor: pointer;
+
+  &:hover {
+    color: $primary;
+    text-decoration: underline;
+
+  }
+}
+
 // 定义的公共筛选样式 结束
 
 

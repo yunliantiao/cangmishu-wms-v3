@@ -229,7 +229,14 @@
               </q-td>
               <q-td key="orderInfo" :props="props">
                 <div class="column">
-                  <div>入库单号: {{ props.row.system_order_number }}</div>
+                  <div>
+                    入库单号:
+                    <span
+                      class="hover-copy"
+                      @click="$copy(props.row.system_order_number)"
+                      >{{ props.row.system_order_number }}</span
+                    >
+                  </div>
                   <div>自定义单号: {{ props.row.custom_order_number }}</div>
                 </div>
               </q-td>
