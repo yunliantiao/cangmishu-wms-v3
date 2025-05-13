@@ -48,7 +48,9 @@
           />
         </div>
         <DatePickerNew
-          v-model:selectInfo="pageData.selectInfo"
+          v-model:date_type="pageData.filterOptions.date_type"
+          v-model:start_date="pageData.filterOptions.start_date"
+          v-model:end_date="pageData.filterOptions.end_date"
           :dateList="pageData.timeTypeOptions"
         ></DatePickerNew>
         <!-- <div class="col-auto">
@@ -133,7 +135,9 @@
       </div>
       <div class="row q-col-gutter-sm q-mb-md">
         <KeywordSearch
-          v-model:selectInfo="pageData.keywordSearch"
+          v-model:search_type="pageData.filterOptions.search_type"
+          v-model:search_value="pageData.filterOptions.keywords"
+          v-model:search_mode="pageData.filterOptions.search_mode"
           :searchTypeList="pageData.waveNumberOptions"
           :searchModeList="pageData.searchModeOptions"
         ></KeywordSearch>
@@ -428,20 +432,12 @@ const pageData = reactive({
     wave_type: null,
     status: "pending",
     logistics_group_ids: null,
-    date_type: null,
+    date_type: "created_at",
     start_date: "",
     end_date: "",
     pick_print_status: null,
     search_type: "wave_number",
     keywords: "",
-  },
-  selectInfo: {
-    date_type: "created_at",
-    date_range: [],
-  },
-  keywordSearch: {
-    search_type: "wave_number",
-    search_value: "",
     search_mode: "exact",
   },
 

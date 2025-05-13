@@ -63,7 +63,9 @@
           />
         </div>
         <DatePicker
-          v-model:selectInfo="componentData.selectInfo"
+          v-model:date_type="pageParams.date_type"
+          v-model:start_date="pageParams.start_date"
+          v-model:end_date="pageParams.end_date"
           :dateList="timeFilterOptions"
         ></DatePicker>
         <!-- <div class="col-auto">
@@ -138,7 +140,8 @@
       <!-- 搜索过滤区域 - 第三行 -->
       <div class="row q-col-gutter-sm q-mt-sm">
         <KeywordSearch
-          v-model:selectInfo="componentData.keywordInfo"
+          v-model:search_type="pageParams.search_type"
+          v-model:search_value="pageParams.keywords"
           :searchTypeList="searchFieldOptions"
           :showSearchMode="false"
         ></KeywordSearch>
@@ -561,7 +564,7 @@ const pageParams = reactive({
   platform: "",
   order_status: "",
   intercept_status: "",
-  date_type: "",
+  date_type: "created_at",
   start_date: "",
   end_date: "",
   search_type: "package_number",
@@ -622,17 +625,6 @@ const statusColorMap = {
   exception: { bg: "green-1", text: "green" },
 };
 
-const componentData = reactive({
-  selectInfo: {
-    date_type: "created_at",
-    date_range: [],
-  },
-  keywordInfo: {
-    search_type: "package_number",
-    search_value: "",
-  },
-});
-
 // 处理状态导航切换
 const handleStatusNav = (status) => {
   statusNav.value = status;
@@ -649,16 +641,8 @@ const resetSearch = () => {
   pageParams.platform = "";
   pageParams.order_status = "";
   pageParams.intercept_status = "";
-  pageParams.date_type = "";
+  pageParams.date_type = "created_at";
 
-  componentData.selectInfo = {
-    date_type: "created_at",
-    date_range: [],
-  };
-  componentData.keywordInfo = {
-    search_type: "package_number",
-    search_value: "",
-  };
   getOutboundOrder();
 };
 // 获取状态颜色
@@ -670,11 +654,6 @@ const packages = ref([]);
 const getOutboundOrder = () => {
   let params = {
     ...pageParams,
-    date_type: componentData.selectInfo?.date_type,
-    start_date: componentData.selectInfo?.date_range[0],
-    end_date: componentData.selectInfo?.date_range[1],
-    search_type: componentData.keywordInfo?.search_type,
-    keywords: componentData.keywordInfo?.search_value,
   };
   outApi.getOutboundOrder(params).then((res) => {
     if (res.success) {

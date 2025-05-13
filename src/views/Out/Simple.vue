@@ -65,7 +65,9 @@
         </div>
         <div class="col-auto">
           <DatePickerNew
-            :selectInfo="componentData.selectInfo"
+            v-model:start_date="pageParams.start_date"
+            v-model:end_date="pageParams.end_date"
+            v-model:date_type="pageParams.date_type"
             :dateList="timeFilterOptions"
           ></DatePickerNew>
         </div>
@@ -74,7 +76,8 @@
       <!-- 搜索过滤区域 - 第三行 -->
       <div class="row q-col-gutter-sm q-mt-sm">
         <KeywordSearch
-          :selectInfo="componentData.keywordInfo"
+          v-model:search_type="pageParams.search_type"
+          v-model:search_value="pageParams.keywords"
           :showSearchMode="false"
           :searchTypeList="searchFieldOptions"
         ></KeywordSearch>
@@ -427,17 +430,6 @@ const isPrint = (row, type) => {
   return printBool;
 };
 
-const componentData = reactive({
-  selectInfo: {
-    date_type: "created_at",
-    date_range: [],
-  },
-  keywordInfo: {
-    search_type: "sku",
-    search_value: "",
-  },
-});
-
 // 选中行
 const selectedRows = ref([]);
 
@@ -450,10 +442,10 @@ const pageParams = reactive({
   platform: "",
   order_status: "",
   intercept_status: "",
-  date_type: "",
+  date_type: "created_at",
   start_date: "",
   end_date: "",
-  search_type: "",
+  search_type: "tracking_number",
   keywords: "",
 });
 
@@ -561,16 +553,14 @@ const getStatusColor = (status) => {
 const resetSearch = () => {
   pageParams.start_date = "";
   pageParams.end_date = "";
-  pageParams.search_type = "";
+  pageParams.search_type = "tracking_number";
   pageParams.keywords = "";
   pageParams.source = "";
   pageParams.platform = "";
   pageParams.order_status = "";
   pageParams.intercept_status = "";
-  pageParams.date_type = "";
+  pageParams.date_type = "created_at";
 
-  componentData.keywordInfo = { search_type: "sku", search_value: "" };
-  componentData.selectInfo = { date_type: "created_at", date_range: [] };
   getOutboundOrder();
 };
 
@@ -580,11 +570,6 @@ const packages = ref([]);
 const getOutboundOrder = () => {
   let params = {
     ...pageParams,
-    date_type: componentData.selectInfo.date_type,
-    start_date: componentData.selectInfo?.date_range[0] || "",
-    end_date: componentData.selectInfo?.date_range[1] || "",
-    search_type: componentData.keywordInfo.search_type,
-    keywords: componentData.keywordInfo.search_value,
   };
   outApi.getShipments(params).then((res) => {
     if (res.success) {
