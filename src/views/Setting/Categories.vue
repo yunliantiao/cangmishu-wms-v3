@@ -25,10 +25,7 @@
             <div class="row items-center full-width">
               <div>{{ prop.node.name }}</div>
               <q-space />
-              <div
-                class="row q-gutter-sm"
-                v-if="prop.node.code !== 'uncategorized'"
-              >
+              <div class="row" v-if="prop.node.code !== 'uncategorized'">
                 <q-btn
                   flat
                   round
@@ -45,10 +42,11 @@
                   round
                   dense
                   color="primary"
-                  icon="edit"
+                  class="table-icon"
                   size="sm"
                   @click.stop="handleEditCategory(prop.node)"
                 >
+                  <img src="@/assets/images/edit.png" />
                   <q-tooltip>编辑</q-tooltip>
                 </q-btn>
                 <q-btn
@@ -56,10 +54,11 @@
                   round
                   dense
                   color="negative"
-                  icon="delete"
+                  class="table-icon"
                   size="sm"
                   @click.stop="handleDeleteCategory(prop.node)"
                 >
+                  <img src="@/assets/images/del.png" />
                   <q-tooltip>删除</q-tooltip>
                 </q-btn>
               </div>

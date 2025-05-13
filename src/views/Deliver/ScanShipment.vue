@@ -41,6 +41,7 @@
         :columns="pageData.columns"
         row-key="id"
         flat
+        hide-pagination
         class="scan-table"
         :rows-per-page-options="[0]"
         :rows-per-page="0"
@@ -53,32 +54,40 @@
 
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td key="tracking_number" :props="{ row }">
-              {{ row.tracking_number }}
+            <q-td key="tracking_number" :props="props">
+              {{ props.row.tracking_number }}
             </q-td>
-            <q-td key="logistics" :props="{ row }">
-              {{ row.logistics || "--" }}
+            <q-td key="logistics" :props="props">
+              {{ props.row.logistics_channels_name || "--" }}
             </q-td>
-            <q-td key="product" :props="{ row }">
-              <div class="box" v-for="(item, index) in row.items" :key="index">
+            <q-td key="product" :props="props">
+              <div
+                class="box"
+                v-for="(item, index) in props.row.items"
+                :key="index"
+              >
                 {{ item.sku }}
               </div>
             </q-td>
-            <q-td key="qty" :props="{ row }">
-              <div class="box" v-for="(item, index) in row.items" :key="index">
+            <q-td key="qty" :props="props">
+              <div
+                class="box"
+                v-for="(item, index) in props.row.items"
+                :key="index"
+              >
                 {{ item.quantity }}
               </div>
             </q-td>
 
-            <q-td key="estimated_weight" :props="{ row }">
-              {{ row.estimated_weight || "--" }}
+            <q-td key="estimated_weight" :props="props">
+              {{ props.row.estimated_weight || "--" }}
             </q-td>
 
-            <q-td key="actual_weight" :props="{ row }">
-              {{ row.actual_weight || "--" }}
+            <q-td key="actual_weight" :props="props">
+              {{ props.row.actual_weight || "--" }}
             </q-td>
-            <q-td key="diff_weight" :props="{ row }">
-              {{ row.actual_weight - row.estimated_weight || "--" }}
+            <q-td key="diff_weight" :props="props">
+              {{ props.row.actual_weight - props.row.estimated_weight || "--" }}
             </q-td>
           </q-tr>
         </template>
@@ -136,7 +145,9 @@ const handleSearch = async () => {
   const { data } = await outApi.scanShipment({
     number: pageData.orderNo,
   });
-  pageData.rows = [data.data];
+  console.log("data", data);
+
+  pageData.rows = [data];
 };
 
 const handlePrint = () => {

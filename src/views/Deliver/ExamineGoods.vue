@@ -102,15 +102,17 @@
               </div>
             </q-td>
             <q-td>
-              <q-badge v-if="props.row.status === 0" color="grey-5" outline>
-                待验货
-              </q-badge>
-              <q-badge v-if="props.row.status === 1" color="orange" outline>
-                验货中
-              </q-badge>
-              <q-badge v-if="props.row.status === 2" color="positive" outline>
-                已验货
-              </q-badge>
+              <div class="flex">
+                <q-badge v-if="props.row.status === 0" color="grey-5" outline>
+                  待验货
+                </q-badge>
+                <q-badge v-if="props.row.status === 1" color="orange" outline>
+                  验货中
+                </q-badge>
+                <q-badge v-if="props.row.status === 2" color="positive" outline>
+                  已验货
+                </q-badge>
+              </div>
             </q-td>
           </q-tr>
         </template>

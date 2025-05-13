@@ -444,7 +444,7 @@ const pageParams = reactive({
   date_type: "created_at",
   start_date: "",
   end_date: "",
-  search_type: "tracking_number",
+  search_type: "package_number",
   keywords: "",
 });
 

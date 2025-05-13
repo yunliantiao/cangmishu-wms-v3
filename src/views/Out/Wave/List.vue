@@ -339,9 +339,10 @@
                       props.row.status
                     )
                   "
-                  icon="no_sim"
+                  class="table-icon"
                   @click="handleAbandon(props.row)"
                 >
+                  <img src="@/assets/images/del.png" class="" />
                   <q-tooltip>作废</q-tooltip>
                 </q-btn>
               </div>
