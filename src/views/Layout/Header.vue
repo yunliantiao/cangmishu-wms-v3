@@ -1,5 +1,5 @@
 <template>
-  <q-header elevated class="bg-primary text-white q-py-xs" height-hint="58">
+  <q-header elevated class="bg-white text-black q-py-xs" height-hint="58">
     <q-toolbar>
       <q-btn
         flat
@@ -7,7 +7,7 @@
         round
         @click="toggleDrawer"
         aria-label="Menu"
-        icon="menu"
+        :icon="leftDrawerOpen ? 'menu_open' : 'read_more'"
       />
 
       <q-btn-dropdown
@@ -22,22 +22,14 @@
         <template v-slot:label>
           <div class="row items-center no-wrap">
             <q-toolbar-title shrink class="text-weight-bold">
-              {{
-                warehouseList.find((item) => item.id == currentWarehouse)?.name
-              }}
+              {{ warehouseList.find((item) => item.id == currentWarehouse)?.name }}
               -wms
             </q-toolbar-title>
           </div>
         </template>
 
         <q-list style="min-width: 220px">
-          <q-item
-            clickable
-            v-close-popup
-            v-for="item in warehouseList"
-            @click="changeWarehouse(item)"
-            :key="item.id"
-          >
+          <q-item clickable v-close-popup v-for="item in warehouseList" @click="changeWarehouse(item)" :key="item.id">
             <q-item-section avatar>
               <q-icon name="group" color="primary" />
             </q-item-section>
@@ -58,12 +50,7 @@
           </q-avatar>
           <q-tooltip>Account</q-tooltip>
         </q-btn> -->
-        <q-btn
-          color="primary"
-          :label="
-            '(' + $store.state.userInfo.name + ')' + $store.state.userInfo.email
-          "
-        >
+        <q-btn color="primary" :label="'(' + $store.state.userInfo.name + ')' + $store.state.userInfo.email">
           <q-menu style="width: 100px">
             <q-list>
               <q-item>
@@ -82,16 +69,16 @@
 </template>
 
 <script>
-import { fabYoutube } from "@quasar/extras/fontawesome-v6";
-import { useStore } from "vuex";
-import { computed, ref } from "vue";
-import { useQuasar, Dialog } from "quasar";
-import { useRouter } from "vue-router";
-import warehouseApi from "@/api/warehouse";
-import api from "@/api";
+import api from '@/api';
+import warehouseApi from '@/api/warehouse';
+import { fabYoutube } from '@quasar/extras/fontawesome-v6';
+import { Dialog, useQuasar } from 'quasar';
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
 export default {
-  name: "HeaderComponent",
+  name: 'HeaderComponent',
 
   setup() {
     const store = useStore();
@@ -102,11 +89,11 @@ export default {
     const leftDrawerOpen = computed(() => store.state.leftDrawerOpen);
 
     const toggleDrawer = () => {
-      store.dispatch("toggleLeftDrawer");
+      store.dispatch('toggleLeftDrawer');
     };
     const changeWarehouse = (item) => {
-      localStorage.setItem("warehouseId", item.id);
-      router.push("/");
+      localStorage.setItem('warehouseId', item.id);
+      router.push('/');
       window.location.reload();
     };
     const warehouseList = ref([]); //仓库列表
@@ -115,12 +102,12 @@ export default {
       warehouseApi.getWarehouseList().then((res) => {
         if (res.success) {
           warehouseList.value = res.data;
-          if (localStorage.getItem("warehouseId")) {
-            currentWarehouse.value = localStorage.getItem("warehouseId");
+          if (localStorage.getItem('warehouseId')) {
+            currentWarehouse.value = localStorage.getItem('warehouseId');
           } else {
             if (warehouseList.value.length) {
               currentWarehouse.value = warehouseList.value[0].id;
-              localStorage.setItem("warehouseId", warehouseList.value[0].id);
+              localStorage.setItem('warehouseId', warehouseList.value[0].id);
             }
           }
         }
@@ -129,23 +116,23 @@ export default {
     getWarehouseList();
     const logout = () => {
       Dialog.create({
-        title: "退出确认",
-        message: "确定要退出登录吗？",
+        title: '退出确认',
+        message: '确定要退出登录吗？',
         cancel: true,
         persistent: true,
         ok: {
-          label: "退出",
-          color: "primary",
+          label: '退出',
+          color: 'primary',
         },
         cancel: {
-          label: "取消",
-          color: "grey-8",
+          label: '取消',
+          color: 'grey-8',
         },
       })
         .onOk(() => {
           api.logout().then((res) => {
             if (res.success) {
-              store.dispatch("logout");
+              store.dispatch('logout');
             }
           });
         })

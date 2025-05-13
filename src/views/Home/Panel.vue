@@ -2,7 +2,7 @@
   <div class="panel-page">
     <!-- TODO: 改版开始 -->
     <div class="row q-col-gutter-xl q-mb-md">
-      <div class="col-8">
+      <div class="col-12 col-xs-12 col-sm-8 col-md-8">
         <div class="top-bar">
           <div class="item">
             <div class="label">已预报</div>
@@ -25,7 +25,7 @@
           </div>
         </div>
       </div>
-      <div class="col-4">
+      <div class="col-12 col-xs-12 col-sm-4 col-md-4">
         <div class="contact-box bg-white">
           <div class="text-subtitle1 q-mb-md">联系我们</div>
           <div class="line q-mb-md"></div>
@@ -201,7 +201,6 @@
         </q-card>
       </div>
     </div>
-
     <!-- TODO: 改版结束 -->
 
     <!-- 仓库选择器 -->
@@ -796,6 +795,9 @@ export default {
       if (chartInstance) {
         chartInstance.resize();
       }
+      if (chartInstance2) {
+        chartInstance2.resize();
+      }
     };
 
     // 图表数据-库存
@@ -911,7 +913,7 @@ export default {
   // 1 顶部渐变色数据栏
   .top-bar {
     background-image: linear-gradient(to right, #ef76d3, #8840ff);
-    padding: 50px 100px;
+    padding: 50px 60px;
     color: #fff;
     display: flex;
     justify-content: space-between;

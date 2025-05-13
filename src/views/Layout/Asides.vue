@@ -1,65 +1,77 @@
 <template>
   <div class="fixed-sidebar" :class="{ 'sidebar-hidden': !isOpen }">
     <q-list padding class="rounded-borders route-menu">
-      <!-- 使用q-expansion-item模拟el-submenu -->
-      <q-expansion-item
-        v-for="route in routerMap"
-        :key="route.path"
-        :default-opened="isRouteActive(route)"
-        :content-inset-level="0.5"
-        :expand-separator="true"
-        group="menuGroup"
-        dense
-        header-class="menu-header"
-        expand-icon-class="expand-icon"
-      >
-        <template v-slot:header>
+      <!-- 遍历路由 -->
+      <template v-for="route in routerMap" :key="route.path">
+        <!-- 当有多个子菜单时显示可展开的父菜单 -->
+        <q-expansion-item
+          v-if="hasMultipleChildren(route)"
+          :default-opened="isRouteActive(route)"
+          :content-inset-level="0.5"
+          :expand-separator="true"
+          group="menuGroup"
+          dense
+          header-class="menu-header"
+          expand-icon-class="expand-icon"
+        >
+          <template v-slot:header>
+            <div class="menu-header-content">
+              <q-icon :name="route.icon" size="sm" class="menu-icon" />
+              <div class="menu-title">
+                {{ route.meta?.name || route.name || route.path }}
+              </div>
+            </div>
+          </template>
+
+          <!-- 子菜单项 -->
+          <q-item
+            v-for="childRoute in getLevel2Routes(route.children)"
+            :key="childRoute.path"
+            v-ripple
+            clickable
+            :to="`/${route.path}/${childRoute.path}`"
+            class="route-item"
+            active-class="q-item--active"
+          >
+            <q-item-section avatar class="submenu-icon">
+              <q-icon name="circle" size="xs" />
+            </q-item-section>
+            <q-item-section class="submenu-title">
+              <q-item-label>{{ childRoute.meta?.name || childRoute.name }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-expansion-item>
+
+        <!-- 当只有一个子菜单时，直接显示可点击的父菜单 -->
+        <q-item
+          v-else
+          v-ripple
+          clickable
+          :to="getSingleChildPath(route)"
+          class="menu-header route-item"
+          active-class="q-item--active"
+        >
           <div class="menu-header-content">
-            <q-icon
-              :name="route.icon"
-              color="primary"
-              size="sm"
-              class="menu-icon"
-            />
+            <q-icon :name="route.icon" size="sm" class="menu-icon" />
             <div class="menu-title">
               {{ route.meta?.name || route.name || route.path }}
             </div>
           </div>
-        </template>
-
-        <!-- 子菜单项 -->
-        <q-item
-          v-for="childRoute in getLevel2Routes(route.children)"
-          :key="childRoute.path"
-          v-ripple
-          clickable
-          :to="`/${route.path}/${childRoute.path}`"
-          class="route-item"
-          active-class="q-item--active"
-        >
-          <q-item-section avatar class="submenu-icon">
-            <q-icon name="circle" size="xs" color="primary" />
-          </q-item-section>
-          <q-item-section class="submenu-title">
-            <q-item-label>{{
-              childRoute.meta?.name || childRoute.name
-            }}</q-item-label>
-          </q-item-section>
         </q-item>
-      </q-expansion-item>
+      </template>
     </q-list>
   </div>
 </template>
 
 <script>
-import { computed, watch, ref, onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { useStore } from "vuex";
-import { routerMap } from "../../router";
-import { useQuasar } from "quasar";
+import { useQuasar } from 'quasar';
+import { computed, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+import { routerMap } from '../../router';
 
 export default {
-  name: "AsidesComponent",
+  name: 'AsidesComponent',
 
   setup() {
     const router = useRouter();
@@ -83,9 +95,25 @@ export default {
     watch(route, () => {
       if (isMobile.value && isOpen.value) {
         // 发射事件通知父组件关闭侧边栏
-        store.dispatch("setLeftDrawer", false);
+        store.dispatch('setLeftDrawer', false);
       }
     });
+
+    // 判断路由是否有多个子路由
+    const hasMultipleChildren = (route) => {
+      const level2Routes = getLevel2Routes(route.children);
+      return level2Routes.length > 1;
+    };
+
+    // 获取唯一子路由的路径
+    const getSingleChildPath = (route) => {
+      const level2Routes = getLevel2Routes(route.children);
+      if (level2Routes.length === 1) {
+        return `/${route.path}/${level2Routes[0].path}`;
+      }
+      return `/${route.path}`;
+    };
+
     // 过滤level=2的二级路由
     function getLevel2Routes(children) {
       if (!children) return [];
@@ -99,6 +127,8 @@ export default {
       routerMap,
       getLevel2Routes,
       isRouteActive,
+      hasMultipleChildren,
+      getSingleChildPath,
     };
   },
 };
@@ -139,27 +169,78 @@ export default {
 
 .route-menu {
   background-color: #ffffff;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  padding-top: 8px;
-}
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  padding: 20px;
 
-.menu-header {
-  min-height: 56px !important;
-  padding: 14px 12px;
-  margin: 4px 8px;
-  border-radius: 8px;
-  transition: all 0.25s ease;
-  cursor: pointer;
+  // 父级菜单项,会与子级route-item重叠,所以用!important
+  .menu-header {
+    min-height: 44px !important;
+    padding: 12px !important;
+    margin: 20px 0 !important;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+    cursor: pointer;
 
-  &:hover {
-    background-color: rgba(0, 31, 77, 0.04);
+    &:hover {
+      background-color: rgba(0, 31, 77, 0.04);
+    }
+    .menu-header-content {
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
   }
-}
 
-.menu-header-content {
-  display: flex;
-  align-items: center;
-  width: 100%;
+  // 默认父级菜单项
+  .route-item {
+    padding: 6px 12px 6px 16px;
+    min-height: 40px;
+    margin: 5px 0;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .submenu-icon {
+      min-width: 24px;
+      opacity: 0.7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .submenu-title {
+      font-size: 13px;
+      letter-spacing: 0.2px;
+      color: #555;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .q-icon {
+      color: #1f1f1f;
+    }
+  }
+
+  /* 激活状态的菜单项 */
+  :deep(.q-item--active) {
+    background-color: rgba($color: $primary, $alpha: 0.1);
+    color: var(--q-primary);
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 31, 77, 0.05);
+    .menu-title,
+    .q-item__label,
+    .menu-icon {
+      color: $primary !important;
+    }
+    .submenu-icon {
+      opacity: 1;
+    }
+    .q-icon {
+      color: $primary !important;
+    }
+  }
 }
 
 .menu-icon {
@@ -168,6 +249,7 @@ export default {
   align-items: center;
   justify-content: center;
   font-size: 20px;
+  color: #1f1f1f;
 }
 
 .menu-title {
@@ -180,31 +262,6 @@ export default {
   text-overflow: ellipsis;
   padding-left: 12px;
   line-height: 1.4;
-}
-
-.route-item {
-  padding: 6px 12px 6px 16px;
-  min-height: 40px;
-  margin: 5px 0;
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
-
-  .submenu-icon {
-    min-width: 24px;
-    opacity: 0.7;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .submenu-title {
-    font-size: 13px;
-    letter-spacing: 0.2px;
-    color: #555;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 }
 
 /* 自定义展开图标颜色 */
@@ -221,36 +278,17 @@ export default {
 
   .menu-header {
     background-color: rgba(0, 31, 77, 0.03);
-    min-height: 56px;
+    min-height: 40px;
+    border-radius: 6px;
   }
 }
 
+.q-expansion-item {
+  margin-bottom: 20px;
+}
 /* 隐藏默认的展开图标 - 让整个标题区域可点击 */
 :deep(.q-focusable) {
-  min-height: 56px;
-}
-
-/* 激活状态的菜单项 */
-:deep(.q-item--active) {
-  background-color: rgba(0, 31, 77, 0.08);
-  color: var(--q-primary);
-  font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0, 31, 77, 0.05);
-
-  &::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 8px;
-    height: calc(100% - 16px);
-    width: 3px;
-    background-color: var(--q-primary);
-    border-radius: 0 3px 3px 0;
-  }
-
-  .submenu-icon {
-    opacity: 1;
-  }
+  height: 40px;
 }
 
 /* 鼠标悬停效果 */
