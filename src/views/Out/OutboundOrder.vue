@@ -173,7 +173,7 @@
         <div class="col-auto">
           <q-btn
             outline
-            color="grey"
+            color="primary"
             label="重置"
             class="filter-btn"
             @click="resetSearch"
@@ -183,8 +183,7 @@
           <q-btn
             color="primary"
             class="filter-btn"
-            icon="search"
-            label="搜索"
+            label="查询"
             :loading="$store.state.btnLoading"
             @click="getOutboundOrder"
           />

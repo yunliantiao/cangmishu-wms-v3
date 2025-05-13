@@ -28,9 +28,8 @@
         <div class="col-auto">
           <q-btn
             color="primary"
-            icon="search"
             class="filter-btn"
-            label="搜索"
+            label="查询"
             @click="getShelfLocationList"
           />
         </div>

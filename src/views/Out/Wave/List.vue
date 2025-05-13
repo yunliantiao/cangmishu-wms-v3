@@ -165,8 +165,7 @@
         <div class="col-auto">
           <q-btn
             color="primary"
-            icon="search"
-            label="搜索"
+            label="查询"
             class="filter-btn"
             @click="handleSearch"
           />

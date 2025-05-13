@@ -85,16 +85,15 @@
         <div class="col-auto">
           <q-btn
             outline
-            color="grey"
+            color="primary"
             label="重置"
             class="q-mr-sm filter-btn"
             @click="resetSearch"
           />
           <q-btn
             color="primary"
-            icon="search"
             class="filter-btn"
-            label="搜索"
+            label="查询"
             :loading="$store.state.btnLoading"
             @click="getOutboundOrder"
           />

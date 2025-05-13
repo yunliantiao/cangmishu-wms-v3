@@ -38,6 +38,7 @@
           color="primary"
           class="filter-btn"
           label="重置"
+          outline
           @click="resetFilter"
         />
       </div>

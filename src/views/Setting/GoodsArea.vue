@@ -30,7 +30,6 @@
             label="查询"
             color="primary"
             class="filter-btn"
-            icon="search"
             @click="fetchAreaList"
           />
         </div>
