@@ -3,8 +3,6 @@ import App from './App.vue'
 import './assets/global.scss'
 import router from './router'
 import store from './store'
-import App from './App.vue'
-import './assets/global.scss'
 import './style.css'
 import Message from './utils/message'
 
