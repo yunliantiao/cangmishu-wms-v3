@@ -9,7 +9,7 @@
         multiple
         option-label="label"
         option-value="value"
-        @update:model-value="handleRefresh"
+        @update:model-value="getList"
         map-options
         emit-value
         clearable
@@ -17,11 +17,13 @@
         class="filter-item"
       />
       <DatePickerNew
-        v-model:selectInfo="pageData.selectInfo"
+        v-model:start_date="pageData.start_date"
+        v-model:end_date="pageData.end_date"
         :show-select="false"
       ></DatePickerNew>
       <KeywordSearch
-        v-model:selectInfo="pageData.keywordInfo"
+        v-model:search_type="pageData.search_type"
+        v-model:search_value="pageData.keywords"
         :showSearchMode="false"
       ></KeywordSearch>
       <q-btn color="primary" class="filter-btn" @click="getList">搜索</q-btn>
@@ -108,16 +110,10 @@ const pageData = reactive({
   total: 0,
   page: 1,
   per_page: 10,
-  selectInfo: {
-    date_type: "created_at",
-    search_value: "",
-    date_range: [],
-  },
-  keywordInfo: {
-    search_type: "tracking_number",
-    search_value: "",
-    search_mode: "",
-  },
+  start_date: "",
+  end_date: "",
+  search_type: "tracking_number",
+  keywords: "",
   columns: [
     {
       name: "photo_url",
@@ -182,10 +178,10 @@ const getList = async () => {
     page: pageData.page,
     per_page: pageData.per_page,
     customer_ids: pageData.customer_ids,
-    start_date: pageData.selectInfo?.date_range[0] || "",
-    end_date: pageData.selectInfo?.date_range[1] || "",
-    search_type: pageData.keywordInfo?.search_type || "",
-    keywords: pageData.keywordInfo?.search_value || "",
+    start_date: pageData.start_date || "",
+    end_date: pageData.end_date || "",
+    search_type: pageData.search_type || "",
+    keywords: pageData.keywords || "",
   };
   const { data } = await outApi.photoRecord(params);
   console.log("data", data);

@@ -5,7 +5,7 @@
         outlined
         dense
         v-show="showSelect"
-        v-model="selectInfo.date_type"
+        v-model="date_type"
         :options="dateList"
         option-value="value"
         option-label="label"
@@ -20,9 +20,9 @@
           alt=""
         />
         <div class="content-box">
-          <span>{{ getDate(0) }}</span>
+          <span>{{ start_date || "开始日期" }}</span>
           <span>TO</span>
-          <span>{{ getDate(1) }}</span>
+          <span>{{ end_date || "结束日期" }}</span>
         </div>
         <q-popup-proxy
           v-model="componentData.showDate"
@@ -43,15 +43,19 @@
 
 <script setup>
 import { reactive, watch } from "vue";
-const selectInfo = defineModel("selectInfo", {
-  type: Object,
-  required: true,
-  default: () => {
-    return {
-      date_type: "created_at",
-      date_range: [],
-    };
-  },
+const date_type = defineModel("date_type", {
+  type: String,
+  default: "created_at",
+});
+
+const start_date = defineModel("start_date", {
+  type: String,
+  default: "",
+});
+
+const end_date = defineModel("end_date", {
+  type: String,
+  default: "",
 });
 
 const props = defineProps({
@@ -89,14 +93,18 @@ watch(
     if (componentData.range) {
       let list = Object.values(componentData.range);
       if (list.length) {
-        selectInfo.value.date_range = list.map((item) => {
+        let newList = list.map((item) => {
           return item.replace(/\//g, "-");
         });
+        start_date.value = newList[0];
+        end_date.value = newList[1];
       } else {
-        selectInfo.value.date_range = [];
+        start_date.value = "";
+        end_date.value = "";
       }
     } else {
-      selectInfo.value.date_range = [];
+      start_date.value = "";
+      end_date.value = "";
     }
   },
   { deep: true }

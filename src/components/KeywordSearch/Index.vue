@@ -5,7 +5,7 @@
         outlined
         dense
         v-show="showSearchType"
-        v-model="selectInfo.search_type"
+        v-model="search_type"
         :options="searchTypeList"
         option-value="value"
         option-label="label"
@@ -18,7 +18,7 @@
           outlined
           dense
           class="input-box"
-          v-model="selectInfo.search_value"
+          v-model="search_value"
           placeholder="请输入"
         />
       </div>
@@ -26,7 +26,7 @@
         outlined
         dense
         v-show="showSearchMode"
-        v-model="selectInfo.search_mode"
+        v-model="search_mode"
         :options="searchModeList"
         option-value="value"
         option-label="label"
@@ -40,16 +40,20 @@
 
 <script setup>
 import { reactive, watch } from "vue";
-const selectInfo = defineModel("selectInfo", {
-  type: Object,
-  required: true,
-  default: () => {
-    return {
-      search_type: "",
-      search_value: "",
-      search_mode: "",
-    };
-  },
+
+const search_type = defineModel("search_type", {
+  type: String,
+  default: "",
+});
+
+const search_value = defineModel("search_value", {
+  type: String,
+  default: "",
+});
+
+const search_mode = defineModel("search_mode", {
+  type: String,
+  default: "",
 });
 
 const props = defineProps({
