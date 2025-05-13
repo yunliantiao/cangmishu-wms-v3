@@ -1,5 +1,7 @@
 <template>
   <div class="product">
+    <div class="text-h5 font-bold m-b-50">商品</div>
+
     <div class="search-bar">
       <!-- 搜索过滤区域 -->
       <div class="row q-col-gutter-sm">
