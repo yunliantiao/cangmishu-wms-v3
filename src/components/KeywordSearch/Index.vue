@@ -96,7 +96,7 @@ const componentData = reactive({
 <style scoped lang="scss">
 .date-picker-new {
   border-radius: 4px;
-  height: 42px;
+  height: 40px;
   display: flex;
   border: 1px solid rgba(0, 0, 0, 0.24);
   background: #ffffff;

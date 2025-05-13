@@ -126,7 +126,7 @@ const pageData = reactive({
   group: "",
   loading: false,
   groupOptions: ["所有物流组", "物流组 A", "物流组 B"],
-  packageNo: "ON0042E9000001",
+  packageNo: "",
   sku: "",
   columns: [
     { name: "group", label: "物流组", field: "group", align: "left" },
