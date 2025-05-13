@@ -1,7 +1,7 @@
 <template>
   <div class="simple-print-page">
     <!-- 搜索过滤区域 - 第一行 -->
-    <div class="search-bar bg-white rounded-borders q-pa-md q-mb-md">
+    <div class="search-bar">
       <div class="row q-col-gutter-sm">
         <div class="col-auto">
           <q-select
@@ -99,40 +99,8 @@
       </div>
     </div>
 
-    <!-- 操作按钮区域 -->
-    <div class="row justify-between q-mb-sm page_table_action">
-      <div class="row items-center">
-        <span class="q-mr-sm">选择 {{ selectedRows.length }}</span>
-        <!-- <q-btn
-          color="primary"
-          label="设为待发货"
-          icon="fact_check"
-          flat
-          class="q-ml-sm"
-          @click="handleSetPendingShipment"
-        >
-        </q-btn> -->
-        <!-- <q-btn-dropdown
-          color="primary"
-          label="导出"
-          icon="get_app"
-          flat
-          class="q-ml-sm"
-        >
-          <q-list>
-            <q-item clickable v-close-popup @click="handleExport('selected')">
-              <q-item-section>导出选中</q-item-section>
-            </q-item>
-            <q-item clickable v-close-popup @click="handleExport('all')">
-              <q-item-section>导出全部</q-item-section>
-            </q-item>
-          </q-list>
-        </q-btn-dropdown> -->
-      </div>
-    </div>
-
     <!-- 数据表格 -->
-    <div class="bg-white rounded-borders page_table_action">
+    <div class="main-table">
       <q-table
         :rows="packages"
         :columns="columns"
@@ -768,13 +736,21 @@ onMounted(() => {
 <style lang="scss">
 .simple-print-page {
   .search-bar {
-    .select-width {
-      width: 150px;
-    }
+    background: #ffffff;
+    box-shadow: 0px 1px 10px 1px rgba(102, 102, 102, 0.08);
+    border-radius: 16px 16px 16px 16px;
+    padding: 32px;
 
     .date-input {
       width: 150px;
     }
+  }
+  .main-table {
+    background: #ffffff;
+    box-shadow: 0px 1px 10px 1px rgba(102, 102, 102, 0.08);
+    border-radius: 16px 16px 16px 16px;
+    padding: 32px;
+    margin-top: 20px;
   }
   .status-progress {
     position: relative;
