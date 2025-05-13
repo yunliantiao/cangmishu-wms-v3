@@ -90,14 +90,18 @@
         </div> -->
 
         <DatePicker
-          v-model:selectInfo="pageData.selectInfo"
+          v-model:date_type="filterValues.date_type"
+          v-model:start_date="filterValues.start_date"
+          v-model:end_date="filterValues.end_date"
           :dateList="pageData.dateOptions"
         />
       </div>
 
       <div class="row q-col-gutter-sm q-mt-sm">
         <KeywordSearch
-          v-model:selectInfo="pageData.keywordInfo"
+          v-model:search_type="filterValues.search_type"
+          v-model:search_value="filterValues.keywords"
+          v-model:search_mode="filterValues.search_mode"
           :searchTypeList="searchFieldOptions"
           :searchModeList="searchTypeOptions"
         />
@@ -164,7 +168,7 @@
         <div class="col-auto">
           <q-btn
             outline
-            color="grey"
+            color="primary"
             label="重置"
             class="filter-btn"
             @click="resetSearch"
@@ -176,7 +180,6 @@
             color="primary"
             label="查询"
             class="filter-btn"
-            icon="search"
             :loading="$store.state.btnLoading"
             @click="handleSearch"
           />
@@ -226,7 +229,14 @@
               </q-td>
               <q-td key="orderInfo" :props="props">
                 <div class="column">
-                  <div>入库单号: {{ props.row.system_order_number }}</div>
+                  <div>
+                    入库单号:
+                    <span
+                      class="hover-copy"
+                      @click="$copy(props.row.system_order_number)"
+                      >{{ props.row.system_order_number }}</span
+                    >
+                  </div>
                   <div>自定义单号: {{ props.row.custom_order_number }}</div>
                 </div>
               </q-td>
@@ -725,15 +735,6 @@ const statusOptions = [
 ];
 
 const pageData = reactive({
-  selectInfo: {
-    date_type: "created_at",
-    date_range: [],
-  },
-  keywordInfo: {
-    search_type: "tracking_number",
-    search_value: "",
-    search_mode: "exact",
-  },
   dateOptions: [
     {
       label: "创建时间",
@@ -893,11 +894,18 @@ watch(statusNav, (newValue) => {
 });
 
 // 筛选值
-const filterValues = reactive({});
-// 初始化筛选值为空
-filterOptions.forEach((filter) => {
-  filterValues[filter.field] = null;
+const filterValues = reactive({
+  date_type: "created_at",
+  start_date: "",
+  end_date: "",
+  search_type: "system_order_number",
+  keywords: "",
+  search_mode: "exact",
 });
+// 初始化筛选值为空
+// filterOptions.forEach((filter) => {
+//   filterValues[filter.field] = null;
+// });
 
 // 客户列表
 const customerList = ref([]);
@@ -948,11 +956,11 @@ const searchParams = reactive({
   inbound_status: "", // 单据状态
   received_status: "", // 收货状态
   shelf_status: "", // 上架状态
-  date_type: "", // 时间类型
+  date_type: "created_at", // 时间类型
   start_date: "", // 开始时间
   end_date: "", // 结束时间
-  search_type: "", // 搜索类型
-  search_mode: "", // 搜索模式
+  search_type: "system_order_number", // 搜索类型
+  search_mode: "exact", // 搜索模式
   keywords: "", // 关键词
 });
 
@@ -1078,17 +1086,6 @@ const handleStatusNav = (status) => {
 
 // 处理搜索
 const handleSearch = () => {
-  // 处理搜索类型和关键词
-  if (searchConfig.field && searchConfig.keywords) {
-    searchParams.search_type = searchConfig.field;
-    searchParams.search_mode = searchConfig.type || "fuzzy"; // 默认使用模糊搜索
-    searchParams.keywords = searchConfig.keywords.trim();
-  } else {
-    // 重置搜索相关参数
-    searchParams.search_type = "";
-    searchParams.search_mode = "";
-    searchParams.keywords = "";
-  }
   resetPage();
   getList();
 };
@@ -1185,15 +1182,6 @@ const getList = async () => {
   const params = {
     ...pageParams,
     ...filterValues,
-
-    keywords: pageData.keywordInfo.search_value,
-    search_type: pageData.keywordInfo.search_type,
-    search_mode: pageData.keywordInfo.search_mode,
-
-    date_type: pageData.selectInfo.date_type,
-    start_date: pageData.selectInfo.date_range[0],
-    end_date: pageData.selectInfo.date_range[1],
-
     inbound_status: searchParams.inbound_status,
   };
   const res = await inboundApi.getWarehouseWarrant(params);
@@ -1218,16 +1206,9 @@ const resetSearch = () => {
   dateRange.start = "";
   dateRange.end = "";
 
-  pageData.selectInfo = {
-    date_type: "created_at",
-    date_range: [],
-  };
-
-  pageData.keywordInfo = {
-    search_type: "tracking_number",
-    search_value: "",
-    search_mode: "exact",
-  };
+  filterValues.date_type = "created_at";
+  filterValues.search_type = "system_order_number";
+  filterValues.search_mode = "exact";
 
   resetPage();
   getList();

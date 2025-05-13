@@ -30,7 +30,6 @@
             label="查询"
             color="primary"
             class="filter-btn"
-            icon="search"
             @click="fetchAreaList"
           />
         </div>
@@ -83,20 +82,22 @@
                     flat
                     round
                     color="grey-7"
-                    icon="edit"
+                    class="table-icon"
                     size="sm"
                     @click="handleEdit(props.row)"
                   >
+                    <img src="@/assets/images/edit.png" />
                     <q-tooltip>编辑</q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
                     round
                     color="grey-7"
-                    icon="delete"
+                    class="table-icon"
                     size="sm"
                     @click="handleDelete(props.row)"
                   >
+                    <img src="@/assets/images/del.png" />
                     <q-tooltip>删除</q-tooltip>
                   </q-btn>
                 </div>

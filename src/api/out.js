@@ -44,4 +44,13 @@ export default {
 
     // 拍照记录
     photoRecord: (data) => GET(`packages/ship-photos`, data),
+
+    // 打印签单
+    printShipment: (data) => POST(`packages/deliver-sign`, data),
+
+    // 获取签单记录
+    getShipmentRecord: (data) => GET(`packages/deliver-sign`, data),
+
+    // 获取pdf
+    getShipmentPdf: (id) => GET(`packages/deliver-sign/${id}/pdf`),
 }

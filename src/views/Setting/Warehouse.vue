@@ -88,9 +88,10 @@
                   flat
                   round
                   color="grey-7"
-                  icon="edit"
+                  class="table-icon"
                   @click="showEditForm(props.row)"
                 >
+                  <img src="@/assets/images/edit.png" />
                   <q-tooltip>编辑</q-tooltip>
                 </q-btn>
                 <!-- <q-btn flat round color="grey-7" icon="delete" size="sm" @click="confirmDelete(props.row)">

@@ -154,20 +154,24 @@
         <div class="row q-col-gutter-md">
           <div class="col-auto">
             <DatePickerNew
-              v-model:selectInfo="pageData.selectInfo"
+              v-model:date_type="filterOptions.date_type"
+              v-model:start_date="filterOptions.start_date"
+              v-model:end_date="filterOptions.end_date"
               :dateList="timeOptions"
             ></DatePickerNew>
           </div>
 
           <KeywordSearch
-            v-model:selectInfo="pageData.keywordSearch"
+            v-model:search_type="filterOptions.search_type"
+            v-model:search_value="filterOptions.keywords"
+            v-model:search_mode="filterOptions.search_mode"
             :searchTypeList="productSkuOptions"
             :searchModeList="searchModeOptions"
           ></KeywordSearch>
           <div class="col-auto">
             <q-btn
               outline
-              color="grey"
+              color="primary"
               label="重置"
               class="filter-btn"
               @click="resetFilters"
@@ -176,7 +180,6 @@
 
           <div class="col-auto">
             <q-btn
-              outline
               color="primary"
               label="查询"
               class="filter-btn"
@@ -362,11 +365,11 @@ const filterOptions = reactive({
   product_tag_ids: [],
   category_ids: [],
   warehouse_area_ids: [],
-  start_date: "",
-  end_date: "",
-  search_type: "",
+  start_date: getThirtyDaysAgoDate(),
+  end_date: getTodayDate(),
+  search_type: "product_spec_sku",
   keywords: "",
-  search_mode: "",
+  search_mode: "exact",
   date_type: "created_at",
 });
 
@@ -448,16 +451,13 @@ const resetFilters = () => {
     packageTypes[key] = true;
   }
 
-  pageData.keywordSearch = {
-    search_type: "product_spec_sku",
-    search_value: "",
-    search_mode: "exact",
-  };
+  filterOptions.search_type = "product_spec_sku";
+  filterOptions.keywords = "";
+  filterOptions.search_mode = "exact";
 
-  pageData.selectInfo = {
-    date_type: "created_at",
-    date_range: [getThirtyDaysAgoDate(), getTodayDate()],
-  };
+  filterOptions.date_type = "created_at";
+  filterOptions.start_date = getThirtyDaysAgoDate();
+  filterOptions.end_date = getTodayDate();
 };
 
 // 下拉选项
@@ -565,18 +565,6 @@ const searchModeOptions = ref([
   },
 ]);
 
-const pageData = reactive({
-  selectInfo: {
-    date_type: "created_at",
-    date_range: [getThirtyDaysAgoDate(), getTodayDate()],
-  },
-  keywordSearch: {
-    search_type: "product_spec_sku",
-    search_value: "",
-    search_mode: "exact",
-  },
-});
-
 onMounted(() => {
   getCustomerList();
   getTagList();
@@ -665,12 +653,6 @@ const getParams = () => {
     platforms: filterOptions.platforms || [],
     customer_ids: filterOptions.customer_ids || [],
     warehouse_area_ids: filterOptions.warehouse_area_ids || [],
-    date_type: pageData.selectInfo.date_type,
-    start_date: pageData.selectInfo.date_range[0],
-    end_date: pageData.selectInfo.date_range[1],
-    search_type: pageData.keywordSearch.search_type,
-    keywords: pageData.keywordSearch.search_value,
-    search_mode: pageData.keywordSearch.search_mode,
   };
 
   // 包裹类型映射 为true则push到筛选数组里面

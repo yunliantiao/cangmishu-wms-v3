@@ -26,7 +26,7 @@
         v-model:search_value="pageData.keywords"
         :showSearchMode="false"
       ></KeywordSearch>
-      <q-btn color="primary" class="filter-btn" @click="getList">搜索</q-btn>
+      <q-btn color="primary" class="filter-btn" @click="getList">查询</q-btn>
     </div>
     <div class="main-table q-mt-md">
       <q-table

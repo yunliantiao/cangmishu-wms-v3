@@ -3,7 +3,10 @@ import App from './App.vue'
 import './assets/global.scss'
 import router from './router'
 import store from './store'
+import App from './App.vue'
+import './assets/global.scss'
 import './style.css'
+import Message from './utils/message'
 
 // Import Quasar
 import { Dialog, Notify, Quasar } from 'quasar'
@@ -47,3 +50,8 @@ app.use(Quasar, {
 }).use(router).use(store)
 
 app.mount('#app')
+
+app.config.globalProperties.$copy = async (text) => {
+  await navigator.clipboard.writeText(text)
+  Message.successMessage('复制成功')
+}

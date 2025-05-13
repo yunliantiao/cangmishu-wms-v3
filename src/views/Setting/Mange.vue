@@ -19,16 +19,17 @@
           />
         </div>
         <KeywordSearch
-          v-model:selectInfo="pageData.keywordInfo"
+          v-model:search_type="pageParams.search_type"
+          v-model:search_value="pageParams.keywords"
+          v-model:search_mode="pageParams.search_mode"
           :searchModeList="searchTypeOptions"
           :searchTypeList="locationFilterOptions"
         ></KeywordSearch>
         <div class="col-auto">
           <q-btn
             color="primary"
-            icon="search"
             class="filter-btn"
-            label="搜索"
+            label="查询"
             @click="getShelfLocationList"
           />
         </div>
@@ -581,14 +582,6 @@ const columns = [
   },
 ];
 
-const pageData = reactive({
-  keywordInfo: {
-    search_type: "code",
-    search_value: "",
-    search_mode: "exact",
-  },
-});
-
 // 货架位数据
 const shelfLocations = ref([]);
 
@@ -597,9 +590,9 @@ const pageParams = ref({
   per_page: 10,
   total: 0,
   status: "",
-  search_type: "",
+  search_type: "code",
   keywords: "",
-  search_mode: "",
+  search_mode: "exact",
 });
 
 const importDialogRef = ref(null);
@@ -612,9 +605,9 @@ const handleImportSuccess = () => {
 const getShelfLocationList = () => {
   let params = {
     ...pageParams.value,
-    search_type: pageData.keywordInfo.search_type,
-    keywords: pageData.keywordInfo.search_value,
-    search_mode: pageData.keywordInfo.search_mode,
+    search_type: pageParams.value.search_type,
+    keywords: pageParams.value.keywords,
+    search_mode: pageParams.value.search_mode,
   };
   settingApi.getShelfLocationList(params).then((res) => {
     if (res.success) {
