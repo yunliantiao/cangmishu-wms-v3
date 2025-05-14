@@ -5,12 +5,14 @@
         <DatePicker
           v-model:start_date="pageParams.start_date"
           v-model:end_date="pageParams.end_date"
+          v-model:date_type="pageParams.date_type"
           :dateList="$store.state.dateTypeOptions"
         ></DatePicker>
 
         <KeywordSearch
           v-model:search_type="pageParams.search_type"
           v-model:search_value="pageParams.keywords"
+          v-model:search_mode="pageParams.search_mode"
           :searchModeList="$store.state.searchModeOptions"
           :searchTypeList="[
             { label: trans('商品SKU'), value: 'sku' },
@@ -62,12 +64,14 @@
             outline
             color="grey"
             :label="trans('重置')"
-            class="q-mr-sm"
+            class="filter-btn"
             @click="resetSearch"
           />
+        </div>
+        <div class="col-auto">
           <q-btn
             color="primary"
-            icon="search"
+            class="filter-btn"
             :label="trans('搜索')"
             :loading="$store.state.btnLoading"
             @click="getAdjustList"
@@ -78,16 +82,17 @@
     <div class="q-pa-none page_table_action">
       <!-- 操作按钮区域 -->
       <div class="row justify-between q-mb-sm">
-        <div class="row items-center">
+        <!-- <div class="row items-center">
           <span class="q-mr-sm"
             >{{ trans("选择") }} {{ selectedRows.length }}</span
           >
-        </div>
+        </div> -->
         <div>
           <q-btn
             color="primary"
             :label="trans('创建调整单')"
             icon="add"
+            flat
             @click="createAdjust"
             unelevated
           />
@@ -114,16 +119,14 @@
             <q-tr class="group-header-row">
               <q-td colspan="7">
                 <div class="row group-header items-center">
-                  <div class="col-2">
+                  <div>
                     <q-checkbox v-model="props.selected" />
                     <span class="info-item q-mr-md"
                       >{{ trans("调整单号") }}:
                       {{ props.row.system_order_number }}</span
                     >
                   </div>
-                  <div class="col-9">
-                    {{ trans("备注") }}:{{ props.row.remark || "-" }}
-                  </div>
+                  <div>{{ trans("备注") }}:{{ props.row.remark || "-" }}</div>
                 </div>
               </q-td>
             </q-tr>
@@ -211,7 +214,7 @@ const pageParams = ref({
   total: 0,
   keywords: "",
   status: "",
-  date_type: "",
+  date_type: "created_at",
   start_date: "",
   end_date: "",
   search_type: "sku",
@@ -297,7 +300,7 @@ const resetSearch = () => {
     total: 0,
     keywords: "",
     status: "",
-    date_type: "",
+    date_type: "created_at",
     start_date: "",
     end_date: "",
     search_type: "sku",

@@ -1,8 +1,15 @@
 <template>
   <div class="scan-receive-page">
+    <ScanTop
+      :title="trans('扫描收货')"
+      :placeholder="trans('请扫描入库单号、ERP单号、运单号或箱唛')"
+      ref="scanTopRef"
+      v-model:scanValue="scanCode"
+      @confirm="handleScan"
+    />
     <!-- 标题和扫描区域 -->
     <div class="scan-header rounded-borders q-pa-lg q-mb-md">
-      <template v-if="!orderData">
+      <!-- <template v-if="!orderData">
         <div class="text-h5 text-weight-medium text-center q-mb-lg">
           {{ trans("扫描收货") }}
         </div>
@@ -36,10 +43,10 @@
             {{ trans("请先切换成[EN]输入法") }}
           </div>
         </div>
-      </template>
+      </template> -->
 
       <!-- 已扫描时显示标题和操作按钮 -->
-      <template v-else>
+      <template v-if="orderData">
         <div class="row justify-between items-center">
           <div class="text-h6">
             {{ trans("扫描收货") }}
@@ -164,6 +171,7 @@ import ParcelReceipt from "./components/ParcelReceipt.vue";
 import NewProductDialog from "./components/NewProductDialog.vue";
 import { useRoute, useRouter } from "vue-router";
 import trans from "@/i18n";
+import ScanTop from "@/components/ScanTop/Index.vue";
 
 const $q = useQuasar();
 const route = useRoute();
@@ -961,6 +969,11 @@ onMounted(() => {
       padding: 8px;
     }
   }
+}
+
+.scan-receive-page {
+  min-height: 100vh;
+  background-color: #f4f5f8;
 }
 </style>
 

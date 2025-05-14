@@ -19,31 +19,6 @@
     <div class="tabs-container q-pa-none">
       <div class="search-bar q-pa-md">
         <div class="row q-col-gutter-sm">
-          <!-- <div class="col-auto">
-            <q-select
-              outlined
-              dense
-              v-model="categoryFilter"
-              :options="categoryOptions"
-              label="全部类目"
-              class="select-width"
-            />
-          </div> -->
-          <!-- <div class="col-auto">
-            <q-select
-              outlined
-              dense
-              v-model="pageParams.customer_id"
-              :options="customerList"
-              option-value="value"
-              option-label="label"
-              emit-value
-              map-options
-              clearable
-              label="客户"
-              class="select-width"
-            />
-          </div> -->
           <div class="col-auto" v-if="currentTab == 'flow'">
             <q-select
               outlined
@@ -75,6 +50,7 @@
               v-model:search_type="pageParams.search_type"
               v-model:search_value="pageParams.keywords"
               :searchTypeList="searchType"
+              :searchModeList="searchTypeOptions"
             ></KeywordSearch>
           </div>
 
@@ -89,7 +65,6 @@
             <q-btn
               color="primary"
               :loading="$store.state.btnLoading"
-              icon="search"
               class="h-40"
               :label="trans('搜索')"
               @click="onSearch"
@@ -702,14 +677,14 @@ const resetSearch = () => {
   start_date.value = "";
   end_date.value = "";
   logTypeFilter.value = "";
-  pageParams.search_type = "name";
+  pageParams.search_type = "sku";
   pageParams.search_mode = "exact";
   pageParams.keywords = "";
   onSearch();
 };
 //
 const pageParams = reactive({
-  search_type: "name",
+  search_type: "sku",
   search_mode: "exact",
   keywords: "",
 });

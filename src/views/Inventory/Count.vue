@@ -38,6 +38,7 @@
           <q-select
             outlined
             dense
+            class="filter-item"
             v-model="pageParams.order_type"
             :options="[
               { label: trans('商品+货架位'), value: 'product_location' },
@@ -47,7 +48,6 @@
             map-options
             option-value="value"
             option-label="label"
-            class="filter-item"
             :label="trans('盘点类型')"
             clearable
           />

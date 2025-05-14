@@ -270,42 +270,12 @@
 
         <template v-slot:bottom>
           <div class="row items-center justify-between full-width">
-            <div>Total: {{ pageData.pagination.rowsNumber }}</div>
-            <div class="row items-center">
-              <span class="q-mr-sm">
-                {{ pageData.pagination.page }}/{{
-                  Math.ceil(
-                    pageData.pagination.rowsNumber /
-                      pageData.pagination.rowsPerPage
-                  )
-                }}</span
-              >
-              <q-pagination
-                v-model="pageData.pagination.page"
-                :max="
-                  Math.ceil(
-                    pageData.pagination.rowsNumber /
-                      pageData.pagination.rowsPerPage
-                  )
-                "
-                :max-pages="6"
-                boundary-links
-                direction-links
-                @update:model-value="onPageChange"
-              />
-            </div>
-            <div>
-              <!-- <q-select
-              v-model="pageData.pagination.rowsPerPage"
-              :options="[10, 20, 50, 100]"
-              label="每页行数"
-              dense
-              outlined
-              options-dense
-              style="width: 120px"
-              @update:model-value="onPageChange"
-            /> -->
-            </div>
+            <Pagination
+              :total-count="pageData.pagination.rowsNumber"
+              v-model:page="pageData.pagination.page"
+              v-model:rows-per-page="pageData.pagination.rowsPerPage"
+              @page-change="onPageChange"
+            />
           </div>
         </template>
       </q-table>
@@ -333,6 +303,7 @@ import DatePickerNew from "@/components/DatePickerNew/Index.vue";
 import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 import Message from "@/utils/message.js";
 import trans from "@/i18n";
+import Pagination from "@/components/Pagination.vue";
 
 const $q = useQuasar();
 const router = useRouter();

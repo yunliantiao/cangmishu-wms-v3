@@ -1,7 +1,7 @@
 <template>
   <div class="materials-list-page">
     <!-- 操作按钮区域 -->
-    <div class="flex-between-center m-b-50">
+    <!-- <div class="flex-between-center m-b-50">
       <div class="font-bold text-h5">{{ trans("包材") }}</div>
       <div class="">
         <q-btn
@@ -11,7 +11,7 @@
           @click="add"
         />
       </div>
-    </div>
+    </div> -->
 
     <!-- 搜索栏 -->
     <div class="search-bar">
@@ -53,13 +53,22 @@
     <div class="main-table">
       <!-- 操作栏 -->
       <div class="action-bar">
-        <span>{{ trans("选择") }} {{ pageData.selectedRows.length }}</span>
+        <!-- <span>{{ trans("选择") }} {{ pageData.selectedRows.length }}</span> -->
         <q-btn
           flat
           color="primary"
           class="q-ml-md"
+          icon="print"
           :label="trans('打印标签')"
           @click="printTags"
+        />
+
+        <q-btn
+          color="primary"
+          icon="add"
+          flat
+          :label="trans('新建包材')"
+          @click="add"
         />
       </div>
 
@@ -123,23 +132,35 @@
               <div>{{ trans("更新") }} {{ props.row.updated_at }}</div>
             </q-td>
             <q-td>
-              <div class="flex-center-center gap-24">
-                <div @click="edit(props.row)">
+              <div class="flex-center-center">
+                <q-btn
+                  flat
+                  round
+                  color="grey-7"
+                  size="sm"
+                  @click="edit(props.row)"
+                >
                   <img
                     src="@/assets/images/product/edit-icon.png"
                     class="cursor-pointer w-20 h-20"
                     alt="编辑"
                   />
                   <q-tooltip>{{ trans("编辑") }}</q-tooltip>
-                </div>
-                <div @click="del(props.row)">
+                </q-btn>
+                <q-btn
+                  flat
+                  round
+                  color="grey-7"
+                  size="sm"
+                  @click="del(props.row)"
+                >
                   <img
                     src="@/assets/images/product/delete-icon.png"
                     class="cursor-pointer w-20 h-20"
                     alt="删除"
                   />
                   <q-tooltip>{{ trans("删除") }}</q-tooltip>
-                </div>
+                </q-btn>
               </div>
             </q-td>
           </q-tr>
@@ -156,6 +177,7 @@ import ProductApi from "@/api/product.js";
 import Form from "./components/Form.vue";
 import { useQuasar } from "quasar";
 import trans from "@/i18n";
+import Message from "@/utils/message.js";
 
 const $q = useQuasar();
 const pageData = reactive({
@@ -266,6 +288,10 @@ const add = () => {
 };
 
 const printTags = async () => {
+  if (pageData.selectedRows.length === 0) {
+    Message.notify(trans("请选择包材"));
+    return;
+  }
   let codes = pageData.selectedRows.map((row) => row.code);
   const { data } = await ProductApi.printTags({ codes });
   console.log("data", data);
@@ -282,8 +308,7 @@ const printTags = async () => {
   .action-bar {
     display: flex;
     align-items: center;
-    padding: 10px 24px;
-    margin-bottom: 8px;
+    padding: 10px 0;
   }
 
   .material-img {

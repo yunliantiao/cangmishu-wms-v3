@@ -1,10 +1,20 @@
 <template>
-  <div class="scan-sign-page q-pa-md">
-    <div class="text-h5 text-center q-mb-lg">{{ trans("扫描签收") }}</div>
+  <div class="scan-sign-page">
+    <!-- <div class="text-h5 text-center q-mb-lg">{{ trans("扫描签收") }}</div> -->
 
-    <div class="scan-container q-mx-auto" style="max-width: 800px">
+    <ScanTop
+      :title="trans('扫描签收')"
+      ref="scanTopRef"
+      v-model:scanValue="scanCode"
+      :placeholder="
+        trans('请扫描入库单号/退货单号/运单号/ERP单号/平台订单号/箱唛')
+      "
+      @confirm="handleScan"
+    />
+
+    <div class="scan-container q-mx-auto" style="max-width: 1400px">
       <!-- 扫描输入框 -->
-      <q-input
+      <!-- <q-input
         outlined
         v-model="scanCode"
         :placeholder="
@@ -21,7 +31,7 @@
 
       <div class="text-caption text-grey q-mb-lg">
         <q-icon name="info" size="xs" /> {{ trans("请先切换成[EN]输入法") }}
-      </div>
+      </div> -->
 
       <!-- 结果展示区 -->
       <div
@@ -95,7 +105,6 @@
             :columns="itemColumns"
             row-key="id"
             flat
-            bordered
             dense
             hide-pagination
             :pagination="{ rowsPerPage: 0 }"
@@ -114,10 +123,7 @@
                 >
                   <div class="product-info">
                     <img
-                      :src="
-                        props.row.product_spec_image ||
-                        'https://testoms.cangmishu.com/api/uploads/52331320-d813-40d8-a6db-3cf28f4938b1'
-                      "
+                      :src="props.row.product_spec_image"
                       class="product-img"
                       @error="handleImgError"
                     />
@@ -157,11 +163,12 @@ import { useQuasar } from "quasar";
 import { useRoute } from "vue-router";
 import inboundApi from "@/api/inbound";
 import trans from "@/i18n";
+import ScanTop from "@/components/ScanTop/Index.vue";
 
 const $q = useQuasar();
 const scanCode = ref("");
 const scanSuccess = ref(false);
-const scanInput = ref(null);
+const scanTopRef = ref(null);
 
 const scanData = ref({});
 
@@ -234,7 +241,7 @@ const handleScan = () => {
           scanCode.value = "";
           // 重新聚焦输入框
           nextTick(() => {
-            scanInput.value.focus();
+            scanTopRef.value.focus();
           });
         }, 500);
       }
@@ -267,25 +274,25 @@ const mergeSameSkuItems = (items) => {
 
 // 处理图片加载错误
 const handleImgError = (e) => {
-  e.target.src = "/src/assets/no-image.png"; // 替换为默认图片路径
+  // e.target.src = "/src/assets/no-image.png"; // 替换为默认图片路径
 };
 
 onMounted(() => {
   // 页面加载后自动聚焦到扫描输入框
-  nextTick(() => {
-    scanInput.value.focus();
-    if (route.query.number) {
-      scanCode.value = route.query.number;
-      handleScan();
-    }
-  });
+  // nextTick(() => {
+  //   scanInput.value.focus();
+  if (route.query.number) {
+    scanCode.value = route.query.number;
+    handleScan();
+  }
+  // });
 });
 </script>
 
 <style lang="scss" scoped>
 .scan-sign-page {
-  //   min-height: 100vh;
-  background-color: #f5f7fa;
+  min-height: 100vh;
+  background-color: #f4f5f8;
 
   .scan-container {
     .q-input {

@@ -1,8 +1,7 @@
 <template>
   <div class="tag-list-page">
     <!-- 操作按钮区域 -->
-    <div class="flex-between-center m-b-50">
-      <div class="font-bold text-h5">{{ trans("商品标记") }}</div>
+    <!-- <div class="flex-between-center m-b-50">
       <div class="">
         <q-btn
           color="primary"
@@ -11,7 +10,7 @@
           @click="handleAddTag"
         />
       </div>
-    </div>
+    </div> -->
 
     <!-- 搜索区域 -->
     <div class="search-bar">
@@ -38,6 +37,14 @@
       </div>
     </div>
     <div class="main-table">
+      <q-btn
+        color="primary"
+        icon="add"
+        flat
+        :label="trans('新增标记')"
+        @click="handleAddTag"
+      />
+
       <!-- 数据表格 -->
       <q-table
         :rows="componentData.list"
@@ -65,23 +72,35 @@
             </q-td>
 
             <q-td key="actions" :props="props">
-              <div class="flex-center-center gap-24">
-                <div @click="handleEdit(props.row)">
+              <div class="flex-center-center">
+                <q-btn
+                  flat
+                  round
+                  color="grey-7"
+                  size="sm"
+                  @click="handleEdit(props.row)"
+                >
                   <img
                     src="@/assets/images/product/edit-icon.png"
                     class="cursor-pointer w-20 h-20"
                     :alt="trans('编辑')"
                   />
                   <q-tooltip>{{ trans("编辑") }}</q-tooltip>
-                </div>
-                <div @click="confirmDelete(props.row)">
+                </q-btn>
+                <q-btn
+                  flat
+                  round
+                  color="grey-7"
+                  size="sm"
+                  @click="confirmDelete(props.row)"
+                >
                   <img
                     src="@/assets/images/product/delete-icon.png"
                     class="cursor-pointer w-20 h-20"
                     alt="删除"
                   />
                   <q-tooltip>{{ trans("删除") }}</q-tooltip>
-                </div>
+                </q-btn>
               </div>
             </q-td>
           </q-tr>
@@ -292,5 +311,9 @@ const handleDelete = async (row) => {
 
 :deep(.q-table tbody tr:hover) {
   background-color: rgba(0, 0, 0, 0.03);
+}
+
+.main-table {
+  padding-top: 10px;
 }
 </style>

@@ -10,7 +10,7 @@
             v-model="searchParams.move_type"
             :options="moveTypeOptions"
             :label="trans('全部移货类型')"
-            class="select-width"
+            class="filter-item"
             emit-value
             map-options
             option-value="value"
@@ -25,7 +25,7 @@
             v-model="searchParams.status"
             :options="statusOptions"
             :label="trans('全部状态')"
-            class="select-width"
+            class="filter-item"
             emit-value
             map-options
             option-value="value"
@@ -72,7 +72,6 @@
         <div class="col-auto">
           <q-btn
             color="primary"
-            icon="search"
             class="filter-btn"
             :label="trans('搜索')"
             :loading="$store.state.btnLoading"
@@ -181,18 +180,22 @@
                     flat
                     round
                     color="grey-7"
-                    icon="start"
+                    size="sm"
+                    class="table-icon"
                     @click="handleDetail(props.row, 'move')"
                   >
+                    <img src="@/assets/images/move.png" />
                     <q-tooltip>{{ trans("移货") }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
                     round
                     color="grey-7"
-                    icon="receipt_long"
+                    size="sm"
+                    class="table-icon"
                     @click="handleDetail(props.row, 'detail')"
                   >
+                    <img src="@/assets/images/detail.png" />
                     <q-tooltip>{{ trans("详情") }}</q-tooltip>
                   </q-btn>
                   <q-btn
@@ -200,9 +203,11 @@
                     round
                     v-if="props.row.status != 'completed'"
                     color="grey-7"
-                    icon="task_alt"
+                    size="sm"
+                    class="table-icon"
                     @click="forcedCompletion(props.row)"
                   >
+                    <img src="@/assets/images/complete.png" />
                     <q-tooltip>{{ trans("强制完成") }}</q-tooltip>
                   </q-btn>
                   <q-btn
@@ -210,9 +215,11 @@
                     v-if="props.row.status == 'pending'"
                     round
                     color="grey-7"
-                    icon="delete"
+                    class="table-icon"
+                    size="sm"
                     @click="deleteMove(props.row)"
                   >
+                    <img src="@/assets/images/del.png" />
                     <q-tooltip>{{ trans("删除") }}</q-tooltip>
                   </q-btn>
                 </div>

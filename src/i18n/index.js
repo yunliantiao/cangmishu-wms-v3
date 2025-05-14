@@ -1,12 +1,14 @@
-import store from '@/store'
 import EnTransform from '@/i18n/en.json'
 import ZhTransform from '@/i18n/zh.json'
+import store from '@/store'
 const t = (key, value) => {
   let obj = {
     zh_CN: ZhTransform,
     en: EnTransform
   }
-  const transformStr = obj[store.state.language][key] || key
+
+  let language = store?.state?.language || localStorage.getItem('language') || 'zh_CN'
+  const transformStr = obj[language][key] || key
   if (!value) {
     return transformStr
   } else {

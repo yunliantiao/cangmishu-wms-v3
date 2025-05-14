@@ -14,6 +14,8 @@ const Layout = () => import(`../App.vue`)
 const NotFound = loadonDemand('NotFound')
 const Login = loadonDemand('Login')
 
+const Sign = () => import(`../views/Inbound/Sign.vue`)
+
 
 export const routerMap = []
     .concat(Panel)
@@ -31,6 +33,23 @@ const constantRouterMap = [
         path: '/login',
         name: 'Login',
         component: Login,
+    },
+    // 扫描签收
+    {
+        path: '/inbound/sign',
+        name: 'Sign',
+        component: Sign,
+    },
+    // 扫描收货
+    {
+        path: '/inbound/receive',
+        name: 'Receive',
+        component: () => import('@/views/Inbound/Receive.vue'),
+    },
+    {
+        path: '/Test',
+        name: 'Test',
+        component: () => import('@/views/Test.vue'),
     },
     {
         path: '/partner/login',

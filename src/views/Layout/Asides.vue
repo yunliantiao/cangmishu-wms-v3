@@ -24,6 +24,9 @@
           </template>
 
           <!-- 子菜单项 -->
+          <!-- :to="`/${route.path}/${childRoute.path}`" -->
+          <!-- @click="toPath(`/${route.path}/${childRoute.path}`, childRoute)" -->
+
           <q-item
             v-for="childRoute in getLevel2Routes(route.children)"
             :key="childRoute.path"
@@ -37,7 +40,9 @@
               <q-icon name="circle" size="xs" />
             </q-item-section> -->
             <q-item-section class="submenu-title">
-              <q-item-label>{{ childRoute.meta?.name || childRoute.name }}</q-item-label>
+              <q-item-label>{{
+                childRoute.meta?.name || childRoute.name
+              }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-expansion-item>
@@ -68,14 +73,14 @@
 </template>
 
 <script>
-import { useQuasar } from 'quasar';
-import { computed, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useStore } from 'vuex';
-import { routerMap } from '../../router';
+import { useQuasar } from "quasar";
+import { computed, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { routerMap } from "../../router";
 
 export default {
-  name: 'AsidesComponent',
+  name: "AsidesComponent",
 
   setup() {
     const router = useRouter();
@@ -99,7 +104,7 @@ export default {
     watch(route, () => {
       if (isMobile.value && isOpen.value) {
         // 发射事件通知父组件关闭侧边栏
-        store.dispatch('setLeftDrawer', false);
+        store.dispatch("setLeftDrawer", false);
       }
     });
 
@@ -126,14 +131,20 @@ export default {
 
     // 切换侧边栏状态
     function toggleLeftDrawer() {
-      store.dispatch('toggleLeftDrawer');
+      store.dispatch("toggleLeftDrawer");
     }
+
+    const toPath = (path, route) => {
+      console.log("path", path);
+      console.log("route", route);
+    };
 
     return {
       isOpen,
       isCollapse,
       isMobile,
       routerMap,
+      toPath,
       toggleLeftDrawer,
       getLevel2Routes,
       isRouteActive,
@@ -202,7 +213,7 @@ export default {
 
 .route-menu {
   background-color: #ffffff;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   padding: 20px;
   transition: all 0.25s ease;
 

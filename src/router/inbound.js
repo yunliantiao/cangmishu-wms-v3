@@ -1,7 +1,7 @@
 const Container = () => import(`../views/Layout/Container.vue`)
 const WarehouseWarrant = () => import(`../views/Inbound/WarehouseWarrant.vue`)
-const Sign = () => import(`../views/Inbound/sign.vue`)
-const Receive = () => import(`../views/Inbound/receive.vue`)
+// const Sign = () => import(`../views/Inbound/sign.vue`)
+// const Receive = () => import(`../views/Inbound/receive.vue`)
 const Shelve = () => import(`../views/Inbound/shelve.vue`)
 import trans from "@/i18n";
 
@@ -27,10 +27,11 @@ export default [
                     name: trans('入库管理'),
                 },
             },
+
             {
-                path: 'sign',
-                name: 'sign',
-                component: Sign,
+                path: 'sign2',
+                name: 'sign2',
+                redirect: '/inbound/sign',
                 id: 1001,
                 meta: {
                     level: 2,
@@ -41,8 +42,8 @@ export default [
             {
                 path: 'receive',
                 name: 'receive',
-                component: Receive,
                 id: 1001,
+                redirect: '/inbound/receive',
                 meta: {
                     level: 2,
                     group: trans('入库管理'),
