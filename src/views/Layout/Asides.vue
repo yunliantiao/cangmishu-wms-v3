@@ -176,7 +176,7 @@ export default {
     color: #2c3e50;
     transition: all 0.3s ease-in-out;
     &:hover {
-      background-color: rgba($color: #2c3e50, $alpha: 0.5);
+      background-color: rgba($color: #2c3e50, $alpha: 0.8);
       color: #ffffff;
     }
   }
