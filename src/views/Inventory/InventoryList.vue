@@ -193,6 +193,7 @@
                           </div>
                           <div class="text-overflow-1">
                             {{ props.row?.product_name }}
+                            <q-tooltip>{{ props.row?.product_name }}</q-tooltip>
                           </div>
                           <div>规格: {{ props.row?.name }}</div>
                         </div>
