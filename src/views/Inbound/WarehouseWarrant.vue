@@ -1,7 +1,7 @@
 <template>
   <div class="warehouse-warrant">
     <!-- 状态筛选导航 -->
-    <div class="search-bar">
+    <!-- <div class="search-bar">
       <div class="row q-gutter-x-md">
         <q-btn
           v-for="status in statusOptions"
@@ -13,10 +13,27 @@
           @click="handleStatusNav(status.value)"
         />
       </div>
-    </div>
+    </div> -->
 
     <!-- 搜索过滤区域 -->
     <div class="search-bar global-mt">
+      <div class="tabs-section q-mb-md">
+        <q-tabs
+          v-model="statusNav"
+          active-color="primary"
+          indicator-color="primary"
+          narrow-indicator
+          @update:model-value="handleStatusNav"
+          class="text-grey-8"
+        >
+          <q-tab
+            :name="item.value"
+            :label="item.label"
+            v-for="item in statusOptions"
+            :key="item.value"
+          />
+        </q-tabs>
+      </div>
       <div class="row q-col-gutter-sm">
         <div
           v-for="filter in filterOptions"
@@ -169,7 +186,7 @@
           <q-btn
             outline
             color="primary"
-            label="重置"
+            :label="trans('重置')"
             class="filter-btn"
             @click="resetSearch"
           />
@@ -178,7 +195,7 @@
         <div class="col-auto">
           <q-btn
             color="primary"
-            label="查询"
+            :label="trans('查询')"
             class="filter-btn"
             :loading="$store.state.btnLoading"
             @click="handleSearch"
@@ -188,22 +205,6 @@
     </div>
 
     <div class="main-table">
-      <!-- 操作按钮区域 -->
-      <div class="row justify-between q-mb-sm">
-        <!-- <div class="row items-center">
-          <span class="q-mr-sm">选择 {{ selectedRows.length }}</span>
-          <q-btn
-            color="primary"
-            label="打印入库单"
-            icon="print"
-            flat
-            class="q-ml-sm"
-            :disable="!selectedRows.length"
-            @click="handleBatchPrint"
-          />
-        </div> -->
-      </div>
-
       <!-- 数据表格 -->
       <div class="bg-white rounded-borders">
         <q-table
@@ -355,7 +356,9 @@
                       dense
                       no-caps
                       color="primary"
-                      :label="`多个 (${props.row.total_sku_type_qty})`"
+                      :label="`${trans('多个({count})', {
+                        count: props.row.total_sku_type_qty,
+                      })}`"
                       @mouseenter="showTooltip($event, props.row.id, 'sku')"
                       @mouseleave="hideTooltip('sku')"
                     >
@@ -375,10 +378,10 @@
                           <table class="tooltip-table">
                             <thead>
                               <tr>
-                                <th>SKU</th>
-                                <th>申报数量</th>
-                                <th>收货数量</th>
-                                <th>上架数量</th>
+                                <th>{{ trans("SKU") }}</th>
+                                <th>{{ trans("申报数量") }}</th>
+                                <th>{{ trans("收货数量") }}</th>
+                                <th>{{ trans("上架数量") }}</th>
                               </tr>
                             </thead>
                             <tbody v-if="!$store.state.btnLoading">
@@ -483,7 +486,7 @@
                     @click="viewDetails(props.row)"
                   >
                     <img src="@/assets/images/detail.png" />
-                    <q-tooltip>详情</q-tooltip>
+                    <q-tooltip>{{ trans("详情") }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
@@ -494,7 +497,7 @@
                     v-if="props.row.status === 'in_transit'"
                   >
                     <img src="@/assets/images/sign.png" />
-                    <q-tooltip>签收</q-tooltip>
+                    <q-tooltip>{{ trans("签收") }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
@@ -509,7 +512,7 @@
                     "
                   >
                     <img src="@/assets/images/take.png" />
-                    <q-tooltip>收货</q-tooltip>
+                    <q-tooltip>{{ trans("收货") }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
@@ -525,7 +528,7 @@
                     "
                   >
                     <img src="@/assets/images/grounding.png" />
-                    <q-tooltip>上架</q-tooltip>
+                    <q-tooltip>{{ trans("上架") }}</q-tooltip>
                   </q-btn>
                   <q-btn flat round color="grey-7" class="table-icon" size="sm">
                     <img src="@/assets/images/more.png" />
@@ -536,14 +539,18 @@
                           v-close-popup
                           @click="printLabel(props.row)"
                         >
-                          <q-item-section>打印标签</q-item-section>
+                          <q-item-section>{{
+                            trans("打印标签")
+                          }}</q-item-section>
                         </q-item>
                         <q-item
                           clickable
                           v-close-popup
                           @click="printWarehouseReceipt(props.row)"
                         >
-                          <q-item-section>打印入库单</q-item-section>
+                          <q-item-section>{{
+                            trans("打印入库单")
+                          }}</q-item-section>
                         </q-item>
                         <q-item
                           clickable
@@ -551,7 +558,9 @@
                           v-if="props.row.arrival_method == 'box'"
                           @click="printBoxLabel(props.row)"
                         >
-                          <q-item-section>打印箱唛</q-item-section>
+                          <q-item-section>{{
+                            trans("打印箱唛")
+                          }}</q-item-section>
                         </q-item>
                       </q-list>
                     </q-menu>
@@ -564,7 +573,7 @@
           <template v-slot:no-data>
             <div class="full-width row flex-center q-gutter-sm">
               <q-icon size="2em" name="sentiment_dissatisfied" />
-              <span>暂无数据</span>
+              <span>{{ trans("暂无数据") }}</span>
             </div>
           </template>
         </q-table>
@@ -592,7 +601,7 @@
     <q-dialog v-model="printDialogVisible" persistent>
       <q-card style="min-width: 400px">
         <q-card-section class="row items-center">
-          <div class="text-h6">打印箱唛</div>
+          <div class="text-h6">{{ trans("打印箱唛") }}</div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
@@ -600,9 +609,9 @@
         <q-card-section>
           <div class="q-gutter-y-md">
             <div class="row items-center">
-              <span class="required col-3">打印范围</span>
+              <span class="required col-3">{{ trans("打印范围") }}</span>
               <div class="col row items-center no-wrap">
-                <span>第</span>
+                <span>{{ trans("第") }}</span>
                 <q-input
                   v-model="printForm.start_box"
                   type="number"
@@ -611,7 +620,7 @@
                   dense
                   outlined
                 />
-                <span>~</span>
+                <span>{{ trans("~") }}</span>
                 <q-input
                   v-model="printForm.end_box"
                   type="number"
@@ -620,12 +629,12 @@
                   dense
                   outlined
                 />
-                <span>箱</span>
+                <span>{{ trans("箱") }}</span>
               </div>
             </div>
 
             <div class="row">
-              <span class="required col-3">纸张大小</span>
+              <span class="required col-3">{{ trans("纸张大小") }}</span>
               <div class="col">
                 <div class="row items-center q-mb-sm">
                   <q-radio
@@ -637,14 +646,20 @@
                 <div class="row items-center q-mb-sm">
                   <q-radio v-model="printForm.box_size" val="medium">
                     <template v-slot:default>
-                      100*100 <span class="text-grey-6">(显示SKU信息)</span>
+                      100*100
+                      <span class="text-grey-6">{{
+                        trans("显示SKU信息")
+                      }}</span>
                     </template>
                   </q-radio>
                 </div>
                 <div class="row items-center">
                   <q-radio v-model="printForm.box_size" val="large">
                     <template v-slot:default>
-                      100*150 <span class="text-grey-6">(显示SKU信息)</span>
+                      100*150
+                      <span class="text-grey-6">{{
+                        trans("显示SKU信息")
+                      }}</span>
                     </template>
                   </q-radio>
                 </div>
@@ -652,27 +667,27 @@
             </div>
 
             <div class="row">
-              <span class="col-3">附加信息</span>
+              <span class="col-3">{{ trans("附加信息") }}</span>
               <div class="col q-gutter-x-md">
                 <q-checkbox
                   v-model="printForm.additional_info"
                   val="customer_fullname"
-                  label="客户姓名"
+                  :label="trans('客户姓名')"
                 />
                 <q-checkbox
                   v-model="printForm.additional_info"
                   val="made_in_china"
-                  label="Made in China"
+                  :label="trans('中国制造')"
                 />
                 <q-checkbox
                   v-model="printForm.additional_info"
                   val="product_name"
-                  label="产品名称"
+                  :label="trans('产品名称')"
                 />
                 <q-checkbox
                   v-model="printForm.additional_info"
                   val="other"
-                  label="其他"
+                  :label="trans('其他')"
                 />
               </div>
             </div>
@@ -680,9 +695,9 @@
         </q-card-section>
 
         <q-card-actions align="right" class="q-pa-md">
-          <q-btn label="取消" color="grey-7" flat v-close-popup />
+          <q-btn :label="trans('取消')" color="grey-7" flat v-close-popup />
           <q-btn
-            label="确定"
+            :label="trans('确定')"
             color="primary"
             flat
             @click="handlePrintConfirm"
@@ -693,24 +708,24 @@
     <q-dialog v-model="printOrderDialogVisible" persistent>
       <q-card style="min-width: 400px">
         <q-card-section class="row items-center">
-          <div class="text-h6">打印入库单</div>
+          <div class="text-h6">{{ trans("打印入库单") }}</div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
 
         <q-card-section class="q-pt-none">
           <div class="row q-gutter-sm">
-            <q-radio v-model="printType" val="sku" label="按SKU" />
-            <q-radio v-model="printType" val="box" label="按箱" />
+            <q-radio v-model="printType" val="sku" :label="trans('按SKU')" />
+            <q-radio v-model="printType" val="box" :label="trans('按箱')" />
           </div>
         </q-card-section>
 
         <q-card-actions align="right" class="bg-white text-primary q-pa-md">
-          <q-btn flat label="取消" v-close-popup />
+          <q-btn flat :label="trans('取消')" v-close-popup />
           <q-btn
             unelevated
             color="primary"
-            label="打印"
+            :label="trans('打印')"
             @click="handlePrint"
             :loading="$store.state.btnLoading"
           />
@@ -737,36 +752,37 @@ import customerApi from "@/api/customer";
 import PrintLabelDialog from "@/components/PrintLabelDialog.vue";
 import DatePicker from "@/components/DatePickerNew/Index.vue";
 import KeywordSearch from "@/components/KeywordSearch/Index.vue";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 const router = useRouter();
 
 // 状态选项配置
 const statusOptions = [
-  { label: "全部", value: "all" },
-  { label: "已预报", value: "reported" },
-  { label: "运输中", value: "in_transit" },
-  { label: "待入库", value: "pending_inbound" },
-  { label: "入库中", value: "inbound_processing" },
-  { label: "已完成", value: "shelved" },
+  { label: trans("全部"), value: "all" },
+  { label: trans("已预报"), value: "reported" },
+  { label: trans("运输中"), value: "in_transit" },
+  { label: trans("待入库"), value: "pending_inbound" },
+  { label: trans("入库中"), value: "inbound_processing" },
+  { label: trans("已完成"), value: "shelved" },
 ];
 
 const pageData = reactive({
   dateOptions: [
     {
-      label: "创建时间",
+      label: trans("创建时间"),
       value: "created_at",
     },
     {
-      label: "签收时间",
+      label: trans("签收时间"),
       value: "sign_at",
     },
     {
-      label: "首次上架时间",
+      label: trans("首次上架时间"),
       value: "first_shelf_at",
     },
     {
-      label: "完成时间",
+      label: trans("完成时间"),
       value: "completed_at",
     },
   ],
@@ -776,63 +792,63 @@ const pageData = reactive({
 const filterOptions = [
   {
     field: "customer_id",
-    label: "用户",
+    label: trans("用户"),
     options: [],
   },
   {
     field: "received_status",
-    label: "收货状态",
+    label: trans("收货状态"),
     options: [
       {
-        label: "待收货",
+        label: trans("待收货"),
         value: "pending",
       },
       {
-        label: "部分收货",
+        label: trans("部分收货"),
         value: "partially_received",
       },
       {
-        label: "已收",
+        label: trans("已收"),
         value: "fully_received",
       },
     ],
   },
   {
     field: "shelf_status",
-    label: "上架状态",
+    label: trans("上架状态"),
     options: [
       {
-        label: "待上架",
+        label: trans("待上架"),
         value: "pending_shelved",
       },
       {
-        label: "部分上架",
+        label: trans("部分上架"),
         value: "partially_shelved",
       },
       {
-        label: "全部上架",
+        label: trans("全部上架"),
         value: "fully_shelved",
       },
     ],
   },
   // {
   //   field: "date_type",
-  //   label: "创建时间",
+  //   label: trans("创建时间"),
   //   options: [
   //     {
-  //       label: "创建时间",
+  //       label: trans("创建时间"),
   //       value: "created_at",
   //     },
   //     {
-  //       label: "签收时间",
+  //       label: trans("签收时间"),
   //       value: "sign_at",
   //     },
   //     {
-  //       label: "首次上架时间",
+  //       label: trans("首次上架时间"),
   //       value: "first_shelf_at",
   //     },
   //     {
-  //       label: "完成时间",
+  //       label: trans("完成时间"),
   //       value: "completed_at",
   //     },
   //   ],
@@ -842,23 +858,23 @@ const filterOptions = [
 // 搜索字段选项
 const searchFieldOptions = [
   {
-    label: "入库单号",
+    label: trans("入库单号"),
     value: "system_order_number",
   },
   {
-    label: "运单号",
+    label: trans("运单号"),
     value: "tracking_number",
   },
   {
-    label: "ERP单号",
+    label: trans("ERP单号"),
     value: "custom_order_number",
   },
   {
-    label: "商品SKU",
+    label: trans("商品SKU"),
     value: "sku",
   },
   {
-    label: "商品名称",
+    label: trans("商品名称"),
     value: "product_name",
   },
 ];
@@ -866,11 +882,11 @@ const searchFieldOptions = [
 // 搜索模式选项
 const searchTypeOptions = [
   {
-    label: "模糊搜索",
+    label: trans("模糊搜索"),
     value: "fuzzy",
   },
   {
-    label: "精确搜索",
+    label: trans("精确搜索"),
     value: "exact",
   },
 ];
@@ -944,8 +960,8 @@ getCustomerList();
 const dateRange = reactive({
   start: "",
   end: "",
-  startLabel: "开始时间",
-  endLabel: "结束时间",
+  startLabel: trans("开始时间"),
+  endLabel: trans("结束时间"),
 });
 
 // 搜索配置
@@ -1327,50 +1343,50 @@ const handleVerify = (row) => {
 const columns = [
   {
     name: "orderInfo",
-    label: "单号",
+    label: trans("单号"),
     field: "orderInfo",
     align: "left",
   },
   {
     name: "customer",
-    label: "客户",
+    label: trans("客户"),
     field: "customer",
     align: "left",
   },
   {
     name: "trackingNumber",
-    label: "运单号",
+    label: trans("运单号"),
     field: "trackingNumber",
     align: "left",
   },
   {
     name: "arrivalMethod",
-    label: "到仓方式",
+    label: trans("到仓方式"),
     field: "arrivalMethod",
     align: "center",
   },
   {
     name: "boxCount",
-    label: "总箱数",
+    label: trans("总箱数"),
     field: "boxCount",
     align: "center",
   },
   {
     name: "skuInfo",
-    label: "SKU*Qty",
+    label: trans("SKU*Qty"),
     field: "skuInfo",
     align: "center",
   },
   {
     name: "status",
-    label: "状态",
+    label: trans("状态"),
     field: "status",
     align: "center",
     hidden: () => statusNav.value === "inbound_processing",
   },
   {
     name: "receivedStatus",
-    label: "收货状态",
+    label: trans("收货状态"),
     field: "receivedStatus",
     align: "center",
     format: (val) => `${val}`,
@@ -1379,7 +1395,7 @@ const columns = [
   },
   {
     name: "shelfStatus",
-    label: "上架状态",
+    label: trans("上架状态"),
     field: "shelfStatus",
     align: "center",
     format: (val) => `${val}`,
@@ -1388,13 +1404,13 @@ const columns = [
   },
   {
     name: "time",
-    label: "时间",
+    label: trans("时间"),
     field: "time",
     align: "left",
   },
   {
     name: "actions",
-    label: "操作",
+    label: trans("操作"),
     field: "actions",
     align: "center",
   },
@@ -1599,6 +1615,16 @@ const getSkuItems = (row) => {
       border-bottom: 1px dashed rgba(0, 0, 0, 0.05);
       margin-bottom: 4px;
     }
+  }
+}
+:deep(.q-tabs__content--align-center) {
+  justify-content: flex-start;
+}
+
+.q-tabs {
+  border-bottom: 1px solid #e6e6e6;
+  .q-tab {
+    min-height: 38px;
   }
 }
 </style>

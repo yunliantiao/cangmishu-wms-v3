@@ -30,11 +30,11 @@
                   flat
                   round
                   dense
-                  color="primary"
-                  icon="add"
                   size="sm"
+                  class="table-icon"
                   @click.stop="handleAddCategory(prop.node)"
                 >
+                  <img src="@/assets/images/add-1.png" />
                   <q-tooltip>添加子分类</q-tooltip>
                 </q-btn>
                 <q-btn

@@ -123,9 +123,10 @@
                     'pending_pack',
                   ].includes(row.status)
                 "
-                color="grey-7"
-                icon="report_gmailerrorred"
+                size="sm"
+                class="table-icon"
               >
+                <img src="@/assets/images/error.png" />
                 <q-tooltip>标记异常</q-tooltip>
               </q-btn>
 
@@ -133,9 +134,9 @@
                 @click="showOrderDialog(row)"
                 flat
                 round
-                color="grey-7"
-                icon="library_books"
+                class="table-icon"
               >
+                <img src="@/assets/images/detail.png" />
                 <q-tooltip>详情</q-tooltip>
               </q-btn>
             </td>

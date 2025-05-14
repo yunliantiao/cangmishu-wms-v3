@@ -5,6 +5,7 @@ import router from './router'
 import store from './store'
 import './style.css'
 import Message from './utils/message'
+import t from '@/i18n';
 
 // Import Quasar
 import { Dialog, Notify, Quasar } from 'quasar'
@@ -53,3 +54,4 @@ app.config.globalProperties.$copy = async (text) => {
   await navigator.clipboard.writeText(text)
   Message.successMessage('复制成功')
 }
+app.config.globalProperties.trans = t

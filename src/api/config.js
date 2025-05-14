@@ -34,6 +34,7 @@ function interceptorsRequestSuccess(config) {
   config.headers.Authorization = `Bearer ${token}` || `Bearer ${store.state.token}`
 
   config.headers['X-Warehouse-Id'] = localStorage.getItem('warehouseId') || ''
+  config.headers['Language'] = localStorage.getItem('language') || 'zh_CN'
   config.headers.Accept = 'application/json'
   return config
 }

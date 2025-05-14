@@ -1,7 +1,6 @@
 import { createStore } from 'vuex'
 import router from '../router'
 import { Notify } from 'quasar'
-import Api from '@/api/index'
 
 // 创建store实例
 export default createStore({
@@ -30,11 +29,12 @@ export default createStore({
       { label: '模糊搜索', value: 'fuzzy' },
       { label: '前缀搜索', value: 'prefix' }
     ],
-    dateTypeOptions:[
+    dateTypeOptions: [
       { label: '创建时间', value: 'created_at' },
       { label: '更新时间', value: 'updated_at' }
     ],
-    timezones:[]
+    timezones: [],
+    language: 'zh_CN',
   },
   getters: {
     isLeftDrawerOpen: (state) => state.leftDrawerOpen,
@@ -42,6 +42,12 @@ export default createStore({
     getUserInfo: (state) => state.userInfo,
   },
   mutations: {
+    setTransform(state, data) {
+      state.transform = data
+    },
+    changeLanguage(state, data) {
+      state.language = data
+    },
     updateGlobalLoading(state, data) {
       state.globalLoading = data
     },
@@ -128,3 +134,4 @@ export default createStore({
   },
   modules: {},
 });
+

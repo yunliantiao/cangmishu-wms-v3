@@ -1,7 +1,7 @@
 <template>
   <div class="scan-page">
     <div class="scan-header">
-      <div class="title">扫描包装</div>
+      <div class="title">{{ trans("扫描包装") }}</div>
     </div>
 
     <div class="scan-input-container">
@@ -10,7 +10,7 @@
         <input
           type="text"
           class="scan-input"
-          placeholder="请扫描或输入波次号"
+          :placeholder="trans('请扫描或输入波次号')"
           @keyup.enter="search"
           v-model="pageData.scanValue"
           ref="scanInput"
@@ -18,7 +18,7 @@
       </div>
       <div class="input-hint">
         <q-icon name="info_outline" size="16px" color="grey-7" />
-        <span>请先切换为EN输入法</span>
+        <span>{{ trans("请先切换为EN输入法") }}</span>
       </div>
     </div>
 
@@ -77,7 +77,7 @@
               @click="handlePack(props.row)"
             >
               <img src="@/assets/images/package.png" />
-              <q-tooltip>开始打包</q-tooltip>
+              <q-tooltip>{{ trans("开始打包") }}</q-tooltip>
             </q-btn>
 
             <q-btn
@@ -88,7 +88,7 @@
               @click="handlePrint(props.row)"
             >
               <img src="@/assets/images/print.png" />
-              <q-tooltip>打印</q-tooltip>
+              <q-tooltip>{{ trans("打印") }}</q-tooltip>
             </q-btn>
           </q-td>
         </q-tr>
@@ -103,6 +103,7 @@ import WaveApi from "@/api/wave.js";
 import outApi from "@/api/out.js";
 import Message from "@/utils/message.js";
 import { useRouter } from "vue-router";
+import trans from "@/i18n";
 
 const router = useRouter();
 const scanInput = ref(null);
@@ -114,37 +115,52 @@ const pageData = reactive({
     {
       name: "wave_number",
       align: "left",
-      label: "波次号",
+      label: trans("波次号"),
       field: "wave_number",
     },
     {
       name: "wave_type",
       align: "center",
-      label: "波次类型",
+      label: trans("波次类型"),
       field: "wave_type",
     },
     {
       name: "logistics_group_ids",
       align: "center",
-      label: "物流组",
+      label: trans("物流组"),
       field: "logistics_group_ids",
     },
     {
       name: "package_count",
       align: "center",
-      label: "包裹数量",
+      label: trans("包裹数量"),
       field: "package_count",
     },
     {
       name: "sku_type_count",
       align: "center",
-      label: "商品种类",
+      label: trans("商品种类"),
       field: "sku_type_count",
     },
-    { name: "picker", align: "center", label: "拣货员", field: "picker" },
-    { name: "picker", align: "center", label: "打包员", field: "picker" },
-    { name: "status", align: "center", label: "状态", field: "status" },
-    { name: "actions", align: "center", label: "操作", field: "actions" },
+    {
+      name: "picker",
+      align: "center",
+      label: trans("拣货员"),
+      field: "picker",
+    },
+    {
+      name: "picker",
+      align: "center",
+      label: trans("打包员"),
+      field: "picker",
+    },
+    { name: "status", align: "center", label: trans("状态"), field: "status" },
+    {
+      name: "actions",
+      align: "center",
+      label: trans("操作"),
+      field: "actions",
+    },
   ],
   loading: false,
   scanValue: "",
@@ -159,12 +175,12 @@ onMounted(() => {
 
 const getTypeDesc = (type) => {
   const typeMap = {
-    single_item: "单品单件",
-    multi_items: "单品多件",
-    mixed_items: "多品混包",
-    hot_wave: "爆款包裹",
+    single_item: trans("单品单件"),
+    multi_items: trans("单品多件"),
+    mixed_items: trans("多品混包"),
+    hot_wave: trans("爆款包裹"),
   };
-  return typeMap[type] || "未知";
+  return typeMap[type] || trans("未知");
 };
 
 const getList = async () => {
@@ -198,7 +214,7 @@ const getList = async () => {
 
 const search = async () => {
   if (pageData.scanValue.length == 0) {
-    Message.notify("请扫描或输入波次号");
+    Message.notify(trans("请扫描或输入波次号"));
     return;
   }
 
@@ -206,7 +222,7 @@ const search = async () => {
     number: pageData.scanValue,
   });
   if (!data.is_print_pick_label) {
-    Message.notify("该波次未打印拣货标签");
+    Message.notify(trans("该波次未打印拣货标签"));
     return;
   }
 
@@ -221,13 +237,13 @@ const search = async () => {
 
 const getStatusDesc = (status) => {
   const statusMap = {
-    pending: "待拣货",
-    picking: "待包装",
-    packing: "包装中",
-    completed: "已完成",
-    cancelled: "已作废",
+    pending: trans("待拣货"),
+    picking: trans("待包装"),
+    packing: trans("包装中"),
+    completed: trans("已完成"),
+    cancelled: trans("已作废"),
   };
-  return statusMap[status] || "未知";
+  return statusMap[status] || trans("未知");
 };
 
 const handlePrint = async (row) => {

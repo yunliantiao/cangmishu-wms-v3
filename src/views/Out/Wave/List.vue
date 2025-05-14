@@ -12,12 +12,12 @@
           align="left"
           narrow-indicator
         >
-          <q-tab name="all" label="全部" />
-          <q-tab name="pending" label="待拣货" />
-          <q-tab name="picking" label="待包装" />
-          <q-tab name="packing" label="包装中" />
-          <q-tab name="completed" label="已完成" />
-          <q-tab name="cancelled" label="已作废" />
+          <q-tab name="all" :label="trans('全部')" />
+          <q-tab name="pending" :label="trans('待拣货')" />
+          <q-tab name="picking" :label="trans('待包装')" />
+          <q-tab name="packing" :label="trans('包装中')" />
+          <q-tab name="completed" :label="trans('已完成')" />
+          <q-tab name="cancelled" :label="trans('已作废')" />
         </q-tabs>
       </div>
 
@@ -29,7 +29,7 @@
             dense
             v-model="pageData.filterOptions.wave_type"
             :options="pageData.waveTypeOptions"
-            label="拣货单类型"
+            :label="trans('拣货单类型')"
             class="filter-select"
             emit-value
             map-options
@@ -41,7 +41,7 @@
             dense
             v-model="pageData.filterOptions.logistics_group_ids"
             :options="pageData.logisticsGroupOptions"
-            label="物流组没有"
+            :label="trans('物流组没有')"
             class="filter-select"
             emit-value
             map-options
@@ -53,73 +53,6 @@
           v-model:end_date="pageData.filterOptions.end_date"
           :dateList="pageData.timeTypeOptions"
         ></DatePickerNew>
-        <!-- <div class="col-auto">
-        <q-select
-          outlined
-          dense
-          v-model="pageData.filterOptions.date_type"
-          :options="pageData.timeTypeOptions"
-          label="时间类型"
-          class="filter-select"
-          emit-value
-          map-options
-        >
-          <template v-slot:append>
-            <q-icon name="schedule" />
-          </template>
-        </q-select>
-      </div>
-      <div class="col-auto">
-        <q-input
-          outlined
-          dense
-          v-model="pageData.filterOptions.start_date"
-          label="开始时间"
-          readonly
-          class="date-input"
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy
-                cover
-                transition-show="scale"
-                transition-hide="scale"
-              >
-                <q-date
-                  v-model="pageData.filterOptions.start_date"
-                  mask="YYYY-MM-DD"
-                />
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
-      </div>
-      <div class="col-auto self-center">To</div>
-      <div class="col-auto">
-        <q-input
-          outlined
-          dense
-          v-model="pageData.filterOptions.end_date"
-          label="结束时间"
-          readonly
-          class="date-input"
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy
-                cover
-                transition-show="scale"
-                transition-hide="scale"
-              >
-                <q-date
-                  v-model="pageData.filterOptions.end_date"
-                  mask="YYYY-MM-DD"
-                />
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
-      </div> -->
         <div class="col-auto">
           <q-select
             outlined
@@ -141,31 +74,11 @@
           :searchTypeList="pageData.waveNumberOptions"
           :searchModeList="pageData.searchModeOptions"
         ></KeywordSearch>
-        <!-- <div class="col-auto">
-        <q-select
-          outlined
-          dense
-          v-model="pageData.filterOptions.search_type"
-          :options="pageData.waveNumberOptions"
-          label="请选择"
-          class="filter-select"
-          emit-value
-          map-options
-        />
-      </div>
-      <div class="col-auto">
-        <q-input
-          outlined
-          dense
-          v-model="pageData.filterOptions.keywords"
-          label="请输入"
-          class="search-input"
-        />
-      </div> -->
+
         <div class="col-auto">
           <q-btn
             color="primary"
-            label="查询"
+            :label="trans('查询')"
             class="filter-btn"
             @click="handleSearch"
           />
@@ -179,7 +92,7 @@
           color="primary"
           flat
           v-if="!['all', 'cancelled'].includes(pageData.filterOptions.status)"
-          label="打印拣货单"
+          :label="trans('打印拣货单')"
           icon="print"
           class="q-mr-sm"
           @click="handlePrintPicking"
@@ -188,7 +101,7 @@
         <q-btn
           color="primary"
           flat
-          label="分配拣货员"
+          :label="trans('分配拣货员')"
           v-if="pageData.filterOptions.status == 'pending'"
           icon="person"
           class="q-mr-sm"
@@ -197,19 +110,19 @@
         <q-btn
           color="primary"
           flat
-          label="作废波次"
+          :label="trans('作废波次')"
           v-if="['pending', 'picking'].includes(pageData.filterOptions.status)"
           icon="delete"
           class="q-mr-sm"
           @click="handleCancelWave"
         />
-        <q-btn-dropdown color="primary" flat label="导出">
+        <q-btn-dropdown color="primary" flat :label="trans('导出')">
           <q-list>
             <q-item clickable v-close-popup @click="handleExport('ids')">
-              <q-item-section>按勾选导出</q-item-section>
+              <q-item-section>{{ trans("按勾选导出") }}</q-item-section>
             </q-item>
             <q-item clickable v-close-popup @click="handleExport">
-              <q-item-section>按筛选导出</q-item-section>
+              <q-item-section>{{ trans("按筛选导出") }}</q-item-section>
             </q-item>
           </q-list>
         </q-btn-dropdown>
@@ -243,7 +156,9 @@
               <q-checkbox v-model="props.selected" />
             </q-td>
             <q-td key="wave_number" :props="props">
-              {{ props.row.wave_number }}
+              <span class="hover-copy" @click="$copy(props.row.wave_number)">
+                {{ props.row.wave_number }}
+              </span>
             </q-td>
             <!-- <q-td key="warehouse" :props="props">
             {{ props.row.warehouse }}
@@ -280,7 +195,7 @@
               {{ props.row.pack_by?.name }}
             </q-td>
             <q-td key="created_at" :props="props">
-              <div>生成:{{ props.row.created_at }}</div>
+              <div>{{ trans("生成") }}:{{ props.row.created_at }}</div>
               <!-- <div v-if="props.row.status != 'pending'">
               拣货:{{ props.row.updated_at }}
             </div> -->
@@ -289,7 +204,11 @@
               {{ getStatusDesc(props.row.status) }}
             </q-td>
             <q-td key="is_print_pick_label" :props="props">
-              {{ props.row.is_print_pick_label ? "已打印" : "未打印" }}
+              {{
+                props.row.is_print_pick_label
+                  ? trans("已打印")
+                  : trans("未打印")
+              }}
             </q-td>
             <q-td key="actions" :props="props">
               <div class="row justify-center q-gutter-xs">
@@ -303,7 +222,7 @@
                   @click="handlePack(props.row)"
                 >
                   <img src="@/assets/images/package.png" />
-                  <q-tooltip>开始打包</q-tooltip>
+                  <q-tooltip>{{ trans("开始打包") }}</q-tooltip>
                 </q-btn>
                 <q-btn
                   flat
@@ -313,7 +232,7 @@
                   @click="handleViewDetails(props.row)"
                 >
                   <img src="@/assets/images/detail.png" />
-                  <q-tooltip>查看详情</q-tooltip>
+                  <q-tooltip>{{ trans("查看详情") }}</q-tooltip>
                 </q-btn>
 
                 <span>
@@ -329,7 +248,7 @@
                     @click="handlePrint(props.row)"
                   >
                     <img src="@/assets/images/print.png" />
-                    <q-tooltip>打印</q-tooltip>
+                    <q-tooltip>{{ trans("打印") }}</q-tooltip>
                   </q-btn>
                 </span>
 
@@ -347,7 +266,7 @@
                   @click="handleAbandon(props.row)"
                 >
                   <img src="@/assets/images/del.png" class="" />
-                  <q-tooltip>作废</q-tooltip>
+                  <q-tooltip>{{ trans("作废") }}</q-tooltip>
                 </q-btn>
               </div>
             </q-td>
@@ -357,7 +276,7 @@
         <template v-slot:no-data>
           <div class="full-width row flex-center q-gutter-sm q-pa-lg">
             <q-icon size="2em" name="sentiment_dissatisfied" />
-            <span>无数据</span>
+            <span>{{ trans("无数据") }}</span>
           </div>
         </template>
 
@@ -425,6 +344,7 @@ import { useRouter } from "vue-router";
 import DatePickerNew from "@/components/DatePickerNew/Index.vue";
 import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 import Message from "@/utils/message.js";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -458,32 +378,32 @@ const pageData = reactive({
 
   // 下拉选项
   waveTypeOptions: [
-    { label: "全部波次类型", value: null },
-    { label: "单品单件", value: "single_item" },
-    { label: "单品多件", value: "multi_items" },
-    { label: "多品混包", value: "mixed_items" },
-    { label: "爆款包裹", value: "hot_wave" },
+    { label: trans("全部波次类型"), value: null },
+    { label: trans("单品单件"), value: "single_item" },
+    { label: trans("单品多件"), value: "multi_items" },
+    { label: trans("多品混包"), value: "mixed_items" },
+    { label: trans("爆款包裹"), value: "hot_wave" },
   ],
 
   logisticsGroupOptions: [
-    { label: "全部物流组", value: null },
-    { label: "物流组 A", value: "group_a" },
-    { label: "物流组 B", value: "group_b" },
+    { label: trans("全部物流组"), value: null },
+    { label: trans("物流组 A"), value: "group_a" },
+    { label: trans("物流组 B"), value: "group_b" },
   ],
 
   timeTypeOptions: [
-    { label: "生成时间", value: "created_at" },
-    { label: "拣货时间", value: "picked_at" },
+    { label: trans("生成时间"), value: "created_at" },
+    { label: trans("拣货时间"), value: "picked_at" },
   ],
 
   printStatusOptions: [
-    { label: "已打印", value: "printed" },
-    { label: "未打印", value: "unprint" },
+    { label: trans("已打印"), value: "printed" },
+    { label: trans("未打印"), value: "unprint" },
   ],
 
   waveNumberOptions: [
-    { label: "波次号", value: "wave_number" },
-    { label: "拣货员", value: "picker_name" },
+    { label: trans("波次号"), value: "wave_number" },
+    { label: trans("拣货员"), value: "picker_name" },
   ],
 
   pickerOptions: [],
@@ -491,7 +411,7 @@ const pageData = reactive({
   // 列表数据
   waveData: [],
 
-  searchModeOptions: [{ label: "精确查询", value: "exact" }],
+  searchModeOptions: [{ label: trans("精确查询"), value: "exact" }],
 });
 
 const pickerUserRef = ref(null);
@@ -501,60 +421,70 @@ const columns = computed(() => {
     {
       name: "wave_number",
       align: "left",
-      label: "波次号",
+      label: trans("波次号"),
       field: "wave_number",
     },
     {
       name: "wave_type",
       align: "center",
-      label: "波次类型",
+      label: trans("波次类型"),
       field: "wave_type",
     },
     {
       name: "logistics_group_ids",
       align: "center",
-      label: "物流组",
+      label: trans("物流组"),
       field: "logistics_group_ids",
     },
     {
       name: "package_count",
       align: "center",
-      label: "包裹数量",
+      label: trans("包裹数量"),
       field: "package_count",
     },
     {
       name: "sku_type_count",
       align: "center",
-      label: "商品种类",
+      label: trans("商品种类"),
       field: "sku_type_count",
     },
     {
       name: "item_count",
       align: "center",
-      label: "商品数量",
+      label: trans("商品数量"),
       field: "item_count",
     },
-    { name: "picker", align: "center", label: "拣货员", field: "picker" },
+    {
+      name: "picker",
+      align: "center",
+      label: trans("拣货员"),
+      field: "picker",
+    },
     {
       name: "created_at",
       align: "center",
-      label: "时间",
+      label: trans("时间"),
       field: "created_at",
     },
     {
       name: "is_print_pick_label",
       align: "center",
-      label: "拣货单打印",
+      label: trans("拣货单打印"),
       field: "is_print_pick_label",
     },
-    { name: "actions", align: "center", label: "操作", field: "actions" },
+    {
+      name: "actions",
+      align: "center",
+      label: trans("操作"),
+      field: "actions",
+    },
   ];
 
   if (pageData.filterOptions.status == "packing") {
     list.splice(6, 0, {
       name: "pack_by",
       align: "center",
-      label: "打包员",
+      label: trans("打包员"),
       field: "pack_by",
     });
   }
@@ -564,7 +494,7 @@ const columns = computed(() => {
 // 页面变化处理
 const onPageChange = () => {
   console.log(
-    "页面变化:",
+    trans("页面变化"),
     pageData.pagination.page,
     pageData.pagination.rowsPerPage
   );
@@ -601,16 +531,18 @@ const handlePrintPicking = async () => {
   window.open(data.data, "_blank");
 
   $q.dialog({
-    title: "打印结果确认",
-    message: "波次:拣货单已成功生成。如果已成功打印，请点击 “标记为已打印”",
+    title: trans("打印结果确认"),
+    message: trans(
+      "波次:拣货单已成功生成。如果已成功打印，请点击 “标记为已打印”"
+    ),
     cancel: true,
     persistent: true,
     ok: {
-      label: "标记为已打印",
+      label: trans("标记为已打印"),
       color: "primary",
     },
     cancel: {
-      label: "取消",
+      label: trans("取消"),
       color: "grey-7",
     },
   }).onOk(async () => {
@@ -622,7 +554,7 @@ const handlePrintPicking = async () => {
 // 分配拣货员
 const handleAssignPicker = () => {
   if (pageData.selectedRows.length === 0) {
-    NotifyUtils.tipsMessage("请选择波次");
+    NotifyUtils.tipsMessage(trans("请选择波次"));
     return;
   }
   pickerUserRef.value.openDialog();
@@ -630,7 +562,7 @@ const handleAssignPicker = () => {
 
 const handleConfirmPickerUser = async (pickerUserId) => {
   if (!pickerUserId) {
-    NotifyUtils.tipsMessage("请选择拣货员");
+    NotifyUtils.tipsMessage(trans("请选择拣货员"));
     return;
   }
   console.log("确认拣货员:", pickerUserId);
@@ -648,7 +580,7 @@ const handleConfirmPickerUser = async (pickerUserId) => {
 const handleCancelWave = () => {
   if (pageData.selectedRows.length === 0) {
     // alert("请选择要作废的波次");
-    NotifyUtils.tipsMessage("请选择要作废的波次");
+    NotifyUtils.tipsMessage(trans("请选择要作废的波次"));
     return;
   }
   let ids = pageData.selectedRows.map((row) => row.id);
@@ -661,7 +593,7 @@ const handleExport = async (str) => {
   if (str == "ids") {
     let selected = pageData.selectedRows;
     if (!selected.length) {
-      NotifyUtils.tipsMessage("请勾选波次");
+      NotifyUtils.tipsMessage(trans("请勾选波次"));
       return;
     }
     params = {
@@ -680,16 +612,18 @@ const handlePrint = async (row) => {
   window.open(data.data, "_blank");
   if (!row.is_print_pick_label) {
     $q.dialog({
-      title: "打印结果确认",
-      message: "波次:拣货单已成功生成。如果已成功打印，请点击 “标记为已打印”",
+      title: trans("打印结果确认"),
+      message: trans(
+        "波次:拣货单已成功生成。如果已成功打印，请点击 “标记为已打印”"
+      ),
       cancel: true,
       persistent: true,
       ok: {
-        label: "标记为已打印",
+        label: trans("标记为已打印"),
         color: "primary",
       },
       cancel: {
-        label: "取消",
+        label: trans("取消"),
         color: "grey-7",
       },
     }).onOk(async () => {
@@ -702,16 +636,16 @@ const handlePrint = async (row) => {
 // 取消打印
 const handleCancelPrintPicking = (row) => {
   $q.dialog({
-    title: "提示",
-    message: "是否确认取消打印？",
+    title: trans("提示"),
+    message: trans("是否确认取消打印？"),
     cancel: true,
     persistent: true,
     ok: {
-      label: "确认",
+      label: trans("确认"),
       color: "primary",
     },
     cancel: {
-      label: "取消",
+      label: trans("取消"),
       color: "grey-7",
     },
   }).onOk(async () => {
@@ -728,16 +662,16 @@ const handleAbandon = (row) => {
 
 const abandon = (ids) => {
   $q.dialog({
-    title: "提示",
-    message: "确认作废所选波次?",
+    title: trans("提示"),
+    message: trans("确认作废所选波次?"),
     cancel: true,
     persistent: true,
     ok: {
-      label: "确认",
+      label: trans("确认"),
       color: "primary",
     },
     cancel: {
-      label: "取消",
+      label: trans("取消"),
       color: "grey-7",
     },
   }).onOk(async () => {
@@ -826,23 +760,23 @@ const initList = async () => {
 
 const getTypeDesc = (type) => {
   const typeMap = {
-    single_item: "单品单件",
-    multi_items: "单品多件",
-    mixed_items: "多品混包",
-    hot_wave: "爆款包裹",
+    single_item: trans("单品单件"),
+    multi_items: trans("单品多件"),
+    mixed_items: trans("多品混包"),
+    hot_wave: trans("爆款包裹"),
   };
-  return typeMap[type] || "未知";
+  return typeMap[type] || trans("未知");
 };
 
 const getStatusDesc = (status) => {
   const statusMap = {
-    pending: "待拣货",
-    picking: "待包装",
-    packing: "包装中",
-    completed: "已完成",
-    cancelled: "已作废",
+    pending: trans("待拣货"),
+    picking: trans("待包装"),
+    packing: trans("包装中"),
+    completed: trans("已完成"),
+    cancelled: trans("已作废"),
   };
-  return statusMap[status] || "未知";
+  return statusMap[status] || trans("未知");
 };
 </script>
 
