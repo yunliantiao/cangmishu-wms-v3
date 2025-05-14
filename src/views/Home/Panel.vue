@@ -17,11 +17,11 @@
               {{ reportObj.inbound_orders_count.in_transit_count }}
             </div>
           </div>
-          <div class="line"></div>
+          <!-- <div class="line"></div>
           <div class="item">
             <div class="label">{{ trans('待入库') }}</div>
             <div class="value"></div>
-          </div>
+          </div> -->
           <div class="line"></div>
           <div class="item">
             <div class="label">{{ trans('入库中') }}</div>
@@ -91,7 +91,7 @@
                     v-for="(item, index) in timeOptions"
                     :key="index"
                     :class="['time-range-item', { active: timeRange === item.value }]"
-                    @click="timeRange = item.value"
+                    @click="onChangeTimeRange(item)"
                   >
                     {{ item.label }}
                   </div>
@@ -277,7 +277,6 @@ export default {
         },
       ];
     });
-    const timeRange = ref('week');
 
     // 图表数据-订单量
     const chartData = computed(() => ({
@@ -465,14 +464,80 @@ export default {
         time: '2022-07-01 12:00:00',
       },
     ]);
+    const timeRange = ref('week');
     // 时间选项
     const timeOptions = [
-      { label: trans('昨天'), value: 'yesterday' },
-      { label: trans('今天'), value: 'today' },
-      { label: trans('星期'), value: 'week' },
-      { label: trans('月'), value: 'month' },
-      { label: trans('年'), value: 'year' },
+      {
+        label: trans('昨天'),
+        value: 'yesterday',
+        getDateRange: () => {
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          const dateStr = formatDate(yesterday);
+          return { start_date: dateStr, end_date: dateStr };
+        },
+      },
+      {
+        label: trans('今天'),
+        value: 'today',
+        getDateRange: () => {
+          const today = formatDate(new Date());
+          return { start_date: today, end_date: today };
+        },
+      },
+      {
+        label: trans('星期'),
+        value: 'week',
+        getDateRange: () => {
+          const now = new Date();
+          const weekStart = new Date(now);
+          weekStart.setDate(weekStart.getDate() - 7); // 改为往前推7天（加上今天共8天）
+          return {
+            start_date: formatDate(weekStart),
+            end_date: formatDate(now),
+          };
+        },
+      },
+      {
+        label: trans('月'),
+        value: 'month',
+        getDateRange: () => {
+          const now = new Date();
+          const monthStart = new Date(now);
+          monthStart.setDate(monthStart.getDate() - 30); // 改为往前推30天（加上今天共31天）
+          return {
+            start_date: formatDate(monthStart),
+            end_date: formatDate(now),
+          };
+        },
+      },
+      {
+        label: trans('年'),
+        value: 'year',
+        getDateRange: () => {
+          const now = new Date();
+          const yearStart = new Date(now);
+          yearStart.setDate(yearStart.getDate() - 365); // 改为往前推365天（加上今天共366天）
+          return {
+            start_date: formatDate(yearStart),
+            end_date: formatDate(now),
+          };
+        },
+      },
     ];
+    // 日期格式化函数
+    const formatDate = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    // 修改图标的日期范围
+    const onChangeTimeRange = (item) => {
+      timeRange.value = item.value;
+      const dateRange = item.getDateRange();
+      getHomeChart(dateRange);
+    };
 
     // 所有数据
     const reportObj = reactive({
@@ -520,16 +585,27 @@ export default {
       seriesData1: [],
       seriesData2: [],
     });
-    const getHomeChart = () => {
-      homeApi.getHomeChart().then((res) => {
+    const getHomeChart = (params = {}) => {
+      homeApi.getHomeChart(params).then((res) => {
         Object.assign(chartObj, res.data);
         setChartData();
       });
     };
     const setChartData = () => {
-      chartDataObj.value.xAxisData = chartObj.inbound_orders?.map((item) => item.date) || [];
-      chartDataObj.value.seriesData1 = chartObj.inbound_orders?.map((item) => item.count) || [];
-      chartDataObj.value.seriesData2 = chartObj.outbound_orders?.map((item) => item.count) || [];
+      const inbound = chartObj.inbound_orders || [];
+      const outbound = chartObj.outbound_orders || [];
+
+      // 获取所有不重复的日期，并按时间升序排列
+      const allDates = Array.from(new Set([...inbound.map((i) => i.date), ...outbound.map((i) => i.date)])).sort();
+
+      // 将日期转为一个 Map 方便查找
+      const inboundMap = new Map(inbound.map((item) => [item.date, item.count]));
+      const outboundMap = new Map(outbound.map((item) => [item.date, item.count]));
+
+      // 填充缺失值为 0
+      chartDataObj.value.xAxisData = allDates;
+      chartDataObj.value.seriesData1 = allDates.map((date) => inboundMap.get(date) || 0);
+      chartDataObj.value.seriesData2 = allDates.map((date) => outboundMap.get(date) || 0);
       initChart();
       initChart2();
     };
@@ -558,7 +634,7 @@ export default {
 
     onMounted(() => {
       getReport();
-      getHomeChart();
+      getHomeChart(timeOptions.find((item) => item.value === timeRange.value).getDateRange());
       nextTick(() => {
         window.addEventListener('resize', handleResize);
       });
@@ -584,6 +660,7 @@ export default {
       onClickPhone,
       handleWarehouseCreated,
       confirm,
+      onChangeTimeRange,
     };
   },
 };
