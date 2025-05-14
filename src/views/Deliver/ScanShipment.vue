@@ -1,17 +1,26 @@
 <template>
   <div class="scan-shipment-page">
     <!-- 顶部筛选栏 -->
-    <div class="filter-bar row items-center">
-      <q-input
-        outlined
-        dense
-        v-model="pageData.orderNo"
-        label="请扫描输入运单号或平台订单号"
-        class="filter-input"
-        style="width: 320px"
-      />
+    <div class="search-bar">
+      <div class="row q-col-gutter-sm">
+        <q-input
+          outlined
+          dense
+          v-model="pageData.orderNo"
+          label="请扫描输入运单号或平台订单号"
+          class="filter-item"
+          style="width: 320px"
+        />
 
-      <q-btn color="primary" label="确定" @click="handleSearch" />
+        <div class="col-auto">
+          <q-btn
+            color="primary"
+            class="filter-btn"
+            label="确定"
+            @click="handleSearch"
+          />
+        </div>
+      </div>
     </div>
     <div class="tip-bar row items-center q-mt-xs q-ml-sm">
       <q-icon name="info" color="grey-5" size="18px" class="q-mr-xs" />

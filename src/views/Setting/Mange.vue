@@ -43,8 +43,8 @@
           <q-btn-dropdown
             color="primary"
             class="filter-btn"
+            flat
             label="导入/导出"
-            style="margin-right: 10px"
           >
             <q-list>
               <q-item clickable v-close-popup @click="handleImport">
@@ -58,21 +58,32 @@
               </q-item>
             </q-list>
           </q-btn-dropdown>
-          <!-- <q-btn
-            color="primary"
-            label="删除"
-            icon="delete"
-            flat
-            class="q-ml-sm"
-            @click="confirmBatchDelete"
-          /> -->
+
           <q-btn
             color="primary"
+            flat
             label="打印标签"
             icon="print"
-            class="q-ml-sm"
+            class="q-ml-sm filter-btn"
             @click="handlePrintLabels"
           />
+
+          <q-btn-dropdown
+            color="primary"
+            flat
+            class="filter-btn q-ml-sm"
+            label="新建"
+          >
+            <q-list>
+              <q-item clickable v-close-popup @click="showCreateForm">
+                <q-item-section>单个新建</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="handleExport(false)">
+                <q-item-section>批量新建</q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
+
           <!-- <q-btn
             color="primary"
             label="清理货架位"
@@ -81,34 +92,6 @@
             class="q-ml-sm"
             @click="handleCleanLocations"
           /> -->
-        </div>
-
-        <div>
-          <!-- <q-btn
-            outline
-            color="primary"
-            label="清理货架位设置"
-            icon="settings"
-            class="q-mr-sm"
-            @click="showCleanSettings"
-          /> -->
-          <q-btn
-            color="primary"
-            @click="showCreateForm"
-            class="filter-btn"
-            style="margin-right: 10px"
-          >
-            <img src="@/assets/images/add.png" class="add-icon" />
-            单个新建
-          </q-btn>
-          <q-btn
-            color="primary"
-            @click="showBatchCreateForm"
-            class="filter-btn"
-          >
-            <img src="@/assets/images/add.png" class="add-icon" />
-            批量新建
-          </q-btn>
         </div>
       </div>
 

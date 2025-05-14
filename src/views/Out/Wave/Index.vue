@@ -151,41 +151,39 @@
         </div>
 
         <!-- 筛选条件第二行 -->
-        <div class="row q-col-gutter-md">
-          <div class="col-auto">
-            <DatePickerNew
-              v-model:date_type="filterOptions.date_type"
-              v-model:start_date="filterOptions.start_date"
-              v-model:end_date="filterOptions.end_date"
-              :dateList="timeOptions"
-            ></DatePickerNew>
-          </div>
+        <div class="col-auto">
+          <DatePickerNew
+            v-model:date_type="filterOptions.date_type"
+            v-model:start_date="filterOptions.start_date"
+            v-model:end_date="filterOptions.end_date"
+            :dateList="timeOptions"
+          ></DatePickerNew>
+        </div>
 
-          <KeywordSearch
-            v-model:search_type="filterOptions.search_type"
-            v-model:search_value="filterOptions.keywords"
-            v-model:search_mode="filterOptions.search_mode"
-            :searchTypeList="productSkuOptions"
-            :searchModeList="searchModeOptions"
-          ></KeywordSearch>
-          <div class="col-auto">
-            <q-btn
-              outline
-              color="primary"
-              :label="trans('重置')"
-              class="filter-btn"
-              @click="resetFilters"
-            />
-          </div>
+        <KeywordSearch
+          v-model:search_type="filterOptions.search_type"
+          v-model:search_value="filterOptions.keywords"
+          v-model:search_mode="filterOptions.search_mode"
+          :searchTypeList="productSkuOptions"
+          :searchModeList="searchModeOptions"
+        ></KeywordSearch>
+        <div class="col-auto">
+          <q-btn
+            outline
+            color="primary"
+            :label="trans('重置')"
+            class="filter-btn"
+            @click="resetFilters"
+          />
+        </div>
 
-          <div class="col-auto">
-            <q-btn
-              color="primary"
-              :label="trans('查询')"
-              class="filter-btn"
-              @click="initList"
-            />
-          </div>
+        <div class="col-auto">
+          <q-btn
+            color="primary"
+            :label="trans('查询')"
+            class="filter-btn"
+            @click="initList"
+          />
         </div>
       </div>
     </div>

@@ -1,20 +1,14 @@
 <template>
   <div class="customer-page">
     <!-- 操作栏 -->
-    <div class="action-bar flex-between-center m-b-50">
+    <!-- <div class="action-bar flex-between-center m-b-50">
       <div class="text-h5 font-bold">
-        <!-- 左侧可能有其他操作按钮 -->
         已开户
       </div>
       <div>
-        <q-btn label="OMS地址" color="primary" outline class="q-mr-sm" @click="openOms(currentDomain)">
-          <q-icon name="link" size="xs" class="q-ml-xs" />
-        </q-btn>
-        <q-btn label="开户" color="primary" icon="add" unelevated @click="handleAddCustomer">
-          <q-tooltip>创建新客户账户</q-tooltip>
-        </q-btn>
+
       </div>
-    </div>
+    </div> -->
 
     <!-- 搜索栏 -->
     <div class="search-bar">
@@ -35,7 +29,10 @@
           >
             <template v-slot:selected>
               <div v-if="pageParams.warehouse_id">
-                {{ warehouseList.find((o) => o.id === pageParams.warehouse_id)?.name || '请选择' }}
+                {{
+                  warehouseList.find((o) => o.id === pageParams.warehouse_id)
+                    ?.name || "请选择"
+                }}
               </div>
             </template>
           </q-select>
@@ -61,7 +58,7 @@
     </div>
     <div class="main-table">
       <!-- 标签页 -->
-      <div class="tabs-section q-mb-md">
+      <div class="tabs-section q-mb-md top-bar">
         <q-tabs
           v-model="activeTab"
           active-color="primary"
@@ -70,9 +67,32 @@
           @update:model-value="getCustomerList"
           class="text-grey-8"
         >
-          <q-tab name="approved" label="审核通过" />
-          <q-tab name="used" label="已停用" />
+          <q-tab name="approved" :label="trans('审核通过')" />
+          <q-tab name="used" :label="trans('已停用')" />
         </q-tabs>
+
+        <div>
+          <q-btn
+            :label="trans('OMS地址')"
+            color="primary"
+            outline
+            flat
+            icon="link"
+            class="q-mr-sm"
+            @click="openOms(currentDomain)"
+          >
+          </q-btn>
+          <q-btn
+            :label="trans('开户')"
+            color="primary"
+            icon="add"
+            flat
+            unelevated
+            @click="handleAddCustomer"
+          >
+            <q-tooltip>{{ trans("创建新客户账户") }}</q-tooltip>
+          </q-btn>
+        </div>
       </div>
       <!-- 数据表格 -->
       <q-table
@@ -87,13 +107,13 @@
         <template v-slot:loading>
           <div class="full-width row flex-center q-gutter-sm">
             <q-spinner-dots color="primary" size="2em" />
-            <span>加载中...</span>
+            <span>{{ trans("加载中...") }}</span>
           </div>
         </template>
         <template v-slot:no-data="{ icon, filter }">
           <div class="full-width row flex-center q-gutter-sm">
             <q-icon size="2em" name="sentiment_dissatisfied" />
-            <span>无数据</span>
+            <span>{{ trans("无数据") }} </span>
             <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
           </div>
         </template>
@@ -102,22 +122,32 @@
           <q-tr :props="props">
             <q-td key="customerId" :props="props">
               <div class="customer-info">
-                <div class="customer-id">{{ props.row.code || '--' }}</div>
+                <div class="customer-id">{{ props.row.code || "--" }}</div>
                 <div class="customer-name text-grey-8">
-                  {{ props.row.name || '--' }}
+                  {{ props.row.name || "--" }}
                 </div>
               </div>
             </q-td>
             <q-td key="contactWay" :props="props">
               <div class="contact-info">
                 <div class="email-row">
-                  <q-icon name="email" size="xs" class="q-mr-xs" color="black" />
-                  {{ props.row.email || '--' }}
+                  <q-icon
+                    name="email"
+                    size="xs"
+                    class="q-mr-xs"
+                    color="black"
+                  />
+                  {{ props.row.email || "--" }}
                 </div>
                 <div v-if="props.row.phone_number" class="phone-row">
-                  <q-icon name="phone" size="xs" class="q-mr-xs" color="black" />
+                  <q-icon
+                    name="phone"
+                    size="xs"
+                    class="q-mr-xs"
+                    color="black"
+                  />
                   {{ props.row.phone_prefix }}
-                  {{ props.row.phone_number || '--' }}
+                  {{ props.row.phone_number || "--" }}
                 </div>
               </div>
             </q-td>
@@ -132,13 +162,25 @@
             </q-td>
             <q-td key="actions" :props="props" class="text-center">
               <div class="flex-center-center gap-20">
+                <div
+                  @click="handGetCode(props.row)"
+                  v-if="!props.row.is_partner_code_used"
+                >
+                  <img
+                    src="@/assets/images/customer/edit-icon.png"
+                    class="cursor-pointer w-20 h-20"
+                    alt="授权码"
+                  />
+                  <q-tooltip>{{ trans("授权码") }}</q-tooltip>
+                </div>
+
                 <div @click="handleEditCustomer(props.row)">
                   <img
                     src="@/assets/images/customer/edit-icon.png"
                     class="cursor-pointer w-20 h-20"
                     alt="编辑客户信息"
                   />
-                  <q-tooltip>编辑客户信息</q-tooltip>
+                  <q-tooltip>{{ trans("编辑客户信息") }}</q-tooltip>
                 </div>
                 <div @click="handleGetTempOmsToken(props.row.id)">
                   <img
@@ -146,15 +188,29 @@
                     class="cursor-pointer w-20 h-20"
                     alt="跳转OMS登录"
                   />
-                  <q-tooltip>跳转OMS登录</q-tooltip>
+                  <q-tooltip>{{ trans("跳转OMS登录") }}</q-tooltip>
                 </div>
-                <div v-if="activeTab !== 'used'" @click="handleDisableCustomer(props.row.id)">
-                  <img src="@/assets/images/customer/close-icon.png" class="cursor-pointer w-20 h-20" alt="停用客户" />
-                  <q-tooltip>停用客户</q-tooltip>
+                <div
+                  v-if="activeTab !== 'used'"
+                  @click="handleDisableCustomer(props.row.id)"
+                >
+                  <img
+                    src="@/assets/images/customer/close-icon.png"
+                    class="cursor-pointer w-20 h-20"
+                    alt="停用客户"
+                  />
+                  <q-tooltip>{{ trans("停用客户") }}</q-tooltip>
                 </div>
-                <div v-if="activeTab === 'used'" @click="handleEnableCustomer(props.row.id)">
-                  <img src="@/assets/images/customer/check-icon.png" class="cursor-pointer w-20 h-20" alt="启用客户" />
-                  <q-tooltip>启用客户</q-tooltip>
+                <div
+                  v-if="activeTab === 'used'"
+                  @click="handleEnableCustomer(props.row.id)"
+                >
+                  <img
+                    src="@/assets/images/customer/check-icon.png"
+                    class="cursor-pointer w-20 h-20"
+                    alt="启用客户"
+                  />
+                  <q-tooltip>{{ trans("启用客户") }}</q-tooltip>
                 </div>
               </div>
 
@@ -191,7 +247,7 @@
     <Dialog
       v-model="dialogVisible"
       :footerShow="false"
-      :title="editCustomerId ? '编辑客户' : '开户'"
+      :title="editCustomerId ? trans('编辑客户') : trans('开户')"
       width="700px"
       height="500px"
     >
@@ -200,34 +256,36 @@
           <!-- 左侧列 -->
           <div class="col-6">
             <div class="row items-center form-label">
-              <div class="text-subtitle2 q-mr-sm">客户代码</div>
+              <div class="text-subtitle2 q-mr-sm">{{ trans("客户代码") }}</div>
               <div class="text-negative">*</div>
             </div>
             <q-input
               outlined
               dense
               v-model="formData.code"
-              placeholder="请输入"
+              :placeholder="trans('请输入')"
               class="q-mt-xs"
-              :rules="[(val) => !!val || '客户姓名不能为空']"
+              :rules="[(val) => !!val || trans('客户姓名不能为空')]"
             />
           </div>
 
           <!-- 右侧列 -->
           <div class="col-6">
             <div class="row items-center form-label">
-              <div class="text-subtitle2 q-mr-sm">邮箱</div>
+              <div class="text-subtitle2 q-mr-sm">{{ trans("邮箱") }}</div>
               <div class="text-negative">*</div>
             </div>
             <q-input
               outlined
               dense
               v-model="formData.email"
-              placeholder="请输入"
+              :placeholder="trans('请输入')"
               class="q-mt-xs"
               :rules="[
-                (val) => !!val || '邮箱不能为空',
-                (val) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(val) || '请输入有效的邮箱地址',
+                (val) => !!val || trans('邮箱不能为空'),
+                (val) =>
+                  /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(val) ||
+                  trans('请输入有效的邮箱地址'),
               ]"
             />
           </div>
@@ -235,15 +293,21 @@
           <!-- 左侧列 -->
           <div class="col-6">
             <div class="row items-center form-label">
-              <div class="text-subtitle2">公司名称</div>
+              <div class="text-subtitle2">{{ trans("公司名称") }}</div>
             </div>
-            <q-input outlined dense v-model="formData.name" placeholder="请输入" class="q-mt-xs" />
+            <q-input
+              outlined
+              dense
+              v-model="formData.name"
+              :placeholder="trans('请输入')"
+              class="q-mt-xs"
+            />
           </div>
 
           <!-- 右侧列 -->
           <div class="col-6">
             <div class="row items-center form-label">
-              <div class="text-subtitle2 q-mr-sm">手机号</div>
+              <div class="text-subtitle2 q-mr-sm">{{ trans("手机号") }}</div>
               <div class="text-negative">*</div>
             </div>
             <div class="row q-mt-xs">
@@ -252,17 +316,20 @@
                 dense
                 v-model="formData.phone_prefix"
                 :options="phoneCodes"
-                placeholder="请选择"
+                :placeholder="trans('请选择')"
                 class="col-4 q-pr-sm"
-                :rules="[(val) => !!val || '请选择']"
+                :rules="[(val) => !!val || trans('请选择')]"
               />
               <q-input
                 outlined
                 dense
                 v-model="formData.phone_number"
-                placeholder="请输入"
+                :placeholder="trans('请输入')"
                 class="col-8"
-                :rules="[(val) => !!val || '手机号不能为空', (val) => /^\d+$/.test(val) || '请输入有效的手机号']"
+                :rules="[
+                  (val) => !!val || trans('手机号不能为空'),
+                  (val) => /^\d+$/.test(val) || trans('请输入有效的手机号'),
+                ]"
               />
             </div>
           </div>
@@ -270,7 +337,7 @@
           <!-- 左侧列 -->
           <div class="col-6">
             <div class="row items-center form-label">
-              <div class="text-subtitle2 q-mr-sm">结算币种</div>
+              <div class="text-subtitle2 q-mr-sm">{{ trans("结算币种") }}</div>
               <div class="text-negative">*</div>
             </div>
             <q-select
@@ -278,16 +345,16 @@
               dense
               v-model="formData.currency"
               :options="currencyOptions"
-              placeholder="请选择"
+              :placeholder="trans('请选择')"
               class="q-mt-xs"
-              :rules="[(val) => !!val || '请选择结算币种']"
+              :rules="[(val) => !!val || trans('请选择结算币种')]"
             />
           </div>
 
           <!-- 右侧列 -->
           <div class="col-6">
             <div class="row items-center form-label">
-              <div class="text-subtitle2">国家/地区</div>
+              <div class="text-subtitle2">{{ trans("国家/地区") }}</div>
             </div>
             <q-select
               outlined
@@ -301,12 +368,14 @@
               use-input
               input-debounce="300"
               @filter="filterCountries"
-              placeholder="请选择或搜索"
+              :placeholder="trans('请选择或搜索')"
               class="q-mt-xs"
             >
               <template v-slot:no-option>
                 <q-item>
-                  <q-item-section class="text-grey">未找到匹配的国家/地区</q-item-section>
+                  <q-item-section class="text-grey">{{
+                    trans("未找到匹配的国家/地区")
+                  }}</q-item-section>
                 </q-item>
               </template>
             </q-select>
@@ -314,15 +383,24 @@
           <!-- 仓库分配全宽度显示 -->
           <div class="col-12">
             <div class="row items-center form-label">
-              <div class="text-subtitle2 q-mr-sm">分配仓库</div>
+              <div class="text-subtitle2 q-mr-sm">{{ trans("分配仓库") }}</div>
             </div>
             <div class="row items-center q-mb-xs">
-              <q-icon name="info_outline" size="16px" color="grey-7" class="q-mr-xs" />
-              <div class="text-grey-7 text-caption">至少选择开启一个仓库并选择该仓库的计费策略</div>
+              <q-icon
+                name="info_outline"
+                size="16px"
+                color="grey-7"
+                class="q-mr-xs"
+              />
+              <div class="text-grey-7 text-caption">
+                {{ trans("至少选择开启一个仓库并选择该仓库的计费策略") }}
+              </div>
             </div>
             <div class="warehouse-table">
-              <div class="warehouse-header row items-center bg-grey-2 q-px-md q-py-xs">
-                <div class="col-4 text-subtitle2">计费模板</div>
+              <div
+                class="warehouse-header row items-center bg-grey-2 q-px-md q-py-xs"
+              >
+                <div class="col-4 text-subtitle2">{{ trans("计费模板") }}</div>
                 <!-- <div class="col-4 text-subtitle2">开启/关闭</div>
                 <div class="col-4 text-subtitle2">
                   <div class="row items-center">
@@ -337,7 +415,9 @@
                   </div>
                 </div> -->
               </div>
-              <div class="warehouse-row row items-center q-px-md q-py-sm border-bottom">
+              <div
+                class="warehouse-row row items-center q-px-md q-py-sm border-bottom"
+              >
                 <div class="col-4">
                   <q-select
                     outlined
@@ -346,7 +426,7 @@
                     :options="billingOptions"
                     option-value="id"
                     option-label="name"
-                    placeholder="请选择"
+                    :placeholder="trans('请选择')"
                   />
                 </div>
               </div>
@@ -356,62 +436,84 @@
           <!-- 备注全宽度显示 -->
           <div class="col-12">
             <div class="row items-center form-label">
-              <div class="text-subtitle2">备注</div>
+              <div class="text-subtitle2">{{ trans("备注") }}</div>
             </div>
-            <q-input outlined v-model="formData.remark" placeholder="请输入" type="textarea" rows="2" class="q-mt-xs" />
+            <q-input
+              outlined
+              v-model="formData.remark"
+              :placeholder="trans('请输入')"
+              type="textarea"
+              rows="2"
+              class="q-mt-xs"
+            />
           </div>
         </div>
 
         <div class="row justify-end q-gutter-sm q-py-sm">
-          <q-btn label="取消" color="grey-7" flat @click="dialogVisible = false" />
-          <q-btn label="确认" :loading="$store.state.btnLoading" type="submit" color="primary" unelevated />
+          <q-btn
+            :label="trans('取消')"
+            color="grey-7"
+            flat
+            @click="dialogVisible = false"
+          />
+          <q-btn
+            :label="trans('确认')"
+            :loading="$store.state.btnLoading"
+            type="submit"
+            color="primary"
+            unelevated
+          />
         </div>
       </q-form>
     </Dialog>
+    <Code ref="codeDialog"></Code>
   </div>
 </template>
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import Dialog from '@/components/Dialog.vue';
-import customerApi from '@/api/customer';
-import Pagination from '@/components/Pagination.vue';
-import warehouseApi from '@/api/warehouse';
-import { useQuasar, Dialog as QuasarDialog } from 'quasar';
-import { copyText } from '@/utils/common';
-import KeywordSearch from '@/components/KeywordSearch/Index.vue';
-import { useStore } from 'vuex';
+import { ref, reactive, onMounted } from "vue";
+import Dialog from "@/components/Dialog.vue";
+import customerApi from "@/api/customer";
+import Pagination from "@/components/Pagination.vue";
+import warehouseApi from "@/api/warehouse";
+import { useQuasar, Dialog as QuasarDialog } from "quasar";
+import { copyText } from "@/utils/common";
+import KeywordSearch from "@/components/KeywordSearch/Index.vue";
+import { useStore } from "vuex";
+import Code from "./components/code.vue";
+import trans from "@/i18n";
 
 const store = useStore();
 const customerIdOptions = [
-  { label: '客户代码', value: 'code' },
-  { label: '邮箱', value: 'email' },
-  { label: '手机号', value: 'phone_number' },
-  { label: '客户姓名', value: 'name' },
-  { label: '公司名称', value: 'company' },
+  { label: trans("客户代码"), value: "code" },
+  { label: trans("邮箱"), value: "email" },
+  { label: trans("手机号"), value: "phone_number" },
+  { label: trans("客户姓名"), value: "name" },
+  { label: trans("公司名称"), value: "company" },
 ];
 
 const dialogVisible = ref(false);
 // 标签页
-const activeTab = ref('approved');
+const activeTab = ref("approved");
+const codeDialog = ref(null);
 
 // 表单数据
 const formData = reactive({
-  name: '',
-  code: '',
-  email: '',
-  country_code: '',
-  city: '',
-  remark: '',
-  phone_prefix: '',
-  phone_number: '',
-  currency: '',
-  billing_template_id: '',
+  name: "",
+  code: "",
+  email: "",
+  country_code: "",
+  city: "",
+  remark: "",
+  phone_prefix: "",
+  phone_number: "",
+  currency: "",
+  billing_template_id: "",
 });
 
 // 表单选项
-const phoneCodes = ['+86'];
-const currencyOptions = ['USD', 'CNY'];
-const billingOptions = [{ name: '标准计费', id: 1 }];
+const phoneCodes = ["+86"];
+const currencyOptions = ["USD", "CNY"];
+const billingOptions = [{ name: trans("标准计费"), id: 1 }];
 
 const customers = ref([]);
 const warehouseList = ref([]);
@@ -423,7 +525,7 @@ const getWarehouseList = () => {
   });
 };
 
-const currentDomain = ref('');
+const currentDomain = ref("");
 const getCurrentDomain = () => {
   customerApi.getCurrentDomain().then((res) => {
     if (res.success) {
@@ -434,12 +536,15 @@ const getCurrentDomain = () => {
 const handleGetTempOmsToken = (id) => {
   customerApi.getTempOmsToken(id).then((res) => {
     if (res.success) {
-      window.open(currentDomain.value + '/login?token=' + res.data.token, '_blank');
+      window.open(
+        currentDomain.value + "/login?token=" + res.data.token,
+        "_blank"
+      );
     }
   });
 };
 const openOms = (domain) => {
-  window.open(domain, '_blank');
+  window.open(domain, "_blank");
 };
 getCurrentDomain();
 // 分页配置
@@ -447,14 +552,14 @@ const pageParams = reactive({
   page: 1,
   per_page: 10,
   total: 0,
-  warehouse_id: '',
+  warehouse_id: "",
   is_active: 1,
-  keywords: '',
-  search_type: 'code',
+  keywords: "",
+  search_type: "code",
 });
 // 获取客户列表
 const getCustomerList = () => {
-  pageParams.is_active = activeTab.value == 'used' ? 0 : 1;
+  pageParams.is_active = activeTab.value == "used" ? 0 : 1;
   customerApi.getCustomerList(pageParams).then((res) => {
     if (res.success) {
       customers.value = res.data.items;
@@ -467,33 +572,48 @@ getWarehouseList();
 // 表格配置
 const columns = [
   {
-    name: 'customerId',
-    label: '客户代码/姓名',
+    name: "customerId",
+    label: trans("客户代码/姓名"),
     field: (row) => ({ id: row.id, code: row.code, name: row.name }),
-    align: 'center',
-    style: 'width:200px',
+    align: "center",
+    style: "width:200px",
   },
   {
-    name: 'contactWay',
-    label: '联系方式',
+    name: "contactWay",
+    label: trans("联系方式"),
     field: (row) => ({
       id: row.id,
       email: row.email,
       phone_prefix: row.phone_prefix,
       phone_number: row.phone_number,
     }),
-    align: 'center',
-    style: 'width:200px',
+    align: "center",
+    style: "width:200px",
   },
   {
-    name: 'name',
-    label: '公司名称',
-    field: 'name',
-    align: 'center',
+    name: "name",
+    label: trans("公司名称"),
+    field: "name",
+    align: "center",
   },
-  { name: 'currency', label: '结算币种', field: 'currency', align: 'center' },
-  { name: 'created_at', label: '创建时间', field: 'created_at', align: 'center' },
-  { name: 'actions', label: '操作', field: (row) => row, align: 'center' },
+  {
+    name: "currency",
+    label: trans("结算币种"),
+    field: "currency",
+    align: "center",
+  },
+  {
+    name: "created_at",
+    label: trans("创建时间"),
+    field: "created_at",
+    align: "center",
+  },
+  {
+    name: "actions",
+    label: trans("操作"),
+    field: (row) => row,
+    align: "center",
+  },
 ];
 const editCustomerId = ref(null);
 //编辑
@@ -507,7 +627,7 @@ const handleEditCustomer = (row) => {
 //开户
 const handleAddCustomer = () => {
   Object.keys(formData).forEach((key) => {
-    formData[key] = '';
+    formData[key] = "";
   });
   editCustomerId.value = null;
   dialogVisible.value = true;
@@ -515,16 +635,16 @@ const handleAddCustomer = () => {
 
 const handleEnableCustomer = (id) => {
   QuasarDialog.create({
-    title: '启用客户',
-    message: '确定启用该客户吗？',
+    title: trans("启用客户"),
+    message: trans("确定启用该客户吗？"),
     cancel: true,
     ok: {
-      label: '确认',
-      color: 'primary',
+      label: trans("确认"),
+      color: "primary",
     },
     cancel: {
-      label: '取消',
-      color: 'grey-8',
+      label: trans("取消"),
+      color: "grey-8",
     },
   }).onOk(() => {
     customerApi.enableCustomer(id).then((res) => {
@@ -536,16 +656,16 @@ const handleEnableCustomer = (id) => {
 };
 const handleDisableCustomer = (id) => {
   QuasarDialog.create({
-    title: '停用客户',
-    message: '确定停用该客户吗？',
+    title: trans("停用客户"),
+    message: trans("确定停用该客户吗？"),
     cancel: true,
     ok: {
-      label: '确认',
-      color: 'primary',
+      label: trans("确认"),
+      color: "primary",
     },
     cancel: {
-      label: '取消',
-      color: 'grey-8',
+      label: trans("取消"),
+      color: "grey-8",
     },
   }).onOk(() => {
     customerApi.disableCustomer(id).then((res) => {
@@ -565,7 +685,7 @@ const onSubmit = () => {
       dialogVisible.value = false;
       //   // 重置表单数据
       Object.keys(formData).forEach((key) => {
-        formData[key] = '';
+        formData[key] = "";
       });
       getCustomerList();
     }
@@ -575,7 +695,7 @@ const onSubmit = () => {
 const filteredCountries = ref([]);
 
 const filterCountries = (val, update) => {
-  if (!val || val === '') {
+  if (!val || val === "") {
     filteredCountries.value = store.state.countries;
     update();
     return;
@@ -583,9 +703,17 @@ const filterCountries = (val, update) => {
 
   const needle = val.toLowerCase();
   filteredCountries.value = store.state.countries.filter(
-    (v) => v.name.toLowerCase().includes(needle) || v.code.toLowerCase().includes(needle)
+    (v) =>
+      v.name.toLowerCase().includes(needle) ||
+      v.code.toLowerCase().includes(needle)
   );
   update();
+};
+
+const handGetCode = async (row) => {
+  const res = await customerApi.getAuthorizationCode(row.id);
+  console.log("res", res);
+  codeDialog.value.open(res.data);
 };
 
 // Initialize filtered countries
@@ -713,5 +841,11 @@ onMounted(() => {
   .border-bottom {
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   }
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between !important;
+  align-items: center;
 }
 </style>

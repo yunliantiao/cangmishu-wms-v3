@@ -52,11 +52,6 @@ const search = async () => {
   });
   console.log("data", data);
 
-  if (!data.is_print_pick_label) {
-    Message.notify(trans("该波次未打印拣货标签"));
-    return;
-  }
-
   if (data.wave_type == "mixed_items") {
     router.push({
       path: "/out/wave/pigeonholes",

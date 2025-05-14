@@ -1,19 +1,8 @@
 <template>
   <div class="move-page">
     <!-- 搜索过滤区域 -->
-    <div class="search-bar bg-white rounded-borders q-pa-md q-mb-md">
+    <div class="search-bar">
       <div class="row q-col-gutter-sm">
-        <!-- <div class="col-auto">
-          <q-select
-            outlined
-            dense
-            v-model="searchParams.operator"
-            :options="operatorOptions"
-            label="全部操作人"
-            class="select-width"
-            clearable
-          />
-        </div> -->
         <div class="col-auto">
           <q-select
             outlined
@@ -44,135 +33,47 @@
             clearable
           />
         </div>
-        <div class="col-auto">
-          <q-select
-            outlined
-            dense
-            v-model="searchParams.date_type"
-            :options="dateTypeOptions"
-            label="创建时间"
-            class="select-width"
-            emit-value
-            map-options
-            option-value="value"
-            option-label="label"
-            clearable
-          />
-        </div>
-        <div class="col-auto">
-          <div class="row q-col-gutter-sm">
-            <div class="col-auto">
-              <q-input
-                outlined
-                dense
-                v-model="searchParams.start_date"
-                label="开始时间"
-                readonly
-                class="date-input"
-              >
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy
-                      cover
-                      transition-show="scale"
-                      transition-hide="scale"
-                    >
-                      <q-date
-                        v-model="searchParams.start_date"
-                        mask="YYYY-MM-DD"
-                      />
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
-            </div>
-            <div class="col-auto self-center">To</div>
-            <div class="col-auto">
-              <q-input
-                outlined
-                dense
-                readonly
-                v-model="searchParams.end_date"
-                label="结束时间"
-                class="date-input"
-              >
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy
-                      cover
-                      transition-show="scale"
-                      transition-hide="scale"
-                    >
-                      <q-date
-                        v-model="searchParams.end_date"
-                        mask="YYYY-MM-DD"
-                      />
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
-            </div>
-          </div>
-        </div>
-        <div class="col-auto">
-          <div class="row items-center no-wrap search-group q-ml-md">
-            <q-select
-              outlined
-              dense
-              v-model="searchParams.search_type"
-              :options="[
-                {
-                  label: '商品SKU',
-                  value: 'sku',
-                },
-                {
-                  label: '移货编号',
-                  value: 'system_order_number',
-                },
-                {
-                  label: '商品名称',
-                  value: 'name',
-                },
-              ]"
-              emit-value
-              map-options
-              option-value="value"
-              option-label="label"
-              class="search-type-select"
-            />
-            <q-input
-              outlined
-              dense
-              v-model="searchParams.keywords"
-              placeholder="批量搜索用逗号隔开"
-              class="keywords-input"
-              style="min-width: 200px"
-            />
-            <q-select
-              outlined
-              dense
-              v-model="searchParams.search_mode"
-              :options="$store.state.searchModeOptions"
-              emit-value
-              map-options
-              option-value="value"
-              option-label="label"
-              class="search-mode-select"
-            />
-          </div>
-        </div>
+        <DatePicker
+          v-model:start_date="searchParams.start_date"
+          v-model:end_date="searchParams.end_date"
+          :dateList="dateTypeOptions"
+        ></DatePicker>
+
+        <KeywordSearch
+          v-model:search_type="searchParams.search_type"
+          v-model:search_value="searchParams.keywords"
+          v-model:search_mode="searchParams.search_mode"
+          :searchModeList="$store.state.searchModeOptions"
+          :searchTypeList="[
+            {
+              label: '商品SKU',
+              value: 'sku',
+            },
+            {
+              label: '移货编号',
+              value: 'system_order_number',
+            },
+            {
+              label: '商品名称',
+              value: 'name',
+            },
+          ]"
+        ></KeywordSearch>
 
         <div class="col-auto">
           <q-btn
             outline
             color="grey"
             label="重置"
-            class="q-mr-sm"
+            class="filter-btn"
             @click="resetSearch"
           />
+        </div>
+        <div class="col-auto">
           <q-btn
             color="primary"
             icon="search"
+            class="filter-btn"
             label="搜索"
             :loading="$store.state.btnLoading"
             @click="getMoveOrderList"
@@ -181,17 +82,16 @@
       </div>
     </div>
 
-    <div class="q-pa-none page_table_action">
+    <div class="main-table">
       <!-- 操作按钮区域 -->
       <div class="row justify-between q-mb-sm">
-        <div class="row items-center">
-          <span class="q-mr-sm">选择 {{ selectedRows.length }}</span>
-        </div>
         <div>
           <q-btn
             color="primary"
             label="创建移库单"
             icon="add"
+            class="filter-btn"
+            flat
             @click="createMove"
             unelevated
           />
@@ -293,14 +193,14 @@
                   <q-btn
                     flat
                     round
-                     v-if="props.row.status != 'completed'"
+                    v-if="props.row.status != 'completed'"
                     color="grey-7"
                     icon="task_alt"
                     @click="forcedCompletion(props.row)"
                   >
                     <q-tooltip>强制完成</q-tooltip>
                   </q-btn>
-                   <q-btn
+                  <q-btn
                     flat
                     v-if="props.row.status == 'pending'"
                     round
@@ -564,6 +464,8 @@ import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import inventoryApi from "@/api/inventory";
 import Pagination from "@/components/Pagination.vue";
+import KeywordSearch from "@/components/KeywordSearch/Index.vue";
+import DatePicker from "@/components/DatePickerNew/Index.vue";
 
 const $q = useQuasar();
 const selectedRows = ref([]);
@@ -738,9 +640,7 @@ const handleConfirmMove = async () => {
     // 检查是否所有必填的qty都已填写
     const hasEmptyQty = moveDetails.value.items.some((item) =>
       item.transfer.some((transfer) =>
-        transfer.to.some(
-          (to) => to.qty === "" || to.qty === null
-        )
+        transfer.to.some((to) => to.qty === "" || to.qty === null)
       )
     );
 
@@ -1060,6 +960,9 @@ const getTotalTransferCount = (row) => {
       }
     }
   }
+}
+.main-table {
+  padding-top: 10px;
 }
 </style>
 

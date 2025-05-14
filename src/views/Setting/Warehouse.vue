@@ -1,13 +1,15 @@
 <template>
   <div class="warehouse-page">
-    <div class="row justify-end">
-      <q-btn color="primary" class="filter-btn" @click="showCreateForm">
-        <img src="@/assets/images/add.png" class="add-icon" />
+    <div class="main-table">
+      <q-btn
+        color="primary"
+        icon="add"
+        flat
+        class="filter-btn"
+        @click="showCreateForm"
+      >
         新建
       </q-btn>
-    </div>
-
-    <div class="main-table">
       <q-table
         :rows="warehouseList"
         :columns="columns"
@@ -316,5 +318,9 @@ getWarehouseList();
       font-size: 1.2em;
     }
   }
+}
+
+.main-table {
+  padding-top: 10px;
 }
 </style>

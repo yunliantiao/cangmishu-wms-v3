@@ -52,59 +52,6 @@
             map-options
           />
         </div>
-        <!-- <div class="col-auto">
-          <div class="row q-col-gutter-sm">
-            <div class="col">
-              <q-input
-                outlined
-                dense
-                v-model="dateRange.start"
-                :label="dateRange.startLabel"
-                readonly
-                class="filter-item"
-                clearable
-                @clear="dateRange.start = ''"
-              >
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy
-                      cover
-                      transition-show="scale"
-                      transition-hide="scale"
-                    >
-                      <q-date v-model="dateRange.start" mask="YYYY-MM-DD" />
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
-            </div>
-            <div class="col-auto self-center">To</div>
-            <div class="col">
-              <q-input
-                outlined
-                dense
-                v-model="dateRange.end"
-                :label="dateRange.endLabel"
-                readonly
-                class="date-input"
-                clearable
-                @clear="dateRange.end = ''"
-              >
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy
-                      cover
-                      transition-show="scale"
-                      transition-hide="scale"
-                    >
-                      <q-date v-model="dateRange.end" mask="YYYY-MM-DD" />
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
-            </div>
-          </div>
-        </div> -->
 
         <DatePicker
           v-model:date_type="filterValues.date_type"
@@ -112,9 +59,7 @@
           v-model:end_date="filterValues.end_date"
           :dateList="pageData.dateOptions"
         />
-      </div>
 
-      <div class="row q-col-gutter-sm q-mt-sm">
         <KeywordSearch
           v-model:search_type="filterValues.search_type"
           v-model:search_value="filterValues.keywords"
@@ -122,66 +67,7 @@
           :searchTypeList="searchFieldOptions"
           :searchModeList="searchTypeOptions"
         />
-        <!-- <div class="col-auto">
-          <q-select
-            outlined
-            dense
-            v-model="searchConfig.field"
-            :options="searchFieldOptions"
-            label="搜索字段"
-            placeholder="请选择搜索字段"
-            class="filter-item"
-            emit-value
-            map-options
-            clearable
-            options-dense
-            behavior="menu"
-          >
-            <template v-slot:no-option>
-              <q-item>
-                <q-item-section class="text-grey"> 暂无数据 </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
-        </div>
-        <div class="col-auto">
-          <q-input
-            outlined
-            dense
-            v-model="searchConfig.keywords"
-            placeholder="请输入关键词"
-            class="filter-item"
-            style="width: 310px"
-            @keyup.enter="handleSearch"
-            clearable
-          >
-            <template v-slot:append>
-              <q-icon name="search" />
-            </template>
-          </q-input>
-        </div>
-        <div class="col-auto">
-          <q-select
-            outlined
-            dense
-            v-model="searchConfig.type"
-            :options="searchTypeOptions"
-            label="搜索模式"
-            placeholder="请选择搜索模式"
-            class="filter-item"
-            emit-value
-            map-options
-            clearable
-            options-dense
-            behavior="menu"
-          >
-            <template v-slot:no-option>
-              <q-item>
-                <q-item-section class="text-grey"> 暂无数据 </q-item-section>
-              </q-item>
-            </template>
-          </q-select>
-        </div> -->
+
         <div class="col-auto">
           <q-btn
             outline

@@ -86,10 +86,7 @@
           v-model:end_date="pageParams.end_date"
           :dateList="timeFilterOptions"
         ></DatePicker>
-      </div>
 
-      <!-- 搜索过滤区域 - 第三行 -->
-      <div class="row q-col-gutter-sm q-mt-sm">
         <KeywordSearch
           v-model:search_type="pageParams.search_type"
           v-model:search_value="pageParams.keywords"
@@ -123,6 +120,8 @@
       <div class="btn-group">
         <q-btn-dropdown
           color="primary"
+          flat
+          icon="print"
           :label="trans('导出')"
           class="filter-btn"
         >
@@ -824,8 +823,6 @@ onMounted(() => {
 
 .btn-group {
   display: flex;
-  justify-content: flex-end;
-  padding-top: 20px;
 }
 .icons {
   display: flex;
@@ -844,5 +841,9 @@ onMounted(() => {
   .q-tab {
     min-height: 38px;
   }
+}
+
+.main-table {
+  padding-top: 10px;
 }
 </style>

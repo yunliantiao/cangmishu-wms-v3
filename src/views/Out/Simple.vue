@@ -71,10 +71,8 @@
             :dateList="timeFilterOptions"
           ></DatePickerNew>
         </div>
-      </div>
 
-      <!-- 搜索过滤区域 - 第三行 -->
-      <div class="row q-col-gutter-sm q-mt-sm">
+        <!-- 搜索过滤区域 - 第三行 -->
         <KeywordSearch
           v-model:search_type="pageParams.search_type"
           v-model:search_value="pageParams.keywords"

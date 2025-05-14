@@ -1,7 +1,5 @@
 <template>
   <div class="product">
-    <div class="text-h5 font-bold m-b-50">商品</div>
-
     <div class="search-bar">
       <!-- 搜索过滤区域 -->
       <div class="row q-col-gutter-sm">
@@ -10,6 +8,7 @@
           v-model:date_type="filters.date_type"
           v-model:start_date="filters.start_date"
           v-model:end_date="filters.end_date"
+          :dateList="dateTypeOptions"
         ></DatePickerNew>
 
         <!-- 关键词搜索模块 -->
@@ -21,7 +20,12 @@
         ></KeywordSearch>
 
         <div>
-          <q-btn color="primary" class="h-40" label="搜索" @click="handleSearch" />
+          <q-btn
+            color="primary"
+            class="h-40"
+            :label="trans('搜索')"
+            @click="handleSearch"
+          />
         </div>
       </div>
     </div>
@@ -81,15 +85,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { useQuasar } from 'quasar';
-import ProductSku from './components/ProductSku.vue';
-import ProductSpu from './components/ProductSpu.vue';
-import Pagination from '@/components/Pagination.vue';
-import DatePickerNew from '@/components/DatePickerNew/Index.vue';
-import KeywordSearch from '@/components/KeywordSearch/Index.vue';
-import productApi from '@/api/product';
+import { ref, onMounted, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useQuasar } from "quasar";
+import ProductSku from "./components/ProductSku.vue";
+import ProductSpu from "./components/ProductSpu.vue";
+import Pagination from "@/components/Pagination.vue";
+import DatePickerNew from "@/components/DatePickerNew/Index.vue";
+import KeywordSearch from "@/components/KeywordSearch/Index.vue";
+import productApi from "@/api/product";
+import trans from "@/i18n";
 
 // import { useI18n } from "vue-i18n";
 
@@ -104,35 +109,35 @@ const loading = ref(false);
 
 // 筛选条件
 const filters = ref({
-  date_type: 'created_at',
-  start_date: '',
-  end_date: '',
-  search_type: 'sku',
-  keywords: '',
-  search_mode: 'fuzzy',
+  date_type: "created_at",
+  start_date: "",
+  end_date: "",
+  search_type: "sku",
+  keywords: "",
+  search_mode: "fuzzy",
 });
 
 // 日期类型选项
 const dateTypeOptions = [
-  { label: '创建时间', value: 'created_at' },
-  { label: '更新时间', value: 'updated_at' },
+  { label: trans("创建时间"), value: "created_at" },
+  { label: trans("更新时间"), value: "updated_at" },
 ];
 
 // 搜索类型选项
 const searchTypeOptions = [
-  { label: '名字搜索', value: 'name' },
-  { label: 'SKU搜索', value: 'sku' },
+  { label: trans("名字搜索"), value: "name" },
+  { label: trans("SKU搜索"), value: "sku" },
 ];
 
 // 搜索模式选项
 const searchModeOptions = [
-  { label: '精确搜索', value: 'exact' },
-  { label: '模糊搜索', value: 'fuzzy' },
-  { label: '前缀搜索', value: 'prefix' },
+  { label: trans("精确搜索"), value: "exact" },
+  { label: trans("模糊搜索"), value: "fuzzy" },
+  { label: trans("前缀搜索"), value: "prefix" },
 ];
 
 // 选项卡
-const tab = ref('sku');
+const tab = ref("sku");
 
 // 表格数据
 const productData = ref([]);
@@ -173,9 +178,9 @@ const fetchData = async () => {
     let response;
 
     // 根据当前标签页选择不同的API
-    if (tab.value === 'sku') {
+    if (tab.value === "sku") {
       response = await productApi.getSkuList(params);
-    } else if (tab.value === 'spu') {
+    } else if (tab.value === "spu") {
       response = await productApi.getProductList(params);
     }
     if (response && response.success) {
@@ -189,7 +194,7 @@ const fetchData = async () => {
       pagination.value.rowsPerPage = meta.per_page || 50;
     }
   } catch (error) {
-    console.error('请求出错:', error);
+    console.error("请求出错:", error);
   } finally {
     loading.value = false;
   }
@@ -217,8 +222,8 @@ const handleEditProduct = (product) => {
 // 处理复制产品
 const handleCopyProduct = (product) => {
   $q.notify({
-    message: `复制产品: ${product.sku}`,
-    color: 'info',
+    message: trans(`复制产品: {code}`, { code: product.sku }),
+    color: "info",
   });
 };
 

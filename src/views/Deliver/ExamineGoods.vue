@@ -1,46 +1,48 @@
 <template>
   <div class="examine-goods-page">
     <!-- 顶部筛选栏 -->
-    <div class="filter-bar">
-      <div class="col-auto">
-        <q-select
-          outlined
-          dense
-          label="物流组"
-          v-model="pageData.group"
-          :options="pageData.groupOptions"
-          class="filter-item"
-        />
-      </div>
-      <div class="col-auto">
-        <q-input
-          outlined
-          dense
-          v-model="pageData.packageNo"
-          label="请扫描运单号/包裹号"
-          @keyup.enter="search"
-          class="filter-item"
-        />
-      </div>
-      <div class="col-auto">
-        <q-input
-          outlined
-          dense
-          v-model="pageData.sku"
-          :disable="pageData.rows.length === 0"
-          label="请扫描商品标签"
-          @keyup.enter="examine"
-          class="filter-item"
-        />
-      </div>
-      <div class="col-auto">
-        <q-btn
-          color="primary"
-          class="filter-btn"
-          label="重置"
-          outline
-          @click="resetFilter"
-        />
+    <div class="search-bar">
+      <div class="row q-col-gutter-sm">
+        <div class="col-auto">
+          <q-select
+            outlined
+            dense
+            label="物流组"
+            v-model="pageData.group"
+            :options="pageData.groupOptions"
+            class="filter-item"
+          />
+        </div>
+        <div class="col-auto">
+          <q-input
+            outlined
+            dense
+            v-model="pageData.packageNo"
+            label="请扫描运单号/包裹号"
+            @keyup.enter="search"
+            class="filter-item"
+          />
+        </div>
+        <div class="col-auto">
+          <q-input
+            outlined
+            dense
+            v-model="pageData.sku"
+            :disable="pageData.rows.length === 0"
+            label="请扫描商品标签"
+            @keyup.enter="examine"
+            class="filter-item"
+          />
+        </div>
+        <div class="col-auto">
+          <q-btn
+            color="primary"
+            class="filter-btn"
+            label="重置"
+            outline
+            @click="resetFilter"
+          />
+        </div>
       </div>
     </div>
     <div class="tip-bar row items-center q-mt-xs q-ml-sm q-mt-md">

@@ -102,6 +102,7 @@
         selection="multiple"
         hide-bottom
         class="pack-table"
+        :loading="pageData.loading"
       >
         <template v-slot:header="props">
           <q-tr :props="props">
@@ -228,6 +229,7 @@ const handEndRef = ref(null);
 const pageData = reactive({
   wave_number: "",
   rows: [],
+  loading: false,
   selectedRows: [],
   columns: [
     {
@@ -339,25 +341,32 @@ const handleBatchCheckMaterials = async () => {
 };
 
 const getWaveInfo = async () => {
-  const { data } = await OutApi.getOrderInfoByWaveOrder({
-    number: pageData.wave_number,
-  });
-  let skus = [];
-  pageData.selectedRows = [];
-  pageData.rows = data.packages.map((row) => {
-    row.selected = false;
-    if (!row.packaging_material) {
-      row.packaging_material = {
-        id: "",
-      };
-    }
-    row.items.forEach((row) => {
-      skus.push(row.sku);
+  pageData.loading = true;
+  try {
+    const { data } = await OutApi.getOrderInfoByWaveOrder({
+      number: pageData.wave_number,
     });
-    return row;
-  });
-  pageData.skus = [...new Set(skus)];
-  pageData.waveInfo = data;
+    let skus = [];
+    pageData.selectedRows = [];
+    pageData.rows = data.packages.map((row) => {
+      row.selected = false;
+      if (!row.packaging_material) {
+        row.packaging_material = {
+          id: "",
+        };
+      }
+      row.items.forEach((row) => {
+        skus.push(row.sku);
+      });
+      return row;
+    });
+    pageData.skus = [...new Set(skus)];
+    pageData.waveInfo = data;
+  } catch (error) {
+    console.error("获取波次信息失败", error);
+  } finally {
+    pageData.loading = false;
+  }
 };
 
 const getDesc = (type) => {

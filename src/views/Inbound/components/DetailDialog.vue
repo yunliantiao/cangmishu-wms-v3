@@ -84,7 +84,11 @@
             narrow-indicator
           >
             <q-tab name="products" label="商品信息" />
-            <q-tab name="packages" v-if="orderDetails.arrival_method === 'box'" label="装箱信息" />
+            <q-tab
+              name="packages"
+              v-if="orderDetails.arrival_method === 'box'"
+              label="装箱信息"
+            />
           </q-tabs>
 
           <q-separator />
@@ -110,7 +114,7 @@
                           <img
                             :src="
                               item.product_spec_image ||
-                             'https://testoms.cangmishu.com/api/uploads/52331320-d813-40d8-a6db-3cf28f4938b1'
+                              'https://testoms.cangmishu.com/api/uploads/52331320-d813-40d8-a6db-3cf28f4938b1'
                             "
                             class="product-img"
                           />
@@ -197,7 +201,9 @@
                           {{ index + 1 }}
                         </td>
                         <td class="text-left" :rowspan="box.items.length">
-                          {{ orderDetails.system_order_number }}-{{ box.box_number }}
+                          {{ orderDetails.system_order_number }}-{{
+                            box.box_number
+                          }}
                         </td>
                         <td class="text-center" :rowspan="box.items.length">
                           {{ box.size_length }}x{{ box.size_width }}x{{
@@ -573,5 +579,9 @@ const close = () => {
     line-height: 24px;
     padding: 12px 16px;
   }
+}
+
+:deep(.q-tabs__content--align-center) {
+  justify-content: flex-start;
 }
 </style> 

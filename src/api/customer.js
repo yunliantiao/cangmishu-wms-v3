@@ -10,5 +10,7 @@ export default {
   getTempOmsToken: (id) => POST(`customers/${id}/temp-oms-token`), // 获取临时OMS token
 
   // 获取所有客户 不带分页
-  getAllUser: () => GET('customers/all')
+  getAllUser: () => GET('customers/all'),
+  // 获取授权码
+  getAuthorizationCode: (id) => GET(`customers/${id}/partner-auth-code`)
 };

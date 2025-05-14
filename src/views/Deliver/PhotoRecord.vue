@@ -1,32 +1,38 @@
 <template>
   <div class="photo-record-page">
-    <div class="search-box">
-      <q-select
-        outlined
-        dense
-        v-model="pageData.customer_ids"
-        :options="pageData.customerOptions"
-        multiple
-        option-label="label"
-        option-value="value"
-        @update:model-value="getList"
-        map-options
-        emit-value
-        clearable
-        label="客户"
-        class="filter-item"
-      />
-      <DatePickerNew
-        v-model:start_date="pageData.start_date"
-        v-model:end_date="pageData.end_date"
-        :show-select="false"
-      ></DatePickerNew>
-      <KeywordSearch
-        v-model:search_type="pageData.search_type"
-        v-model:search_value="pageData.keywords"
-        :showSearchMode="false"
-      ></KeywordSearch>
-      <q-btn color="primary" class="filter-btn" @click="getList">查询</q-btn>
+    <div class="search-bar">
+      <div class="row q-col-gutter-sm">
+        <q-select
+          outlined
+          dense
+          v-model="pageData.customer_ids"
+          :options="pageData.customerOptions"
+          multiple
+          option-label="label"
+          option-value="value"
+          @update:model-value="getList"
+          map-options
+          emit-value
+          clearable
+          label="客户"
+          class="filter-item"
+        />
+        <DatePickerNew
+          v-model:start_date="pageData.start_date"
+          v-model:end_date="pageData.end_date"
+          :show-select="false"
+        ></DatePickerNew>
+        <KeywordSearch
+          v-model:search_type="pageData.search_type"
+          v-model:search_value="pageData.keywords"
+          :showSearchMode="false"
+        ></KeywordSearch>
+        <div class="col-auto">
+          <q-btn color="primary" class="filter-btn" @click="getList"
+            >查询</q-btn
+          >
+        </div>
+      </div>
     </div>
     <div class="main-table q-mt-md">
       <q-table

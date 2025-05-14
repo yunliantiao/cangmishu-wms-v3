@@ -1,13 +1,15 @@
 <template>
   <div class="shelf-page">
-    <div class="row justify-end">
-      <q-btn color="primary" @click="showCreateForm">
-        <img src="@/assets/images/add.png" class="add-icon" />
-        新建
-      </q-btn>
-    </div>
-
     <div class="main-table">
+      <q-btn
+        color="primary"
+        icon="add"
+        flat
+        class="filter-btn"
+        @click="showCreateForm"
+      >
+        新建货架
+      </q-btn>
       <q-table
         :rows="shelfSizeList"
         :columns="columns"
@@ -418,6 +420,9 @@ getShelfSizeList();
       }
     }
   }
+}
+.main-table {
+  padding-top: 10px;
 }
 </style>
 

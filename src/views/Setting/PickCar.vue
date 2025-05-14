@@ -1,15 +1,25 @@
 <template>
   <div class="warehouse-page">
-    <div class="row justify-end">
-      <q-btn color="primary" class="filter-btn" @click="showCreateForm">
-        <img src="@/assets/images/add.png" class="add-icon" />
-        新建拣货车
-      </q-btn>
-    </div>
+    <div class="row justify-end"></div>
 
     <div class="main-table">
-      <div class="row justify-end q-mb-md">
-        <q-btn color="primary" label="打印" @click="handlePrint" />
+      <div class="row q-mb-md">
+        <q-btn
+          color="primary"
+          icon="add"
+          flat
+          class="filter-btn"
+          @click="showCreateForm"
+        >
+          新建拣货车
+        </q-btn>
+        <q-btn
+          color="primary"
+          icon="print"
+          flat
+          label="打印"
+          @click="handlePrint"
+        />
       </div>
       <q-table
         :rows="pageData.list"
@@ -269,5 +279,9 @@ const handlePrintConfirm = async (form) => {
   align-items: center;
   margin-bottom: 20px;
   gap: 20px;
+}
+
+.main-table {
+  padding-top: 10px;
 }
 </style>

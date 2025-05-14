@@ -38,9 +38,14 @@
 
     <div class="main-table">
       <!-- 操作按钮区域 -->
-      <div class="row justify-end q-mb-sm">
-        <q-btn color="primary" class="filter-btn" @click="showCreateForm">
-          <img src="@/assets/images/add.png" class="add-icon" />
+      <div class="row q-mb-sm">
+        <q-btn
+          color="primary"
+          icon="add"
+          flat
+          class="filter-btn"
+          @click="showCreateForm"
+        >
           新建货区
         </q-btn>
       </div>
@@ -419,5 +424,8 @@ const handleSubmit = async () => {
 
 .mt-50 {
   margin-top: 50px;
+}
+.main-table {
+  padding-top: 10px;
 }
 </style>

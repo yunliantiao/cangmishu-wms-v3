@@ -65,8 +65,7 @@
             map-options
           />
         </div>
-      </div>
-      <div class="row q-col-gutter-sm q-mb-md">
+
         <KeywordSearch
           v-model:search_type="pageData.filterOptions.search_type"
           v-model:search_value="pageData.filterOptions.keywords"
@@ -180,15 +179,9 @@
             </q-td>
             <q-td key="picker" :props="props">
               {{ props.row.pick_by?.name }}
-              <!-- <q-select
-              outlined
-              dense
-              @change="handlePickerChange(props.row)"
-              v-model="props.row.pick_by.id"
-              :options="pageData.pickerOptions"
-              class="picker-select"
-            >
-            </q-select> -->
+            </q-td>
+            <q-td key="status" :props="props">
+              {{ getStatusDesc(props.row.status) }}
             </q-td>
 
             <q-td key="pack_by" :props="props">
@@ -196,13 +189,8 @@
             </q-td>
             <q-td key="created_at" :props="props">
               <div>{{ trans("生成") }}:{{ props.row.created_at }}</div>
-              <!-- <div v-if="props.row.status != 'pending'">
-              拣货:{{ props.row.updated_at }}
-            </div> -->
             </q-td>
-            <q-td key="status" :props="props">
-              {{ getStatusDesc(props.row.status) }}
-            </q-td>
+
             <q-td key="is_print_pick_label" :props="props">
               {{
                 props.row.is_print_pick_label
@@ -459,6 +447,12 @@ const columns = computed(() => {
       align: "center",
       label: trans("拣货员"),
       field: "picker",
+    },
+    {
+      name: "status",
+      align: "center",
+      label: trans("状态"),
+      field: "status",
     },
     {
       name: "created_at",

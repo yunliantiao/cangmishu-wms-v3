@@ -1,17 +1,15 @@
 <template>
   <div class="categories-page">
-    <div class="row justify-end">
+    <div class="main-table">
       <q-btn
         color="primary"
         class="filter-btn"
+        flat
+        icon="add"
         @click="handleAddCategory(null)"
       >
-        <img src="@/assets/images/add.png" class="add-icon" />
         新增分类
       </q-btn>
-    </div>
-
-    <div class="main-table">
       <!-- 分类树 -->
       <div class="col-12">
         <q-tree
@@ -243,6 +241,10 @@ const handleSubmit = async () => {
       }
     }
   }
+}
+
+.main-table {
+  padding-top: 10px;
 }
 </style>
 
