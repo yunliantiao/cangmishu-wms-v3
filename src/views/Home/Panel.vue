@@ -5,37 +5,49 @@
       <div class="col-12 col-xs-12 col-sm-8 col-md-8">
         <div class="top-bar">
           <div class="item">
-            <div class="label">已预报</div>
-            <div class="value">1000</div>
+            <div class="label">{{ trans("已预报") }}</div>
+            <div class="value">
+              {{ reportObj.inbound_orders_count.reported_count }}
+            </div>
           </div>
           <div class="line"></div>
           <div class="item">
-            <div class="label">已预报</div>
-            <div class="value">1000</div>
+            <div class="label">{{ trans("运输中") }}</div>
+            <div class="value">
+              {{ reportObj.inbound_orders_count.in_transit_count }}
+            </div>
           </div>
+          <!-- <div class="line"></div>
+          <div class="item">
+            <div class="label">{{ trans('待入库') }}</div>
+            <div class="value"></div>
+          </div> -->
           <div class="line"></div>
           <div class="item">
-            <div class="label">已预报</div>
-            <div class="value">1000</div>
-          </div>
-          <div class="line"></div>
-          <div class="item">
-            <div class="label">已预报</div>
-            <div class="value">1000</div>
+            <div class="label">{{ trans("入库中") }}</div>
+            <div class="value">
+              {{ reportObj.inbound_orders_count.inbound_processing_count }}
+            </div>
           </div>
         </div>
       </div>
       <div class="col-12 col-xs-12 col-sm-4 col-md-4">
         <div class="contact-box bg-white">
-          <div class="text-subtitle1 q-mb-md">联系我们</div>
+          <div class="text-subtitle1 q-mb-md">{{ trans("联系我们") }}</div>
           <div class="line q-mb-md"></div>
-          <div class="q-mb-md row items-center">
+          <div
+            class="q-mb-md row items-center"
+            @click="onClickPhone('15576601706')"
+          >
             <q-icon name="phone" size="xs" class="q-mr-sm" />
-            <span>+86 15576601706</span>
+            <span class="hover-copy">+86 15576601706</span>
           </div>
-          <div class="row items-center">
+          <div
+            class="row items-center"
+            @click="onClickEmail('Hubinjie@Tongxiao.Tech')"
+          >
             <q-icon name="email" size="xs" class="q-mr-sm" />
-            <span>Hubinjie@Tongxiao.Tech</span>
+            <span class="hover-copy">Hubinjie@Tongxiao.Tech</span>
           </div>
         </div>
       </div>
@@ -65,8 +77,8 @@
           <q-card-section class="p-0 m-b-16">
             <div class="row items-center justify-between">
               <div>
-                <span class="text-h6 font-bold">单量统计</span>
-                <span class="text-grey-7">(单)</span>
+                <span class="text-h6 font-bold">{{ trans("单量统计") }}</span>
+                <span class="text-grey-7">({{ trans("单") }})</span>
               </div>
 
               <!-- <q-btn-toggle
@@ -94,7 +106,7 @@
                       'time-range-item',
                       { active: timeRange === item.value },
                     ]"
-                    @click="timeRange = item.value"
+                    @click="onChangeTimeRange(item)"
                   >
                     {{ item.label }}
                   </div>
@@ -106,14 +118,18 @@
             <div class="row type-btn q-col-gutter-sm">
               <div>
                 <div class="item item-1 col-12 col-sm-4 col-md-3">
-                  <div class="label">一件代发</div>
-                  <div class="value">1360</div>
+                  <div class="label">{{ trans("一件代发") }}</div>
+                  <div class="value">
+                    {{ chartDataObj.seriesData1.reduce((a, b) => a + b, 0) }}
+                  </div>
                 </div>
               </div>
               <div>
                 <div class="item item-2 col-12 col-sm-4 col-md-3">
-                  <div class="label">标准入库</div>
-                  <div class="value">704</div>
+                  <div class="label">{{ trans("标准入库") }}</div>
+                  <div class="value">
+                    {{ chartDataObj.seriesData2.reduce((a, b) => a + b, 0) }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -127,7 +143,9 @@
         <q-card class="common-card b-rd-16 notice-box" v-show="false">
           <q-card-section class="p-20">
             <div class="flex-between-center">
-              <div class="text-subtitle1 font-bold">系统公告</div>
+              <div class="text-subtitle1 font-bold">
+                {{ trans("系统公告") }}
+              </div>
               <q-btn
                 flat
                 color="primary"
@@ -151,22 +169,20 @@
 
         <q-card class="common-card b-rd-16 p-20 down-box">
           <q-card-section class="p-0 m-b-20">
-            <div class="text-subtitle1 font-bold">下载PDA</div>
+            <div class="text-subtitle1 font-bold">{{ trans("下载") }} PDA</div>
           </q-card-section>
           <q-card-section class="down-list p-0">
             <div class="item">
-              <q-icon
-                name="img:/src/assets/images/home/apple.png"
-                size="24px"
-                class="q-mr-sm"
+              <img
+                src="@/assets/images/home/apple.png"
+                class="w-24 h-24 q-mr-sm"
               />
               <div class="text-subtitle2">App Store</div>
             </div>
             <div class="item">
-              <q-icon
-                name="img:/src/assets/images/home/android.png"
-                size="24px"
-                class="q-mr-sm"
+              <img
+                src="@/assets/images/home/android.png"
+                class="w-24 h-24 q-mr-sm"
               />
               <div class="text-subtitle2">Android</div>
             </div>
@@ -181,7 +197,7 @@
         <q-card class="capacity-box common-card b-rd-16 p-20">
           <q-card-section class="p-0 q-mb-md">
             <div class="flex-between-center">
-              <span class="text-h6 font-bold">库容</span>
+              <span class="text-h6 font-bold">{{ trans("库容") }}</span>
               <q-select
                 v-model="selectedOption"
                 :options="[{ label: 'SKU数量', value: 'sku' }]"
@@ -197,12 +213,20 @@
           <q-card-section class="p-0">
             <div class="row">
               <div class="col-12 col-xs-12 col-sm-4 col-md-4">
-                <div class="statistic-label q-mb-md">在库总数(个)</div>
+                <div class="statistic-label q-mb-md">
+                  {{ trans("在库总数") }} ({{ trans("个") }})
+                </div>
                 <div class="text-h5 font-bold q-mb-md">123</div>
 
-                <div class="capacity-item capacity-item-1">商品库存</div>
-                <div class="capacity-item capacity-item-2">B2B库存</div>
-                <div class="capacity-item capacity-item-3">FBA退货库存</div>
+                <div class="capacity-item capacity-item-1">
+                  {{ trans("商品库存") }}
+                </div>
+                <div class="capacity-item capacity-item-2">
+                  {{ trans("B2B库存") }}
+                </div>
+                <div class="capacity-item capacity-item-3">
+                  {{ trans("FBA退货库存") }}
+                </div>
               </div>
               <div class="col-12 col-xs-12 col-sm-8 col-md-8">
                 <div
@@ -218,7 +242,9 @@
         <q-card class="help-box common-card b-rd-16 p-20">
           <q-card-section class="p-0">
             <div class="flex-between-center q-mb-md">
-              <div class="text-subtitle1 font-bold">帮助中心</div>
+              <div class="text-subtitle1 font-bold">
+                {{ trans("帮助中心") }}
+              </div>
               <q-btn
                 flat
                 color="primary"
@@ -252,11 +278,13 @@
 </template>
 
 <script>
+import homeApi from "@/api/home";
 import Dialog from "@/components/Dialog.vue";
 import WarehouseForm from "@/components/WarehouseForm.vue";
+import trans from "@/i18n";
 import * as echarts from "echarts";
 import { Notify } from "quasar";
-import { computed, nextTick, onMounted, onUnmounted, ref } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from "vue";
 
 export default {
   name: "PanelPage",
@@ -275,7 +303,7 @@ export default {
       localStorage.setItem("warehouseId", data.id);
       dialogVisible.value = false;
       Notify.create({
-        message: "仓库创建成功",
+        message: trans("仓库创建成功"),
         color: "positive",
       });
       window.location.reload();
@@ -284,35 +312,34 @@ export default {
     const totalList = computed(() => {
       return [
         {
-          label: "待生成/待打单",
-          value: 0,
-        },
-        {
           label: "待发货",
-          value: 0,
-        },
-        {
-          label: "获取运单号",
-          value: 0,
+          value: reportObj.outbound_orders_count.pending_shipment_count,
         },
         {
           label: "待移货",
-          value: 0,
+          value: reportObj.outbound_orders_count.pending_transfer_count,
         },
         {
           label: "待拣货",
-          value: 0,
+          value: reportObj.outbound_orders_count.pending_pick_count,
         },
         {
           label: "待包装",
-          value: 0,
+          value: reportObj.outbound_orders_count.pending_pack_count,
+        },
+        {
+          label: "包装中",
+          value: reportObj.outbound_orders_count.packing_count,
+        },
+        {
+          label: "异常订单",
+          value: reportObj.outbound_orders_count.exception_count,
         },
       ];
     });
-    const timeRange = ref("week");
 
     // 图表数据-订单量
-    const chartData = ref({
+    const chartData = computed(() => ({
       grid: {
         left: 10,
         right: 10,
@@ -332,15 +359,7 @@ export default {
       },
       xAxis: {
         type: "category",
-        data: [
-          "2022-07-01",
-          "2022-07-02",
-          "2022-07-03",
-          "2022-07-04",
-          "2022-07-05",
-          "2022-07-06",
-          "2022-07-07",
-        ],
+        data: chartDataObj.value.xAxisData,
         axisTick: {
           alignWithLabel: true,
           inside: true,
@@ -363,7 +382,7 @@ export default {
           name: "一件代发",
           type: "line",
           smooth: true,
-          data: [260, 150, 270, 230, 380, 330, 400],
+          data: chartDataObj.value.seriesData1,
           areaStyle: {
             opacity: 0.7, // 增加不透明度以更好显示渐变
             color: {
@@ -389,7 +408,7 @@ export default {
           name: "标准入库",
           type: "line",
           smooth: true,
-          data: [70, 20, 30, 60, 150, 110, 160],
+          data: chartDataObj.value.seriesData2,
           areaStyle: {
             opacity: 0.7,
             color: {
@@ -411,7 +430,7 @@ export default {
           },
         },
       ],
-    });
+    }));
     const chartRef = ref(null);
     let chartInstance = null;
     const initChart = () => {
@@ -435,7 +454,7 @@ export default {
 
     const chartRef2 = ref(null);
     let chartInstance2 = null;
-    const chartData2 = ref({
+    const chartData2 = reactive({
       color: ["#5745C5", "#69C096", "#409EFF"], // 在这里定义颜色数组
       series: [
         {
@@ -469,7 +488,7 @@ export default {
       chartRef2.value = document.getElementById("capacity-chart");
       if (!chartRef2.value) return;
       chartInstance2 = echarts.init(chartRef2.value);
-      chartInstance2.setOption(chartData2.value);
+      chartInstance2.setOption(chartData2);
     };
 
     // 公告列表
@@ -505,18 +524,195 @@ export default {
         time: "2022-07-01 12:00:00",
       },
     ]);
+    const timeRange = ref("week");
     // 时间选项
     const timeOptions = [
-      { label: "昨天", value: "yesterday" },
-      { label: "今天", value: "today" },
-      { label: "星期", value: "week" },
-      { label: "月", value: "month" },
-      { label: "年", value: "year" },
+      {
+        label: trans("昨天"),
+        value: "yesterday",
+        getDateRange: () => {
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          const dateStr = formatDate(yesterday);
+          return { start_date: dateStr, end_date: dateStr };
+        },
+      },
+      {
+        label: trans("今天"),
+        value: "today",
+        getDateRange: () => {
+          const today = formatDate(new Date());
+          return { start_date: today, end_date: today };
+        },
+      },
+      {
+        label: trans("星期"),
+        value: "week",
+        getDateRange: () => {
+          const now = new Date();
+          const weekStart = new Date(now);
+          weekStart.setDate(weekStart.getDate() - 7); // 改为往前推7天（加上今天共8天）
+          return {
+            start_date: formatDate(weekStart),
+            end_date: formatDate(now),
+          };
+        },
+      },
+      {
+        label: trans("月"),
+        value: "month",
+        getDateRange: () => {
+          const now = new Date();
+          const monthStart = new Date(now);
+          monthStart.setDate(monthStart.getDate() - 30); // 改为往前推30天（加上今天共31天）
+          return {
+            start_date: formatDate(monthStart),
+            end_date: formatDate(now),
+          };
+        },
+      },
+      {
+        label: trans("年"),
+        value: "year",
+        getDateRange: () => {
+          const now = new Date();
+          const yearStart = new Date(now);
+          yearStart.setDate(yearStart.getDate() - 365); // 改为往前推365天（加上今天共366天）
+          return {
+            start_date: formatDate(yearStart),
+            end_date: formatDate(now),
+          };
+        },
+      },
     ];
+    // 日期格式化函数
+    const formatDate = (date) => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    };
+    // 修改图标的日期范围
+    const onChangeTimeRange = (item) => {
+      timeRange.value = item.value;
+      const dateRange = item.getDateRange();
+      getHomeChart(dateRange);
+    };
+
+    // 所有数据
+    const reportObj = reactive({
+      // 扣费记录统计
+      deduction_records_count: {
+        pending_count: 0, // 待处理扣费数量
+        rejected_count: 0, // 已拒绝扣费数量
+        approved_count: 0, // 已通过扣费数量
+      },
+      // 入库订单统计
+      inbound_orders_count: {
+        reported_count: 0, // 已预报入库单数量
+        in_transit_count: 0, // 运输中入库单数量
+        inbound_processing_count: 0, // 入库处理中数量
+      },
+      // 出库订单统计
+      outbound_orders_count: {
+        pending_shipment_count: 0, // 待发货数量
+        pending_transfer_count: 0, // 待移货数量
+        pending_pick_count: 0, // 待拣货数量
+        pending_pack_count: 0, // 待包装数量
+        packing_count: 0, // 包装中数量
+        exception_count: 0, // 异常订单数量
+      },
+      // 充值记录统计
+      recharge_records_count: {
+        pending_count: 0, // 待处理充值数量
+        rejected_count: 0, // 已拒绝充值数量
+        approved_count: 0, // 已通过充值数量
+      },
+    });
+    const getReport = () => {
+      homeApi.getHomeReport().then((res) => {
+        Object.assign(reportObj, res.data);
+      });
+    };
+
+    // 图表数据
+    const chartObj = reactive({
+      inbound_orders: [],
+      outbound_orders: [],
+    });
+    const chartDataObj = ref({
+      xAxisData: [],
+      seriesData1: [],
+      seriesData2: [],
+    });
+    const getHomeChart = (params = {}) => {
+      homeApi.getHomeChart(params).then((res) => {
+        Object.assign(chartObj, res.data);
+        setChartData();
+      });
+    };
+    const setChartData = () => {
+      const inbound = chartObj.inbound_orders || [];
+      const outbound = chartObj.outbound_orders || [];
+
+      // 获取所有不重复的日期，并按时间升序排列
+      const allDates = Array.from(
+        new Set([...inbound.map((i) => i.date), ...outbound.map((i) => i.date)])
+      ).sort();
+
+      // 将日期转为一个 Map 方便查找
+      const inboundMap = new Map(
+        inbound.map((item) => [item.date, item.count])
+      );
+      const outboundMap = new Map(
+        outbound.map((item) => [item.date, item.count])
+      );
+
+      // 填充缺失值为 0
+      chartDataObj.value.xAxisData = allDates;
+      chartDataObj.value.seriesData1 = allDates.map(
+        (date) => inboundMap.get(date) || 0
+      );
+      chartDataObj.value.seriesData2 = allDates.map(
+        (date) => outboundMap.get(date) || 0
+      );
+      initChart();
+      initChart2();
+    };
+
+    const onClickEmail = (email) => {
+      window.location.href = `mailto:${email}`;
+    };
+
+    const onClickPhone = (phone) => {
+      // 检查是否是移动设备
+      const isMobile =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        );
+
+      if (isMobile) {
+        // 移动设备使用 tel: 协议
+        window.location.href = `tel:+86${phone}`;
+      } else {
+        // PC端复制到剪贴板
+        navigator.clipboard.writeText(phone).then(() => {
+          Notify.create({
+            message: trans("电话号码已复制到剪贴板"),
+            color: "positive",
+          });
+        });
+      }
+    };
+
     onMounted(() => {
+      getReport();
+      getHomeChart(
+        timeOptions
+          .find((item) => item.value === timeRange.value)
+          .getDateRange()
+      );
       nextTick(() => {
-        initChart();
-        initChart2();
         window.addEventListener("resize", handleResize);
       });
     });
@@ -534,8 +730,14 @@ export default {
       noticeList,
       timeOptions,
       selectedOption,
+      trans,
+      reportObj,
+      chartDataObj,
+      onClickEmail,
+      onClickPhone,
       handleWarehouseCreated,
       confirm,
+      onChangeTimeRange,
     };
   },
 };
