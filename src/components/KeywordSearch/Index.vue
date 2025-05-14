@@ -19,7 +19,7 @@
           dense
           class="input-box"
           v-model="search_value"
-          placeholder="请输入"
+          :placeholder="trans('请输入')"
         />
       </div>
       <q-select
@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { reactive, watch } from "vue";
+import trans from "@/i18n";
 
 const search_type = defineModel("search_type", {
   type: String,
@@ -69,9 +69,9 @@ const props = defineProps({
     type: Array,
     default: () => {
       return [
-        { label: "运单号", value: "tracking_number" },
-        { label: "包裹号", value: "package_number" },
-        { label: "订单号", value: "order_number" },
+        { label: trans("运单号"), value: "tracking_number" },
+        { label: trans("包裹号"), value: "package_number" },
+        { label: trans("订单号"), value: "order_number" },
       ];
     },
   },
@@ -79,9 +79,9 @@ const props = defineProps({
     type: Array,
     default: () => {
       return [
-        { label: "精确搜索", value: "exact" },
-        { label: "模糊搜索", value: "fuzzy" },
-        { label: "前缀搜索", value: "prefix" },
+        { label: trans("精确搜索"), value: "exact" },
+        { label: trans("模糊搜索"), value: "fuzzy" },
+        { label: trans("前缀搜索"), value: "prefix" },
       ];
     },
   },

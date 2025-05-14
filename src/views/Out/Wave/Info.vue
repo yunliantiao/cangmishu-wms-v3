@@ -10,7 +10,7 @@
           class="q-mr-sm"
           @click="goBack"
         />
-        <div class="text-h6">波次详情</div>
+        <div class="text-h6">{{ trans("波次详情") }}</div>
         <q-space />
       </div>
     </div>
@@ -43,15 +43,22 @@
                   )
                 "
                 outline
-                label="作废波次"
+                :label="trans('作废波次')"
                 @click="abandonWave"
               />
-              <q-btn color="primary" label="打印拣货单" @click="printPick" />
+              <q-btn
+                color="primary"
+                :label="trans('打印拣货单')"
+                @click="printPick"
+              />
             </div>
           </div>
           <div class="col-auto info-right">
             <div class="text-subtitle2 justify-between flex">
-              <div>物流组: {{ pageData.waveInfo?.logistics_group || "-" }}</div>
+              <div>
+                {{ trans("物流组") }}:
+                {{ pageData.waveInfo?.logistics_group || "-" }}
+              </div>
               <div class="text-right">
                 {{ pageData.waveInfo?.warehouse || "-" }}
               </div>
@@ -75,8 +82,8 @@
         align="left"
         narrow-indicator
       >
-        <q-tab name="packages" label="包裹信息" />
-        <q-tab name="logs" label="波次日志" />
+        <q-tab name="packages" :label="trans('包裹信息')" />
+        <q-tab name="logs" :label="trans('波次日志')" />
       </q-tabs>
 
       <q-separator />
@@ -94,7 +101,7 @@
                 clearable
                 :options="pageData.customerList"
                 @update:model-value="getWaveDetail"
-                label="全部客户"
+                :label="trans('全部客户')"
                 class="filter-select"
                 emit-value
                 map-options
@@ -121,45 +128,49 @@
             <div class="left-statics">
               <q-card flat bordered class="statics-card">
                 <div class="statics-box">
-                  <div class="text-h6 q-mb-md statics-title">波次信息</div>
+                  <div class="text-h6 q-mb-md statics-title">
+                    {{ trans("波次信息") }}
+                  </div>
                   <div class="statics-item">
-                    <div class="statics-label">初始包裹数量</div>
+                    <div class="statics-label">{{ trans("初始包裹数量") }}</div>
                     <div class="statics-value">
                       {{ pageData.waveInfo.package_count || 0 }}
                     </div>
                   </div>
                   <div class="statics-item">
-                    <div class="statics-label">待拣货&待包装</div>
+                    <div class="statics-label">
+                      {{ trans("待拣货&待包装") }}
+                    </div>
                     <div class="statics-value">
                       {{ pageData.waveInfo["package_count-picked_qty"] || 0 }}
                     </div>
                   </div>
                   <div class="statics-item">
-                    <div class="statics-label">已包装</div>
+                    <div class="statics-label">{{ trans("已包装") }}</div>
                     <div class="statics-value">
                       {{ pageData.waveInfo.packed_qty || 0 }}
                     </div>
                   </div>
                   <div class="statics-item">
-                    <div class="statics-label">被释放</div>
+                    <div class="statics-label">{{ trans("被释放") }}</div>
                     <div class="statics-value">
                       {{ pageData.waveInfo.packed_qty || 0 }}
                     </div>
                   </div>
                   <div class="statics-item error-item">
-                    <div class="statics-label">异常</div>
+                    <div class="statics-label">{{ trans("异常") }}</div>
                     <div class="statics-value text-red">
                       {{ pageData.waveInfo.abnormal_qty || 0 }}
                     </div>
                   </div>
                   <div class="statics-item">
-                    <div class="statics-label">SKU种类</div>
+                    <div class="statics-label">{{ trans("SKU种类") }}</div>
                     <div class="statics-value">
                       {{ pageData.waveInfo.sku_type_count || 0 }}
                     </div>
                   </div>
                   <div class="statics-item">
-                    <div class="statics-label">商品数量</div>
+                    <div class="statics-label">{{ trans("商品数量") }}</div>
                     <div class="statics-value">
                       {{ pageData.waveInfo.item_count || 0 }}
                     </div>
@@ -207,6 +218,7 @@ import WaveApi from "@/api/wave";
 import NotifyUtils from "@/utils/message.js";
 import Process from "./components/Process.vue";
 import CustomTable from "./components/CustomTable.vue";
+import trans from "@/i18n";
 
 const route = useRoute();
 const router = useRouter();
@@ -244,28 +256,33 @@ const pageData = reactive({
     {
       name: "packageInfo",
       align: "left",
-      label: "包裹信息",
+      label: trans("包裹信息"),
       field: "packageInfo",
     },
     {
       name: "logisticsInfo",
       align: "left",
-      label: "物流方式/运单号",
+      label: trans("物流方式/运单号"),
       field: "logisticsInfo",
     },
     {
       name: "receiverInfo",
       align: "left",
-      label: "收货人&地区",
+      label: trans("收货人&地区"),
       field: "receiverInfo",
     },
     {
       name: "statusTime",
       align: "left",
-      label: "状态&时间",
+      label: trans("状态&时间"),
       field: "statusTime",
     },
-    { name: "actions", align: "center", label: "操作", field: "actions" },
+    {
+      name: "actions",
+      align: "center",
+      label: trans("操作"),
+      field: "actions",
+    },
   ],
 
   // 包裹数据
@@ -277,19 +294,19 @@ const pageData = reactive({
     {
       name: "created_at",
       align: "center",
-      label: "时间",
+      label: trans("时间"),
       field: "created_at",
     },
     {
       name: "remark",
       align: "center",
-      label: "操作",
+      label: trans("操作"),
       field: "remark",
     },
     {
       name: "user_id",
       align: "center",
-      label: "账号",
+      label: trans("账号"),
       field: "user_id",
     },
   ],
@@ -358,11 +375,11 @@ const getWaveDetail = async () => {
         pageData.packageData = data.packages.map((row) => {
           row.checked = false;
           row.statusTimes = [
-            { label: "创建", time: row.created_at || "-" },
-            { label: "波次", time: row.wave_at || "-" },
-            { label: "拣货", time: row.picked_at || "-" },
-            { label: "包装", time: row.packed_at || "-" },
-            { label: "发货", time: row.shipped_at || "-" },
+            { label: trans("创建"), time: row.created_at || "-" },
+            { label: trans("波次"), time: row.wave_at || "-" },
+            { label: trans("拣货"), time: row.picked_at || "-" },
+            { label: trans("包装"), time: row.packed_at || "-" },
+            { label: trans("发货"), time: row.shipped_at || "-" },
           ];
 
           return row;
@@ -389,10 +406,10 @@ const getWaveLogs = async () => {
 // 获取波次类型文本
 const getWaveTypeText = (type) => {
   const typeMap = {
-    single_item: "单品单数",
-    multi_items: "单品多数",
-    mixed_items: "多品混包",
-    hot_wave: "爆款包裹",
+    single_item: trans("单品单数"),
+    multi_items: trans("单品多数"),
+    mixed_items: trans("多品混包"),
+    hot_wave: trans("爆款包裹"),
   };
   return typeMap[type] || type;
 };
@@ -400,11 +417,11 @@ const getWaveTypeText = (type) => {
 // 获取状态文本
 const getStatusText = (status) => {
   const statusMap = {
-    pending: "待拣货",
-    picking: "拣货中",
-    packing: "包装中",
-    completed: "已完成",
-    cancelled: "已作废",
+    pending: trans("待拣货"),
+    picking: trans("拣货中"),
+    packing: trans("包装中"),
+    completed: trans("已完成"),
+    cancelled: trans("已作废"),
   };
   return statusMap[status] || status;
 };
@@ -437,17 +454,17 @@ const refresh = () => {
 
 const abandonWave = () => {
   $q.dialog({
-    title: "确定要作废波次吗？",
-    message: "波次状态将会置为已作废，波次中的包裹状态置为待生成",
-    ok: "作废",
-    cancel: "取消",
+    title: trans("确定要作废波次吗？"),
+    message: trans("波次状态将会置为已作废，波次中的包裹状态置为待生成"),
+    ok: trans("作废"),
+    cancel: trans("取消"),
   }).onOk(async () => {
     console.log("作废波次");
     let params = {
       ids: [pageData.waveId],
     };
     await WaveApi.abandonWave(params);
-    NotifyUtils.successMessage("作废波次成功");
+    NotifyUtils.successMessage(trans("作废波次成功"));
     getWaveDetail();
   });
 };
@@ -456,19 +473,19 @@ const printPick = async () => {
   console.log("打印拣货单");
   const { data } = await WaveApi.printWave(pageData.waveId);
   window.open(data.data, "_blank");
-  NotifyUtils.successMessage("打印拣货单成功");
+  NotifyUtils.successMessage(trans("打印拣货单成功"));
   if (pageData.waveInfo.is_print_pick_label) return;
   $q.dialog({
-    title: "打印结果确认",
-    message: "是否打印成功",
+    title: trans("打印结果确认"),
+    message: trans("是否打印成功"),
     cancel: true,
     persistent: true,
     ok: {
-      label: "确认",
+      label: trans("确认"),
       color: "primary",
     },
     cancel: {
-      label: "取消",
+      label: trans("取消"),
       color: "grey-7",
     },
   }).onOk(async () => {

@@ -2,7 +2,9 @@
   <div class="parcel-receipt">
     <div class="section-header q-px-lg q-py-md">
       <div class="row justify-between items-center q-mb-md">
-        <div class="text-subtitle1 text-weight-medium">包裹收货</div>
+        <div class="text-subtitle1 text-weight-medium">
+          {{ trans("包裹收货") }}
+        </div>
       </div>
     </div>
 
@@ -35,7 +37,7 @@
             <q-checkbox v-model="showReceived" label="显示已收货箱子" />
           </div> -->
           <span class="text-weight-medium q-mr-sm"
-            >箱子总数: {{ parcels.length }}</span
+            >{{ trans("箱子总数") }}: {{ parcels.length }}</span
           >
         </div>
       </div>
@@ -141,6 +143,7 @@
 <script setup>
 import { ref, computed, defineProps, defineEmits } from "vue";
 import { useQuasar } from "quasar";
+import trans from "@/i18n";
 
 const props = defineProps({
   parcels: {
@@ -176,28 +179,33 @@ const columns = [
   {
     name: "box_number",
     required: true,
-    label: "箱号",
+    label: trans("箱号"),
     align: "left",
     field: "box_number",
   },
   {
     name: "dimensions",
-    label: "箱子尺寸",
+    label: trans("箱子尺寸"),
     align: "center",
     field: (row) => getDimensions(row),
   },
-  { name: "weight", label: "箱子重量", align: "center", field: "weight" },
+  {
+    name: "weight",
+    label: trans("箱子重量"),
+    align: "center",
+    field: "weight",
+  },
   {
     name: "products",
-    label: "商品SKU",
+    label: trans("商品SKU"),
     align: "left",
     field: "items",
     style: "width: 40%",
   },
   {
     name: "received_quantity",
-    label: "收货/预报数量",
-    subLabel: "全部",
+    label: trans("收货/预报数量"),
+    subLabel: trans("全部"),
     align: "center",
     field: "items",
     style: "width: 15%",
@@ -225,7 +233,7 @@ const handlePrint = () => {
   emit("print", props.parcels);
   $q.notify({
     type: "info",
-    message: "准备打印包裹标签...",
+    message: trans("准备打印包裹标签..."),
   });
 };
 
@@ -233,7 +241,7 @@ const handlePrintSelected = () => {
   if (selectedBoxes.value.length === 0) {
     $q.notify({
       type: "warning",
-      message: "请先选择箱子",
+      message: trans("请先选择箱子"),
     });
     return;
   }
@@ -241,7 +249,9 @@ const handlePrintSelected = () => {
   emit("print", selectedBoxes.value);
   $q.notify({
     type: "info",
-    message: `准备打印${selectedBoxes.value.length}个箱子标签...`,
+    message: trans(`准备打印{count}个箱子标签...`, {
+      count: selectedBoxes.value.length,
+    }),
   });
 };
 
@@ -249,7 +259,9 @@ const handlePrintAll = () => {
   emit("print", props.parcels);
   $q.notify({
     type: "info",
-    message: `准备打印${props.parcels.length}个箱子标签...`,
+    message: trans(`准备打印{count}个箱子标签...`, {
+      count: props.parcels.length,
+    }),
   });
 };
 
@@ -260,8 +272,7 @@ const fillAllQuantities = () => {
   updatedParcels.forEach((parcel) => {
     parcel.items.forEach((item) => {
       if (item.quantity > item.received_quantity) {
-        item.put_away_quantity =
-          item.quantity - item.received_quantity;
+        item.put_away_quantity = item.quantity - item.received_quantity;
       } else {
         item.put_away_quantity = 0;
       }
@@ -272,7 +283,7 @@ const fillAllQuantities = () => {
   emit("update:parcels", updatedParcels);
   $q.notify({
     type: "positive",
-    message: "已将所有商品的预报数量填入收货数量",
+    message: trans("已将所有商品的预报数量填入收货数量"),
     position: "top",
   });
 };
@@ -309,7 +320,13 @@ defineExpose({
         // 检查是否有未填写的收货数量
         if (item.put_away_quantity === null) {
           valid = false;
-          errorMessage = `包裹 ${parcel.box_number} 中的商品 ${item.product_spec_sku} 未填写收货数量`;
+          errorMessage = trans(
+            "包裹 {box_number} 中的商品 {product_spec_sku} 未填写收货数量",
+            {
+              box_number: parcel.box_number,
+              product_spec_sku: item.product_spec_sku,
+            }
+          );
         }
       });
     });

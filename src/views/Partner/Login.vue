@@ -4,15 +4,21 @@
       <!-- 加载中状态 -->
       <div v-if="pageData.loading" class="loading-state">
         <q-spinner color="primary" size="3em" />
-        <div class="loading-text q-mt-md">正在登录中，请稍候...</div>
+        <div class="loading-text q-mt-md">
+          {{ trans("正在登录中，请稍候...") }}
+        </div>
       </div>
 
       <!-- 登录成功状态 -->
       <div v-else-if="pageData.loginSuccess" class="success-state">
         <q-icon name="check_circle" color="positive" size="3em" />
-        <div class="success-text q-mt-md">登录成功！</div>
+        <div class="success-text q-mt-md">{{ trans("登录成功！") }}</div>
         <div class="countdown-text">
-          {{ pageData.countdown }}秒后自动跳转到首页
+          {{
+            trans("{countdown}秒后自动跳转到首页", {
+              countdown: pageData.countdown,
+            })
+          }}
         </div>
       </div>
 
@@ -33,6 +39,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useQuasar } from "quasar";
 import indexApi from "@/api/index";
 import { useStore } from "vuex";
+import trans from "@/i18n";
 
 const route = useRoute();
 const router = useRouter();
@@ -54,7 +61,7 @@ const handleLogin = async () => {
     const tempToken = route.query.token;
 
     if (!tempToken) {
-      throw new Error("未找到临时登录令牌");
+      throw new Error(trans("未找到临时登录令牌"));
     }
 
     pageData.token = tempToken;

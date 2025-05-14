@@ -15,7 +15,11 @@
           >
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
-                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                <q-popup-proxy
+                  cover
+                  transition-show="scale"
+                  transition-hide="scale"
+                >
                   <q-date v-model="timeObj.time" mask="YYYY-MM-DD" range />
                 </q-popup-proxy>
               </q-icon>
@@ -34,7 +38,14 @@
           ></q-input>
         </div>
         <div class="col-auto">
-          <q-btn outline color="grey" padding="sm md" label="重置" class="q-mr-sm" @click="onResetSearch" />
+          <q-btn
+            outline
+            color="grey"
+            padding="sm md"
+            label="重置"
+            class="q-mr-sm"
+            @click="onResetSearch"
+          />
           <q-btn
             color="primary"
             icon="search"
@@ -49,7 +60,13 @@
 
     <div class="bg-white rounded-borders q-pa-md">
       <div class="text-right q-mb-md">
-        <q-btn color="primary" icon="add" label="新建" text-color="white" @click="onJumpAdd" />
+        <q-btn
+          color="primary"
+          icon="add"
+          label="新建"
+          text-color="white"
+          @click="onJumpAdd"
+        />
       </div>
       <!-- 表格 -->
       <q-table
@@ -76,21 +93,39 @@
             </q-td>
             <q-td key="created_at" :props="props">
               <div>
-                <span class="text-grey">创建：</span>
-                {{ parseTime(props.row.created_at, '{y}-{m}-{d}') }}
+                <span class="text-grey">{{ trans("创建：") }}</span>
+                {{ parseTime(props.row.created_at, "{y}-{m}-{d}") }}
               </div>
               <div>
-                <span class="text-grey">更新：</span>
-                {{ parseTime(props.row.updated_at, '{y}-{m}-{d}') }}
+                <span class="text-grey">{{ trans("更新：") }}</span>
+                {{ parseTime(props.row.updated_at, "{y}-{m}-{d}") }}
               </div>
             </q-td>
 
             <q-td key="action" :props="props">
-              <q-btn icon="editor" color="primary" size="sm" flat round @click="onEdit(props.row)">
-                <q-tooltip anchor="top middle" :offset="[30, 30]">编辑</q-tooltip>
+              <q-btn
+                icon="editor"
+                color="primary"
+                size="sm"
+                flat
+                round
+                @click="onEdit(props.row)"
+              >
+                <q-tooltip anchor="top middle" :offset="[30, 30]">{{
+                  trans("编辑")
+                }}</q-tooltip>
               </q-btn>
-              <q-btn icon="delete" color="negative" size="sm" flat round @click="onDelete(props.row)">
-                <q-tooltip anchor="top middle" :offset="[30, 30]">删除</q-tooltip>
+              <q-btn
+                icon="delete"
+                color="negative"
+                size="sm"
+                flat
+                round
+                @click="onDelete(props.row)"
+              >
+                <q-tooltip anchor="top middle" :offset="[30, 30]">{{
+                  trans("删除")
+                }}</q-tooltip>
               </q-btn>
             </q-td>
           </q-tr>
@@ -99,7 +134,7 @@
         <template v-slot:no-data="{ icon, filter }">
           <div class="full-width row flex-center q-gutter-sm">
             <q-icon size="2em" name="sentiment_dissatisfied" />
-            <span>无数据</span>
+            <span>{{ trans("无数据") }}</span>
             <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
           </div>
         </template>
@@ -117,12 +152,13 @@
 </template>
 
 <script setup>
-import logisticsApi from '@/api/logistics';
-import Pagination from '@/components/Pagination.vue';
-import { parseTime } from '@/utils/common.js';
-import { useQuasar } from 'quasar';
-import { onMounted, reactive, ref, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import logisticsApi from "@/api/logistics";
+import Pagination from "@/components/Pagination.vue";
+import { parseTime } from "@/utils/common.js";
+import { useQuasar } from "quasar";
+import { onMounted, reactive, ref, watch } from "vue";
+import { useRouter } from "vue-router";
+import trans from "@/i18n";
 
 const router = useRouter();
 const $q = useQuasar();
@@ -130,43 +166,43 @@ const $q = useQuasar();
 const zonesList = ref([]);
 const total = ref(0);
 const timeObj = ref({
-  result: '',
+  result: "",
   time: {
-    form: '', // 开始时间
-    to: '', // 结束时间
+    form: "", // 开始时间
+    to: "", // 结束时间
   },
 });
 // 分页参数
 const pageParams = reactive({
   page: 1,
   per_page: 10,
-  keywords: '',
-  start_date: '',
-  end_date: '',
+  keywords: "",
+  start_date: "",
+  end_date: "",
 });
 
 const tabColumns = [
   {
-    name: 'name',
-    label: '规则名称',
-    align: 'left',
+    name: "name",
+    label: trans("规则名称"),
+    align: "left",
     sortable: false,
   },
   {
-    name: 'match_type',
-    label: '匹配方式',
-    align: 'center',
+    name: "match_type",
+    label: trans("匹配方式"),
+    align: "center",
   },
 
   {
-    name: 'created_at',
-    label: '时间',
-    align: 'center',
+    name: "created_at",
+    label: trans("时间"),
+    align: "center",
   },
   {
-    name: 'action',
-    label: '操作',
-    align: 'center',
+    name: "action",
+    label: trans("操作"),
+    align: "center",
   },
 ];
 
@@ -179,44 +215,44 @@ watch(
       pageParams.start_date = newVal.from;
       pageParams.end_date = newVal.to;
     } else {
-      timeObj.value.result = '';
-      pageParams.start_date = '';
-      pageParams.end_date = '';
+      timeObj.value.result = "";
+      pageParams.start_date = "";
+      pageParams.end_date = "";
     }
   },
   { deep: true }
 );
 
 const resultMatch = (match_type) => {
-  if (match_type === 'postcode') {
-    return '邮编全匹配';
-  } else if (match_type === 'country') {
-    return '国家/地区匹配';
-  } else if (match_type === 'country_city') {
-    return '国家/地区+城市匹配';
+  if (match_type === "postcode") {
+    return trans("邮编全匹配");
+  } else if (match_type === "country") {
+    return trans("国家/地区匹配");
+  } else if (match_type === "country_city") {
+    return trans("国家/地区+城市匹配");
   } else {
-    return '-';
+    return "-";
   }
 };
 
 const onClearTime = () => {
   timeObj.value.time = {
-    form: '',
-    to: '',
+    form: "",
+    to: "",
   };
 };
 
 // 新增
 const onJumpAdd = () => {
   router.push({
-    path: '/logistics/rule/zones',
+    path: "/logistics/rule/zones",
   });
 };
 
 // 编辑
 const onEdit = (row) => {
   router.push({
-    path: '/logistics/rule/zones',
+    path: "/logistics/rule/zones",
     query: {
       id: row.id,
     },
@@ -226,15 +262,15 @@ const onEdit = (row) => {
 // 删除
 const onDelete = (row) => {
   $q.dialog({
-    title: '提示',
-    message: '您是否确定要删除该分区规则？',
+    title: trans("提示"),
+    message: trans("您是否确定要删除该分区规则？"),
     ok: {
-      label: '是',
-      color: 'negative',
+      label: trans("是"),
+      color: "negative",
     },
     cancel: {
-      label: '否',
-      color: 'grey',
+      label: trans("否"),
+      color: "grey",
     },
     persistent: true,
   })
@@ -257,12 +293,12 @@ const onDelete = (row) => {
 const onResetSearch = () => {
   // 重置时间选择器的值
   Object.assign(timeObj.value, {
-    result: '',
-    time: { from: '', to: '' },
+    result: "",
+    time: { from: "", to: "" },
   });
-  pageParams.keywords = '';
-  pageParams.start_date = '';
-  pageParams.end_date = '';
+  pageParams.keywords = "";
+  pageParams.start_date = "";
+  pageParams.end_date = "";
 };
 
 const getList = () => {

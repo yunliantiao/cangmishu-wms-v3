@@ -1,5 +1,6 @@
 const Container = () => import(`../views/Layout/Container.vue`)
 const Panel = () => import(`../views/Home/Panel.vue`)
+import trans from "@/i18n";
 
 export default [
     {
@@ -8,7 +9,7 @@ export default [
         component: Container,
         icon: 'home',
         meta: {
-            name: '首页',
+            name: trans('首页'),
             icon: '',
         },
         children: [
@@ -19,8 +20,8 @@ export default [
                 id: 1001,
                 meta: {
                     level: 2,
-                    group: '首页',
-                    name: '控制面板',
+                    group: trans('首页'),
+                    name: trans('控制面板'),
                 },
             },
         ]

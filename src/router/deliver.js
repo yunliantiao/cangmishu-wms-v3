@@ -1,4 +1,6 @@
 
+import trans from "@/i18n";
+
 export default [
   {
     path: "deliver",
@@ -6,7 +8,7 @@ export default [
     redirect: "/deliver/examine/goods",
     icon: "print",
     meta: {
-      name: "发货管理",
+      name: trans("发货管理"),
       icon: "",
     },
     children: [
@@ -17,8 +19,8 @@ export default [
         component: () => import("@/views/Deliver/ExamineGoods.vue"),
         meta: {
           level: 2,
-          group: "发货管理",
-          name: "扫描验货",
+          group: trans("发货管理"),
+          name: trans("扫描验货"),
         },
       },
       {
@@ -28,8 +30,8 @@ export default [
         component: () => import("@/views/Deliver/ScanShipment.vue"),
         meta: {
           level: 2,
-          group: "发货管理",
-          name: "扫描发货",
+          group: trans("发货管理"),
+          name: trans("扫描发货"),
         },
       },
       {
@@ -39,8 +41,8 @@ export default [
         component: () => import("@/views/Deliver/SigningRecord.vue"),
         meta: {
           level: 2,
-          group: "发货管理",
-          name: "签单记录",
+          group: trans("发货管理"),
+          name: trans("签单记录"),
         },
       },
       {
@@ -50,8 +52,8 @@ export default [
         component: () => import("@/views/Deliver/PhotoRecord.vue"),
         meta: {
           level: 2,
-          group: "发货管理",
-          name: "拍照记录",
+          group: trans("发货管理"),
+          name: trans("拍照记录"),
         },
       },
     ],

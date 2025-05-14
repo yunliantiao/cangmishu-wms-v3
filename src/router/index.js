@@ -15,7 +15,6 @@ const NotFound = loadonDemand('NotFound')
 const Login = loadonDemand('Login')
 
 
-
 export const routerMap = []
     .concat(Panel)
     .concat(Customer)

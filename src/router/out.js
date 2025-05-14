@@ -8,7 +8,7 @@ const SortOut = () => import(`../views/Out/Wave/SortOut.vue`)
 const Pigeonholes = () => import(`../views/Out/Wave/Pigeonholes.vue`)
 const Packaging = () => import(`../views/Out/Wave/Packaging.vue`)
 const ScanPacking = () => import(`../views/Out/Wave/ScanPacking.vue`)
-
+import trans from "@/i18n";
 export default [
     {
         path: 'out',
@@ -16,7 +16,7 @@ export default [
         redirect: '/out/simple',
         icon: 'print',
         meta: {
-            name: '出库管理',
+            name: trans('出库管理'),
             icon: '',
         },
         children: [
@@ -27,8 +27,8 @@ export default [
                 id: 1001,
                 meta: {
                     level: 2,
-                    group: '出库管理',
-                    name: '简易打单',
+                    group: trans('出库管理'),
+                    name: trans('简易打单'),
                 },
             },
             {
@@ -38,8 +38,8 @@ export default [
                 id: 1002,
                 meta: {
                     level: 2,
-                    group: '出库管理',
-                    name: '全部订单',
+                    group: trans('出库管理'),
+                    name: trans('全部订单'),
                 },
             },
             {
@@ -49,8 +49,8 @@ export default [
                 id: 1003,
                 meta: {
                     level: 2,
-                    group: '出库管理',
-                    name: '生成波次',
+                    group: trans('出库管理'),
+                    name: trans('生成波次'),
                 },
             },
             {
@@ -60,8 +60,8 @@ export default [
                 id: 1004,
                 meta: {
                     level: 2,
-                    group: '出库管理',
-                    name: '波次列表',
+                    group: trans('出库管理'),
+                    name: trans('波次列表'),
                 },
             },
             {
@@ -71,8 +71,8 @@ export default [
                 id: 1005,
                 meta: {
                     level: 2,
-                    group: '出库管理',
-                    name: '扫描分拣',
+                    group: trans('出库管理'),
+                    name: trans('扫描分拣'),
                 },
             },
             {
@@ -82,8 +82,8 @@ export default [
                 id: 1009,
                 meta: {
                     level: 2,
-                    group: '出库管理',
-                    name: '扫描包装',
+                    group: trans('出库管理'),
+                    name: trans('扫描包装'),
                 },
             },
             {
@@ -93,8 +93,8 @@ export default [
                 id: 1006,
                 meta: {
                     level: 3,
-                    group: '出库管理',
-                    name: '波次详情',
+                    group: trans('出库管理'),
+                    name: trans('波次详情'),
                 },
             },
             {
@@ -104,8 +104,8 @@ export default [
                 id: 1007,
                 meta: {
                     level: 3,
-                    group: '出库管理',
-                    name: '分拣台',
+                    group: trans('出库管理'),
+                    name: trans('分拣台'),
                 },
             },
             {
@@ -115,8 +115,8 @@ export default [
                 id: 1008,
                 meta: {
                     level: 3,
-                    group: '出库管理',
-                    name: '扫描包装',
+                    group: trans('出库管理'),
+                    name: trans('扫描包装'),
                 },
             },
 

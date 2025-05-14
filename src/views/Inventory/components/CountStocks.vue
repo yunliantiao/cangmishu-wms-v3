@@ -6,7 +6,7 @@
   >
     <q-card style="width: 90vw; max-width: 1400px">
       <q-card-section class="row items-center q-py-sm">
-        <div class="text-h6">选择货架位</div>
+        <div class="text-h6">{{ trans("选择货架位") }}</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
@@ -19,7 +19,7 @@
               dense
               v-model="params.area_type"
               :options="areaTypeOptions"
-              label="货区类型"
+              :label="trans('货区类型')"
               option-label="label"
               option-value="value"
               emit-value
@@ -39,7 +39,7 @@
               option-label="label"
               emit-value
               map-options
-              label="货架位"
+              :label="trans('货架位')"
               class="search-type-select"
             />
           </div>
@@ -48,7 +48,7 @@
               outlined
               dense
               v-model="params.keywords"
-              placeholder="批量搜索用逗号隔开"
+              :placeholder="trans('批量搜索用逗号隔开')"
               class="keywords-input"
               style="min-width: 200px"
             />
@@ -62,14 +62,14 @@
               clearable
               map-options
               emit-value
-              label="搜索模式"
+              :label="trans('搜索模式')"
               class="select-width"
             />
           </div>
           <div class="col-12 col-sm-auto">
             <q-btn
               color="primary"
-              label="搜索"
+              :label="trans('搜索')"
               @click="getShelfLocationList"
               class="full-width"
             />
@@ -100,19 +100,19 @@
                   },
                   {
                     name: 'code',
-                    label: '货架位编码',
+                    label: trans('货架位编码'),
                     align: 'left',
                     field: 'code',
                   },
                   {
                     name: 'warehouse_area_type',
-                    label: '货区类型',
+                    label: trans('货区类型'),
                     align: 'left',
                     field: 'warehouse_area_type',
                   },
                   {
                     name: 'warehouse_area',
-                    label: '货区编号',
+                    label: trans('货区编号'),
                     align: 'left',
                     field: 'warehouse_area',
                   },
@@ -164,7 +164,7 @@
                 </template>
                 <template v-slot:no-data>
                   <div class="full-width row flex-center q-pa-md text-grey-7">
-                    暂无数据
+                    {{ trans("暂无数据") }}
                   </div>
                 </template>
               </q-table>
@@ -183,17 +183,23 @@
       </q-card-section>
 
       <q-card-actions align="right" class="q-pa-md">
-        <q-btn flat label="取消" color="grey" v-close-popup />
-        <q-btn unelevated label="确认" color="primary" @click="handleConfirm" />
+        <q-btn flat :label="trans('取消')" color="grey" v-close-popup />
+        <q-btn
+          unelevated
+          :label="trans('确认')"
+          color="primary"
+          @click="handleConfirm"
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script setup>
-import { ref, reactive, computed ,watch } from "vue";
+import { ref, reactive, computed, watch } from "vue";
 import settingApi from "@/api/setting";
 import Pagination from "@/components/Pagination.vue";
+import trans from "@/i18n";
 
 const props = defineProps({
   modelValue: {
@@ -202,23 +208,23 @@ const props = defineProps({
   },
 });
 const areaTypeOptions = [
-  { label: "拣货区", value: "picking" },
-  { label: "备货区", value: "staging" },
-  { label: "不良品区", value: "defective" },
-  { label: "转运区", value: "transit" },
+  { label: trans("拣货区"), value: "picking" },
+  { label: trans("备货区"), value: "staging" },
+  { label: trans("不良品区"), value: "defective" },
+  { label: trans("转运区"), value: "transit" },
 ]; //货区类型
 
 const locationFilterOptions = [
   {
-    label: "货位编号",
+    label: trans("货位编号"),
     value: "code",
   },
   {
-    label: "SKU 编号",
+    label: trans("SKU 编号"),
     value: "sku",
   },
   {
-    label: "货架位规格",
+    label: trans("货架位规格"),
     value: "shelf_spec",
   },
 ];
@@ -228,15 +234,15 @@ const emit = defineEmits(["update:modelValue", "confirm"]);
 // 搜索类型选项
 const searchTypeOptions = [
   {
-    label: "精确搜索",
+    label: trans("精确搜索"),
     value: "exact",
   },
   {
-    label: "模糊搜索",
+    label: trans("模糊搜索"),
     value: "like",
   },
   {
-    label: "前缀搜索",
+    label: trans("前缀搜索"),
     value: "prefix",
   },
 ];

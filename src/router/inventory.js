@@ -7,6 +7,7 @@ const CreateAdjust = () => import(`../views/Inventory/CreateAdjust.vue`)
 const Count = () => import(`../views/Inventory/Count.vue`)
 const CreateCount = () => import(`../views/Inventory/CreateCount.vue`)
 const Stocktaking = () => import(`../views/Inventory/Stocktaking.vue`)
+import trans from "@/i18n";
 
 export default [
     {
@@ -15,7 +16,7 @@ export default [
         redirect: '/inventory/inventory-list',
         icon: 'inventory',
         meta: {
-            name: '库存管理',
+            name: trans('库存管理'),
         },
         children: [
             {
@@ -24,8 +25,8 @@ export default [
                 id: 1001,
                 meta: {
                     level: 2,
-                    group: '库存管理',
-                    name: '库存列表',
+                    group: trans('库存管理'),
+                    name: trans('库存列表'),
                 },
             },
             {
@@ -34,8 +35,8 @@ export default [
                 id: 1002,
                 meta: {
                     level: 2,
-                    group: '库存管理',
-                    name: '库内移货',
+                    group: trans('库存管理'),
+                    name: trans('库内移货'),
                 },
             },
             {
@@ -45,8 +46,8 @@ export default [
                 id: 1003,
                 meta: {
                     level: 3,
-                    group: '库存管理',
-                    name: '创建移货单',
+                    group: trans('库存管理'),
+                    name: trans('创建移货单'),
                 },
             },
             {
@@ -55,8 +56,8 @@ export default [
                 id: 1004,
                 meta: {
                     level: 2,
-                    group: '库存管理',
-                    name: '库存调整',
+                    group: trans('库存管理'),
+                    name: trans('库存调整'),
                 },
             },
             {
@@ -66,8 +67,8 @@ export default [
                 id: 1005,
                 meta: {
                     level: 3,
-                    group: '库存管理',
-                    name: '创建调整单',
+                    group: trans('库存管理'),
+                    name: trans('创建调整单'),
                 },
             },
             {
@@ -77,8 +78,8 @@ export default [
                 id: 1006,
                 meta: {
                     level: 2,
-                    group: '库存管理',
-                    name: '库存盘点',
+                    group: trans('库存管理'),
+                    name: trans('库存盘点'),
                 },
             },
             {
@@ -88,8 +89,8 @@ export default [
                 id: 1007,
                 meta: {
                     level: 3,
-                    group: '库存管理',
-                    name: '创建盘点单',
+                    group: trans('库存管理'),
+                    name: trans('创建盘点单'),
                 },
             },
             {
@@ -99,8 +100,8 @@ export default [
                 id: 1008,
                 meta: {
                     level: 3,
-                    group: '库存管理',
-                    name: '盘点',
+                    group: trans('库存管理'),
+                    name: trans('盘点'),
                 },
             },
         ]

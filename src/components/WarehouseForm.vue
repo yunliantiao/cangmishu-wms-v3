@@ -13,14 +13,14 @@
           <div class="col-12 col-sm-6">
             <div class="form-item row items-center">
               <div class="form-label col-sm-4 pb-20">
-                仓库名称 <span class="required">*</span>
+                {{ trans("仓库名称") }} <span class="required">*</span>
               </div>
               <div class="form-input col-sm-8">
                 <q-input
                   outlined
                   dense
                   v-model="warehouseForm.name"
-                  placeholder="请输入"
+                  :placeholder="trans('请输入')"
                   :rules="[(val) => !!val || '请输入仓库名称']"
                 />
               </div>
@@ -29,15 +29,15 @@
           <div class="col-12 col-sm-6">
             <div class="form-item row items-center">
               <div class="form-label col-sm-4 pb-20">
-                仓库编号 <span class="required">*</span>
+                {{ trans("仓库编号") }} <span class="required">*</span>
               </div>
               <div class="form-input col-sm-8">
                 <q-input
                   outlined
                   dense
                   v-model="warehouseForm.code"
-                  placeholder="请输入"
-                  :rules="[(val) => !!val || '请输入仓库编号']"
+                  :placeholder="trans('请输入')"
+                  :rules="[(val) => !!val || trans('请输入仓库编号')]"
                 />
               </div>
             </div>
@@ -77,7 +77,7 @@
           <div class="col-12 col-sm-6">
             <div class="form-item row items-center">
               <div class="form-label col-sm-4 pb-20">
-                域名 <span class="required">*</span>
+                {{ trans("域名") }} <span class="required">*</span>
               </div>
               <div class="form-input col-sm-8">
                 <div class="row items-center domain-input-group">
@@ -88,7 +88,7 @@
                       dense
                       :disable="editMode"
                       v-model="warehouseForm.domain"
-                      placeholder="请输入仓库域名"
+                      :placeholder="trans('请输入仓库域名')"
                       class="domain-input"
                       bg-color="white"
                     />
@@ -101,7 +101,7 @@
           <div class="col-12 col-sm-6">
             <div class="form-item row items-center">
               <div class="form-label col-sm-4">
-                国家/地区 <span class="required">*</span>
+                {{ trans("国家/地区") }} <span class="required">*</span>
               </div>
               <div class="form-input col-sm-8">
                 <q-select
@@ -111,7 +111,7 @@
                   :options="filteredCountries"
                   option-value="code"
                   option-label="name"
-                  placeholder="搜索"
+                  :placeholder="trans('搜索')"
                   map-options
                   emit-value
                   use-input
@@ -121,7 +121,7 @@
                   <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">
-                        未找到匹配的国家/地区
+                        {{ trans("未找到匹配的国家/地区") }}
                       </q-item-section>
                     </q-item>
                   </template>
@@ -134,26 +134,30 @@
         <div class="row q-mb-md">
           <div class="col-12 col-sm-6">
             <div class="form-item row items-center">
-              <div class="form-label col-sm-4">省</div>
+              <div class="form-label col-sm-4">
+                {{ trans("省") }}
+              </div>
               <div class="form-input col-sm-8">
                 <q-input
                   outlined
                   dense
                   v-model="warehouseForm.province"
-                  placeholder="请输入"
+                  :placeholder="trans('请输入')"
                 />
               </div>
             </div>
           </div>
           <div class="col-12 col-sm-6">
             <div class="form-item row items-center">
-              <div class="form-label col-sm-4">市/州</div>
+              <div class="form-label col-sm-4">
+                {{ trans("市/州") }}
+              </div>
               <div class="form-input col-sm-8">
                 <q-input
                   outlined
                   dense
                   v-model="warehouseForm.city"
-                  placeholder="请输入"
+                  :placeholder="trans('请输入')"
                 />
               </div>
             </div>
@@ -163,26 +167,30 @@
         <div class="row q-mb-md">
           <div class="col-12 col-sm-6">
             <div class="form-item row items-center">
-              <div class="form-label col-sm-4">街道</div>
+              <div class="form-label col-sm-4">
+                {{ trans("街道") }}
+              </div>
               <div class="form-input col-sm-8">
                 <q-input
                   outlined
                   dense
                   v-model="warehouseForm.street"
-                  placeholder="请输入"
+                  :placeholder="trans('请输入')"
                 />
               </div>
             </div>
           </div>
           <div class="col-12 col-sm-6">
             <div class="form-item row items-center">
-              <div class="form-label col-sm-4">门牌号</div>
+              <div class="form-label col-sm-4">
+                {{ trans("门牌号") }}
+              </div>
               <div class="form-input col-sm-8">
                 <q-input
                   outlined
                   dense
                   v-model="warehouseForm.door_no"
-                  placeholder="请输入"
+                  :placeholder="trans('请输入')"
                 />
               </div>
             </div>
@@ -192,20 +200,24 @@
         <div class="row q-mb-md">
           <div class="col-12 col-sm-6">
             <div class="form-item row items-center">
-              <div class="form-label col-sm-4">邮编</div>
+              <div class="form-label col-sm-4">
+                {{ trans("邮编") }}
+              </div>
               <div class="form-input col-sm-8">
                 <q-input
                   outlined
                   dense
                   v-model="warehouseForm.postcode"
-                  placeholder="请输入"
+                  :placeholder="trans('请输入')"
                 />
               </div>
             </div>
           </div>
           <div class="col-12 col-sm-6">
             <div class="form-item row items-center">
-              <div class="form-label col-sm-4">时区</div>
+              <div class="form-label col-sm-4">
+                {{ trans("时区") }}
+              </div>
               <div class="form-input col-sm-8">
                 <q-select
                   outlined
@@ -215,7 +227,7 @@
                   option-value="value"
                   option-label="label"
                   emit-value
-                  placeholder="搜索"
+                  :placeholder="trans('搜索')"
                   use-input
                   input-debounce="300"
                   @filter="filterTimezone"
@@ -223,7 +235,7 @@
                   <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">
-                        未找到匹配的时区
+                        {{ trans("未找到匹配的时区") }}
                       </q-item-section>
                     </q-item>
                   </template>
@@ -236,14 +248,16 @@
         <div class="row q-mb-md">
           <div class="col-12">
             <div class="form-item row items-start">
-              <div class="form-label col-sm-2">地址</div>
+              <div class="form-label col-sm-2">
+                {{ trans("地址") }}
+              </div>
               <div class="form-input col-sm-10">
                 <q-input
                   outlined
                   type="textarea"
                   rows="3"
                   v-model="warehouseForm.address"
-                  placeholder="请输入"
+                  :placeholder="trans('请输入')"
                 />
               </div>
             </div>
@@ -253,26 +267,30 @@
         <div class="row q-mb-md">
           <div class="col-12 col-sm-6">
             <div class="form-item row items-center">
-              <div class="form-label col-sm-4">联系人</div>
+              <div class="form-label col-sm-4">
+                {{ trans("联系人") }}
+              </div>
               <div class="form-input col-sm-8">
                 <q-input
                   outlined
                   dense
                   v-model="warehouseForm.contact_user"
-                  placeholder="请输入"
+                  :placeholder="trans('请输入')"
                 />
               </div>
             </div>
           </div>
           <div class="col-12 col-sm-6">
             <div class="form-item row items-center">
-              <div class="form-label col-sm-4">联系电话</div>
+              <div class="form-label col-sm-4">
+                {{ trans("联系电话") }}
+              </div>
               <div class="form-input col-sm-8">
                 <q-input
                   outlined
                   dense
                   v-model="warehouseForm.contact_phone"
-                  placeholder="请输入"
+                  :placeholder="trans('请输入')"
                 />
               </div>
             </div>
@@ -282,26 +300,30 @@
         <div class="row q-mb-md">
           <div class="col-12 col-sm-6">
             <div class="form-item row items-center">
-              <div class="form-label col-sm-4">联系邮箱</div>
+              <div class="form-label col-sm-4">
+                {{ trans("联系邮箱") }}
+              </div>
               <div class="form-input col-sm-8">
                 <q-input
                   outlined
                   dense
                   v-model="warehouseForm.contact_email"
-                  placeholder="请输入"
+                  :placeholder="trans('请输入')"
                 />
               </div>
             </div>
           </div>
           <div class="col-12 col-sm-6">
             <div class="form-item row items-center">
-              <div class="form-label col-sm-4">币种</div>
+              <div class="form-label col-sm-4">
+                {{ trans("币种") }}
+              </div>
               <div class="form-input col-sm-8">
                 <q-input
                   outlined
                   dense
                   v-model="warehouseForm.currency"
-                  placeholder="请输入"
+                  :placeholder="trans('请输入')"
                 />
               </div>
             </div>
@@ -311,7 +333,9 @@
         <div class="row">
           <div class="col-12">
             <div class="form-item row items-start">
-              <div class="form-label col-sm-2">备注</div>
+              <div class="form-label col-sm-2">
+                {{ trans("备注") }}
+              </div>
               <div class="form-input col-sm-10">
                 <q-input
                   outlined
@@ -336,7 +360,7 @@ import Dialog from "@/components/Dialog.vue";
 import warehouseApi from "@/api/warehouse";
 import { useStore } from "vuex";
 import api from "@/api";
-
+import trans from "@/i18n";
 const store = useStore();
 const $q = useQuasar();
 const emit = defineEmits(["update:modelValue", "created", "updated"]);
@@ -369,7 +393,9 @@ const props = defineProps({
 });
 
 // 表单标题
-const formTitle = computed(() => (props.editMode ? "编辑仓库" : "新建仓库"));
+const formTitle = computed(() =>
+  props.editMode ? trans("编辑仓库") : trans("新建仓库")
+);
 
 // 控制对话框显示
 const visible = computed({
@@ -463,25 +489,25 @@ const handleSubmit = () => {
   // 表单验证
   if (!warehouseForm.value.name) {
     $q.notify({
-      message: "请输入仓库名称",
+      message: trans("请输入仓库名称"),
       color: "negative",
     });
     return;
   } else if (!warehouseForm.value.code) {
     $q.notify({
-      message: "请输入仓库编号",
+      message: trans("请输入仓库编号"),
       color: "negative",
     });
     return;
   } else if (!warehouseForm.value.domain) {
     $q.notify({
-      message: "请输入仓库域名",
+      message: trans("请输入仓库域名"),
       color: "negative",
     });
     return;
   } else if (!warehouseForm.value.country_code) {
     $q.notify({
-      message: "请选择国家/地区",
+      message: trans("请选择国家/地区"),
       color: "negative",
     });
     return;
@@ -498,7 +524,7 @@ const handleSubmit = () => {
         if (res.success) {
           visible.value = false;
           $q.notify({
-            message: "仓库更新成功",
+            message: trans("仓库更新成功"),
             color: "positive",
           });
           emit("updated", res.data);
@@ -516,7 +542,7 @@ const handleSubmit = () => {
             if (res.success) {
               visible.value = false;
               $q.notify({
-                message: "仓库创建成功",
+                message: trans("仓库创建成功"),
                 color: "positive",
               });
               emit("created", res.data);

@@ -3,7 +3,7 @@
     <q-card class="material-form-dialog">
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6">
-          {{ componentData.form.id ? "编辑包材" : "新建包材" }}
+          {{ componentData.form.id ? trans("编辑包材") : trans("新建包材") }}
         </div>
         <q-space />
         <q-btn icon="close" flat round dense @click="close" />
@@ -24,9 +24,9 @@
                     outlined
                     dense
                     v-model="componentData.form.code"
-                    label="包材编号 *"
+                    :label="trans('包材编号') + ' *'"
                     placeholder="请输入"
-                    :rules="[(val) => !!val || '必填']"
+                    :rules="[(val) => !!val || trans('必填')]"
                   />
                 </div>
                 <div class="col-12">
@@ -34,9 +34,9 @@
                     outlined
                     dense
                     v-model="componentData.form.name"
-                    label="包材名称 *"
+                    :label="trans('包材名称') + ' *'"
                     placeholder="请输入"
-                    :rules="[(val) => !!val || '必填']"
+                    :rules="[(val) => !!val || trans('必填')]"
                   />
                 </div>
                 <div class="col-12 pr-hidden">
@@ -44,9 +44,9 @@
                     outlined
                     dense
                     v-model="componentData.form.price"
-                    label="售价 *"
-                    placeholder="请输入"
-                    :rules="[(val) => !!val || '必填']"
+                    :label="trans('售价') + ' *'"
+                    :placeholder="trans('请输入')"
+                    :rules="[(val) => !!val || trans('必填')]"
                   >
                     <template #append>
                       <q-select
@@ -59,7 +59,7 @@
                         dropdown-icon="arrow_drop_down"
                         emit-value
                         map-options
-                        label="货币"
+                        :label="trans('货币')"
                       />
                     </template>
                   </q-input>
@@ -71,7 +71,7 @@
                       style="flex: 1"
                       dense
                       v-model="componentData.form.dimensions.length"
-                      label="长"
+                      :label="trans('长')"
                       type="number"
                       min="0"
                     >
@@ -84,7 +84,7 @@
                       dense
                       style="flex: 1"
                       v-model="componentData.form.dimensions.width"
-                      label="宽"
+                      :label="trans('宽')"
                       type="number"
                       min="0"
                     >
@@ -97,7 +97,7 @@
                       dense
                       style="flex: 1"
                       v-model="componentData.form.dimensions.height"
-                      label="高"
+                      :label="trans('高')"
                       type="number"
                       min="0"
                     >
@@ -112,8 +112,8 @@
                     outlined
                     dense
                     v-model="componentData.form.weight"
-                    label="重量"
-                    placeholder="请输入"
+                    :label="trans('重量')"
+                    :placeholder="trans('请输入')"
                     type="number"
                     min="0"
                   >
@@ -131,11 +131,15 @@
                   color="grey-5"
                   class="q-mr-xs"
                 />
-                包材售价的货币单位与客户结算货币不一致时，系统将按照跟踪前一天的汇率转换后扣费
+                {{
+                  trans(
+                    "包材售价的货币单位与客户结算货币不一致时，系统将按照跟踪前一天的汇率转换后扣费"
+                  )
+                }}
               </div>
               <q-card-actions align="right" class="q-mt-md">
-                <q-btn flat label="取消" @click="close" />
-                <q-btn color="primary" label="确认" type="submit" />
+                <q-btn flat :label="trans('取消')" @click="close" />
+                <q-btn color="primary" :label="trans('确认')" type="submit" />
               </q-card-actions>
             </q-form>
           </div>
@@ -151,6 +155,7 @@ import Image from "@/components/Image/Index.vue";
 import ProductApi from "@/api/product.js";
 import Message from "@/utils/message.js";
 import IndexApi from "@/api/index.js";
+import trans from "@/i18n";
 
 const emit = defineEmits(["refresh"]);
 const myForm = ref(null);
@@ -215,7 +220,7 @@ const handleConfirm = async () => {
 
   if (!componentData.form.id) {
     await ProductApi.createMaterial(componentData.form);
-    Message.successMessage("操作成功");
+    Message.successMessage(trans("操作成功"));
   } else {
     await ProductApi.updateMaterial(componentData.form.id, componentData.form);
   }

@@ -1,5 +1,5 @@
 <template>
-    <div>
+  <div>
     <div class="page-header">
       <div class="page-title">
         <q-btn
@@ -9,40 +9,45 @@
           class="q-mr-sm"
           to="/product/product?type=spu"
         />
-        <span>编辑商品</span>
+        <span>{{ trans("编辑商品") }}</span>
       </div>
       <div class="page-actions">
         <q-btn
           outline
-          label="取消"
+          :label="trans('取消')"
           class="q-mr-sm"
           to="/product/product?type=spu"
         />
         <q-btn
           color="primary"
-          label="保存"
+          :label="trans('保存')"
           :loading="$store.state.btnLoading"
           @click="saveProduct"
         />
       </div>
     </div>
 
-    <div v-if="$store.state.btnLoading" class="q-pa-md flex justify-center items-center">
+    <div
+      v-if="$store.state.btnLoading"
+      class="q-pa-md flex justify-center items-center"
+    >
       <q-spinner-dots color="primary" size="40px" />
     </div>
     <div v-else>
       <!-- 基本信息 -->
       <div class="bg-white rounded-borders q-pa-lg q-mb-md">
-        <div class="text-subtitle1 text-weight-medium q-mb-lg">基本信息</div>
+        <div class="text-subtitle1 text-weight-medium q-mb-lg">
+          {{ trans("基本信息") }}
+        </div>
 
         <div class="row q-col-gutter-y-md">
           <div class="col-12 info-row">
-            <div class="info-label">商品名称</div>
+            <div class="info-label">{{ trans("商品名称") }}</div>
             <div class="info-value">{{ product.name || "" }}</div>
           </div>
 
           <div class="col-12 info-row">
-            <div class="info-label">商品分类</div>
+            <div class="info-label">{{ trans("商品分类") }}</div>
             <div class="info-value">
               <div
                 ref="categoryDisplay"
@@ -50,13 +55,13 @@
                 @click="toggleCategoryMenu($event)"
               >
                 <div class="selected-category">
-                  {{ product.category_name || "请选择分类" }}
+                  {{ product.category_name || trans("请选择分类") }}
                 </div>
                 <q-icon name="arrow_drop_down" />
               </div>
 
-              <div 
-                v-if="showCategoryMenu" 
+              <div
+                v-if="showCategoryMenu"
                 class="category-menu-container"
                 :class="{ 'position-top': menuPosition === 'top' }"
                 ref="categoryMenuContainer"
@@ -167,41 +172,41 @@
           </div>
 
           <div class="col-12 info-row">
-            <div class="info-label">客户</div>
+            <div class="info-label">{{ trans("客户") }}</div>
             <div class="info-value">{{ product.customer?.name || "" }}</div>
           </div>
 
           <div class="col-12 info-row">
-            <div class="info-label">收货状态</div>
+            <div class="info-label">{{ trans("收货状态") }}</div>
             <div class="info-value">
               <div class="row q-gutter-x-md">
                 <q-radio
                   v-model="product.allow_inbound"
                   val="true"
-                  label="允许收货"
+                  :label="trans('允许收货')"
                 />
                 <q-radio
                   v-model="product.allow_inbound"
                   val="false"
-                  label="禁止收货"
+                  :label="trans('禁止收货')"
                 />
               </div>
             </div>
           </div>
 
           <div class="col-12 info-row">
-            <div class="info-label">销售状态</div>
+            <div class="info-label">{{ trans("销售状态") }}</div>
             <div class="info-value">
               <div class="row q-gutter-x-md">
                 <q-radio
                   v-model="product.allow_order"
                   val="true"
-                  label="允许销售"
+                  :label="trans('允许销售')"
                 />
                 <q-radio
                   v-model="product.allow_order"
                   val="false"
-                  label="禁止销售"
+                  :label="trans('禁止销售')"
                 />
               </div>
             </div>
@@ -218,21 +223,23 @@
 
       <!-- 申报信息 -->
       <div class="bg-white rounded-borders q-pa-lg q-mb-md">
-        <div class="text-subtitle1 text-weight-medium q-mb-lg">申报信息</div>
+        <div class="text-subtitle1 text-weight-medium q-mb-lg">
+          {{ trans("申报信息") }}
+        </div>
 
         <div class="row q-col-gutter-y-md">
           <div class="col-12 info-row">
-            <div class="info-label">申报中文名</div>
+            <div class="info-label">{{ trans("申报中文名") }}</div>
             <div class="info-value">{{ product.customs_name_cn || "" }}</div>
           </div>
 
           <div class="col-12 info-row">
-            <div class="info-label">申报英文名</div>
+            <div class="info-label">{{ trans("申报英文名") }}</div>
             <div class="info-value">{{ product.customs_name_en || "" }}</div>
           </div>
 
           <div class="col-12 info-row">
-            <div class="info-label">申报价格</div>
+            <div class="info-label">{{ trans("申报价格") }}</div>
             <div class="info-value">
               {{ product.customs_price || "" }}
               {{ product.customs_currency || "" }}
@@ -240,7 +247,7 @@
           </div>
 
           <div class="col-12 info-row">
-            <div class="info-label">报关属性</div>
+            <div class="info-label">{{ trans("报关属性") }}</div>
             <div class="info-value">
               {{ getCustomsTypeLabel(product.customs_type) || "" }}
             </div>
@@ -248,7 +255,7 @@
         </div>
       </div>
     </div>
-    </div>
+  </div>
 </template>
 
 <script setup>
@@ -257,6 +264,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useQuasar } from "quasar";
 import productApi from "@/api/product";
 import categoriesApi from "@/api/categories";
+import trans from "@/i18n";
 
 const route = useRoute();
 const router = useRouter();
@@ -282,7 +290,6 @@ const actualSize = ref({
   width: "",
   height: "",
 });
-
 
 const actualWeight = ref("");
 
@@ -448,7 +455,7 @@ const getCategoryTree = async () => {
     console.error("Failed to load categories:", error);
     $q.notify({
       color: "negative",
-      message: "加载商品分类失败",
+      message: trans("加载商品分类失败"),
       icon: "error",
     });
   }
@@ -457,19 +464,18 @@ const getCategoryTree = async () => {
 const showCategoryMenu = ref(false);
 const categoryMenuContainer = ref(null);
 const categoryDisplay = ref(null);
-const menuPosition = ref('bottom'); // 默认向下显示
+const menuPosition = ref("bottom"); // 默认向下显示
 
 // 点击外部关闭菜单
 const handleOutsideClick = (event) => {
   // 菜单未显示时不处理
   if (!showCategoryMenu.value) return;
-  
+
   // 检查点击是否在菜单外部
-  const isClickedOutside = (
-    !event.target.closest('.category-display') && 
-    !event.target.closest('.category-menu-container')
-  );
-  
+  const isClickedOutside =
+    !event.target.closest(".category-display") &&
+    !event.target.closest(".category-menu-container");
+
   if (isClickedOutside) {
     showCategoryMenu.value = false;
   }
@@ -478,20 +484,22 @@ const handleOutsideClick = (event) => {
 // 检测元素位置并判断菜单显示方向
 const checkMenuPosition = () => {
   if (!categoryDisplay.value) return;
-  
+
   const rect = categoryDisplay.value.getBoundingClientRect();
   const windowHeight = window.innerHeight;
   const spaceBelow = windowHeight - rect.bottom;
   const menuHeight = 350; // 菜单大致高度
-  
+
   // 如果下方空间不足，向上显示
   if (spaceBelow < menuHeight && rect.top > menuHeight) {
-    menuPosition.value = 'top';
+    menuPosition.value = "top";
   } else {
-    menuPosition.value = 'bottom';
+    menuPosition.value = "bottom";
   }
-  
-  console.log(`菜单显示方向: ${menuPosition.value}, 下方空间: ${spaceBelow}px, 窗口高度: ${windowHeight}px`);
+
+  console.log(
+    `菜单显示方向: ${menuPosition.value}, 下方空间: ${spaceBelow}px, 窗口高度: ${windowHeight}px`
+  );
 };
 
 // 组件挂载和卸载时添加/移除事件监听
@@ -499,18 +507,18 @@ onMounted(() => {
   getProduct();
   getCategoryTree();
   customsTypes();
-  
+
   // 添加全局点击事件监听
-  document.addEventListener('click', handleOutsideClick);
+  document.addEventListener("click", handleOutsideClick);
   // 添加窗口大小变化监听
-  window.addEventListener('resize', checkMenuPosition);
+  window.addEventListener("resize", checkMenuPosition);
 });
 
 onBeforeUnmount(() => {
   // 移除全局点击事件监听
-  document.removeEventListener('click', handleOutsideClick);
+  document.removeEventListener("click", handleOutsideClick);
   // 移除窗口大小变化监听
-  window.removeEventListener('resize', checkMenuPosition);
+  window.removeEventListener("resize", checkMenuPosition);
 });
 
 const getProduct = () => {
@@ -526,7 +534,7 @@ const getProduct = () => {
       }
 
       product.value = res.data;
-      
+
       // 如果有分类ID且分类数据已加载，设置选中状态
       if (product.value.category_id && categoryOptions.value.length > 0) {
         setSelectedCategoryPath(product.value.category_id);
@@ -544,59 +552,63 @@ const setSelectedCategoryPath = (categoryId) => {
   }
 
   // 查找目标分类
-  const targetCategory = categoryOptions.value.find(cat => cat.value === categoryId);
+  const targetCategory = categoryOptions.value.find(
+    (cat) => cat.value === categoryId
+  );
   if (!targetCategory) {
     console.log("未找到对应的分类：", categoryId);
     return;
   }
-  
+
   // 查找分类路径
   const path = findCategoryPath(categoryId);
   if (path.length === 0) return;
-  
+
   // 路径中的分类应该从顶级到底层排序
   const orderedPath = [...path].reverse();
-  
+
   // 根据路径长度设置不同级别的选中状态
   if (orderedPath.length >= 1) {
     const firstLevel = orderedPath[0];
     tempSelectedCategory.value = firstLevel;
     firstLevelCategories.value = getSubCategories(firstLevel);
   }
-  
+
   if (orderedPath.length >= 2) {
     const secondLevel = orderedPath[1];
     tempActiveSubCategory.value = secondLevel;
     secondLevelCategories.value = getSubCategories(secondLevel);
   }
-  
+
   if (orderedPath.length >= 3) {
     const thirdLevel = orderedPath[2];
     tempThirdCategory.value = thirdLevel;
     thirdLevelCategories.value = getSubCategories(thirdLevel);
   }
-  
+
   // 最后设置产品分类ID和名称
   product.value.category_id = targetCategory.value;
   product.value.category_name = targetCategory.label;
-  
+
   // 如果是从编辑进入，自动展开分类选择器展示已选分类
   // showCategoryMenu.value = true;
-  
+
   console.log("成功设置分类选中状态:", orderedPath);
 };
 
 // 递归查找分类路径
 const findCategoryPath = (categoryId, path = []) => {
-  const category = categoryOptions.value.find(cat => cat.value === categoryId);
+  const category = categoryOptions.value.find(
+    (cat) => cat.value === categoryId
+  );
   if (!category) return [];
-  
+
   const newPath = [category, ...path];
-  
+
   if (!category.parent_id) {
     return newPath;
   }
-  
+
   return findCategoryPath(category.parent_id, newPath);
 };
 
@@ -615,7 +627,7 @@ const saveProduct = async () => {
   if (res.success) {
     $q.notify({
       color: "positive",
-      message: "商品信息保存成功",
+      message: trans("商品信息保存成功"),
       icon: "check",
     });
     router.push("/product/product?type=spu");
@@ -697,24 +709,27 @@ const selectFinalCategory = (category) => {
 // 生成分类名称路径字符串，用于显示
 const getCategoryPathDisplay = computed(() => {
   if (!product.value.category_id) return "";
-  
+
   const path = findCategoryPath(product.value.category_id);
   if (path.length === 0) return product.value.category_name || "";
-  
+
   // 反转路径并提取标签名
-  return [...path].reverse().map(cat => cat.label).join(" / ");
+  return [...path]
+    .reverse()
+    .map((cat) => cat.label)
+    .join(" / ");
 });
 
 // 仅当有展示需求时才显示分类菜单
 const toggleCategoryMenu = (event) => {
   // 阻止事件冒泡，避免立即触发外部点击事件关闭
   event.stopPropagation();
-  
+
   // 切换显示前检查位置
   if (!showCategoryMenu.value) {
     checkMenuPosition();
   }
-  
+
   showCategoryMenu.value = !showCategoryMenu.value;
 };
 </script>
@@ -823,7 +838,7 @@ const toggleCategoryMenu = (event) => {
   width: 650px;
   max-width: 100%;
   z-index: 100;
-  
+
   &.position-top {
     bottom: 100%;
     margin-top: 0;

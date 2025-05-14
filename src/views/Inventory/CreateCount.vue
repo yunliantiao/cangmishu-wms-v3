@@ -4,13 +4,13 @@
       <div class="row items-center">
         <q-btn flat dense icon="arrow_back" @click="$router.back()" />
         <div class="text-h6 q-ml-sm">
-          {{ id ? "编辑盘点单" : "创建盘点单" }}
+          {{ id ? trans("编辑盘点单") : trans("创建盘点单") }}
         </div>
       </div>
       <div>
         <q-btn
           outline
-          label="取消"
+          :label="trans('取消')"
           color="grey"
           class="q-mr-sm"
           @click="$router.back()"
@@ -18,14 +18,14 @@
         <q-btn
           outline
           class="q-mr-sm"
-          label="保存"
+          :label="trans('保存')"
           color="primary"
           :loading="$store.state.btnLoading"
           @click="handleSave('save')"
         />
         <q-btn
           unelevated
-          label="开始盘点"
+          :label="trans('开始盘点')"
           color="primary"
           :loading="$store.state.btnLoading"
           @click="handleSave('start')"
@@ -35,7 +35,7 @@
     <div class="q-mb-md">
       <!-- 基本信息 -->
       <div class="bg-white rounded-borders q-pa-lg q-mb-md">
-        <div class="text-subtitle1 q-mb-md">基本信息</div>
+        <div class="text-subtitle1 q-mb-md">{{ trans("基本信息") }}</div>
         <q-form ref="formRef" class="q-gutter-md" @submit="handleSave">
           <div class="row q-mb-md">
             <div class="col-4">
@@ -43,7 +43,7 @@
                 outlined
                 v-model="formData.type"
                 :options="inventoryTypes"
-                label="盘点类型"
+                :label="trans('盘点类型')"
                 @update:model-value="handleTypeChange"
                 :rules="rules.type"
                 emit-value
@@ -55,17 +55,17 @@
               </q-select>
             </div>
             <div class="col-4 q-ml-xl">
-              <div>0库存是否参加盘点</div>
+              <div>{{ trans("0库存是否参加盘点") }}</div>
               <q-radio
                 v-model="formData.is_zero_counting"
                 :val="true"
-                label="是"
+                :label="trans('是')"
               />
               <span class="q-ml-md"></span>
               <q-radio
                 v-model="formData.is_zero_counting"
                 :val="false"
-                label="否"
+                :label="trans('否')"
               />
             </div>
           </div>
@@ -74,7 +74,7 @@
               <q-input
                 outlined
                 v-model="formData.remark"
-                label="备注"
+                :label="trans('备注')"
                 type="textarea"
                 rows="4"
               />
@@ -84,11 +84,11 @@
       </div>
       <div class="bg-white rounded-borders q-pa-lg">
         <div class="row items-center justify-between q-mb-lg">
-          <div class="text-subtitle1">盘点信息</div>
+          <div class="text-subtitle1">{{ trans("盘点信息") }}</div>
           <q-btn
             outline
             color="primary"
-            label="选择商品"
+            :label="trans('选择商品')"
             icon="add"
             @click="selectGoods"
           />
@@ -108,7 +108,7 @@
           >
             <template v-slot:no-data>
               <div class="full-width row flex-center q-my-lg">
-                <span class="text-grey">暂无数据</span>
+                <span class="text-grey">{{ trans("暂无数据") }} </span>
               </div>
             </template>
             <!-- 自定义表头 -->
@@ -161,7 +161,7 @@
                     flat
                     dense
                     color="primary"
-                    label="删除"
+                    :label="trans('删除')"
                     @click="handleDelete(props.row)"
                   />
                 </q-td>
@@ -189,6 +189,7 @@ import { useQuasar } from "quasar";
 import inventoryApi from "@/api/inventory";
 import settingApi from "@/api/setting";
 import { useRoute, useRouter } from "vue-router";
+import trans from "@/i18n";
 
 const route = useRoute();
 const router = useRouter();
@@ -196,14 +197,14 @@ const id = route.query.id;
 const $q = useQuasar();
 const formRef = ref(null);
 const rules = {
-  type: [(val) => !!val || "请选择盘点类型"],
+  type: [(val) => !!val || trans("请选择盘点类型")],
 };
 const showProductSelector = ref(false);
 const showStocksSelector = ref(false);
 
 const inventoryTypes = ref([
-  { label: "商品+货架位", value: "product_location" },
-  { label: "货架位", value: "location_only" },
+  { label: trans("商品+货架位"), value: "product_locatxion" },
+  { label: trans("货架位"), value: "location_only" },
 ]);
 
 const formData = ref({
@@ -216,19 +217,19 @@ const formData = ref({
 const columns = [
   {
     name: "sku",
-    label: "商品SKU",
+    label: trans("商品SKU"),
     align: "left",
     field: "sku",
   },
   {
     name: "name",
-    label: "商品名称",
+    label: trans("商品名称"),
     align: "left",
     field: (row) => row.product?.name || "-",
   },
   {
     name: "customer",
-    label: "客户",
+    label: trans("客户"),
     align: "left",
     field: (row) => {
       const code = row.customer?.code || "-";
@@ -237,19 +238,19 @@ const columns = [
   },
   {
     name: "location",
-    label: "货架位",
+    label: trans("货架位"),
     align: "left",
     field: (row) => row.location || "B-001",
   },
   {
     name: "type",
-    label: "货区类型",
+    label: trans("货区类型"),
     align: "left",
     field: (row) => row.type || "拣货区",
   },
   {
     name: "actions",
-    label: "操作",
+    label: trans("操作"),
     align: "center",
   },
 ];
@@ -258,7 +259,7 @@ const selectGoods = () => {
   if (!formData.value.type) {
     $q.notify({
       type: "warning",
-      message: "请选择盘点类型",
+      message: trans("请选择盘点类型"),
     });
     return;
   }
@@ -297,16 +298,16 @@ const getStocksLocations = (val) => {
 const handleTypeChange = (val) => {
   if (tableData.value.length) {
     $q.dialog({
-      title: "提示",
-      message: "更换盘点类型，将会清空已添加的商品，确定要更换吗？",
+      title: trans("提示"),
+      message: trans("更换盘点类型，将会清空已添加的商品，确定要更换吗？"),
       cancel: true,
       persistent: true,
       ok: {
-        label: "确认",
+        label: trans("确认"),
         color: "primary",
       },
       cancel: {
-        label: "取消",
+        label: trans("取消"),
         color: "grey-7",
       },
     })
@@ -324,7 +325,7 @@ const handleSave = async (type) => {
   if (!formData.value.type) {
     $q.notify({
       type: "warning",
-      message: "请选择盘点类型",
+      message: trans("请选择盘点类型"),
     });
     return;
   }
@@ -332,7 +333,7 @@ const handleSave = async (type) => {
   if (tableData.value.length === 0) {
     $q.notify({
       type: "warning",
-      message: "请选择商品",
+      message: trans("请选择商品"),
     });
     return;
   }

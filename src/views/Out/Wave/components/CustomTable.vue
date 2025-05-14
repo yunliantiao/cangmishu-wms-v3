@@ -2,10 +2,15 @@
   <div class="custom-table">
     <div class="row items-center q-mb-sm">
       <div class="col-auto">
-        <span>选择 {{ componentData.selectCount }}</span>
+        <span>{{ trans("选择") }} {{ componentData.selectCount }}</span>
       </div>
       <div class="col-auto q-ml-md" v-if="props.showError">
-        <q-btn flat color="primary" @click="handleError" label="标记异常" />
+        <q-btn
+          flat
+          color="primary"
+          @click="handleError"
+          :label="trans('标记异常')"
+        />
       </div>
     </div>
 
@@ -18,11 +23,11 @@
               @update:model-value="toggleSelectAll"
             />
           </th>
-          <th>包裹信息</th>
-          <th>物流方式/运单号</th>
-          <th>收货人&地区</th>
-          <th>状态&时间</th>
-          <th>操作</th>
+          <th>{{ trans("包裹信息") }}</th>
+          <th>{{ trans("物流方式/运单号") }}</th>
+          <th>{{ trans("收货人&地区") }}</th>
+          <th>{{ trans("状态&时间") }}</th>
+          <th>{{ trans("操作") }}</th>
         </tr>
       </thead>
 
@@ -39,14 +44,16 @@
             </td>
             <td>
               <div>
-                包裹号: {{ row.package_number }} ({{
+                {{ trans("包裹号") }}: {{ row.package_number }} ({{
                   getWaveTypeText(row.package_type)
                 }})
               </div>
             </td>
             <td>
               <div>
-                客户: {{ row.customer?.name }} [{{ row.customer?.code }}]
+                {{ trans("客户") }}: {{ row.customer?.name }} [{{
+                  row.customer?.code
+                }}]
               </div>
             </td>
             <td></td>
@@ -92,8 +99,12 @@
               </div>
             </td>
             <td>
-              <div>物流方式:{{ row.logistics_channels_name || "--" }}</div>
-              <div>单号:{{ row.tracking_number || "--" }}</div>
+              <div>
+                {{ trans("物流方式") }}:{{
+                  row.logistics_channels_name || "--"
+                }}
+              </div>
+              <div>{{ trans("单号") }}:{{ row.tracking_number || "--" }}</div>
             </td>
             <td>
               <div>
@@ -107,8 +118,8 @@
               <div>
                 {{ getStatusDesc(row.status) }}
               </div>
-              <div>创建:{{ row.created_at }}</div>
-              <div>波次:{{ row.wave_at }}</div>
+              <div>{{ trans("创建") }}:{{ row.created_at }}</div>
+              <div>{{ trans("波次") }}:{{ row.wave_at }}</div>
             </td>
             <td>
               <q-btn
@@ -127,7 +138,7 @@
                 class="table-icon"
               >
                 <img src="@/assets/images/error.png" />
-                <q-tooltip>标记异常</q-tooltip>
+                <q-tooltip>{{ trans("标记异常") }}</q-tooltip>
               </q-btn>
 
               <q-btn
@@ -137,7 +148,7 @@
                 class="table-icon"
               >
                 <img src="@/assets/images/detail.png" />
-                <q-tooltip>详情</q-tooltip>
+                <q-tooltip>{{ trans("详情") }}</q-tooltip>
               </q-btn>
             </td>
           </tr>
@@ -160,6 +171,7 @@ import { useRoute } from "vue-router";
 import OrderDetailsDialog from "../../components/OrderDetailsDialog.vue";
 import outApi from "@/api/out";
 import HandleError from "./HandleError.vue";
+import trans from "@/i18n";
 
 const componentData = reactive({
   showOrderDialog: false,
@@ -229,10 +241,10 @@ const selectRow = () => {
 // 获取波次类型文本
 const getWaveTypeText = (type) => {
   const typeMap = {
-    single_item: "单品单数",
-    multi_items: "单品多数",
-    mixed_items: "多品混包",
-    hot_wave: "爆款包裹",
+    single_item: trans("单品单数"),
+    multi_items: trans("单品多数"),
+    mixed_items: trans("多品混包"),
+    hot_wave: trans("爆款包裹"),
   };
   return typeMap[type];
 };
@@ -249,18 +261,18 @@ const getStatusDesc = (status) => {
   // cancelled	发货前被取消的包裹
 
   const statusMap = {
-    pending_transfer: "待调拨",
-    pending_print: "待加入波次",
-    pending_pick: "待拣货",
-    pending_pack: "待包装",
-    packing: "包装中",
-    pending_shipment: "待发货",
-    shipped: "已发货",
-    exception: "异常",
-    cancelled: "已取消",
+    pending_transfer: trans("待调拨"),
+    pending_print: trans("待加入波次"),
+    pending_pick: trans("待拣货"),
+    pending_pack: trans("待包装"),
+    packing: trans("包装中"),
+    pending_shipment: trans("待发货"),
+    shipped: trans("已发货"),
+    exception: trans("异常"),
+    cancelled: trans("已取消"),
   };
 
-  return statusMap[status] || status || "未知状态";
+  return statusMap[status] || status || trans("未知状态");
 };
 
 const getCheckedList = () => {
@@ -273,7 +285,7 @@ const handleError = () => {
   if (ids.length) {
     handleErrorRef.value.open(route.query.id, ids);
   } else {
-    NotifyUtils.notify("请选择包裹");
+    NotifyUtils.notify(trans("请选择包裹"));
   }
 };
 

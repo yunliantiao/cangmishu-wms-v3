@@ -59,7 +59,7 @@
             dense
             v-model="pageData.filterOptions.pick_print_status"
             :options="pageData.printStatusOptions"
-            label="拣货单打印"
+            :label="trans('拣货单打印')"
             class="filter-select"
             emit-value
             map-options

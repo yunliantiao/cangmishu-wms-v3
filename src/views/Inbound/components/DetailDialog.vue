@@ -10,7 +10,9 @@
   >
     <q-card class="detail-card" style="width: 80vw; max-width: 1400px">
       <q-card-section class="dialog-header row items-center bg-grey-2">
-        <div class="text-subtitle1 text-weight-medium">入库单详情</div>
+        <div class="text-subtitle1 text-weight-medium">
+          {{ trans("入库单详情") }}
+        </div>
         <q-space />
         <q-btn flat round dense icon="close" @click="close" />
       </q-card-section>
@@ -18,11 +20,13 @@
       <q-card-section class="dialog-body q-pa-md scroll" v-if="orderDetails">
         <!-- 基本信息 -->
         <div class="detail-section bg-white q-pa-md q-mb-md rounded-borders">
-          <div class="text-subtitle1 text-weight-medium q-mb-md">基本信息</div>
+          <div class="text-subtitle1 text-weight-medium q-mb-md">
+            {{ trans("基本信息") }}
+          </div>
           <div class="row q-col-gutter-md">
             <div class="col-3">
               <div class="detail-item">
-                <div class="detail-label">客户</div>
+                <div class="detail-label">{{ trans("客户") }}</div>
                 <div class="detail-value">
                   {{ orderDetails.customer?.name || "--" }}
                 </div>
@@ -30,7 +34,7 @@
             </div>
             <div class="col-3">
               <div class="detail-item">
-                <div class="detail-label">入库单号</div>
+                <div class="detail-label">{{ trans("入库单号") }}</div>
                 <div class="detail-value">
                   {{ orderDetails.system_order_number }}
                 </div>
@@ -38,7 +42,7 @@
             </div>
             <div class="col-3">
               <div class="detail-item">
-                <div class="detail-label">运单号</div>
+                <div class="detail-label">{{ trans("运单号") }}</div>
                 <div class="detail-value">
                   {{ orderDetails.tracking_number || "--" }}
                 </div>
@@ -46,17 +50,19 @@
             </div>
             <div class="col-3">
               <div class="detail-item">
-                <div class="detail-label">到仓方式</div>
+                <div class="detail-label">{{ trans("到仓方式") }}</div>
                 <div class="detail-value">
                   {{
-                    orderDetails.arrival_method === "box" ? "箱子" : "快递包裹"
+                    orderDetails.arrival_method === "box"
+                      ? trans("箱子")
+                      : trans("快递包裹")
                   }}
                 </div>
               </div>
             </div>
             <div class="col-3">
               <div class="detail-item">
-                <div class="detail-label">签收时间</div>
+                <div class="detail-label">{{ trans("签收时间") }}</div>
                 <div class="detail-value">
                   {{ orderDetails.sign_at || "--" }}
                 </div>
@@ -83,11 +89,11 @@
             dense
             narrow-indicator
           >
-            <q-tab name="products" label="商品信息" />
+            <q-tab name="products" :label="trans('商品信息')" />
             <q-tab
               name="packages"
               v-if="orderDetails.arrival_method === 'box'"
-              label="装箱信息"
+              :label="trans('装箱信息')"
             />
           </q-tabs>
 
@@ -98,12 +104,14 @@
               <q-markup-table flat bordered class="q-mb-none">
                 <thead>
                   <tr>
-                    <th class="text-left product-col">SKU信息</th>
-                    <th class="text-center">申报体积&重量</th>
-                    <th class="text-center">实际体积&重量</th>
-                    <th class="text-center">申报入库数量</th>
-                    <th class="text-center">已收</th>
-                    <th class="text-center">上架良品</th>
+                    <th class="text-left product-col">
+                      {{ trans("SKU信息") }}
+                    </th>
+                    <th class="text-center">{{ trans("申报体积&重量") }}</th>
+                    <th class="text-center">{{ trans("实际体积&重量") }}</th>
+                    <th class="text-center">{{ trans("申报入库数量") }}</th>
+                    <th class="text-center">{{ trans("已收") }}</th>
+                    <th class="text-center">{{ trans("上架良品") }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -159,10 +167,14 @@
                     </td>
                   </tr>
                   <tr v-if="skuList.length === 0">
-                    <td colspan="6" class="text-center">暂无数据</td>
+                    <td colspan="6" class="text-center">
+                      {{ trans("暂无数据") }}
+                    </td>
                   </tr>
                   <tr class="bg-grey-2">
-                    <td class="text-left">合计{{ skuList.length }}条</td>
+                    <td class="text-left">
+                      {{ trans("合计") }} {{ skuList.length }} {{ trans("条") }}
+                    </td>
                     <td class="text-center">--</td>
                     <td class="text-center">--</td>
                     <td class="text-center">{{ getTotalQty(skuList) }}</td>
@@ -182,12 +194,12 @@
                 <thead>
                   <tr>
                     <th class="text-center" style="width: 60px">#</th>
-                    <th class="text-left">箱唛号</th>
-                    <th class="text-center">箱子尺寸</th>
-                    <th class="text-center">箱子重量</th>
-                    <th class="text-center">商品SKU</th>
-                    <th class="text-center">申报入库数量</th>
-                    <th class="text-center">已收</th>
+                    <th class="text-left">{{ trans("箱唛号") }}</th>
+                    <th class="text-center">{{ trans("箱子尺寸") }}</th>
+                    <th class="text-center">{{ trans("箱子重量") }}</th>
+                    <th class="text-center">{{ trans("商品SKU") }}</th>
+                    <th class="text-center">{{ trans("申报入库数量") }}</th>
+                    <th class="text-center">{{ trans("已收") }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -221,14 +233,18 @@
                     </tr>
                   </template>
                   <tr v-if="boxList.length === 0">
-                    <td colspan="7" class="text-center">暂无箱子数据</td>
+                    <td colspan="7" class="text-center">
+                      {{ trans("暂无箱子数据") }}
+                    </td>
                   </tr>
                 </tbody>
               </q-markup-table>
             </q-tab-panel>
 
             <q-tab-panel name="fees" class="q-pa-md">
-              <div class="text-grey-8 text-center">费用信息暂未开放</div>
+              <div class="text-grey-8 text-center">
+                {{ trans("费用信息暂未开放") }}
+              </div>
             </q-tab-panel>
           </q-tab-panels>
         </div>
@@ -237,7 +253,9 @@
       <q-card-section class="dialog-body q-pa-md" v-else>
         <div class="row flex-center">
           <q-spinner size="40px" color="primary" v-if="loading" />
-          <div class="text-grey-8 q-pa-lg text-center" v-else>暂无数据</div>
+          <div class="text-grey-8 q-pa-lg text-center">
+            {{ trans("暂无数据") }}
+          </div>
         </div>
       </q-card-section>
     </q-card>
@@ -248,7 +266,7 @@
 import { ref, computed, watch } from "vue";
 import { useQuasar } from "quasar";
 import inboundApi from "@/api/inbound";
-
+import trans from "@/i18n";
 const $q = useQuasar();
 
 // Props
@@ -309,11 +327,11 @@ const statusLabel = computed(() => {
   if (!orderDetails.value) return "";
 
   const statusLabels = {
-    reported: "已预报",
-    in_transit: "运输中",
-    pending_inbound: "待入库",
-    inbound_processing: "入库中",
-    shelved: "已完成",
+    reported: trans("已预报"),
+    in_transit: trans("运输中"),
+    pending_inbound: trans("待入库"),
+    inbound_processing: trans("入库中"),
+    shelved: trans("已完成"),
   };
 
   return statusLabels[orderDetails.value.status] || orderDetails.value.status;
@@ -404,15 +422,15 @@ const getTotalShelvedQty = (items) => {
 };
 
 const getBoxStatus = (box) => {
-  if (!box) return "未知";
+  if (!box) return trans("未知");
 
   // 根据业务逻辑判断箱子状态
   if (box.received && box.shelved) {
-    return "已上架";
+    return trans("已上架");
   } else if (box.received) {
-    return "已收货";
+    return trans("已收货");
   } else {
-    return "待处理";
+    return trans("待处理");
   }
 };
 

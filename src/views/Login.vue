@@ -5,15 +5,15 @@
       <div class="login-info-section">
         <div class="logo-container">
           <!-- <img src="../../assets/logo.png" alt="Logo" class="logo"> -->
-          <span class="logo-text">仓秘书WMS</span>
+          <span class="logo-text">{{ trans("仓秘书WMS") }}</span>
         </div>
         <div class="info-content">
-          <h1 class="info-title">电商仓储管理系统！</h1>
+          <h1 class="info-title">{{ trans("电商仓储管理系统！") }}</h1>
           <ul class="feature-list">
             <!-- <li>免注册费！免年费！免ERP对接费、物流对接费！</li> -->
-            <li>对接大量物流，解锁全球！</li>
+            <li>{{ trans("对接大量物流，解锁全球！") }}</li>
             <!-- <li>支持中、英、西、葡、印尼、越、泰等多国语言！</li> -->
-            <li>一对一指导，帮助您快速上手！</li>
+            <li>{{ trans("一对一指导，帮助您快速上手！") }}</li>
           </ul>
         </div>
       </div>
@@ -22,22 +22,22 @@
       <div class="login-form-section">
         <div class="form-container">
           <q-form @submit="onSubmit" v-show="loginType == 1" class="login-form">
-            <h2 class="login-title">登录</h2>
+            <h2 class="login-title">{{ trans("登录") }}</h2>
             <q-input
               v-model="ruleForm.email"
               filled
               type="email"
-              label="邮箱"
+              :label="trans('邮箱')"
               class="q-mb-md"
-              :rules="[(val) => !!val || '请输入邮箱']"
+              :rules="[(val) => !!val || trans('请输入邮箱')]"
             />
             <q-input
               v-model="ruleForm.password"
               filled
               :type="isPwd ? 'password' : 'text'"
-              label="密码"
+              :label="trans('密码')"
               class="q-mb-md"
-              :rules="[(val) => !!val || '请输入密码']"
+              :rules="[(val) => !!val || trans('请输入密码')]"
             >
               <template v-slot:append>
                 <q-icon
@@ -65,7 +65,7 @@
             </div> -->
 
             <q-btn
-              label="登录"
+              :label="trans('登录')"
               type="submit"
               color="primary"
               class="full-width login-btn"
@@ -73,11 +73,11 @@
             />
 
             <div class="login-options">
-              <span>还没有账号？</span>
+              <span>{{ trans("还没有账号？") }}</span>
               <q-btn
                 flat
                 color="primary"
-                label="免费注册"
+                :label="trans('免费注册')"
                 class="register-link"
                 @click="loginType = 2"
               />
@@ -107,7 +107,7 @@ import { useStore } from "vuex";
 import { useQuasar } from "quasar";
 import Register from "./User/Register.vue";
 import api from "@/api/index";
-
+import trans from "@/i18n";
 export default {
   name: "LoginPage",
   components: {
@@ -141,7 +141,7 @@ export default {
       console.log("刷新验证码");
       $q.notify({
         type: "info",
-        message: "验证码已刷新",
+        message: trans("验证码已刷新"),
         position: "top",
         timeout: 1000,
       });
@@ -362,7 +362,6 @@ export default {
     }
   }
 }
-
 
 // 响应式适配
 @media (max-width: 767px) {

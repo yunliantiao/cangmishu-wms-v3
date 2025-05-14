@@ -3,12 +3,12 @@
     <div class="row items-center justify-between q-pa-md bg-white q-mb-md">
       <div class="row items-center">
         <q-btn flat dense icon="arrow_back" @click="$router.back()" />
-        <div class="text-h6 q-ml-sm">创建移货单</div>
+        <div class="text-h6 q-ml-sm">{{ trans("创建移货单") }}</div>
       </div>
       <div>
         <q-btn
           outline
-          label="取消"
+          :label="trans('取消')"
           color="grey"
           class="q-mr-sm"
           @click="$router.back()"
@@ -16,7 +16,7 @@
         <q-btn
           unelevated
           color="primary"
-          label="保存"
+          :label="trans('保存')"
           :loading="loading"
           @click="handleSave"
         />
@@ -26,15 +26,15 @@
     <div class="q-mb-md">
       <!-- 基本信息 -->
       <div class="bg-white rounded-borders q-pa-lg q-mb-md">
-        <div class="text-subtitle1 q-mb-md">基本信息</div>
+        <div class="text-subtitle1 q-mb-md">{{ trans("基本信息") }}</div>
         <div class="row q-col-gutter-x-lg q-mb-md">
           <div class="col-4">
             <q-select
               outlined
               v-model="formData.moveType"
               :options="moveTypeOptions"
-              label="库存类型"
-              :rules="[(val) => !!val || '请选择库存类型']"
+              :label="trans('库存类型')"
+              :rules="[(val) => !!val || trans('请选择库存类型')]"
               emit-value
               map-options
             >
@@ -49,7 +49,7 @@
             <q-input
               outlined
               v-model="formData.remark"
-              label="备注"
+              :label="trans('备注')"
               type="textarea"
               rows="4"
             />
@@ -60,11 +60,11 @@
       <!-- 移货信息 -->
       <div class="bg-white rounded-borders q-pa-lg">
         <div class="row items-center justify-between q-mb-lg">
-          <div class="text-subtitle1">移货信息</div>
+          <div class="text-subtitle1">{{ trans("移货信息") }}</div>
           <q-btn
             outline
             color="primary"
-            label="选择商品"
+            :label="trans('选择商品')"
             icon="add"
             @click="showProductSelector = true"
           />
@@ -118,7 +118,7 @@
                       emit-value
                       clearable
                       map-options
-                      placeholder="请选择"
+                      :placeholder="trans('请选择')"
                     />
                   </div>
                   <div class="col-auto">
@@ -178,7 +178,7 @@
                   dense
                   v-model.number="props.row.moveOutLocation[0].quantity"
                   type="number"
-                  placeholder="请输入"
+                  :placeholder="trans('请输入')"
                 />
               </q-td>
               <q-td key="moveIn" :props="props" class="move-location-cell">
@@ -197,7 +197,7 @@
                       option-value="code"
                       emit-value
                       map-options
-                      placeholder="请选择"
+                      :placeholder="trans('请选择')"
                     />
                   </div>
                   <div class="col-auto">
@@ -243,7 +243,7 @@
                     dense
                     v-model.number="to.quantity"
                     type="number"
-                    placeholder="请输入"
+                    :placeholder="trans('请输入')"
                   />
                 </div>
               </q-td>
@@ -295,7 +295,7 @@
                         emit-value
                         clearable
                         map-options
-                        placeholder="请选择"
+                        :placeholder="trans('请选择')"
                       />
                     </div>
                     <div class="col-auto">
@@ -354,7 +354,7 @@
                     dense
                     v-model.number="location.quantity"
                     type="number"
-                    placeholder="请输入"
+                    :placeholder="trans('请输入')"
                   />
                 </q-td>
                 <q-td key="moveIn" class="move-location-cell">
@@ -373,7 +373,7 @@
                         option-value="code"
                         emit-value
                         map-options
-                        placeholder="请选择"
+                        :placeholder="trans('请选择')"
                       />
                     </div>
                     <div class="col-auto">
@@ -414,7 +414,7 @@
                       dense
                       v-model.number="to.quantity"
                       type="number"
-                      placeholder="请输入"
+                      :placeholder="trans('请输入')"
                     />
                   </div>
                 </q-td>
@@ -424,7 +424,7 @@
           <!-- 无数据时的显示 -->
           <template v-slot:no-data>
             <div class="full-width row flex-center q-my-lg">
-              <span class="text-grey">暂无数据</span>
+              <span class="text-grey">{{ trans("暂无数据") }}</span>
             </div>
           </template>
         </q-table>
@@ -448,6 +448,7 @@ import settingApi from "@/api/setting";
 import inventoryApi from "@/api/inventory";
 import Pagination from "@/components/Pagination.vue";
 import ProductSelector from "./components/ProductSelector.vue";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -465,55 +466,55 @@ const formData = reactive({
 
 // 选项数据
 
-const moveTypeOptions = [{ label: "商品移货", value: "normal" }];
+const moveTypeOptions = [{ label: trans("商品移货"), value: "normal" }];
 
 // 表格列配置
 const columns = [
   {
     name: "info",
-    label: "商品信息",
+    label: trans("商品信息"),
     field: (row) => row,
     style: "width: 200px",
     align: "left",
   },
   {
     name: "moveOut",
-    label: "移出货架位",
+    label: trans("移出货架位"),
     field: "moveOutLocation",
     style: "width: 200px",
     align: "left",
   },
   {
     name: "stock",
-    label: "可用库存",
+    label: trans("可用库存"),
     field: "availableStock",
     style: "width: 100px",
     align: "center",
   },
   {
     name: "moveQuantity",
-    label: "移货数量",
+    label: trans("移货数量"),
     field: "moveQuantity",
     style: "width: 150px",
     align: "left",
   },
   {
     name: "moveIn",
-    label: "移入货架位",
+    label: trans("移入货架位"),
     field: "moveInLocation",
     style: "width: 200px",
     align: "left",
   },
   {
     name: "moveInQuantity",
-    label: "移入数量",
+    label: trans("移入数量"),
     field: "moveInQuantity",
     style: "width: 150px",
     align: "left",
   },
   {
     name: "actions",
-    label: "操作",
+    label: trans("操作"),
     field: "actions",
     align: "center",
     style: "width: 80px",
@@ -523,26 +524,26 @@ const columns = [
 const productColumns = [
   {
     name: "select",
-    label: "选择",
+    label: trans("选择"),
     field: "select",
   },
   {
     name: "info",
-    label: "商品信息",
+    label: trans("商品信息"),
     field: (row) => row,
   },
 ];
 
 // 搜索类型选项
 const searchTypeOptions = [
-  { label: "名字搜索", value: "name" },
-  { label: "SKU搜索", value: "sku" },
+  { label: trans("名字搜索"), value: "name" },
+  { label: trans("SKU搜索"), value: "sku" },
 ];
 // 搜索模式选项
 const searchModeOptions = [
-  { label: "精确搜索", value: "exact" },
-  { label: "模糊搜索", value: "fuzzy" },
-  { label: "前缀搜索", value: "prefix" },
+  { label: trans("精确搜索"), value: "exact" },
+  { label: trans("模糊搜索"), value: "fuzzy" },
+  { label: trans("前缀搜索"), value: "prefix" },
 ];
 // 商品列表数据
 const productList = ref([]);
@@ -589,7 +590,7 @@ const handleSave = async () => {
   if (!formData.moveType) {
     $q.notify({
       type: "warning",
-      message: "请填写必填项",
+      message: trans("请填写必填项"),
     });
     return;
   }
@@ -597,7 +598,7 @@ const handleSave = async () => {
   if (formData.items.length === 0) {
     $q.notify({
       type: "warning",
-      message: "请选择要移货的商品",
+      message: trans("请选择要移货的商品"),
     });
     return;
   }
@@ -611,7 +612,7 @@ const handleSave = async () => {
     if (hasEmptyMoveOut) {
       $q.notify({
         type: "negative",
-        message: `商品 ${item.sku} 请选择移出货架位`,
+        message: trans(`商品 {sku} 请选择移出货架位`, { sku: item.sku }),
       });
       return;
     }
@@ -621,7 +622,13 @@ const handleSave = async () => {
       if (!location.quantity || location.quantity <= 0) {
         $q.notify({
           type: "negative",
-          message: `商品 ${item.sku} 在货架位 ${location.location_code} 的移货数量必须大于0`,
+          message: trans(
+            `商品 {sku} 在货架位 {location_code} 的移货数量必须大于0`,
+            {
+              sku: item.sku,
+              location_code: location.location_code,
+            }
+          ),
         });
         return;
       }
@@ -636,7 +643,14 @@ const handleSave = async () => {
       if (location.quantity > availableStock) {
         $q.notify({
           type: "negative",
-          message: `商品 ${item.sku} 在货架位 ${location.location_code} 的移货数量不能大于可用库存 ${availableStock}`,
+          message: trans(
+            `商品 {sku} 在货架位 {location_code} 的移货数量不能大于可用库存 {availableStock}`,
+            {
+              sku: item.sku,
+              location_code: location.location_code,
+              availableStock: availableStock,
+            }
+          ),
         });
         return;
       }
@@ -646,7 +660,13 @@ const handleSave = async () => {
       if (hasEmptyMoveIn) {
         $q.notify({
           type: "negative",
-          message: `商品 ${item.sku} 在货架位 ${location.location_code} 请选择移入货架位`,
+          message: trans(
+            `商品 {sku} 在货架位 {location_code} 请选择移入货架位`,
+            {
+              sku: item.sku,
+              location_code: location.location_code,
+            }
+          ),
         });
         return;
       }
@@ -658,7 +678,13 @@ const handleSave = async () => {
       if (hasEmptyQuantity) {
         $q.notify({
           type: "negative",
-          message: `商品 ${item.sku} 在货架位 ${location.location_code} 的移入数量必须大于0`,
+          message: trans(
+            `商品 {sku} 在货架位 {location_code} 的移入数量必须大于0`,
+            {
+              sku: item.sku,
+              location_code: location.location_code,
+            }
+          ),
         });
         return;
       }
@@ -673,7 +699,13 @@ const handleSave = async () => {
       if (totalMoveInQuantity !== location.quantity) {
         $q.notify({
           type: "negative",
-          message: `商品 ${item.sku} 在货架位 ${location.location_code} 的移入数量之和必须等于移货数量`,
+          message: trans(
+            `商品 {sku} 在货架位 {location_code} 的移入数量之和必须等于移货数量`,
+            {
+              sku: item.sku,
+              location_code: location.location_code,
+            }
+          ),
         });
         return;
       }
@@ -702,7 +734,7 @@ const handleSave = async () => {
   } catch (error) {
     $q.notify({
       type: "negative",
-      message: error.message || "保存失败",
+      message: error.message || trans("保存失败"),
     });
   } finally {
     loading.value = false;
@@ -714,7 +746,7 @@ const handleConfirmSelect = (selected) => {
   if (selected.length === 0) {
     $q.notify({
       type: "warning",
-      message: "请选择商品",
+      message: trans("请选择商品"),
     });
     return;
   }

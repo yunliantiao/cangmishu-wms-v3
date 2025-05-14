@@ -6,6 +6,7 @@ const GoodsArea = () => import(`../views/Setting/GoodsArea.vue`)
 const BatchAdd = () => import(`../views/Setting/BatchAdd.vue`)
 const Categories = () => import(`../views/Setting/Categories.vue`)
 const PickCar = () => import(`../views/Setting/PickCar.vue`)
+import trans from "@/i18n";
 
 export default [
     {
@@ -15,8 +16,8 @@ export default [
         icon: 'settings',
         meta: {
             level: 2,
-            group: '设置',
-            name: '设置',
+            group: trans('设置'),
+            name: trans('设置'),
         },
         children: [
             {
@@ -26,8 +27,8 @@ export default [
                 id: 1001,
                 meta: {
                     level: 2,
-                    group: '设置',
-                    name: '仓库设置',
+                    group: trans('设置'),
+                    name: trans('仓库设置'),
                 },
             },
             {
@@ -37,8 +38,8 @@ export default [
                 id: 1002,
                 meta: {
                     level: 2,
-                    group: '设置',
-                    name: '分类设置',
+                    group: trans('设置'),
+                    name: trans('分类设置'),
                 },
             },
             {
@@ -48,8 +49,8 @@ export default [
                 id: 1002,
                 meta: {
                     level: 2,
-                    group: '设置',
-                    name: '货区设置',
+                    group: trans('设置'),
+                    name: trans('货区设置'),
                 },
             },
             {
@@ -59,8 +60,8 @@ export default [
                 id: 1002,
                 meta: {
                     level: 2,
-                    group: '设置',
-                    name: '拣货车设置',
+                    group: trans('设置'),
+                    name: trans('拣货车设置'),
                 },
             },
             {
@@ -70,8 +71,8 @@ export default [
                 id: 1002,
                 meta: {
                     level: 2,
-                    group: '设置',
-                    name: '货架设置',
+                    group: trans('设置'),
+                    name: trans('货架设置'),
                 },
             },
             {
@@ -81,8 +82,8 @@ export default [
                 id: 1003,
                 meta: {
                     level: 2,
-                    group: '设置',
-                    name: '货位设置',
+                    group: trans('设置'),
+                    name: trans('货位设置'),
                 },
             },
             {
@@ -92,8 +93,8 @@ export default [
                 id: 1004,
                 meta: {
                     level: 3,
-                    group: '设置',
-                    name: '批量添加',
+                    group: trans('设置'),
+                    name: trans('批量添加'),
                 },
             },
         ]

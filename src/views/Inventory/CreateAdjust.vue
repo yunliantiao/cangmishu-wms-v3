@@ -3,12 +3,12 @@
     <div class="row items-center justify-between q-pa-md bg-white q-mb-md">
       <div class="row items-center">
         <q-btn flat dense icon="arrow_back" @click="$router.back()" />
-        <div class="text-h6 q-ml-sm">创建调整单</div>
+        <div class="text-h6 q-ml-sm">{{ trans("创建调整单") }}</div>
       </div>
       <div>
         <q-btn
           outline
-          label="取消"
+          :label="trans('取消')"
           color="grey"
           class="q-mr-sm"
           @click="$router.back()"
@@ -16,7 +16,7 @@
         <q-btn
           unelevated
           color="primary"
-          label="保存"
+          :label="trans('保存')"
           :loading="loading"
           @click="handleSave"
         />
@@ -26,7 +26,7 @@
     <div class="q-mb-md">
       <!-- 基本信息 -->
       <div class="bg-white rounded-borders q-pa-lg q-mb-md">
-        <div class="text-subtitle1 q-mb-md">基本信息</div>
+        <div class="text-subtitle1 q-mb-md">{{ trans("基本信息") }}</div>
         <q-form ref="formRef" class="q-gutter-md" @submit="handleSave">
           <div class="row q-mb-md">
             <div class="col-4">
@@ -34,7 +34,7 @@
                 outlined
                 v-model="formData.type"
                 :options="moveTypeOptions"
-                label="调整类型"
+                :label="trans('调整类型')"
                 :rules="rules.type"
                 emit-value
                 map-options
@@ -50,7 +50,7 @@
               <q-input
                 outlined
                 v-model="formData.remark"
-                label="备注"
+                :label="trans('备注')"
                 type="textarea"
                 rows="4"
               />
@@ -61,11 +61,11 @@
 
       <div class="bg-white rounded-borders q-pa-lg">
         <div class="row items-center justify-between q-mb-lg">
-          <div class="text-subtitle1">调整信息</div>
+          <div class="text-subtitle1">{{ trans("调整信息") }}</div>
           <q-btn
             outline
             color="primary"
-            label="选择商品"
+            :label="trans('选择商品')"
             icon="add"
             @click="showProductSelector = true"
           />
@@ -84,9 +84,9 @@
           <template v-slot:header-cell-quantity="props">
             <q-th :props="props" class="text-center">
               <div class="row items-center justify-center">
-                <div>调整数量</div>
+                <div>{{ trans("调整数量") }}</div>
                 <div class="batch-btn" @click="showBatchQuantityDialog">
-                  批量
+                  {{ trans("批量") }}
                 </div>
               </div>
             </q-th>
@@ -132,7 +132,7 @@
                       option-value="warehouse_location_code"
                       emit-value
                       map-options
-                      placeholder="请选择"
+                      :placeholder="trans('请选择')"
                     />
                   </div>
                   <div class="col-auto">
@@ -142,6 +142,7 @@
                       round
                       size="sm"
                       icon="add"
+                      :label="trans('添加')"
                       color="primary"
                       class="shadow-1"
                       v-if="
@@ -191,8 +192,8 @@
                     dense
                     v-model="props.row.moveOutLocation[0].quantity_type"
                     :options="[
-                      { label: '增加', value: 'add' },
-                      { label: '减少', value: 'sub' },
+                      { label: trans('增加'), value: 'add' },
+                      { label: trans('减少'), value: 'sub' },
                     ]"
                     map-options
                     emit-value
@@ -204,7 +205,7 @@
                     v-model.number="props.row.moveOutLocation[0].quantity"
                     type="number"
                     style="width: 100px"
-                    placeholder="请输入"
+                    :placeholder="trans('请输入')"
                   />
                 </div>
               </q-td>
@@ -255,7 +256,7 @@
                         option-value="warehouse_location_code"
                         emit-value
                         map-options
-                        placeholder="请选择"
+                        :placeholder="trans('请选择')"
                       />
                     </div>
                     <div class="col-auto">
@@ -315,8 +316,8 @@
                       dense
                       v-model="location.quantity_type"
                       :options="[
-                        { label: '增加', value: 'add' },
-                        { label: '减少', value: 'sub' },
+                        { label: trans('增加'), value: 'add' },
+                        { label: trans('减少'), value: 'sub' },
                       ]"
                       map-options
                       emit-value
@@ -328,7 +329,7 @@
                       v-model.number="location.quantity"
                       type="number"
                       style="width: 100px"
-                      placeholder="请输入"
+                      :placeholder="trans('请输入')"
                     />
                   </div>
                 </q-td>
@@ -337,7 +338,7 @@
           </template>
           <template v-slot:no-data>
             <div class="full-width row flex-center q-my-lg">
-              <span class="text-grey">暂无数据</span>
+              <span class="text-grey">{{ trans("暂无数据") }}</span>
             </div>
           </template>
         </q-table>
@@ -354,7 +355,7 @@
     <q-dialog v-model="showBatchDialog">
       <q-card style="min-width: 350px">
         <q-card-section class="row items-center">
-          <div class="text-h6">调整数量</div>
+          <div class="text-h6">{{ trans("调整数量") }}</div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
@@ -367,8 +368,8 @@
                 dense
                 v-model="batchQuantityForm.type"
                 :options="[
-                  { label: '增加', value: 'add' },
-                  { label: '减少', value: 'sub' },
+                  { label: trans('增加'), value: 'add' },
+                  { label: trans('减少'), value: 'sub' },
                 ]"
                 map-options
               />
@@ -379,17 +380,17 @@
                 dense
                 v-model.number="batchQuantityForm.quantity"
                 type="number"
-                placeholder="调整数量"
+                :placeholder="trans('调整数量')"
               />
             </div>
           </div>
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="取消" color="grey" v-close-popup />
+          <q-btn flat :label="trans('取消')" color="grey" v-close-popup />
           <q-btn
             flat
-            label="确认"
+            :label="trans('确认')"
             color="primary"
             @click="handleBatchSetQuantity"
           />
@@ -408,6 +409,7 @@ import settingApi from "@/api/setting";
 import inventoryApi from "@/api/inventory";
 import Pagination from "@/components/Pagination.vue";
 import ProductSelector from "./components/ProductSelector.vue";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -426,28 +428,28 @@ const formData = reactive({
 });
 
 const rules = {
-  type: [(val) => !!val || "请选择调整类型"],
-  items: [(val) => val.length > 0 || "请添加调整商品"],
+  type: [(val) => !!val || trans("请选择调整类型")],
+  items: [(val) => val.length > 0 || trans("请添加调整商品")],
 };
 
 const validateQuantity = (item) => {
   const location = item.moveOutLocation[0];
   if (!location.location_code) {
-    return "请选择货架位";
+    return trans("请选择货架位");
   }
   if (!location.quantity) {
-    return "请输入调整数量";
+    return trans("请输入调整数量");
   }
   if (!location.quantity_type) {
-    return "请选择调整类型";
+    return trans("请选择调整类型");
   }
   const quantity = Number(location.quantity);
   if (isNaN(quantity) || quantity === 0) {
-    return "调整数量必须是非零数字";
+    return trans("调整数量必须是非零数字");
   }
   // 减少库存时需要验证可用库存
   if (location.quantity_type === "sub" && quantity > item.availableStock) {
-    return "调整数量不能大于可用库存";
+    return trans("调整数量不能大于可用库存");
   }
   return "";
 };
@@ -455,7 +457,7 @@ const validateQuantity = (item) => {
 // 选项数据
 
 const moveTypeOptions = [
-  { label: "良品调整", value: "good" },
+  { label: trans("良品调整"), value: "good" },
   //   { label: "不良品调整", value: "bad" },
 ];
 
@@ -463,31 +465,31 @@ const moveTypeOptions = [
 const columns = [
   {
     name: "product",
-    label: "商品信息",
+    label: trans("商品信息"),
     align: "left",
     field: (row) => row,
     style: "width: 300px",
   },
   {
     name: "moveOutLocation",
-    label: "货架位",
+    label: trans("货架位"),
     align: "left",
     field: (row) => row.moveOutLocation,
   },
   {
     name: "availableStock",
-    label: "可用库存",
+    label: trans("可用库存"),
     align: "center",
     field: (row) => row.availableStock,
   },
   {
     name: "quantity",
-    label: "调整数量",
+    label: trans("调整数量"),
     align: "center",
   },
   {
     name: "actions",
-    label: "操作",
+    label: trans("操作"),
     align: "center",
   },
 ];
@@ -495,26 +497,26 @@ const columns = [
 const productColumns = [
   {
     name: "select",
-    label: "选择",
+    label: trans("选择"),
     field: "select",
   },
   {
     name: "info",
-    label: "商品信息",
+    label: trans("商品信息"),
     field: (row) => row,
   },
 ];
 
 // 搜索类型选项
 const searchTypeOptions = [
-  { label: "名字搜索", value: "name" },
-  { label: "SKU搜索", value: "sku" },
+  { label: trans("名字搜索"), value: "name" },
+  { label: trans("SKU搜索"), value: "sku" },
 ];
 // 搜索模式选项
 const searchModeOptions = [
-  { label: "精确搜索", value: "exact" },
-  { label: "模糊搜索", value: "fuzzy" },
-  { label: "前缀搜索", value: "prefix" },
+  { label: trans("精确搜索"), value: "exact" },
+  { label: trans("模糊搜索"), value: "fuzzy" },
+  { label: trans("前缀搜索"), value: "prefix" },
 ];
 // 商品列表数据
 const productList = ref([]);
@@ -603,7 +605,7 @@ const handleSave = async () => {
         } catch (error) {
           $q.notify({
             type: "negative",
-            message: error.message || "创建调整单失败",
+            message: error.message || trans("创建调整单失败"),
           });
         }
       }
@@ -611,7 +613,7 @@ const handleSave = async () => {
   } catch (error) {
     $q.notify({
       type: "negative",
-      message: error.message || "表单验证失败",
+      message: error.message || trans("表单验证失败"),
     });
   }
 };
@@ -621,7 +623,7 @@ const handleConfirmSelect = (selected) => {
   if (selected.length === 0) {
     $q.notify({
       type: "warning",
-      message: "请选择商品",
+      message: trans("请选择商品"),
     });
     return;
   }
@@ -656,14 +658,14 @@ const getSkuLocations = (selected) => {
       } else {
         $q.notify({
           type: "warning",
-          message: "获取商品货架位信息失败",
+          message: trans("获取商品货架位信息失败"),
         });
       }
     })
     .catch(() => {
       $q.notify({
         type: "negative",
-        message: "获取商品货架位信息失败",
+        message: trans("获取商品货架位信息失败"),
       });
     });
 };
@@ -718,7 +720,7 @@ const handleBatchSetQuantity = () => {
   if (!batchQuantityForm.quantity) {
     $q.notify({
       type: "warning",
-      message: "请输入调整数量",
+      message: trans("请输入调整数量"),
     });
     return;
   }

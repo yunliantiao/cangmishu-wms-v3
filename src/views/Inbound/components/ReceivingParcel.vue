@@ -2,7 +2,9 @@
   <div class="products-section bg-white rounded-borders">
     <div class="section-header q-px-lg q-py-md">
       <div class="row justify-between items-center q-mb-md">
-        <div class="text-subtitle1 text-weight-medium">收货商品</div>
+        <div class="text-subtitle1 text-weight-medium">
+          {{ trans("收货商品") }}
+        </div>
         <div style="width: 400px">
           <!-- <q-input
             outlined
@@ -79,7 +81,8 @@
 
         <div class="row items-center">
           <span class="text-weight-medium q-mr-sm"
-            >商品类目/商品总数: {{ totalItems }} / {{ totalItems }}</span
+            >{{ trans("商品类目/商品总数") }} : {{ totalItems }} /
+            {{ totalItems }}</span
           >
         </div>
       </div>
@@ -187,7 +190,7 @@
               <div class="col-auto px-1">cm</div>
             </div>
             <div class="text-caption text-grey">
-              申报: {{ props.row.product_spec_size_length }} ×
+              {{ trans("申报") }}: {{ props.row.product_spec_size_length }} ×
               {{ props.row.product_spec_size_width }} ×
               {{ props.row.product_spec_size_height }} cm
             </div>
@@ -195,7 +198,7 @@
               class="text-caption"
               :class="{ 'text-negative': hasVolumeDiff(props.row) }"
             >
-              体积: {{ updateVolume(props.row) }}
+              {{ trans("体积") }}: {{ updateVolume(props.row) }}
             </div>
           </q-td>
           <q-td key="weight" :props="props">
@@ -213,7 +216,7 @@
               <div class="col-auto px-1">g</div>
             </div>
             <div class="text-caption text-grey">
-              申报: {{ props.row.product_spec_weight }} g
+              {{ trans("申报") }}: {{ props.row.product_spec_weight }} g
             </div>
           </q-td>
           <q-td key="quantityExpected" :props="props">
@@ -260,7 +263,7 @@
                   <template v-slot:no-option>
                     <q-item>
                       <q-item-section class="text-grey">
-                        未找到匹配的货架位
+                        {{ trans("未找到匹配的货架位") }}
                       </q-item-section>
                     </q-item>
                   </template>
@@ -280,7 +283,7 @@
                 class="text-primary add-shelf-link q-mt-xs"
                 @click="addShelfLocation(props.row)"
               >
-                添加货架位
+                {{ trans("添加货架位") }}
               </div>
             </div>
           </q-td>
@@ -309,7 +312,7 @@
   <q-dialog v-model="showDimensionsDialog" persistent>
     <q-card style="min-width: 350px">
       <q-card-section class="row items-center">
-        <div class="text-h6">批量设置尺寸</div>
+        <div class="text-h6">{{ trans("批量设置尺寸") }}</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
@@ -319,14 +322,14 @@
           <q-radio
             v-model="batchDimensions.mode"
             val="customer"
-            label="应用客户申报尺寸"
+            :label="trans('应用客户申报尺寸')"
           />
         </div>
         <div class="q-mb-md">
           <q-radio
             v-model="batchDimensions.mode"
             val="manual"
-            label="统一修改为"
+            :label="trans('统一修改为')"
           />
         </div>
         <div class="row q-col-gutter-md">
@@ -334,7 +337,7 @@
             <q-input
               outlined
               v-model="batchDimensions.length"
-              label="长"
+              :label="trans('长')"
               type="number"
               dense
               class="input-spacing"
@@ -349,7 +352,7 @@
             <q-input
               outlined
               v-model="batchDimensions.width"
-              label="宽"
+              :label="trans('宽')"
               type="number"
               dense
               class="input-spacing"
@@ -364,7 +367,7 @@
             <q-input
               outlined
               v-model="batchDimensions.height"
-              label="高"
+              :label="trans('高')"
               type="number"
               dense
               class="input-spacing"
@@ -379,10 +382,10 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="取消" color="grey-7" v-close-popup />
+        <q-btn flat :label="trans('取消')" color="grey-7" v-close-popup />
         <q-btn
           unelevated
-          label="确认"
+          :label="trans('确认')"
           color="primary"
           @click="applyBatchDimensions"
         />
@@ -394,7 +397,7 @@
   <q-dialog v-model="showWeightDialog" persistent>
     <q-card style="min-width: 350px">
       <q-card-section class="row items-center">
-        <div class="text-h6">批量设置重量</div>
+        <div class="text-h6">{{ trans("批量设置重量") }}</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
@@ -404,17 +407,21 @@
           <q-radio
             v-model="batchWeight.mode"
             val="customer"
-            label="应用客户申报重量"
+            :label="trans('应用客户申报重量')"
           />
         </div>
         <div class="q-mb-md">
-          <q-radio v-model="batchWeight.mode" val="manual" label="统一修改为" />
+          <q-radio
+            v-model="batchWeight.mode"
+            val="manual"
+            :label="trans('统一修改为')"
+          />
 
           <q-input
             :disable="batchWeight.mode !== 'manual'"
             outlined
             v-model="batchWeight.weight"
-            label="重量"
+            :label="trans('重量')"
             type="number"
             dense
             class="q-mt-sm"
@@ -427,10 +434,10 @@
       </q-card-section>
 
       <q-card-actions align="right">
-        <q-btn flat label="取消" color="grey-7" v-close-popup />
+        <q-btn flat :label="trans('取消')" color="grey-7" v-close-popup />
         <q-btn
           unelevated
-          label="确认"
+          :label="trans('确认')"
           color="primary"
           @click="applyBatchWeight"
         />
@@ -442,6 +449,7 @@
 <script setup>
 import { ref, reactive, computed, defineProps, defineEmits, watch } from "vue";
 import { useQuasar } from "quasar";
+import trans from "@/i18n";
 
 const props = defineProps({
   products: {
@@ -474,8 +482,8 @@ const $q = useQuasar();
 
 // 状态变量
 const productScanCode = ref("");
-const scanType = ref("逐个扫描");
-const scanTypeOptions = ["逐个扫描", "批量扫描"];
+const scanType = ref(trans("逐个扫描"));
+const scanTypeOptions = [trans("逐个扫描"), trans("批量扫描")];
 const selectedProducts = ref([]);
 const viewMode = ref("list");
 const productScanning = ref(false);
@@ -510,47 +518,47 @@ const columns = [
   {
     name: "product",
     required: true,
-    label: "商品",
+    label: trans("商品"),
     align: "left",
     field: "product",
   },
   {
     name: "dimensions",
     align: "center",
-    label: "实际体积",
-    subLabel: "全部",
+    label: trans("实际体积"),
+    subLabel: trans("全部"),
     field: "dimensions",
   },
   {
     name: "weight",
     align: "center",
-    label: "实际重量",
-    subLabel: "全部",
+    label: trans("实际重量"),
+    subLabel: trans("全部"),
     field: "weight",
   },
   {
     name: "quantityExpected",
     align: "center",
-    label: "待收货数量",
+    label: trans("待收货数量"),
     field: "quantity",
   },
   {
     name: "receivedQuantity",
     align: "center",
-    label: "本次收货数量",
-    subLabel: "全部",
+    label: trans("本次收货数量"),
+    subLabel: trans("全部"),
     field: "received_quantity",
   },
   {
     name: "shelfLocation",
     align: "center",
-    label: "上架货架位",
+    label: trans("上架货架位"),
   },
   {
     name: "shelfQty",
     align: "center",
-    label: "上架数量",
-    subLabel: "全部",
+    label: trans("上架数量"),
+    subLabel: trans("全部"),
     field: "shelfQty",
   },
 ];
@@ -710,7 +718,7 @@ const applyBatchDimensions = () => {
   if (targetProducts.length === 0) {
     $q.notify({
       type: "warning",
-      message: "没有可处理的商品",
+      message: trans("没有可处理的商品"),
     });
     return;
   }
@@ -724,7 +732,7 @@ const applyBatchDimensions = () => {
     ) {
       $q.notify({
         type: "warning",
-        message: "请至少输入一个尺寸值",
+        message: trans("请至少输入一个尺寸值"),
       });
       return;
     }
@@ -732,7 +740,7 @@ const applyBatchDimensions = () => {
     if (!batchDimensions.uniformSize) {
       $q.notify({
         type: "warning",
-        message: "请输入统一尺寸值",
+        message: trans("请输入统一尺寸值"),
       });
       return;
     }
@@ -780,7 +788,7 @@ const applyBatchDimensions = () => {
 
   $q.notify({
     type: "positive",
-    message: `已为${targetProducts.length}个商品设置尺寸`,
+    message: trans(`已为${targetProducts.length}个商品设置尺寸`),
   });
 
   showDimensionsDialog.value = false;
@@ -794,7 +802,7 @@ const applyBatchWeight = () => {
   if (targetProducts.length === 0) {
     $q.notify({
       type: "warning",
-      message: "没有可处理的商品",
+      message: trans("没有可处理的商品"),
     });
     return;
   }
@@ -803,7 +811,7 @@ const applyBatchWeight = () => {
   if (batchWeight.mode === "manual" && !batchWeight.weight) {
     $q.notify({
       type: "warning",
-      message: "请输入重量值",
+      message: trans("请输入重量值"),
     });
     return;
   }
@@ -824,7 +832,9 @@ const applyBatchWeight = () => {
 
   $q.notify({
     type: "positive",
-    message: `已为${targetProducts.length}个商品设置重量`,
+    message: trans(`已为{count}个商品设置重量`, {
+      count: targetProducts.length,
+    }),
   });
 
   showWeightDialog.value = false;
@@ -848,7 +858,7 @@ const fillAllQuantities = () => {
 
   $q.notify({
     type: "positive",
-    message: "已将所有商品的待收货数量填入本次收货数量",
+    message: trans("已将所有商品的待收货数量填入本次收货数量"),
     position: "top",
   });
 };
@@ -890,7 +900,7 @@ const fillAllShelfQuantities = () => {
 
   $q.notify({
     type: "positive",
-    message: "已将本次收货数量填入上架数量",
+    message: trans("已将本次收货数量填入上架数量"),
     position: "top",
   });
 };

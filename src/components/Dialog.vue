@@ -11,7 +11,14 @@
         <q-card-section class="row items-center">
           <div class="text-h6">{{ title }}</div>
           <q-space />
-          <q-btn icon="close" v-if="cancelShow" flat round dense @click="close" />
+          <q-btn
+            icon="close"
+            v-if="cancelShow"
+            flat
+            round
+            dense
+            @click="close"
+          />
         </q-card-section>
 
         <q-separator />
@@ -23,8 +30,20 @@
         <q-separator v-if="footerShow" />
 
         <q-card-actions v-if="footerShow" align="right">
-          <q-btn flat label="取消" color="grey-8" v-if="cancelShow" @click="close" />
-          <q-btn label="确定" color="primary" type="submit" :loading="dialogVisibleLoading" @click="confirm" />
+          <q-btn
+            flat
+            :label="trans('取消')"
+            color="grey-8"
+            v-if="cancelShow"
+            @click="close"
+          />
+          <q-btn
+            :label="trans('确定')"
+            color="primary"
+            type="submit"
+            :loading="dialogVisibleLoading"
+            @click="confirm"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -32,18 +51,19 @@
 </template>
   
 <script>
-import { computed, ref, watch } from 'vue'
-import { useStore } from 'vuex'
+import { computed, ref, watch } from "vue";
+import { useStore } from "vuex";
+import trans from "@/i18n";
 
 export default {
   props: {
     title: {
       type: String,
-      default: '',
+      default: "",
     },
     width: {
       type: String,
-      default: '500px',
+      default: "500px",
     },
     modelValue: Boolean,
     footerShow: {
@@ -56,7 +76,7 @@ export default {
     },
     transitionShow: {
       type: String,
-      default: 'fade',
+      default: "fade",
     },
     noBackdropDismiss: {
       type: Boolean,
@@ -67,36 +87,39 @@ export default {
       default: false,
     },
   },
-  emits: ['update:modelValue', 'confirm', 'reset'],
+  emits: ["update:modelValue", "confirm", "reset"],
   setup(props, { emit }) {
-    const store = useStore()
-    const dialogVisibleLoading = computed(() => store.state.btnLoading)
-    const localModelValue = ref(props.modelValue)
-    
-    watch(() => props.modelValue, (newVal) => {
-      localModelValue.value = newVal
-    })
-    
+    const store = useStore();
+    const dialogVisibleLoading = computed(() => store.state.btnLoading);
+    const localModelValue = ref(props.modelValue);
+
+    watch(
+      () => props.modelValue,
+      (newVal) => {
+        localModelValue.value = newVal;
+      }
+    );
+
     watch(localModelValue, (newVal) => {
-      emit('update:modelValue', newVal)
-    })
+      emit("update:modelValue", newVal);
+    });
 
     const close = () => {
-      emit('update:modelValue', false)
-      emit('reset')
-    }
-    
+      emit("update:modelValue", false);
+      emit("reset");
+    };
+
     const confirm = () => {
-      emit('confirm')
-    }
-    
+      emit("confirm");
+    };
+
     return {
       localModelValue,
       close,
       confirm,
       dialogVisibleLoading,
-    }
+    };
   },
-}
+};
 </script>
   

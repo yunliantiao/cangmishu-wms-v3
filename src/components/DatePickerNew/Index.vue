@@ -20,9 +20,9 @@
           alt=""
         />
         <div class="content-box">
-          <span>{{ start_date || "开始日期" }}</span>
+          <span>{{ start_date || trans("开始日期") }}</span>
           <span>TO</span>
-          <span>{{ end_date || "结束日期" }}</span>
+          <span>{{ end_date || trans("结束日期") }}</span>
         </div>
         <q-popup-proxy
           v-model="componentData.showDate"
@@ -43,6 +43,8 @@
 
 <script setup>
 import { reactive, watch } from "vue";
+import trans from "@/i18n";
+
 const date_type = defineModel("date_type", {
   type: String,
   default: "created_at",
@@ -67,8 +69,8 @@ const props = defineProps({
     type: Array,
     default: () => {
       return [
-        { label: "创建时间", value: "created_at" },
-        { label: "更新时间", value: "updated_at" },
+        { label: trans("创建时间"), value: "created_at" },
+        { label: trans("更新时间"), value: "updated_at" },
       ];
     },
   },
@@ -109,21 +111,6 @@ watch(
   },
   { deep: true }
 );
-
-const getDate = (index) => {
-  let list = selectInfo.value.date_range || [];
-  console.log("list", list);
-
-  if (index == 0) {
-    return list[0] || "开始时间";
-  } else {
-    return list[1] || "结束时间";
-  }
-};
-
-const changeSelect = (e) => {
-  selectInfo.value.date_type = componentData.date_type;
-};
 </script>
 
 <style scoped lang="scss">

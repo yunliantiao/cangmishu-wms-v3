@@ -4,11 +4,11 @@
     <div class="header-bar">
       <div class="left">
         <span class="wave-no">{{ pageData.waveInfo.wave_number }}</span>
-        <span class="wave-type">（多品混包）</span>
+        <span class="wave-type">{{ trans("（多品混包）") }}</span>
       </div>
       <div class="right">
         <span class="progress"
-          >处理进度:{{ pageData.successCount }}/{{
+          >{{ trans("处理进度") }}:{{ pageData.successCount }}/{{
             pageData.packages.length
           }}</span
         >
@@ -16,7 +16,7 @@
           color="negative"
           flat
           class="end-btn"
-          label="结束作业"
+          :label="trans('结束作业')"
           @click="handleEnd"
         />
         <q-btn
@@ -24,7 +24,7 @@
           outline
           icon="history"
           @click="showLogs"
-          label="分拣记录"
+          :label="trans('分拣记录')"
         />
       </div>
     </div>
@@ -37,17 +37,17 @@
           outlined
           class="tag-input"
           v-model="pageData.keyword"
-          label="请扫描商品标签"
+          :label="trans('请扫描商品标签')"
           @keyup.enter="search"
         />
       </div>
       <div class="input-tip">
         <q-icon name="info" size="16px" color="grey-7" />
-        <span>请先切换或[EN]输入法</span>
+        <span>{{ trans("请先切换或[EN]输入法") }}</span>
       </div>
 
       <!-- 分拣信息 -->
-      <div class="sort-info-title">分拣信息</div>
+      <div class="sort-info-title">{{ trans("分拣信息") }}</div>
       <div class="sort-info-row">
         <div class="product-img-placeholder">
           {{ pageData.showIndex }}
@@ -72,7 +72,7 @@
                     @click="showCheckMaterial(item)"
                   >
                     <q-item-section>
-                      <q-item-label>打印</q-item-label>
+                      <q-item-label>{{ trans("打印") }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
@@ -83,7 +83,7 @@
                     @click="handleIsPrint(item)"
                   >
                     <q-item-section>
-                      <q-item-label>标记为已打印</q-item-label>
+                      <q-item-label>{{ trans("标记为已打印") }}</q-item-label>
                     </q-item-section>
                   </q-item>
 
@@ -94,7 +94,7 @@
                     @click="handleNotPrint(item)"
                   >
                     <q-item-section>
-                      <q-item-label>标记为未打印</q-item-label>
+                      <q-item-label>{{ trans("标记为未打印") }}</q-item-label>
                     </q-item-section>
                   </q-item>
                 </q-list>
@@ -141,6 +141,7 @@ import Logs from "./components/Logs.vue";
 import { useQuasar } from "quasar";
 import NotPacking from "./components/NotPacking.vue";
 import CheckMaterial from "./components/CheckMaterial.vue";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 const route = useRoute();
@@ -206,14 +207,14 @@ onMounted(() => {
 
 const successWave = () => {
   $q.dialog({
-    title: "提示",
-    message: "所有的都已经处理完成了",
+    title: trans("提示"),
+    message: trans("所有的都已经处理完成了"),
     ok: {
-      label: "结束作业",
+      label: trans("结束作业"),
       color: "primary",
     },
     cancel: {
-      label: "取消",
+      label: trans("取消"),
       color: "grey-7",
     },
   }).onOk(async () => {
@@ -284,7 +285,7 @@ const getWaveInfo = async () => {
 
 const search = async () => {
   if (!pageData.keyword.length) {
-    return Message.notify("请输入商品标签");
+    return Message.notify(trans("请输入商品标签"));
   }
   let boxes = [];
   pageData.packages.forEach((item) => {
@@ -297,7 +298,7 @@ const search = async () => {
       item.product_spec_sku == pageData.keyword && item.inFrame < item.quantity
   );
   if (!box) {
-    Message.notify("该商品标签不存在");
+    Message.notify(trans("该商品标签不存在"));
     return;
   }
   box.inFrame++;
@@ -328,16 +329,16 @@ const handlePrint = async (item) => {
   let { data } = await OutApi.printPackageOrder(item.package_id);
   window.open(data.data, "_blank");
   $q.dialog({
-    title: "打印结果确认",
-    message: "是否打印成功",
+    title: trans("打印结果确认"),
+    message: trans("是否打印成功"),
     cancel: true,
     persistent: true,
     ok: {
-      label: "是",
+      label: trans("是"),
       color: "primary",
     },
     cancel: {
-      label: "否",
+      label: trans("否"),
       color: "grey-7",
     },
   }).onOk(async () => {

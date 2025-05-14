@@ -42,10 +42,16 @@
     </div>
 
     <div class="total-list row q-col-gutter-lg q-mb-md">
-      <div class="col-12 col-sm-6 col-md-2" v-for="item in totalList" :key="item.label">
+      <div
+        class="col-12 col-sm-6 col-md-2"
+        v-for="item in totalList"
+        :key="item.label"
+      >
         <q-card class="common-card b-rd-16">
           <q-card-section class="p-20">
-            <div class="text-grey-8 text-subtitle2 q-mb-md">{{ item.label }}</div>
+            <div class="text-grey-8 text-subtitle2 q-mb-md">
+              {{ item.label }}
+            </div>
             <div class="text-primary text-h5">{{ item.value }}</div>
           </q-card-section>
         </q-card>
@@ -84,7 +90,10 @@
                   <div
                     v-for="(item, index) in timeOptions"
                     :key="index"
-                    :class="['time-range-item', { active: timeRange === item.value }]"
+                    :class="[
+                      'time-range-item',
+                      { active: timeRange === item.value },
+                    ]"
                     @click="timeRange = item.value"
                   >
                     {{ item.label }}
@@ -119,10 +128,20 @@
           <q-card-section class="p-20">
             <div class="flex-between-center">
               <div class="text-subtitle1 font-bold">系统公告</div>
-              <q-btn flat color="primary" size="sm" icon="chevron_right" dense />
+              <q-btn
+                flat
+                color="primary"
+                size="sm"
+                icon="chevron_right"
+                dense
+              />
             </div>
             <q-scroll-area class="notice-list">
-              <div v-for="item in noticeList" :key="item.label" class="notice-item">
+              <div
+                v-for="item in noticeList"
+                :key="item.label"
+                class="notice-item"
+              >
                 <div class="title text-overflow-1">{{ item.label }}</div>
                 <div class="time">{{ item.time }}</div>
               </div>
@@ -136,11 +155,19 @@
           </q-card-section>
           <q-card-section class="down-list p-0">
             <div class="item">
-              <q-icon name="img:/src/assets/images/home/apple.png" size="24px" class="q-mr-sm" />
+              <q-icon
+                name="img:/src/assets/images/home/apple.png"
+                size="24px"
+                class="q-mr-sm"
+              />
               <div class="text-subtitle2">App Store</div>
             </div>
             <div class="item">
-              <q-icon name="img:/src/assets/images/home/android.png" size="24px" class="q-mr-sm" />
+              <q-icon
+                name="img:/src/assets/images/home/android.png"
+                size="24px"
+                class="q-mr-sm"
+              />
               <div class="text-subtitle2">Android</div>
             </div>
           </q-card-section>
@@ -178,7 +205,10 @@
                 <div class="capacity-item capacity-item-3">FBA退货库存</div>
               </div>
               <div class="col-12 col-xs-12 col-sm-8 col-md-8">
-                <div id="capacity-chart" style="width: 100%; height: 200px"></div>
+                <div
+                  id="capacity-chart"
+                  style="width: 100%; height: 200px"
+                ></div>
               </div>
             </div>
           </q-card-section>
@@ -189,10 +219,20 @@
           <q-card-section class="p-0">
             <div class="flex-between-center q-mb-md">
               <div class="text-subtitle1 font-bold">帮助中心</div>
-              <q-btn flat color="primary" size="sm" icon="chevron_right" dense />
+              <q-btn
+                flat
+                color="primary"
+                size="sm"
+                icon="chevron_right"
+                dense
+              />
             </div>
             <q-scroll-area class="help-list">
-              <div v-for="item in noticeList" :key="item.label" class="help-item">
+              <div
+                v-for="item in noticeList"
+                :key="item.label"
+                class="help-item"
+              >
                 <div>{{ item.label }}</div>
               </div>
             </q-scroll-area>
@@ -203,36 +243,40 @@
     <!-- TODO: 改版结束 -->
 
     <!-- 仓库表单组件 -->
-    <WarehouseForm v-model="dialogVisible" :cancelShow="false" @created="handleWarehouseCreated" />
+    <WarehouseForm
+      v-model="dialogVisible"
+      :cancelShow="false"
+      @created="handleWarehouseCreated"
+    />
   </div>
 </template>
 
 <script>
-import Dialog from '@/components/Dialog.vue';
-import WarehouseForm from '@/components/WarehouseForm.vue';
-import * as echarts from 'echarts';
-import { Notify } from 'quasar';
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
+import Dialog from "@/components/Dialog.vue";
+import WarehouseForm from "@/components/WarehouseForm.vue";
+import * as echarts from "echarts";
+import { Notify } from "quasar";
+import { computed, nextTick, onMounted, onUnmounted, ref } from "vue";
 
 export default {
-  name: 'PanelPage',
+  name: "PanelPage",
   components: {
     Dialog,
     WarehouseForm,
   },
   setup() {
     const dialogVisible = ref(false);
-    const isRegister = localStorage.getItem('isRegister'); //如果是注册，则需要建仓库选
-    if (isRegister == 'true') {
+    const isRegister = localStorage.getItem("isRegister"); //如果是注册，则需要建仓库选
+    if (isRegister == "true") {
       dialogVisible.value = true;
     }
     const handleWarehouseCreated = (data) => {
-      localStorage.setItem('isRegister', false); //建仓库后需要标记
-      localStorage.setItem('warehouseId', data.id);
+      localStorage.setItem("isRegister", false); //建仓库后需要标记
+      localStorage.setItem("warehouseId", data.id);
       dialogVisible.value = false;
       Notify.create({
-        message: '仓库创建成功',
-        color: 'positive',
+        message: "仓库创建成功",
+        color: "positive",
       });
       window.location.reload();
     };
@@ -240,32 +284,32 @@ export default {
     const totalList = computed(() => {
       return [
         {
-          label: '待生成/待打单',
+          label: "待生成/待打单",
           value: 0,
         },
         {
-          label: '待发货',
+          label: "待发货",
           value: 0,
         },
         {
-          label: '获取运单号',
+          label: "获取运单号",
           value: 0,
         },
         {
-          label: '待移货',
+          label: "待移货",
           value: 0,
         },
         {
-          label: '待拣货',
+          label: "待拣货",
           value: 0,
         },
         {
-          label: '待包装',
+          label: "待包装",
           value: 0,
         },
       ];
     });
-    const timeRange = ref('week');
+    const timeRange = ref("week");
 
     // 图表数据-订单量
     const chartData = ref({
@@ -277,9 +321,9 @@ export default {
         containLabel: true,
       },
       tooltip: {
-        trigger: 'axis',
+        trigger: "axis",
         formatter: function (params) {
-          let result = params[0].axisValue + '<br/>';
+          let result = params[0].axisValue + "<br/>";
           params.forEach((item) => {
             result += `${item.marker} ${item.seriesName}: ${item.value}<br/>`;
           });
@@ -287,8 +331,16 @@ export default {
         },
       },
       xAxis: {
-        type: 'category',
-        data: ['2022-07-01', '2022-07-02', '2022-07-03', '2022-07-04', '2022-07-05', '2022-07-06', '2022-07-07'],
+        type: "category",
+        data: [
+          "2022-07-01",
+          "2022-07-02",
+          "2022-07-03",
+          "2022-07-04",
+          "2022-07-05",
+          "2022-07-06",
+          "2022-07-07",
+        ],
         axisTick: {
           alignWithLabel: true,
           inside: true,
@@ -298,7 +350,7 @@ export default {
         },
       },
       yAxis: {
-        type: 'value',
+        type: "value",
         axisTick: {
           inside: true,
         },
@@ -308,54 +360,54 @@ export default {
       },
       series: [
         {
-          name: '一件代发',
-          type: 'line',
+          name: "一件代发",
+          type: "line",
           smooth: true,
           data: [260, 150, 270, 230, 380, 330, 400],
           areaStyle: {
             opacity: 0.7, // 增加不透明度以更好显示渐变
             color: {
               // 线性渐变配置
-              type: 'linear',
+              type: "linear",
               x: 0,
               y: 0, // 起点
               x2: 0,
               y2: 1, // 终点 (垂直向下)
               colorStops: [
-                { offset: 0, color: '#0E6CFA' }, // 曲线颜色
-                { offset: 1, color: 'rgba(255,255,255,0)' }, // 完全透明
+                { offset: 0, color: "#0E6CFA" }, // 曲线颜色
+                { offset: 1, color: "rgba(255,255,255,0)" }, // 完全透明
               ],
               global: false, // 不全局渐变
             },
           },
           lineStyle: {
             width: 2,
-            color: '#0E6CFA',
+            color: "#0E6CFA",
           },
         },
         {
-          name: '标准入库',
-          type: 'line',
+          name: "标准入库",
+          type: "line",
           smooth: true,
           data: [70, 20, 30, 60, 150, 110, 160],
           areaStyle: {
             opacity: 0.7,
             color: {
-              type: 'linear',
+              type: "linear",
               x: 0,
               y: 0,
               x2: 0,
               y2: 1,
               colorStops: [
-                { offset: 0, color: '#5745C5' },
-                { offset: 1, color: 'rgba(255,255,255,0)' },
+                { offset: 0, color: "#5745C5" },
+                { offset: 1, color: "rgba(255,255,255,0)" },
               ],
               global: false,
             },
           },
           lineStyle: {
             width: 2,
-            color: '#5745C5',
+            color: "#5745C5",
           },
         },
       ],
@@ -363,7 +415,7 @@ export default {
     const chartRef = ref(null);
     let chartInstance = null;
     const initChart = () => {
-      chartRef.value = document.getElementById('order-chart');
+      chartRef.value = document.getElementById("order-chart");
       if (!chartRef.value) return;
       chartInstance = echarts.init(chartRef.value);
       chartInstance.setOption(chartData.value);
@@ -379,42 +431,42 @@ export default {
     };
 
     // 图表数据-库存
-    const selectedOption = ref('sku');
+    const selectedOption = ref("sku");
 
     const chartRef2 = ref(null);
     let chartInstance2 = null;
     const chartData2 = ref({
-      color: ['#5745C5', '#69C096', '#409EFF'], // 在这里定义颜色数组
+      color: ["#5745C5", "#69C096", "#409EFF"], // 在这里定义颜色数组
       series: [
         {
-          name: '库存分类',
-          type: 'pie',
-          radius: ['50%', '70%'],
+          name: "库存分类",
+          type: "pie",
+          radius: ["50%", "70%"],
           avoidLabelOverlap: false,
           label: {
             show: false,
-            position: 'center',
+            position: "center",
           },
           emphasis: {
             label: {
               show: true,
-              fontSize: '30',
-              fontWeight: 'bold',
+              fontSize: "30",
+              fontWeight: "bold",
             },
           },
           labelLine: {
             show: false,
           },
           data: [
-            { value: 800, name: '商品库存' },
-            { value: 100, name: 'B2B库存' },
-            { value: 229, name: 'FBA退货库存' },
+            { value: 800, name: "商品库存" },
+            { value: 100, name: "B2B库存" },
+            { value: 229, name: "FBA退货库存" },
           ],
         },
       ],
     });
     const initChart2 = () => {
-      chartRef2.value = document.getElementById('capacity-chart');
+      chartRef2.value = document.getElementById("capacity-chart");
       if (!chartRef2.value) return;
       chartInstance2 = echarts.init(chartRef2.value);
       chartInstance2.setOption(chartData2.value);
@@ -423,54 +475,54 @@ export default {
     // 公告列表
     const noticeList = ref([
       {
-        label: '如何设置仓库/货区/货位',
-        desc: '如何设置仓库/货区/货位',
-        time: '2022-07-01 12:00:00',
+        label: "如何设置仓库/货区/货位",
+        desc: "如何设置仓库/货区/货位",
+        time: "2022-07-01 12:00:00",
       },
       {
-        label: '如何设置仓租策略',
-        desc: '如何设置仓租策略',
-        time: '2022-07-01 12:00:00',
+        label: "如何设置仓租策略",
+        desc: "如何设置仓租策略",
+        time: "2022-07-01 12:00:00",
       },
       {
-        label: '如何在操作中再及操作库策略',
-        desc: '如何在操作中再及操作库策略',
-        time: '2022-07-01 12:00:00',
+        label: "如何在操作中再及操作库策略",
+        desc: "如何在操作中再及操作库策略",
+        time: "2022-07-01 12:00:00",
       },
       {
-        label: '如何设置计费模板',
-        desc: '如何设置计费模板',
-        time: '2022-07-01 12:00:00',
+        label: "如何设置计费模板",
+        desc: "如何设置计费模板",
+        time: "2022-07-01 12:00:00",
       },
       {
-        label: '如何创建客户',
-        desc: '如何创建客户',
-        time: '2022-07-01 12:00:00',
+        label: "如何创建客户",
+        desc: "如何创建客户",
+        time: "2022-07-01 12:00:00",
       },
       {
-        label: '其他问题',
-        desc: '其他问题',
-        time: '2022-07-01 12:00:00',
+        label: "其他问题",
+        desc: "其他问题",
+        time: "2022-07-01 12:00:00",
       },
     ]);
     // 时间选项
     const timeOptions = [
-      { label: '昨天', value: 'yesterday' },
-      { label: '今天', value: 'today' },
-      { label: '星期', value: 'week' },
-      { label: '月', value: 'month' },
-      { label: '年', value: 'year' },
+      { label: "昨天", value: "yesterday" },
+      { label: "今天", value: "today" },
+      { label: "星期", value: "week" },
+      { label: "月", value: "month" },
+      { label: "年", value: "year" },
     ];
     onMounted(() => {
       nextTick(() => {
         initChart();
         initChart2();
-        window.addEventListener('resize', handleResize);
+        window.addEventListener("resize", handleResize);
       });
     });
     onUnmounted(() => {
       if (chartInstance) {
-        window.removeEventListener('resize', handleResize);
+        window.removeEventListener("resize", handleResize);
         chartInstance.dispose();
         chartInstance = null;
       }
@@ -554,7 +606,7 @@ export default {
         height: 80px;
         box-sizing: border-box;
         &::before {
-          content: '';
+          content: "";
           position: absolute;
           top: 0;
           left: 0;
@@ -691,7 +743,7 @@ export default {
         margin-bottom: 20px;
       }
       &::before {
-        content: '';
+        content: "";
         display: inline-block;
         width: 8px;
         height: 8px;

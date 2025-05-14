@@ -2,7 +2,7 @@
   <q-dialog v-model="dialogVisible" persistent>
     <q-card class="print-dialog-card">
       <div class="row items-center dialog-header">
-        <div class="text-h6">打印标签</div>
+        <div class="text-h6">{{ trans("打印标签") }}</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </div>
@@ -14,7 +14,7 @@
             <div class="col-4">
               <div class="q-mb-md">
                 <div class="q-mb-sm">
-                  模板名称 <span class="text-red">*</span>
+                  {{ trans("模板名称") }} <span class="text-red">*</span>
                 </div>
                 <q-select
                   v-model="form.template_id"
@@ -30,19 +30,19 @@
 
               <div class="q-mb-md">
                 <div class="q-mb-sm">
-                  纸张类型 <span class="text-red">*</span>
+                  {{ trans("纸张类型") }} <span class="text-red">*</span>
                 </div>
                 <div class="row">
                   <q-radio
                     v-model="form.paper_type"
                     val="roll"
-                    label="卷纸"
+                    :label="trans('卷纸')"
                     class="col-6"
                   />
                   <q-radio
                     v-model="form.paper_type"
                     val="flat"
-                    label="平面纸"
+                    :label="trans('平面纸')"
                     class="col-6"
                   />
                 </div>
@@ -50,7 +50,9 @@
 
               <template v-if="form.paper_type === 'roll'">
                 <div class="q-mb-md">
-                  <div class="q-mb-sm">排<span class="text-red">*</span></div>
+                  <div class="q-mb-sm">
+                    {{ trans("排") }}<span class="text-red">*</span>
+                  </div>
                   <q-input
                     v-model.number="form.columns"
                     type="number"
@@ -61,7 +63,9 @@
                 </div>
 
                 <div class="q-mb-md">
-                  <div class="q-mb-sm">边距</div>
+                  <div class="q-mb-sm">
+                    {{ trans("边距") }}
+                  </div>
                   <q-input
                     v-model.number="form.margin"
                     type="number"
@@ -74,7 +78,9 @@
                 </div>
 
                 <div class="q-mb-md">
-                  <div class="q-mb-sm">水平间距</div>
+                  <div class="q-mb-sm">
+                    {{ trans("水平间距") }}
+                  </div>
                   <q-input
                     v-model.number="form.horizontal_spacing"
                     type="number"
@@ -90,7 +96,7 @@
               <template v-else>
                 <div class="q-mb-md">
                   <div class="q-mb-sm">
-                    纸张宽度<span class="text-red">*</span>
+                    {{ trans("纸张宽度") }}<span class="text-red">*</span>
                   </div>
                   <q-input
                     v-model.number="form.paper_width"
@@ -105,7 +111,7 @@
 
                 <div class="q-mb-md">
                   <div class="q-mb-sm">
-                    纸张高度<span class="text-red">*</span>
+                    {{ trans("纸张高度") }}<span class="text-red">*</span>
                   </div>
                   <q-input
                     v-model.number="form.paper_height"
@@ -119,7 +125,9 @@
                 </div>
 
                 <div class="q-mb-md">
-                  <div class="q-mb-sm">边距</div>
+                  <div class="q-mb-sm">
+                    {{ trans("边距") }}
+                  </div>
                   <q-input
                     v-model.number="form.margin"
                     type="number"
@@ -133,7 +141,9 @@
               </template>
 
               <div class="preview-box q-mt-lg">
-                <div class="text-subtitle2 q-mb-sm">预览</div>
+                <div class="text-subtitle2 q-mb-sm">
+                  {{ trans("预览") }}
+                </div>
                 <div class="preview-content" :class="form.paper_type">
                   <template v-if="form.paper_type === 'roll'">
                     <div class="roll-preview">
@@ -252,11 +262,11 @@
             <div class="col-8">
               <div v-if="printType == 'goods_allocation'">
                 <div class="row items-center bg-grey-2 q-pa-sm">
-                  <div class="col">货架位编号</div>
+                  <div class="col">{{ trans("货架位编号") }}</div>
                   <div class="col-2 text-right">
-                    打印数量<span class="text-red">*</span>
+                    {{ trans("打印数量") }}<span class="text-red">*</span>
                   </div>
-                  <div class="col-2 text-center">操作</div>
+                  <div class="col-2 text-center">{{ trans("操作") }}</div>
                 </div>
                 <div
                   v-for="(item, index) in form.specs"
@@ -292,37 +302,37 @@
 
               <div v-if="printType == 'inbound'">
                 <div class="row bg-grey-2 q-pa-sm">
-                  <div class="col">商品SKU</div>
+                  <div class="col">{{ trans("商品SKU") }}</div>
                   <div class="col-2 text-center">
-                    收货数量
+                    {{ trans("收货数量") }}
                     <div>
                       <q-btn
                         flat
                         dense
                         size="sm"
                         color="primary"
-                        label="全部"
+                        :label="trans('全部')"
                         @click="fillAllReceivedQuantity"
                       />
                     </div>
                   </div>
                   <div class="col-2 text-center">
-                    待收货数量
+                    {{ trans("待收货数量") }}
                     <div>
                       <q-btn
                         flat
                         dense
                         size="sm"
                         color="primary"
-                        label="全部"
+                        :label="trans('全部')"
                         @click="fillAllPendingQuantity"
                       />
                     </div>
                   </div>
                   <div class="col-2 text-center">
-                    打印数量<span class="text-red">*</span>
+                    {{ trans("打印数量") }}<span class="text-red">*</span>
                   </div>
-                  <div class="col-2 text-center">操作</div>
+                  <div class="col-2 text-center">{{ trans("操作") }}</div>
                 </div>
                 <div
                   v-for="(item, index) in form.specs"
@@ -382,14 +392,14 @@
         <q-btn
           outline
           color="primary"
-          label="取消"
+          :label="trans('取消')"
           v-close-popup
           class="q-px-md"
         />
         <q-btn
           unelevated
           color="primary"
-          label="打印"
+          :label="trans('打印')"
           @click="handleSubmit"
           :loading="loading"
           class="q-ml-sm q-px-md"
@@ -404,6 +414,7 @@ import { ref, defineProps, defineEmits, watch, computed } from "vue";
 import { useQuasar } from "quasar";
 import settingApi from "@/api/setting";
 import productApi from "@/api/product";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 

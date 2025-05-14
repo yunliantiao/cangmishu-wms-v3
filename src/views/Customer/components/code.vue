@@ -12,17 +12,23 @@
         @click="close"
       />
       <q-card-section>
-        <div class="text-h6 q-mb-md">授权码</div>
+        <div class="text-h6 q-mb-md">{{ trans("授权码") }}</div>
         <div class="code-box q-mb-md">
           {{ qrcode }}
         </div>
         <div class="text-grey-7 q-mb-md" style="font-size: 14px">
-          请复制上面的授权码分享到需要使用的用户
+          {{ trans("请复制上面的授权码分享到需要使用的用户") }}
         </div>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn flat label="关闭" color="grey" v-close-popup @click="close" />
-        <q-btn color="primary" label="复制" @click="copyQrcode" />
+        <q-btn
+          flat
+          :label="trans('关闭')"
+          color="grey"
+          v-close-popup
+          @click="close"
+        />
+        <q-btn color="primary" :label="trans('复制')" @click="copyQrcode" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -46,7 +52,7 @@ function close() {
 function copyQrcode() {
   if (!qrcode.value) return;
   navigator.clipboard.writeText(qrcode.value).then(() => {
-    Message.successMessage("已复制");
+    Message.successMessage(trans("已复制"));
   });
 }
 

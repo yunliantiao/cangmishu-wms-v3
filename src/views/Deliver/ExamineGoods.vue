@@ -7,7 +7,7 @@
           <q-select
             outlined
             dense
-            label="物流组"
+            :label="trans('物流组')"
             v-model="pageData.group"
             :options="pageData.groupOptions"
             class="filter-item"
@@ -18,7 +18,7 @@
             outlined
             dense
             v-model="pageData.packageNo"
-            label="请扫描运单号/包裹号"
+            :label="trans('请扫描运单号/包裹号')"
             @keyup.enter="search"
             class="filter-item"
           />
@@ -29,7 +29,7 @@
             dense
             v-model="pageData.sku"
             :disable="pageData.rows.length === 0"
-            label="请扫描商品标签"
+            :label="trans('请扫描商品标签')"
             @keyup.enter="examine"
             class="filter-item"
           />
@@ -38,7 +38,7 @@
           <q-btn
             color="primary"
             class="filter-btn"
-            label="重置"
+            :label="trans('重置')"
             outline
             @click="resetFilter"
           />
@@ -47,9 +47,9 @@
     </div>
     <div class="tip-bar row items-center q-mt-xs q-ml-sm q-mt-md">
       <q-icon name="info" color="grey-5" size="18px" class="q-mr-xs" />
-      <span class="text-grey-6" style="font-size: 13px"
-        >请先切换成EN输入法</span
-      >
+      <span class="text-grey-6" style="font-size: 13px">{{
+        trans("请先切换成EN输入法")
+      }}</span>
     </div>
 
     <!-- 表格 -->
@@ -71,7 +71,7 @@
       >
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td> {{ props.row.group || "暂无" }}</q-td>
+            <q-td> {{ props.row.group || trans("暂无") }}</q-td>
             <q-td>{{ props.row.package_number }}</q-td>
             <q-td>
               <div
@@ -107,13 +107,13 @@
             <q-td>
               <div class="flex">
                 <q-badge v-if="props.row.status === 0" color="grey-5" outline>
-                  待验货
+                  {{ trans("待验货") }}
                 </q-badge>
                 <q-badge v-if="props.row.status === 1" color="orange" outline>
-                  验货中
+                  {{ trans("验货中") }}
                 </q-badge>
                 <q-badge v-if="props.row.status === 2" color="positive" outline>
-                  已验货
+                  {{ trans("已验货") }}
                 </q-badge>
               </div>
             </q-td>
@@ -123,7 +123,7 @@
         <template v-slot:no-data>
           <div class="full-width row flex-center q-gutter-sm">
             <q-icon size="2em" name="sentiment_dissatisfied" />
-            <span>暂无数据</span>
+            <span>{{ trans("暂无数据") }}</span>
           </div>
         </template>
       </q-table>
@@ -135,24 +135,40 @@
 import { reactive } from "vue";
 import outApi from "@/api/out";
 import Message from "@/utils/message";
+import trans from "@/i18n";
 
 const pageData = reactive({
   group: "",
   loading: false,
-  groupOptions: ["所有物流组", "物流组 A", "物流组 B"],
+  groupOptions: [trans("所有物流组"), trans("物流组 A"), trans("物流组 B")],
   packageNo: "",
   sku: "",
   columns: [
-    { name: "group", label: "物流组", field: "group", align: "left" },
+    { name: "group", label: trans("物流组"), field: "group", align: "left" },
     {
       name: "package_number",
-      label: "运单号/包裹号",
+      label: trans("运单号/包裹号"),
       field: "package_number",
       align: "left",
     },
-    { name: "product", label: "商品信息", field: "product", align: "left" },
-    { name: "checked", label: "已扫/应扫", field: "checked", align: "left" },
-    { name: "status", label: "验货状态", field: "status", align: "left" },
+    {
+      name: "product",
+      label: trans("商品信息"),
+      field: "product",
+      align: "left",
+    },
+    {
+      name: "checked",
+      label: trans("已扫/应扫"),
+      field: "checked",
+      align: "left",
+    },
+    {
+      name: "status",
+      label: trans("验货状态"),
+      field: "status",
+      align: "left",
+    },
   ],
   rows: [],
 });
@@ -166,7 +182,7 @@ const resetFilter = () => {
 
 const search = async () => {
   if (!pageData.packageNo) {
-    Message.notify("请输入运单号/包裹号");
+    Message.notify(trans("请输入运单号/包裹号"));
     return;
   }
   pageData.rows = [];
@@ -193,7 +209,7 @@ const search = async () => {
       return row;
     });
   } catch (error) {
-    Message.notify("获取订单信息失败");
+    Message.notify(trans("获取订单信息失败"));
   } finally {
     pageData.loading = false;
   }
@@ -201,7 +217,7 @@ const search = async () => {
 
 const examine = async () => {
   if (!pageData.sku) {
-    Message.notify("请输入商品编码");
+    Message.notify(trans("请输入商品编码"));
     return;
   }
 
@@ -218,7 +234,7 @@ const examine = async () => {
     return false;
   });
   if (!row) {
-    Message.notify("商品编码不正确");
+    Message.notify(trans("商品编码不正确"));
     return;
   }
 

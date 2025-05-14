@@ -7,7 +7,7 @@
           outlined
           dense
           v-model="pageData.orderNo"
-          label="请扫描输入运单号或平台订单号"
+          :label="trans('请扫描输入运单号或平台订单号')"
           class="filter-item"
           style="width: 320px"
         />
@@ -16,7 +16,7 @@
           <q-btn
             color="primary"
             class="filter-btn"
-            label="确定"
+            :label="trans('确定')"
             @click="handleSearch"
           />
         </div>
@@ -24,25 +24,25 @@
     </div>
     <div class="tip-bar row items-center q-mt-xs q-ml-sm">
       <q-icon name="info" color="grey-5" size="18px" class="q-mr-xs" />
-      <span class="text-grey-6" style="font-size: 13px"
-        >请先切换成EN输入法</span
-      >
+      <span class="text-grey-6" style="font-size: 13px">{{
+        trans("请先切换成EN输入法")
+      }}</span>
     </div>
     <div class="text-grey-7 q-ml-sm q-mt-xs" style="font-size: 13px">
-      称重须知：请注意电子平台单位和页面选中的称重单位保持一致
+      {{ trans("称重须知：请注意电子平台单位和页面选中的称重单位保持一致") }}
     </div>
 
     <!-- 表格 -->
     <div class="main-table">
       <div class="table-header row items-center">
-        <span class="text-h6">扫描记录</span>
+        <span class="text-h6">{{ trans("扫描记录") }}</span>
         <q-space />
         <q-btn
           color="primary"
           flat
           @click="handlePrint"
           :disable="pageData.rows.length === 0"
-          >打印签单</q-btn
+          >{{ trans("打印签单") }}</q-btn
         >
       </div>
       <q-table
@@ -58,7 +58,7 @@
         <template v-slot:no-data>
           <div class="full-width row flex-center q-gutter-sm">
             <q-icon size="2em" name="sentiment_dissatisfied" />
-            <span>暂无数据</span>
+            <span>{{ trans("暂无数据") }} </span>
           </div>
         </template>
 
@@ -109,6 +109,7 @@
 <script setup>
 import { reactive } from "vue";
 import outApi from "@/api/out";
+import trans from "@/i18n";
 const pageData = reactive({
   orderNo: "",
   weight: "",
@@ -122,28 +123,38 @@ const pageData = reactive({
   columns: [
     {
       name: "tracking_number",
-      label: "运单号",
+      label: trans("运单号"),
       field: "tracking_number",
       align: "left",
     },
-    { name: "logistics", label: "物流方式", field: "logistics", align: "left" },
-    { name: "product", label: "商品信息", field: "product", align: "left" },
-    { name: "qty", label: "数量", field: "qty", align: "center" },
+    {
+      name: "logistics",
+      label: trans("物流方式"),
+      field: "logistics",
+      align: "left",
+    },
+    {
+      name: "product",
+      label: trans("商品信息"),
+      field: "product",
+      align: "left",
+    },
+    { name: "qty", label: trans("数量"), field: "qty", align: "center" },
     {
       name: "estimated_weight",
-      label: "预设重量(g)",
+      label: trans("预设重量(g)"),
       field: "estimated_weight",
       align: "center",
     },
     {
       name: "actual_weight",
-      label: "实际重量(g)",
+      label: trans("实际重量(g)"),
       field: "real_weight",
       align: "actual_weight",
     },
     {
       name: "diff_weight",
-      label: "称重差异(g)",
+      label: trans("称重差异(g)"),
       field: "diff_weight",
       align: "center",
     },

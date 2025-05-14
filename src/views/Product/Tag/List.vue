@@ -2,9 +2,14 @@
   <div class="tag-list-page">
     <!-- 操作按钮区域 -->
     <div class="flex-between-center m-b-50">
-      <div class="font-bold text-h5">商品标记</div>
+      <div class="font-bold text-h5">{{ trans("商品标记") }}</div>
       <div class="">
-        <q-btn color="primary" icon="add" label="新增标记" @click="handleAddTag" />
+        <q-btn
+          color="primary"
+          icon="add"
+          :label="trans('新增标记')"
+          @click="handleAddTag"
+        />
       </div>
     </div>
 
@@ -12,10 +17,23 @@
     <div class="search-bar">
       <div class="row q-col-gutter-sm">
         <div class="col-auto">
-          <q-input outlined dense v-model="componentData.keyword" clearable placeholder="请输入" class="search-input" />
+          <q-input
+            outlined
+            dense
+            v-model="componentData.keyword"
+            clearable
+            :placeholder="trans('请输入')"
+            class="search-input"
+          />
         </div>
         <div class="col-auto">
-          <q-btn color="primary" icon="search" label="搜索" class="h-40" @click="handleSearch" />
+          <q-btn
+            color="primary"
+            icon="search"
+            :label="trans('搜索')"
+            class="h-40"
+            @click="handleSearch"
+          />
         </div>
       </div>
     </div>
@@ -34,7 +52,11 @@
           <q-tr :props="props">
             <q-td key="name" :props="props">
               <div class="flex-start-center">
-                <q-icon name="bookmark" :color="props.row.style" class="q-mr-sm font-18" />
+                <q-icon
+                  name="bookmark"
+                  :color="props.row.style"
+                  class="q-mr-sm font-18"
+                />
                 <span>{{ props.row.name }}</span>
               </div>
             </q-td>
@@ -45,12 +67,20 @@
             <q-td key="actions" :props="props">
               <div class="flex-center-center gap-24">
                 <div @click="handleEdit(props.row)">
-                  <img src="@/assets/images/product/edit-icon.png" class="cursor-pointer w-20 h-20" alt="编辑" />
-                  <q-tooltip>编辑</q-tooltip>
+                  <img
+                    src="@/assets/images/product/edit-icon.png"
+                    class="cursor-pointer w-20 h-20"
+                    :alt="trans('编辑')"
+                  />
+                  <q-tooltip>{{ trans("编辑") }}</q-tooltip>
                 </div>
                 <div @click="confirmDelete(props.row)">
-                  <img src="@/assets/images/product/delete-icon.png" class="cursor-pointer w-20 h-20" alt="删除" />
-                  <q-tooltip>删除</q-tooltip>
+                  <img
+                    src="@/assets/images/product/delete-icon.png"
+                    class="cursor-pointer w-20 h-20"
+                    alt="删除"
+                  />
+                  <q-tooltip>{{ trans("删除") }}</q-tooltip>
                 </div>
               </div>
             </q-td>
@@ -60,7 +90,7 @@
         <template v-slot:no-data>
           <div class="full-width row flex-center q-gutter-sm q-pa-lg">
             <q-icon size="2em" name="sentiment_dissatisfied" />
-            <span>无数据</span>
+            <span>{{ trans("无数据") }}</span>
           </div>
         </template>
       </q-table>
@@ -85,17 +115,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from 'vue';
-import Pagination from '@/components/Pagination.vue';
-import productApi from '@/api/product';
-import TagForm from './components/TagForm.vue';
-import { useQuasar } from 'quasar';
+import { ref, onMounted, reactive } from "vue";
+import Pagination from "@/components/Pagination.vue";
+import productApi from "@/api/product";
+import TagForm from "./components/TagForm.vue";
+import { useQuasar } from "quasar";
+import trans from "@/i18n";
 
 const q = useQuasar();
 
 // 筛选选项
 const componentData = reactive({
-  keyword: '',
+  keyword: "",
   total: 0,
   lastPage: 1,
   page: 1,
@@ -104,10 +135,10 @@ const componentData = reactive({
   showTagForm: false,
   list: [],
   currentEditTag: {
-    name: '',
-    description: '',
-    style: '',
-    id: '',
+    name: "",
+    description: "",
+    style: "",
+    id: "",
   },
 });
 
@@ -117,34 +148,34 @@ const loading = ref(false);
 // 表格列定义
 const columns = [
   {
-    name: 'name',
-    align: 'left',
-    label: '标记名称',
-    field: 'name',
-    headerStyle: 'font-size:16px;font-weight:bold',
-    style: 'width:45%',
+    name: "name",
+    align: "left",
+    label: trans("标记名称"),
+    field: "name",
+    headerStyle: "font-size:16px;font-weight:bold",
+    style: "width:45%",
   },
   {
-    name: 'description',
-    align: 'left',
-    label: '备注',
-    field: 'description',
-    headerStyle: 'font-size:16px;font-weight:bold',
-    style: 'width:35%',
+    name: "description",
+    align: "left",
+    label: trans("备注"),
+    field: "description",
+    headerStyle: "font-size:16px;font-weight:bold",
+    style: "width:35%",
   },
   {
-    name: 'actions',
-    align: 'center',
-    label: '操作',
-    field: 'actions',
-    headerStyle: 'font-size:16px;font-weight:bold',
-    style: 'width:20%',
+    name: "actions",
+    align: "center",
+    label: trans("操作"),
+    field: "actions",
+    headerStyle: "font-size:16px;font-weight:bold",
+    style: "width:20%",
   },
 ];
 
 // 搜索处理
 const handleSearch = () => {
-  console.log('搜索条件:', componentData);
+  console.log("搜索条件:", componentData);
   // 这里可以添加搜索逻辑
   initList();
 };
@@ -152,17 +183,17 @@ const handleSearch = () => {
 // 添加标记
 const handleAddTag = () => {
   componentData.currentEditTag = {
-    name: '',
-    description: '',
-    style: '',
-    id: '',
+    name: "",
+    description: "",
+    style: "",
+    id: "",
   };
   componentData.showTagForm = true;
 };
 
 // 编辑
 const handleEdit = (row) => {
-  console.log('编辑标记:', row);
+  console.log("编辑标记:", row);
   // 这里可以添加打开编辑标记对话框的逻辑
   componentData.currentEditTag = { ...row };
   componentData.showTagForm = true;
@@ -171,8 +202,8 @@ const handleEdit = (row) => {
 // 确认删除
 const confirmDelete = (row) => {
   q.dialog({
-    title: '确认删除',
-    message: `确定要删除标记 "${row.name}" 吗？`,
+    title: trans("确认删除"),
+    message: trans(`确定要删除标记 {name} 吗？`, { name: row.name }),
     cancel: true,
     persistent: true,
   }).onOk(() => {
@@ -182,7 +213,7 @@ const confirmDelete = (row) => {
 
 onMounted(() => {
   // 初始化加载数据
-  console.log('页面加载完成，初始化数据');
+  console.log("页面加载完成，初始化数据");
   initList();
 });
 
@@ -198,7 +229,7 @@ const initList = async () => {
     // page_size: componentData.rowsPerPage,
     keyword: componentData.keyword,
   });
-  console.log('initList', data);
+  console.log("initList", data);
   componentData.list = data;
 };
 
@@ -209,21 +240,23 @@ const handleTagSubmit = async (params) => {
   } else {
     data = await productApi.addTag(params);
   }
-  console.log('data', data);
+  console.log("data", data);
   componentData.page = 1;
   initList();
 };
 
 const handleDelete = async (row) => {
-  console.log('删除标记:', row);
+  console.log("删除标记:", row);
   try {
     loading.value = true;
     const { data } = await productApi.deleteTag(row.id);
     initList();
   } catch (error) {
     q.notify({
-      type: 'negative',
-      message: '删除失败: ' + (error.message || '未知错误'),
+      type: "negative",
+      message: trans("删除失败: {message}", {
+        message: error.message || "未知错误",
+      }),
     });
   } finally {
     loading.value = false;

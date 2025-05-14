@@ -6,7 +6,7 @@
   >
     <q-card style="width: 90vw; max-width: 1400px">
       <q-card-section class="row items-center q-py-sm">
-        <div class="text-h6">选择商品</div>
+        <div class="text-h6">{{ trans("选择商品") }}</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
@@ -31,7 +31,7 @@
               outlined
               dense
               v-model="skuParams.keywords"
-              placeholder="批量搜索用逗号隔开"
+              :placeholder="trans('批量搜索用逗号隔开')"
               class="keywords-input"
               style="min-width: 200px"
             />
@@ -50,7 +50,12 @@
             />
           </div>
           <div class="col-12 col-sm-auto">
-            <q-btn color="primary" label="搜索" @click="getSkuList" class="full-width" />
+            <q-btn
+              color="primary"
+              :label="trans('搜索')"
+              @click="getSkuList"
+              class="full-width"
+            />
           </div>
           <div class="col-12 col-sm-grow">
             <div>
@@ -67,20 +72,23 @@
         <div class="modal_content">
           <div class="view_list">
             <div class="row q-col-gutter-sm" v-if="!$store.state.btnLoading">
-              <div v-for="item in productList" :key="item.id" class="col-12 col-sm-6 col-md-4 col-lg-3">
+              <div
+                v-for="item in productList"
+                :key="item.id"
+                class="col-12 col-sm-6 col-md-4 col-lg-3"
+              >
                 <q-card flat bordered class="product-card">
                   <q-card-section class="q-pa-sm">
                     <div class="row items-start">
                       <div class="col-auto">
-                        <q-checkbox
-                          v-model="selectedProducts"
-                          :val="item"
-                        />
+                        <q-checkbox v-model="selectedProducts" :val="item" />
                       </div>
                       <div class="col product-info">
                         <div class="sku text-weight-medium">{{ item.sku }}</div>
                         <div class="name text-caption">{{ item.name }}</div>
-                        <div class="product-name text-caption">{{ item.product.name }}</div>
+                        <div class="product-name text-caption">
+                          {{ item.product.name }}
+                        </div>
                       </div>
                     </div>
                   </q-card-section>
@@ -101,13 +109,13 @@
             <q-card flat bordered>
               <q-card-section class="q-pa-sm">
                 <div class="row justify-between items-center q-mb-sm">
-                  <div>已选：{{ selectedProducts.length }}</div>
+                  <div>{{ trans("已选") }}:{{ selectedProducts.length }}</div>
                   <div>
                     <q-btn
                       flat
                       dense
                       class="q-ml-sm text-primary"
-                      label="清空"
+                      :label="trans('清空')"
                       @click="clearSelected"
                     />
                   </div>
@@ -128,10 +136,10 @@
       </q-card-section>
 
       <q-card-actions align="right" class="q-pa-md">
-        <q-btn flat label="取消" color="grey" v-close-popup />
+        <q-btn flat :label="trans('取消')" color="grey" v-close-popup />
         <q-btn
           unelevated
-          label="确认"
+          :label="trans('确认')"
           color="primary"
           @click="handleConfirm"
         />
@@ -141,30 +149,31 @@
 </template>
 
 <script setup>
-import { ref, reactive ,watch} from "vue";
+import { ref, reactive, watch } from "vue";
 import productApi from "@/api/product";
 import Pagination from "@/components/Pagination.vue";
+import trans from "@/i18n";
 
 const props = defineProps({
   modelValue: {
     type: Boolean,
-    required: true
-  }
+    required: true,
+  },
 });
 
-const emit = defineEmits(['update:modelValue', 'confirm']);
+const emit = defineEmits(["update:modelValue", "confirm"]);
 
 // 搜索类型选项
 const searchTypeOptions = [
-  { label: "名字搜索", value: "name" },
-  { label: "SKU搜索", value: "sku" },
+  { label: trans("名字搜索"), value: "name" },
+  { label: trans("SKU搜索"), value: "sku" },
 ];
 
 // 搜索模式选项
 const searchModeOptions = [
-  { label: "精确搜索", value: "exact" },
-  { label: "模糊搜索", value: "fuzzy" },
-  { label: "前缀搜索", value: "prefix" },
+  { label: trans("精确搜索"), value: "exact" },
+  { label: trans("模糊搜索"), value: "fuzzy" },
+  { label: trans("前缀搜索"), value: "prefix" },
 ];
 
 // 商品列表数据
@@ -198,8 +207,8 @@ const clearSelected = () => {
 
 // 确认选择
 const handleConfirm = () => {
-  emit('confirm', selectedProducts.value);
-  emit('update:modelValue', false);
+  emit("confirm", selectedProducts.value);
+  emit("update:modelValue", false);
 };
 
 watch(
@@ -230,7 +239,7 @@ watch(
     border-radius: 6px;
     flex: 1;
     min-width: 0;
-    
+
     @media (max-width: 768px) {
       width: 100%;
     }
@@ -248,7 +257,7 @@ watch(
 
 .product-card {
   height: 100%;
-  
+
   .q-card__section {
     height: 100%;
   }
@@ -257,10 +266,10 @@ watch(
 .product-info {
   min-width: 0;
   padding-left: 8px;
-  
+
   > div {
     margin-bottom: 4px;
-    
+
     &:last-child {
       margin-bottom: 0;
     }
@@ -276,7 +285,8 @@ watch(
     -webkit-line-clamp: 1;
   }
 
-  .name, .product-name {
+  .name,
+  .product-name {
     color: rgba(0, 0, 0, 0.65);
     line-height: 1.4;
     overflow: hidden;
@@ -307,7 +317,7 @@ watch(
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
-    
+
     &:last-child {
       margin-bottom: 0;
     }

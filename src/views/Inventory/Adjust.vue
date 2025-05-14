@@ -2,92 +2,33 @@
   <div class="adjust-page">
     <div class="bg-white rounded-borders q-pa-md q-mb-md">
       <div class="row q-col-gutter-sm">
-        <div class="col-auto">
-          <q-select
-            outlined
-            dense
-            v-model="pageParams.date_type"
-            :options="$store.state.dateTypeOptions"
-            label="创建时间"
-            class="select-width"
-            emit-value
-            map-options
-            option-value="value"
-            option-label="label"
-            clearable
-          />
-        </div>
-        <div class="col-auto">
-          <div class="row q-col-gutter-sm">
-            <div class="col-auto">
-              <q-input
-                outlined
-                dense
-                v-model="pageParams.start_date"
-                label="开始时间"
-                readonly
-                class="date-input"
-              >
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy
-                      cover
-                      transition-show="scale"
-                      transition-hide="scale"
-                    >
-                      <q-date
-                        v-model="pageParams.start_date"
-                        mask="YYYY-MM-DD"
-                      />
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
-            </div>
-            <div class="col-auto self-center">To</div>
-            <div class="col-auto">
-              <q-input
-                outlined
-                dense
-                readonly
-                v-model="pageParams.end_date"
-                label="结束时间"
-                class="date-input"
-              >
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy
-                      cover
-                      transition-show="scale"
-                      transition-hide="scale"
-                    >
-                      <q-date v-model="pageParams.end_date" mask="YYYY-MM-DD" />
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
-            </div>
-          </div>
-        </div>
-        <div class="col-auto">
+        <DatePicker
+          v-model:start_date="pageParams.start_date"
+          v-model:end_date="pageParams.end_date"
+          :dateList="$store.state.dateTypeOptions"
+        ></DatePicker>
+
+        <KeywordSearch
+          v-model:search_type="pageParams.search_type"
+          v-model:search_value="pageParams.keywords"
+          :searchModeList="$store.state.searchModeOptions"
+          :searchTypeList="[
+            { label: trans('商品SKU'), value: 'sku' },
+            { label: trans('移货编号'), value: 'system_order_number' },
+            { label: trans('商品名称'), value: 'name' },
+          ]"
+        ></KeywordSearch>
+
+        <!-- <div class="col-auto">
           <div class="row items-center no-wrap search-group q-ml-md">
             <q-select
               outlined
               dense
               v-model="pageParams.search_type"
               :options="[
-                {
-                  label: '商品SKU',
-                  value: 'sku',
-                },
-                {
-                  label: '移货编号',
-                  value: 'system_order_number',
-                },
-                {
-                  label: '商品名称',
-                  value: 'name',
-                },
+                { label: trans('商品SKU'), value: 'sku' },
+                { label: trans('移货编号'), value: 'system_order_number' },
+                { label: trans('商品名称'), value: 'name' },
               ]"
               emit-value
               map-options
@@ -99,7 +40,7 @@
               outlined
               dense
               v-model="pageParams.keywords"
-              placeholder="批量搜索用逗号隔开"
+              :placeholder="trans('批量搜索用逗号隔开')"
               class="keywords-input"
               style="min-width: 200px"
             />
@@ -115,19 +56,19 @@
               class="search-mode-select"
             />
           </div>
-        </div>
+        </div> -->
         <div class="col-auto">
           <q-btn
             outline
             color="grey"
-            label="重置"
+            :label="trans('重置')"
             class="q-mr-sm"
             @click="resetSearch"
           />
           <q-btn
             color="primary"
             icon="search"
-            label="搜索"
+            :label="trans('搜索')"
             :loading="$store.state.btnLoading"
             @click="getAdjustList"
           />
@@ -138,12 +79,14 @@
       <!-- 操作按钮区域 -->
       <div class="row justify-between q-mb-sm">
         <div class="row items-center">
-           <span class="q-mr-sm">选择 {{ selectedRows.length }}</span>
+          <span class="q-mr-sm"
+            >{{ trans("选择") }} {{ selectedRows.length }}</span
+          >
         </div>
         <div>
           <q-btn
             color="primary"
-            label="创建调整单"
+            :label="trans('创建调整单')"
             icon="add"
             @click="createAdjust"
             unelevated
@@ -155,7 +98,7 @@
           flat
           :rows="adjustList"
           :columns="columns"
-           v-model:selected="selectedRows"
+          v-model:selected="selectedRows"
           row-key="id"
           selection="multiple"
           separator="horizontal"
@@ -174,10 +117,13 @@
                   <div class="col-2">
                     <q-checkbox v-model="props.selected" />
                     <span class="info-item q-mr-md"
-                      >调整单号: {{ props.row.system_order_number }}</span
+                      >{{ trans("调整单号") }}:
+                      {{ props.row.system_order_number }}</span
                     >
                   </div>
-                  <div class="col-9">备注：{{ props.row.remark || "-" }}</div>
+                  <div class="col-9">
+                    {{ trans("备注") }}:{{ props.row.remark || "-" }}
+                  </div>
                 </div>
               </q-td>
             </q-tr>
@@ -195,7 +141,11 @@
                   </div>
                 </q-td>
                 <q-td key="type">
-                  {{ props.row.type === "good" ? "良品调整" : "不良品调整" }}
+                  {{
+                    props.row.type === "good"
+                      ? trans("良品调整")
+                      : trans("不良品调整")
+                  }}
                 </q-td>
                 <q-td key="location">
                   <div
@@ -250,7 +200,9 @@ import { ref, watch } from "vue";
 import inventoryApi from "@/api/inventory";
 import { useRouter } from "vue-router";
 import Pagination from "@/components/Pagination.vue";
-
+import trans from "@/i18n";
+import DatePicker from "@/components/DatePickerNew/Index.vue";
+import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 const router = useRouter();
 const selectedRows = ref([]);
 const pageParams = ref({
@@ -263,7 +215,7 @@ const pageParams = ref({
   start_date: "",
   end_date: "",
   search_type: "sku",
-  search_mode: "fuzzy",
+  search_mode: "exact",
 });
 
 const adjustList = ref([]);
@@ -272,37 +224,37 @@ const adjustList = ref([]);
 const columns = [
   {
     name: "info",
-    label: "商品信息/箱信息",
+    label: trans("商品信息/箱信息"),
     align: "left",
     field: (row) => row,
   },
   {
     name: "type",
-    label: "调整类型",
+    label: trans("调整类型"),
     align: "left",
     field: (row) => row.type,
   },
   {
     name: "location",
-    label: "货架位",
+    label: trans("货架位"),
     align: "left",
     field: (row) => row.items?.[0]?.locations?.[0]?.location_code,
   },
   {
     name: "quantity",
-    label: "调整数量",
+    label: trans("调整数量"),
     align: "center",
     field: (row) => row.items?.[0]?.locations?.[0]?.adjustment_qty,
   },
   {
     name: "operator",
-    label: "操作人",
+    label: trans("操作人"),
     align: "left",
     field: (row) => row.operator,
   },
   {
     name: "created_at",
-    label: "时间",
+    label: trans("时间"),
     align: "left",
     field: (row) => row.created_at,
   },
@@ -349,7 +301,7 @@ const resetSearch = () => {
     start_date: "",
     end_date: "",
     search_type: "sku",
-    search_mode: "fuzzy",
+    search_mode: "exact",
   };
   getAdjustList();
 };

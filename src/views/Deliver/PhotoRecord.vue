@@ -14,7 +14,7 @@
           map-options
           emit-value
           clearable
-          label="客户"
+          :label="trans('客户')"
           class="filter-item"
         />
         <DatePickerNew
@@ -28,9 +28,9 @@
           :showSearchMode="false"
         ></KeywordSearch>
         <div class="col-auto">
-          <q-btn color="primary" class="filter-btn" @click="getList"
-            >查询</q-btn
-          >
+          <q-btn color="primary" class="filter-btn" @click="getList">{{
+            trans("查询")
+          }}</q-btn>
         </div>
       </div>
     </div>
@@ -88,7 +88,7 @@
         <template v-slot:no-data>
           <div class="full-width row flex-center q-gutter-sm">
             <q-icon size="2em" name="sentiment_dissatisfied" />
-            <span>暂无数据</span>
+            <span>{{ trans("暂无数据") }}</span>
           </div>
         </template>
       </q-table>
@@ -110,6 +110,7 @@ import customerApi from "@/api/customer";
 import Pagination from "@/components/Pagination.vue";
 import DatePickerNew from "@/components/DatePickerNew/Index.vue";
 import KeywordSearch from "@/components/KeywordSearch/Index.vue";
+import trans from "@/i18n";
 
 const pageData = reactive({
   loading: false,
@@ -124,38 +125,43 @@ const pageData = reactive({
   columns: [
     {
       name: "photo_url",
-      label: "商品",
+      label: trans("商品"),
       field: "photo_url",
       align: "left",
     },
     {
       name: "package_number",
-      label: "包裹号",
+      label: trans("包裹号"),
       field: "package_number",
       align: "left",
     },
-    { name: "customer_id", label: "客户", field: "customer_id", align: "left" },
+    {
+      name: "customer_id",
+      label: trans("客户"),
+      field: "customer_id",
+      align: "left",
+    },
     {
       name: "logistics_providers_code",
-      label: "物流方式/运单号",
+      label: trans("物流方式/运单号"),
       field: "logistics_providers_code",
       align: "left",
     },
     {
       name: "system_order_number",
-      label: "平台订单号",
+      label: trans("平台订单号"),
       field: "system_order_number",
       align: "left",
     },
     {
       name: "order_number",
-      label: "ERP单号",
+      label: trans("ERP单号"),
       field: "order_number",
       align: "left",
     },
     {
       name: "created_at",
-      label: "拍照时间",
+      label: trans("拍照时间"),
       field: "created_at",
       align: "left",
     },

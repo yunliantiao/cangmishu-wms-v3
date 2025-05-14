@@ -9,7 +9,7 @@
             dense
             v-model="pageParams.area_type"
             :options="areaTypeOptionsForm"
-            label="货区类型"
+            :label="trans('货区类型')"
             class="filter-item"
             emit-value
             clearable
@@ -27,7 +27,7 @@
         </div>
         <div class="col-auto">
           <q-btn
-            label="查询"
+            :label="trans('查询')"
             color="primary"
             class="filter-btn"
             @click="fetchAreaList"
@@ -46,7 +46,7 @@
           class="filter-btn"
           @click="showCreateForm"
         >
-          新建货区
+          {{ trans("新建货区") }}
         </q-btn>
       </div>
 
@@ -92,7 +92,7 @@
                     @click="handleEdit(props.row)"
                   >
                     <img src="@/assets/images/edit.png" />
-                    <q-tooltip>编辑</q-tooltip>
+                    <q-tooltip>{{ trans("编辑") }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
@@ -103,7 +103,7 @@
                     @click="handleDelete(props.row)"
                   >
                     <img src="@/assets/images/del.png" />
-                    <q-tooltip>删除</q-tooltip>
+                    <q-tooltip>{{ trans("删除") }}</q-tooltip>
                   </q-btn>
                 </div>
               </q-td>
@@ -138,7 +138,7 @@
           <q-form @submit="handleSubmit" class="area-form">
             <div class="form-item">
               <div class="form-label">
-                货区类型 <span class="required">*</span>
+                {{ trans("货区类型") }} <span class="required">*</span>
               </div>
               <q-select
                 outlined
@@ -146,9 +146,9 @@
                 :options="areaTypeOptionsForm"
                 option-label="label"
                 option-value="value"
-                placeholder="请选择"
+                :placeholder="trans('请选择货区类型')"
                 emit-value
-                :rules="[(val) => !!val || '请选择货区类型']"
+                :rules="[(val) => !!val || trans('请选择货区类型')]"
               >
                 <template v-slot:selected>
                   <div>
@@ -163,13 +163,13 @@
             </div>
             <div class="form-item">
               <div class="form-label">
-                货区编号 <span class="required">*</span>
+                {{ trans("货区编号") }} <span class="required">*</span>
               </div>
               <q-input
                 outlined
                 v-model="formData.code"
-                placeholder="请输入"
-                :rules="[(val) => !!val || '请输入货区编号']"
+                :placeholder="trans('请输入货区编号')"
+                :rules="[(val) => !!val || trans('请输入货区编号')]"
               />
             </div>
           </q-form>
@@ -178,10 +178,10 @@
         <q-separator />
 
         <q-card-actions align="right">
-          <q-btn flat label="取消" color="grey-7" v-close-popup />
+          <q-btn flat :label="trans('取消')" color="grey-7" v-close-popup />
           <q-btn
             unelevated
-            label="确认"
+            :label="trans('确认')"
             color="primary"
             @click="handleSubmit"
             :loading="$store.state.btnLoading"
@@ -197,42 +197,40 @@ import { ref, onMounted } from "vue";
 import { useQuasar, Dialog as QuasarDialog } from "quasar";
 import settingApi from "@/api/setting";
 import Pagination from "@/components/Pagination.vue";
-
+import trans from "@/i18n";
 const $q = useQuasar();
 
 // 筛选选项
-const areaTypeFilter = ref("全部货区类型");
-const areaTypeOptions = ["全部货区类型", "拣货区", "转运区"];
 const areaTypeOptionsForm = [
-  { label: "拣货区", value: "picking" },
-  { label: "备货区", value: "staging" },
-  { label: "不良品区", value: "defective" },
-  { label: "转运区", value: "transit" },
+  { label: trans("拣货区"), value: "picking" },
+  { label: trans("备货区"), value: "staging" },
+  { label: trans("不良品区"), value: "defective" },
+  { label: trans("转运区"), value: "transit" },
 ];
 
 // 表格列定义
 const columns = [
   {
     name: "areaCode",
-    label: "货区编号",
+    label: trans("货区编号"),
     field: "areaCode",
     align: "left",
   },
   {
     name: "areaType",
-    label: "货区类型",
+    label: trans("货区类型"),
     field: "areaType",
     align: "center",
   },
   {
     name: "time",
-    label: "时间",
+    label: trans("时间"),
     field: "createTime",
     align: "center",
   },
   {
     name: "actions",
-    label: "操作",
+    label: trans("操作"),
     field: "actions",
     align: "center",
   },
@@ -244,7 +242,6 @@ const editMode = ref(false);
 const formData = ref({
   code: "",
   type: "",
-  //   remark: "",
 });
 
 // 货区列表数据
@@ -295,23 +292,23 @@ const handleEdit = (row) => {
 // 删除货区
 const handleDelete = (row) => {
   QuasarDialog.create({
-    title: "确认删除",
-    message: `确定要删除货区 "${row.code}" 吗？`,
+    title: trans("确认删除"),
+    message: trans("确定要删除货区 {code} 吗？", { code: row.code }),
     cancel: true,
     persistent: true,
     ok: {
-      label: "确认",
+      label: trans("确认"),
       color: "primary",
     },
     cancel: {
-      label: "取消",
+      label: trans("取消"),
       color: "grey-7",
     },
   }).onOk(() => {
     settingApi.deleteGoodsArea(row.id).then((res) => {
       if (res.success) {
         $q.notify({
-          message: "删除成功",
+          message: trans("删除成功"),
           color: "positive",
         });
         fetchAreaList();
@@ -324,7 +321,7 @@ const handleDelete = (row) => {
 const handleSubmit = async () => {
   if (!formData.value.type) {
     $q.notify({
-      message: "请选择货区类型",
+      message: trans("请选择货区类型"),
       color: "negative",
     });
     return;
@@ -332,7 +329,7 @@ const handleSubmit = async () => {
 
   if (!formData.value.code) {
     $q.notify({
-      message: "请输入货区编号",
+      message: trans("请输入货区编号"),
       color: "negative",
     });
     return;
@@ -343,14 +340,14 @@ const handleSubmit = async () => {
     // 编辑模式
     res = await settingApi.updateGoodsArea(formData.value.id, formData.value);
     $q.notify({
-      message: "货区更新成功",
+      message: trans("货区更新成功"),
       color: "positive",
     });
   } else {
     // 新建模式
     res = await settingApi.addGoodsArea(formData.value);
     $q.notify({
-      message: "货区创建成功",
+      message: trans("货区创建成功"),
       color: "positive",
     });
   }

@@ -9,7 +9,7 @@
             dense
             v-model="pageParams.status"
             :options="statusOptions"
-            label="状态"
+            :label="trans('状态')"
             option-label="label"
             option-value="value"
             emit-value
@@ -29,7 +29,7 @@
           <q-btn
             color="primary"
             class="filter-btn"
-            label="查询"
+            :label="trans('查询')"
             @click="getShelfLocationList"
           />
         </div>
@@ -44,17 +44,17 @@
             color="primary"
             class="filter-btn"
             flat
-            label="导入/导出"
+            :label="trans('导入/导出')"
           >
             <q-list>
               <q-item clickable v-close-popup @click="handleImport">
-                <q-item-section>导入</q-item-section>
+                <q-item-section>{{ trans("导入") }}</q-item-section>
               </q-item>
               <q-item clickable v-close-popup @click="handleExport(true)">
-                <q-item-section>导出</q-item-section>
+                <q-item-section>{{ trans("导出") }}</q-item-section>
               </q-item>
               <q-item clickable v-close-popup @click="handleExport(false)">
-                <q-item-section>筛选导出</q-item-section>
+                <q-item-section>{{ trans("筛选导出") }}</q-item-section>
               </q-item>
             </q-list>
           </q-btn-dropdown>
@@ -62,7 +62,7 @@
           <q-btn
             color="primary"
             flat
-            label="打印标签"
+            :label="trans('打印标签')"
             icon="print"
             class="q-ml-sm filter-btn"
             @click="handlePrintLabels"
@@ -72,14 +72,14 @@
             color="primary"
             flat
             class="filter-btn q-ml-sm"
-            label="新建"
+            :label="trans('新建')"
           >
             <q-list>
               <q-item clickable v-close-popup @click="showCreateForm">
-                <q-item-section>单个新建</q-item-section>
+                <q-item-section>{{ trans("单个新建") }}</q-item-section>
               </q-item>
               <q-item clickable v-close-popup @click="handleExport(false)">
-                <q-item-section>批量新建</q-item-section>
+                <q-item-section>{{ trans("批量新建") }}</q-item-section>
               </q-item>
             </q-list>
           </q-btn-dropdown>
@@ -140,7 +140,7 @@
                       @mouseenter="showTooltip($event, props.row.id)"
                       @mouseleave="hideTooltip"
                     >
-                      <span class="more-link">更多</span>
+                      <span class="more-link">{{ trans("更多") }}</span>
                       <div
                         v-show="tooltipVisible && activeRowId === props.row.id"
                         class="custom-hover-tooltip"
@@ -190,8 +190,8 @@
                 </q-chip>
               </q-td>
               <q-td key="time" :props="props">
-                <div>创建 {{ props.row.created_at }}</div>
-                <div>更新 {{ props.row.updated_at }}</div>
+                <div>{{ trans("创建") }} {{ props.row.created_at }}</div>
+                <div>{{ trans("更新") }} {{ props.row.updated_at }}</div>
               </q-td>
               <q-td key="actions" :props="props">
                 <div class="row justify-center q-gutter-xs">
@@ -203,7 +203,7 @@
                     @click="handleEdit(props.row)"
                   >
                     <img src="@/assets/images/edit.png" />
-                    <q-tooltip>编辑</q-tooltip>
+                    <q-tooltip>{{ trans("编辑") }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
@@ -213,7 +213,7 @@
                     @click="handleDelete(props.row)"
                   >
                     <img src="@/assets/images/del.png" />
-                    <q-tooltip>删除</q-tooltip>
+                    <q-tooltip>{{ trans("删除") }}</q-tooltip>
                   </q-btn>
                 </div>
               </q-td>
@@ -222,7 +222,7 @@
           <template v-slot:no-data>
             <div class="full-width row flex-center q-gutter-sm">
               <q-icon size="2em" name="sentiment_dissatisfied" />
-              <span> 无数据 </span>
+              <span>{{ trans("无数据") }}</span>
             </div>
           </template>
         </q-table>
@@ -242,7 +242,7 @@
       <q-card style="width: 500px; max-width: 90vw">
         <q-card-section class="row items-center">
           <div class="text-h6">
-            {{ editMode ? "编辑货架位" : "新建货架位" }}
+            {{ editMode ? trans("编辑货架位") : trans("新建货架位") }}
           </div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
@@ -254,7 +254,7 @@
           <q-form @submit="handleSubmit" class="location-form">
             <div class="form-item">
               <div class="form-label">
-                货区类型 <span class="required">*</span>
+                {{ trans("货区类型") }} <span class="required">*</span>
               </div>
               <q-select
                 outlined
@@ -265,8 +265,8 @@
                 option-label="label"
                 option-value="value"
                 emit-value
-                placeholder="请选择"
-                :rules="[(val) => !!val || '请选择货区类型']"
+                :placeholder="trans('请选择货区类型')"
+                :rules="[(val) => !!val || trans('请选择货区类型')]"
               >
                 <template v-slot:selected>
                   <div>
@@ -281,7 +281,7 @@
 
             <div class="form-item">
               <div class="form-label">
-                货区编号 <span class="required">*</span>
+                {{ trans("货区编号") }} <span class="required">*</span>
               </div>
               <q-select
                 outlined
@@ -290,16 +290,16 @@
                 :options="areaCodeOptions"
                 option-label="code"
                 option-value="id"
-                placeholder="请选择"
+                :placeholder="trans('请选择货区编号')"
                 emit-value
-                :rules="[(val) => !!val || '请选择货区编号']"
+                :rules="[(val) => !!val || trans('请选择货区编号')]"
               >
                 <template v-slot:selected>
                   <div>
                     {{
                       areaCodeOptions.find(
                         (item) => item.id === formData.warehouse_area_id
-                      )?.code || "请选择"
+                      )?.code || trans("请选择")
                     }}
                   </div>
                 </template>
@@ -308,19 +308,21 @@
 
             <div class="form-item">
               <div class="form-label">
-                货架位编号 <span class="required">*</span>
+                {{ trans("货架位编号") }} <span class="required">*</span>
               </div>
               <q-input
                 outlined
                 dense
                 v-model="formData.code"
-                placeholder="请输入"
-                :rules="[(val) => !!val || '请输入货架位编号']"
+                :placeholder="trans('请输入货架位编号')"
+                :rules="[(val) => !!val || trans('请输入货架位编号')]"
               />
             </div>
 
             <div class="form-item">
-              <div class="form-label">货架位规格</div>
+              <div class="form-label">
+                {{ trans("货架位规格") }} <span class="required">*</span>
+              </div>
               <q-select
                 outlined
                 dense
@@ -335,7 +337,7 @@
                     {{
                       locationSpecOptions.find(
                         (item) => item.id === formData.shelf_spec_id
-                      )?.name || "请选择"
+                      )?.name || trans("请选择")
                     }}
                   </div>
                 </template>
@@ -392,10 +394,10 @@
         <q-separator />
 
         <q-card-actions align="right">
-          <q-btn flat label="取消" color="grey-7" v-close-popup />
+          <q-btn flat :label="trans('取消')" color="grey-7" v-close-popup />
           <q-btn
             unelevated
-            label="确认"
+            :label="trans('确认')"
             color="primary"
             @click="handleSubmit"
             :loading="$store.state.btnLoading"
@@ -426,6 +428,7 @@ import { useRouter } from "vue-router";
 import ImportDialog from "@/components/ImportDialog.vue";
 import PrintLabelDialog from "@/components/PrintLabelDialog.vue";
 import KeywordSearch from "@/components/KeywordSearch/index.vue";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -433,40 +436,40 @@ const router = useRouter();
 const area_type = ref("");
 
 const areaTypeOptions = [
-  { label: "拣货区", value: "picking" },
-  { label: "备货区", value: "staging" },
-  { label: "不良品区", value: "defective" },
-  { label: "转运区", value: "transit" },
+  { label: trans("拣货区"), value: "picking" },
+  { label: trans("备货区"), value: "staging" },
+  { label: trans("不良品区"), value: "defective" },
+  { label: trans("转运区"), value: "transit" },
 ]; //货区类型
 const areaCodeOptions = ref([]);
 // 货架位
 const locationSpecOptions = ref([]);
 const statusOptions = ref([
   {
-    label: "已占用",
+    label: trans("已占用"),
     value: "stored",
   },
   {
-    label: "空闲",
+    label: trans("空闲"),
     value: "idle",
   },
   {
-    label: "可清理",
+    label: trans("可清理"),
     value: "clearable",
   },
 ]);
 const locationFilter = ref("货架位编号");
 const locationFilterOptions = [
   {
-    label: "货位编号",
+    label: trans("货位编号"),
     value: "code",
   },
   {
-    label: "SKU 编号",
+    label: trans("SKU 编号"),
     value: "sku",
   },
   {
-    label: "货架位规格",
+    label: trans("货架位规格"),
     value: "shelf_spec",
   },
 ];
@@ -474,15 +477,15 @@ const searchText = ref("");
 const searchTypeFilter = ref("精确搜索");
 const searchTypeOptions = [
   {
-    label: "精确搜索",
+    label: trans("精确搜索"),
     value: "exact",
   },
   {
-    label: "模糊搜索",
+    label: trans("模糊搜索"),
     value: "like",
   },
   {
-    label: "前缀搜索",
+    label: trans("前缀搜索"),
     value: "prefix",
   },
 ];
@@ -510,31 +513,31 @@ const formData = ref({
 const columns = [
   {
     name: "locationCode",
-    label: "货架位编号",
+    label: trans("货架位编号"),
     field: "locationCode",
     align: "left",
   },
   {
     name: "productInfo",
-    label: "商品信息",
+    label: trans("商品信息"),
     field: "productInfo",
     align: "left",
   },
   {
     name: "areaType",
-    label: "货区类型",
+    label: trans("货区类型"),
     field: "areaType",
     align: "center",
   },
   {
     name: "areaCode",
-    label: "货区编号",
+    label: trans("货区编号"),
     field: "areaCode",
     align: "center",
   },
   {
     name: "locationSpec",
-    label: "货架位规格",
+    label: trans("货架位规格"),
     field: "locationSpec",
     align: "center",
   },
@@ -547,19 +550,19 @@ const columns = [
   // },
   {
     name: "status",
-    label: "状态",
+    label: trans("状态"),
     field: "status",
     align: "center",
   },
   {
     name: "time",
-    label: "时间",
+    label: trans("时间"),
     field: "time",
     align: "center",
   },
   {
     name: "actions",
-    label: "操作",
+    label: trans("操作"),
     field: "actions",
     align: "center",
   },
@@ -660,7 +663,7 @@ const showBatchCreateForm = () => {
 
 const showImportForm = () => {
   $q.notify({
-    message: "导入创建功能将在后续版本中提供",
+    message: trans("导入创建功能将在后续版本中提供"),
     color: "info",
   });
 };
@@ -691,16 +694,16 @@ const handleEdit = (row) => {
 // 删除确认
 const handleDelete = (row) => {
   QuasarDialog.create({
-    title: "确认删除",
-    message: `确定要删除货架位 "${row.code}" 吗？`,
+    title: trans("确认删除"),
+    message: trans("确定要删除货架位 {code} 吗？", { code: row.code }),
     cancel: true,
     persistent: true,
     ok: {
-      label: "确认",
+      label: trans("确认"),
       color: "primary",
     },
     cancel: {
-      label: "取消",
+      label: trans("取消"),
       color: "grey-7",
     },
   }).onOk(() => {
@@ -716,15 +719,17 @@ const handleDelete = (row) => {
 const confirmBatchDelete = () => {
   if (selectedLocations.value.length === 0) {
     $q.notify({
-      message: "请先选择需要删除的货架位",
+      message: trans("请先选择需要删除的货架位"),
       color: "warning",
     });
     return;
   }
 
   QuasarDialog.create({
-    title: "确认删除",
-    message: `确定要删除选中的 ${selectedLocations.value.length} 个货架位吗？`,
+    title: trans("确认删除"),
+    message: trans("确定要删除选中的 {count} 个货架位吗？", {
+      count: selectedLocations.value.length,
+    }),
     cancel: true,
     persistent: true,
   }).onOk(() => {
@@ -735,7 +740,7 @@ const confirmBatchDelete = () => {
     );
     selectedLocations.value = [];
     $q.notify({
-      message: "批量删除成功",
+      message: trans("批量删除成功"),
       color: "positive",
     });
   });
@@ -750,7 +755,7 @@ const handleExport = async (bool) => {
   if (bool) {
     if (!selectedLocations.value.length) {
       $q.notify({
-        message: "请先选择需要导出的货架位",
+        message: trans("请先选择需要导出的货架位"),
         color: "warning",
       });
       return;
@@ -769,7 +774,7 @@ const printDialogVisible = ref(false);
 const handlePrintLabels = () => {
   if (selectedLocations.value.length === 0) {
     $q.notify({
-      message: "请先选择需要打印标签的货架位",
+      message: trans("请先选择需要打印标签的货架位"),
       color: "warning",
     });
     return;
@@ -780,14 +785,14 @@ const handlePrintLabels = () => {
 
 const handleCleanLocations = () => {
   $q.notify({
-    message: "清理货架位功能将在后续版本中提供",
+    message: trans("清理货架位功能将在后续版本中提供"),
     color: "info",
   });
 };
 
 const showCleanSettings = () => {
   $q.notify({
-    message: "清理货架位设置功能将在后续版本中提供",
+    message: trans("清理货架位设置功能将在后续版本中提供"),
     color: "info",
   });
 };
@@ -809,7 +814,7 @@ const handleSubmit = async () => {
 
   if (res.success) {
     $q.notify({
-      message: "操作成功",
+      message: trans("操作成功"),
       color: "positive",
     });
     formVisible.value = false;

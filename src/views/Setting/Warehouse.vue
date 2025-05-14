@@ -8,7 +8,7 @@
         class="filter-btn"
         @click="showCreateForm"
       >
-        新建
+        {{ trans("新建") }}
       </q-btn>
       <q-table
         :rows="warehouseList"
@@ -43,7 +43,11 @@
                 :text-color="props.row.allow_inbound ? 'green' : 'orange'"
                 class="text-weight-medium"
               >
-                {{ props.row.allow_inbound ? "正常收货" : "禁止收货" }}
+                {{
+                  props.row.allow_inbound
+                    ? trans("正常收货")
+                    : trans("禁止收货")
+                }}
               </q-chip>
             </q-td>
             <q-td key="orderStatus" :props="props">
@@ -53,7 +57,9 @@
                 :text-color="props.row.allow_order ? 'green' : 'orange'"
                 class="text-weight-medium"
               >
-                {{ props.row.allow_order ? "正常接单" : "禁止接单" }}
+                {{
+                  props.row.allow_order ? trans("正常接单") : trans("禁止接单")
+                }}
               </q-chip>
             </q-td>
             <q-td key="creator" :props="props">
@@ -77,7 +83,11 @@
                   />
                   <img src="@/assets/images/start.png" v-else />
                   <q-tooltip
-                    >{{ props.row.allow_inbound ? "暂停收货" : "允许收货" }}
+                    >{{
+                      props.row.allow_inbound
+                        ? trans("暂停收货")
+                        : trans("允许收货")
+                    }}
                   </q-tooltip>
                 </q-btn>
                 <q-btn
@@ -93,7 +103,11 @@
                   />
                   <img src="@/assets/images/start-order.png" v-else />
                   <q-tooltip
-                    >{{ props.row.allow_order ? "暂停接单" : "允许接单" }}
+                    >{{
+                      props.row.allow_order
+                        ? trans("暂停接单")
+                        : trans("允许接单")
+                    }}
                   </q-tooltip>
                 </q-btn>
                 <q-btn
@@ -105,7 +119,7 @@
                   @click="showEditForm(props.row)"
                 >
                   <img src="@/assets/images/edit.png" />
-                  <q-tooltip>编辑</q-tooltip>
+                  <q-tooltip>{{ trans("编辑") }}</q-tooltip>
                 </q-btn>
                 <!-- <q-btn flat round color="grey-7" icon="delete" size="sm" @click="confirmDelete(props.row)">
                   <q-tooltip>删除</q-tooltip>
@@ -133,6 +147,7 @@ import { ref } from "vue";
 import warehouseApi from "@/api/warehouse";
 import { useQuasar, Dialog as QuasarDialog } from "quasar";
 import WarehouseForm from "@/components/WarehouseForm.vue";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 
@@ -146,49 +161,49 @@ const loading = ref(false);
 const columns = [
   {
     name: "warehouseId",
-    label: "仓库编号",
+    label: trans("仓库编号"),
     field: "warehouseId",
     align: "left",
   },
   {
     name: "warehouseName",
-    label: "仓库名称",
+    label: trans("仓库名称"),
     field: "warehouseName",
     align: "left",
   },
   {
     name: "country",
-    label: "国家/地区",
+    label: trans("国家/地区"),
     field: "country",
     align: "center",
   },
   {
     name: "receiveStatus",
-    label: "收货状态",
+    label: trans("收货状态"),
     field: "receiveStatus",
     align: "center",
   },
   {
     name: "orderStatus",
-    label: "接单状态",
+    label: trans("接单状态"),
     field: "orderStatus",
     align: "center",
   },
   {
     name: "creator",
-    label: "创建人",
+    label: trans("创建人"),
     field: "creator",
     align: "center",
   },
   {
     name: "createTime",
-    label: "时间",
+    label: trans("时间"),
     field: "createTime",
     align: "center",
   },
   {
     name: "actions",
-    label: "操作",
+    label: trans("操作"),
     field: "actions",
     align: "center",
   },
@@ -230,7 +245,7 @@ const showEditForm = (warehouse) => {
 const handleWarehouseCreated = (data) => {
   getWarehouseList();
   $q.notify({
-    message: "仓库创建成功",
+    message: trans("仓库创建成功"),
     color: "positive",
   });
 };
@@ -239,7 +254,7 @@ const handleWarehouseCreated = (data) => {
 const handleWarehouseUpdated = (data) => {
   getWarehouseList();
   $q.notify({
-    message: "仓库更新成功",
+    message: trans("仓库更新成功"),
     color: "positive",
   });
 };
@@ -261,8 +276,8 @@ const toggleInbound = (warehouse) => {
 // 确认删除
 const confirmDelete = (warehouse) => {
   QuasarDialog.create({
-    title: "确认删除",
-    message: `确定要删除仓库 "${warehouse.name}" 吗？`,
+    title: trans("确认删除"),
+    message: trans("确定要删除仓库 {name} 吗？", { name: warehouse.name }),
     cancel: true,
     persistent: true,
   }).onOk(() => {
@@ -277,14 +292,14 @@ const deleteWarehouse = async (id) => {
     if (res.success) {
       getWarehouseList();
       $q.notify({
-        message: "仓库删除成功",
+        message: trans("仓库删除成功"),
         color: "positive",
       });
     }
   } catch (error) {
     console.error("删除仓库失败", error);
     $q.notify({
-      message: "删除仓库失败",
+      message: trans("删除仓库失败"),
       color: "negative",
     });
   }

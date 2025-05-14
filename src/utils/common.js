@@ -1,4 +1,5 @@
 import { Notify } from 'quasar';
+import trans from "@/i18n";
 export const loadonDemand = path => {
   return () => import(`../views/${path}.vue`)
 }
@@ -11,7 +12,7 @@ export const copyText = (text) => {
   document.execCommand('copy');
   document.body.removeChild(input);
   Notify.create({
-    message: '复制成功',
+    message: trans('复制成功'),
     color: 'positive',
     icon: 'check',
     position: 'top',

@@ -2,7 +2,7 @@
   <q-dialog v-model="componentData.visible" persistent>
     <q-card style="min-width: 380px; max-width: 95vw">
       <q-card-section>
-        <div class="text-h6">打印拣货车标签</div>
+        <div class="text-h6">{{ trans("打印拣货车标签") }}</div>
       </q-card-section>
       <q-separator />
       <q-card-section>
@@ -11,7 +11,7 @@
             <q-select
               v-model="componentData.form.width"
               :options="componentData.widthOptions"
-              label="标签尺寸宽度"
+              :label="trans('标签尺寸宽度')"
               outlined
               dense
               emit-value
@@ -22,7 +22,7 @@
             <q-select
               v-model="componentData.form.height"
               :options="componentData.heightOptions"
-              label="标签尺寸高度"
+              :label="trans('标签尺寸高度')"
               outlined
               dense
               emit-value
@@ -35,7 +35,7 @@
             <q-select
               v-model="componentData.form.font_size"
               :options="componentData.fontOptions"
-              label="字体"
+              :label="trans('字体')"
               outlined
               dense
               emit-value
@@ -44,7 +44,7 @@
           </div>
         </div>
         <div class="q-mb-md">
-          <div class="q-mb-xs">标签纸张</div>
+          <div class="q-mb-xs">{{ trans("标签纸张") }}</div>
           <q-option-group
             v-model="componentData.form.column"
             :options="componentData.columnOptions"
@@ -55,8 +55,8 @@
         </div>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn flat label="取消" @click="close" />
-        <q-btn color="primary" label="确认" @click="handleConfirm" />
+        <q-btn flat :label="trans('取消')" @click="close" />
+        <q-btn color="primary" :label="trans('确认')" @click="handleConfirm" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -65,7 +65,7 @@
 <script setup>
 import { reactive } from "vue";
 import Message from "@/utils/message.js";
-
+import trans from "@/i18n";
 const emit = defineEmits(["confirm"]);
 
 const componentData = reactive({
@@ -92,9 +92,9 @@ const componentData = reactive({
     { label: "14pt", value: "14" },
   ],
   columnOptions: [
-    { label: "一列", value: "1" },
-    { label: "两列", value: "2" },
-    { label: "三列", value: "3" },
+    { label: trans("一列"), value: "1" },
+    { label: trans("两列"), value: "2" },
+    { label: trans("三列"), value: "3" },
   ],
 });
 
@@ -120,7 +120,7 @@ const handleConfirm = () => {
     !componentData.form.font_size ||
     !componentData.form.column
   ) {
-    Message.notify("请填写完整信息");
+    Message.notify(trans("请填写完整信息"));
     return;
   }
   emit("confirm", { ...componentData.form });

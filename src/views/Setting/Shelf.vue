@@ -8,7 +8,7 @@
         class="filter-btn"
         @click="showCreateForm"
       >
-        新建货架
+        {{ trans("新建货架") }}
       </q-btn>
       <q-table
         :rows="shelfSizeList"
@@ -53,7 +53,7 @@
                   @click="showEditForm(props.row)"
                 >
                   <img src="@/assets/images/edit.png" />
-                  <q-tooltip>编辑</q-tooltip>
+                  <q-tooltip>{{ trans("编辑") }}</q-tooltip>
                 </q-btn>
                 <q-btn
                   flat
@@ -63,7 +63,7 @@
                   @click="confirmDelete(props.row)"
                 >
                   <img src="@/assets/images/del.png" />
-                  <q-tooltip>删除</q-tooltip>
+                  <q-tooltip>{{ trans("删除") }} </q-tooltip>
                 </q-btn>
               </div>
             </q-td>
@@ -77,7 +77,7 @@
       <q-card style="width: 700px; max-width: 90vw">
         <q-card-section class="row items-center">
           <div class="text-h6">
-            {{ editMode ? "编辑货架规格" : "新建货架规格" }}
+            {{ editMode ? trans("编辑货架规格") : trans("新建货架规格") }}
           </div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
@@ -91,25 +91,28 @@
               <div class="col-12 col-md-6">
                 <div class="form-item">
                   <div class="form-label">
-                    货架位规格名称 <span class="required">*</span>
+                    {{ trans("货架位规格名称") }}
+                    <span class="required">*</span>
                   </div>
                   <q-input
                     outlined
                     dense
                     v-model="formData.name"
-                    placeholder="请输入规格名称"
-                    :rules="[(val) => !!val || '请输入规格名称']"
+                    :placeholder="trans('请输入规格名称')"
+                    :rules="[(val) => !!val || trans('请输入规格名称')]"
                   />
                 </div>
               </div>
               <div class="col-12 col-md-6">
                 <div class="form-item">
-                  <div class="form-label">备注</div>
+                  <div class="form-label">
+                    {{ trans("备注") }}
+                  </div>
                   <q-input
                     outlined
                     dense
                     v-model="formData.description"
-                    placeholder="请输入备注"
+                    :placeholder="trans('请输入备注')"
                   />
                 </div>
               </div>
@@ -119,16 +122,16 @@
               <div class="col-12 col-md-4">
                 <div class="form-item">
                   <div class="form-label">
-                    长 (cm) <span class="required">*</span>
+                    {{ trans("长 (cm)") }} <span class="required">*</span>
                   </div>
                   <q-input
                     outlined
                     dense
                     type="number"
                     v-model.number="formData.size_length"
-                    placeholder="请输入"
+                    :placeholder="trans('请输入')"
                     :rules="[
-                      (val) => (!!val && val > 0) || '请输入大于0的数值',
+                      (val) => (!!val && val > 0) || trans('请输入大于0的数值'),
                     ]"
                   />
                 </div>
@@ -136,16 +139,16 @@
               <div class="col-12 col-md-4">
                 <div class="form-item">
                   <div class="form-label">
-                    宽 (cm) <span class="required">*</span>
+                    {{ trans("宽 (cm)") }} <span class="required">*</span>
                   </div>
                   <q-input
                     outlined
                     dense
                     type="number"
                     v-model.number="formData.size_width"
-                    placeholder="请输入"
+                    :placeholder="trans('请输入')"
                     :rules="[
-                      (val) => (!!val && val > 0) || '请输入大于0的数值',
+                      (val) => (!!val && val > 0) || trans('请输入大于0的数值'),
                     ]"
                   />
                 </div>
@@ -153,16 +156,16 @@
               <div class="col-12 col-md-4">
                 <div class="form-item">
                   <div class="form-label">
-                    高 (cm) <span class="required">*</span>
+                    {{ trans("高 (cm)") }} <span class="required">*</span>
                   </div>
                   <q-input
                     outlined
                     dense
                     type="number"
                     v-model.number="formData.size_height"
-                    placeholder="请输入"
+                    :placeholder="trans('请输入')"
                     :rules="[
-                      (val) => (!!val && val > 0) || '请输入大于0的数值',
+                      (val) => (!!val && val > 0) || trans('请输入大于0的数值'),
                     ]"
                   />
                 </div>
@@ -172,10 +175,10 @@
         </q-card-section>
         <q-separator />
         <q-card-actions align="right">
-          <q-btn flat label="取消" color="grey-7" v-close-popup />
+          <q-btn flat :label="trans('取消')" color="grey-7" v-close-popup />
           <q-btn
             unelevated
-            label="确定"
+            :label="trans('确定')"
             color="primary"
             @click="handleSubmit"
             :loading="$store.state.btnLoading"
@@ -190,7 +193,7 @@
 import { ref, computed } from "vue";
 import { useQuasar, Dialog as QuasarDialog } from "quasar";
 import settingApi from "@/api/setting";
-
+import trans from "@/i18n";
 const $q = useQuasar();
 
 // 表单控制
@@ -211,49 +214,49 @@ const formData = ref({
 const columns = [
   {
     name: "sizeName",
-    label: "货架位规格名称",
+    label: trans("货架位规格名称"),
     field: "name",
     align: "left",
   },
   {
     name: "size_length",
-    label: "长",
+    label: trans("长"),
     field: "size_length",
     align: "center",
   },
   {
     name: "size_width",
-    label: "宽",
+    label: trans("宽"),
     field: "size_width",
     align: "center",
   },
   {
     name: "size_height",
-    label: "高",
+    label: trans("高"),
     field: "size_height",
     align: "center",
   },
   {
     name: "volume",
-    label: "体积",
+    label: trans("体积"),
     field: "volume",
     align: "center",
   },
   {
     name: "description",
-    label: "备注",
+    label: trans("备注"),
     field: "description",
     align: "left",
   },
   {
     name: "created_at",
-    label: "时间",
+    label: trans("时间"),
     field: "created_at",
     align: "center",
   },
   {
     name: "actions",
-    label: "操作",
+    label: trans("操作"),
     field: "actions",
     align: "center",
   },
@@ -316,22 +319,22 @@ const showEditForm = (row) => {
 // 确认删除
 const confirmDelete = (row) => {
   QuasarDialog.create({
-    title: "确认删除",
-    message: `确定要删除货架规格 "${row.name}" 吗？`,
+    title: trans("确认删除"),
+    message: trans("确定要删除货架规格 {name} 吗？", { name: row.name }),
     cancel: true,
     persistent: true,
     ok: {
-      label: "确定",
+      label: trans("确定"),
       color: "primary",
     },
     cancel: {
-      label: "取消",
+      label: trans("取消"),
     },
   }).onOk(() => {
     settingApi.deleteShelfSpec(row.id).then((res) => {
       if (res.success) {
         $q.notify({
-          message: "删除成功",
+          message: trans("删除成功"),
           color: "positive",
         });
         getShelfSizeList();
@@ -350,7 +353,7 @@ const handleSubmit = async () => {
         if (res.success) {
           formVisible.value = false;
           $q.notify({
-            message: "货架规格更新成功",
+            message: trans("货架规格更新成功"),
             color: "positive",
           });
         }

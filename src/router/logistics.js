@@ -6,6 +6,8 @@ const RemoteForm = () => import(`../views/Logistics/Rule/RemoteForm.vue`); // �
 const ZonesForm = () => import(`../views/Logistics/Rule/ZonesForm.vue`); // 分区规则表单
 const CostIndex = () => import(`../views/Logistics/Cost/Index.vue`); // 物流计费
 const StrategyForm = () => import(`../views/Logistics/Cost/StrategyForm.vue`); // 物流计费策略表单
+import trans from "@/i18n";
+
 export default [
   {
     path: 'logistics',
@@ -13,7 +15,7 @@ export default [
     redirect: '/logistics/offline',
     icon: 'print',
     meta: {
-      name: '物流管理',
+      name: trans('物流管理'),
       icon: '',
     },
     children: [
@@ -24,8 +26,8 @@ export default [
         id: 1001,
         meta: {
           level: 2,
-          group: '物流管理',
-          name: '线下物流',
+          group: trans('物流管理'),
+          name: trans('线下物流'),
           icon: 'store',
         },
       },
@@ -36,8 +38,8 @@ export default [
         id: 1002,
         meta: {
           level: 3,
-          group: '物流管理',
-          name: '物流商渠道管理',
+          group: trans('物流管理'),
+          name: trans('物流商渠道管理'),
           icon: 'store',
         },
       },
@@ -48,8 +50,8 @@ export default [
         id: 1003,
         meta: {
           level: 2,
-          group: '物流管理',
-          name: '物流规则',
+          group: trans('物流管理'),
+          name: trans('物流规则'),
           icon: 'store',
         },
       },
@@ -60,8 +62,8 @@ export default [
         id: 1004,
         meta: {
           level: 3,
-          group: '物流管理',
-          name: '偏远地区规则',
+          group: trans('物流管理'),
+          name: trans('偏远地区规则'),
           icon: 'store',
         },
       },
@@ -72,8 +74,8 @@ export default [
         id: 1005,
         meta: {
           level: 3,
-          group: '物流管理',
-          name: '分区规则',
+          group: trans('物流管理'),
+          name: trans('分区规则'),
           icon: 'store',
         },
       },
@@ -84,8 +86,8 @@ export default [
         id: 1006,
         meta: {
           level: 2,
-          group: '物流管理',
-          name: '物流计费',
+          group: trans('物流管理'),
+          name: trans('物流计费'),
           icon: 'store',
         },
       },
@@ -96,8 +98,8 @@ export default [
         id: 1006,
         meta: {
           level: 3,
-          group: '物流管理',
-          name: '物流计费策略',
+          group: trans('物流管理'),
+          name: trans('物流计费策略'),
           icon: 'store',
         },
       },

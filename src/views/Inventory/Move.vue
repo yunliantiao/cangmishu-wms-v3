@@ -9,7 +9,7 @@
             dense
             v-model="searchParams.move_type"
             :options="moveTypeOptions"
-            label="全部移货类型"
+            :label="trans('全部移货类型')"
             class="select-width"
             emit-value
             map-options
@@ -24,7 +24,7 @@
             dense
             v-model="searchParams.status"
             :options="statusOptions"
-            label="全部状态"
+            :label="trans('全部状态')"
             class="select-width"
             emit-value
             map-options
@@ -46,11 +46,11 @@
           :searchModeList="$store.state.searchModeOptions"
           :searchTypeList="[
             {
-              label: '商品SKU',
+              label: trans('商品SKU'),
               value: 'sku',
             },
             {
-              label: '移货编号',
+              label: trans('移货编号'),
               value: 'system_order_number',
             },
             {
@@ -64,7 +64,7 @@
           <q-btn
             outline
             color="grey"
-            label="重置"
+            :label="trans('重置')"
             class="filter-btn"
             @click="resetSearch"
           />
@@ -74,7 +74,7 @@
             color="primary"
             icon="search"
             class="filter-btn"
-            label="搜索"
+            :label="trans('搜索')"
             :loading="$store.state.btnLoading"
             @click="getMoveOrderList"
           />
@@ -88,7 +88,7 @@
         <div>
           <q-btn
             color="primary"
-            label="创建移库单"
+            :label="trans('创建移库单')"
             icon="add"
             class="filter-btn"
             flat
@@ -122,7 +122,8 @@
                   <div class="row group-header items-center">
                     <div class="col-12">
                       <span class="info-item q-mr-md"
-                        >移库单号: {{ props.row.system_order_number }}</span
+                        >{{ trans("移库单号") }}:
+                        {{ props.row.system_order_number }}</span
                       >
                     </div>
                   </div>
@@ -137,8 +138,12 @@
               <q-td key="info" :props="props">
                 <div>
                   <div>
-                    <div>SKU种类: {{ props.row.total_sku_type_qty }}</div>
-                    <div>计划移货数量: {{ props.row.total_sku_qty }}</div>
+                    <div>
+                      {{ trans("SKU种类") }}: {{ props.row.total_sku_type_qty }}
+                    </div>
+                    <div>
+                      {{ trans("计划移货数量") }}: {{ props.row.total_sku_qty }}
+                    </div>
                   </div>
                   <div class="q-mt-sm">
                     <q-btn
@@ -152,7 +157,7 @@
                       @click="handleExpand(props)"
                       class="text-grey"
                     >
-                      详情
+                      {{ trans("详情") }}
                     </q-btn>
                   </div>
                 </div>
@@ -161,10 +166,10 @@
                 {{ getMoveTypeLabel(props.row.type) }}
               </q-td>
               <q-td key="operator" :props="props">
-                创建：{{ props.row.created_by.name }}
+                {{ trans("创建") }}: {{ props.row.created_by.name }}
               </q-td>
               <q-td key="created_at" :props="props">
-                创建：{{ props.row.created_at }}
+                {{ trans("创建") }}: {{ props.row.created_at }}
               </q-td>
               <q-td key="status" :props="props">
                 {{ getStatusLabel(props.row.status) }}
@@ -179,7 +184,7 @@
                     icon="start"
                     @click="handleDetail(props.row, 'move')"
                   >
-                    <q-tooltip>移货</q-tooltip>
+                    <q-tooltip>{{ trans("移货") }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
@@ -188,7 +193,7 @@
                     icon="receipt_long"
                     @click="handleDetail(props.row, 'detail')"
                   >
-                    <q-tooltip>详情</q-tooltip>
+                    <q-tooltip>{{ trans("详情") }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
@@ -198,7 +203,7 @@
                     icon="task_alt"
                     @click="forcedCompletion(props.row)"
                   >
-                    <q-tooltip>强制完成</q-tooltip>
+                    <q-tooltip>{{ trans("强制完成") }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
@@ -208,7 +213,7 @@
                     icon="delete"
                     @click="deleteMove(props.row)"
                   >
-                    <q-tooltip>删除</q-tooltip>
+                    <q-tooltip>{{ trans("删除") }}</q-tooltip>
                   </q-btn>
                 </div>
               </q-td>
@@ -222,11 +227,15 @@
                     :key="item.id"
                   >
                     <div class="q-mb-sm">
-                      <div>SKU：{{ item.product_spec_sku }}</div>
-                      <div>规格：{{ item.product_spec_name }}</div>
-                      <div>名称：{{ item.product_name || "-" }}</div>
+                      <div>{{ trans("SKU") }}: {{ item.product_spec_sku }}</div>
                       <div>
-                        移入数量：{{ item.transferred_qty }}/{{
+                        {{ trans("规格") }}: {{ item.product_spec_name }}
+                      </div>
+                      <div>
+                        {{ trans("名称") }}: {{ item.product_name || "-" }}
+                      </div>
+                      <div>
+                        {{ trans("移入数量") }}: {{ item.transferred_qty }}/{{
                           item.total_qty
                         }}
                       </div>
@@ -253,7 +262,7 @@
       <q-card style="width: 1200px; max-width: 90vw">
         <q-card-section class="row items-center">
           <div class="text-h6">
-            {{ openType == "move" ? "移货" : "移货详情" }}
+            {{ openType == "move" ? trans("移货") : trans("移货详情") }}
           </div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
@@ -265,7 +274,7 @@
               <q-input
                 outlined
                 dense
-                label="移货编号"
+                :label="trans('移货编号')"
                 disable
                 v-model="moveDetails.system_order_number"
               />
@@ -274,7 +283,7 @@
               <q-select
                 outlined
                 dense
-                label="移货类型"
+                :label="trans('移货类型')"
                 v-model="moveDetails.type"
                 :options="moveTypeOptions"
                 emit-value
@@ -287,7 +296,7 @@
                 outlined
                 dense
                 type="textarea"
-                label="备注"
+                :label="trans('备注')"
                 v-model="moveDetails.remark"
                 disable
               />
@@ -327,7 +336,7 @@
                         dense
                         size="sm"
                         color="primary"
-                        label="全部"
+                        :label="trans('全部')"
                         class="q-ml-sm"
                         @click="fillAllQuantities"
                       />
@@ -399,7 +408,7 @@
                         dense
                         type="number"
                         v-model.number="item.to[0].qty"
-                        placeholder="请输入"
+                        :placeholder="trans('请输入')"
                       />
                       <template v-else>{{
                         item.to[0].actual_qty || "-"
@@ -431,7 +440,7 @@
                           dense
                           type="number"
                           v-model.number="to.qty"
-                          placeholder="请输入"
+                          :placeholder="trans('请输入')"
                         />
                         <template v-else>{{ to.actual_qty || "-" }}</template>
                       </q-td>
@@ -444,7 +453,7 @@
         </q-card-section>
 
         <q-card-actions align="right" class="q-pa-md">
-          <q-btn flat label="取消" color="grey-7" v-close-popup />
+          <q-btn flat :label="trans('取消')" color="grey-7" v-close-popup />
           <q-btn
             unelevated
             label="确认"
@@ -466,6 +475,7 @@ import inventoryApi from "@/api/inventory";
 import Pagination from "@/components/Pagination.vue";
 import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 import DatePicker from "@/components/DatePickerNew/Index.vue";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 const selectedRows = ref([]);
@@ -473,7 +483,7 @@ const router = useRouter();
 // 搜索参数
 const searchParams = ref({
   search_type: "sku",
-  search_mode: "fuzzy",
+  search_mode: "exact",
   date_type: "",
   start_date: "",
   end_date: "",
@@ -488,56 +498,56 @@ const searchParams = ref({
 
 const operatorOptions = [];
 
-const moveTypeOptions = [{ label: "商品移货", value: "normal" }];
+const moveTypeOptions = [{ label: trans("商品移货"), value: "normal" }];
 
 const statusOptions = [
-  { label: "待移货", value: "pending" },
-  { label: "部分移货", value: "partially" },
-  { label: "移货完成", value: "completed" },
-  { label: "作废", value: "cancelled" },
+  { label: trans("待移货"), value: "pending" },
+  { label: trans("部分移货"), value: "partially" },
+  { label: trans("移货完成"), value: "completed" },
+  { label: trans("作废"), value: "cancelled" },
 ];
 
 const dateTypeOptions = [
-  { label: "创建时间", value: "created_at" },
-  { label: "更新时间", value: "updated_at" },
+  { label: trans("创建时间"), value: "created_at" },
+  { label: trans("更新时间"), value: "updated_at" },
 ];
 // 表格列定义
 const columns = [
   {
     name: "info",
     required: true,
-    label: "商品信息/移库信息",
+    label: trans("商品信息/移库信息"),
     align: "left",
     field: (row) => row,
     style: "width: 40%",
   },
   {
     name: "move_type",
-    label: "移货类型",
+    label: trans("移货类型"),
     align: "center",
     field: "move_type",
   },
   {
     name: "operator",
-    label: "操作人",
+    label: trans("操作人"),
     align: "center",
     field: "operator",
   },
   {
     name: "created_at",
-    label: "时间",
+    label: trans("时间"),
     align: "center",
     field: "created_at",
   },
   {
     name: "status",
-    label: "状态",
+    label: trans("状态"),
     align: "center",
     field: "status",
   },
   {
     name: "actions",
-    label: "操作",
+    label: trans("操作"),
     align: "center",
   },
 ];
@@ -575,42 +585,42 @@ const showDetail = ref(false); // 初始化为 false
 const moveColumns = [
   {
     name: "info",
-    label: "商品信息",
+    label: trans("商品信息"),
     field: (row) => row,
     style: "width: 200px",
     align: "left",
   },
   {
     name: "moveOut",
-    label: "移出货架位",
+    label: trans("移出货架位"),
     field: (row) => row.transfer?.[0]?.from?.location_code,
     style: "width: 150px",
     align: "center",
   },
   {
     name: "moveQuantity",
-    label: "待移货数量",
+    label: trans("待移货数量"),
     field: (row) => row.transfer?.[0]?.from?.quantity,
     style: "width: 100px",
     align: "center",
   },
   {
     name: "moveIn",
-    label: "移入货架位",
+    label: trans("移入货架位"),
     field: (row) => row.transfer?.[0]?.to,
     style: "width: 150px",
     align: "center",
   },
   {
     name: "planQuantity",
-    label: "待移入数量",
+    label: trans("待移入数量"),
     field: (row) => row.transfer?.[0]?.to?.[0]?.quantity,
     style: "width: 100px",
     align: "center",
   },
   {
     name: "actualQuantity",
-    label: "实际移入数量",
+    label: trans("实际移入数量"),
     field: (row) => row.transfer?.[0]?.to?.[0]?.qty,
     style: "width: 150px",
     align: "center",
@@ -647,7 +657,7 @@ const handleConfirmMove = async () => {
     if (hasEmptyQty) {
       $q.notify({
         type: "warning",
-        message: "请填写所有实际移入数量",
+        message: trans("请填写所有实际移入数量"),
       });
       return;
     }
@@ -665,7 +675,7 @@ const handleConfirmMove = async () => {
     await inventoryApi.confirmMove(moveDetails.value.id, { items: items });
     $q.notify({
       type: "positive",
-      message: "移货成功",
+      message: trans("移货成功"),
     });
 
     showDetail.value = false;
@@ -673,7 +683,7 @@ const handleConfirmMove = async () => {
   } catch (error) {
     $q.notify({
       type: "negative",
-      message: error.message || "移货失败",
+      message: error.message || trans("移货失败"),
     });
   }
 };
@@ -707,7 +717,7 @@ const handleDetail = async (row, type) => {
     console.error(error);
     $q.notify({
       type: "negative",
-      message: error.message || "获取移货单详情失败",
+      message: error.message || trans("获取移货单详情失败"),
     });
     showDetail.value = false;
   }
@@ -754,7 +764,7 @@ const resetSearch = () => {
   searchParams.value.per_page = 10;
   searchParams.value.total = 0;
   searchParams.value.search_type = "sku";
-  searchParams.value.search_mode = "fuzzy";
+  searchParams.value.search_mode = "exact";
   getMoveOrderList();
 };
 
@@ -769,16 +779,16 @@ const createMove = () => {
 // 删除移库单
 const deleteMove = (row) => {
   $q.dialog({
-    title: "确认删除",
-    message: "确认删除该移货任务吗？",
+    title: trans("确认删除"),
+    message: trans("确认删除该移货任务吗？"),
     cancel: true,
     persistent: true,
     ok: {
-      label: "确认",
+      label: trans("确认"),
       color: "primary",
     },
     cancel: {
-      label: "取消",
+      label: trans("取消"),
       color: "grey-7",
     },
   }).onOk(() => {
@@ -793,16 +803,16 @@ const deleteMove = (row) => {
 
 const forcedCompletion = (row) => {
   $q.dialog({
-    title: "确认强制完成",
-    message: "确认强制完成移货任务吗？",
+    title: trans("确认强制完成"),
+    message: trans("确认强制完成移货任务吗？"),
     cancel: true,
     persistent: true,
     ok: {
-      label: "确认",
+      label: trans("确认"),
       color: "primary",
     },
     cancel: {
-      label: "取消",
+      label: trans("取消"),
       color: "grey-7",
     },
   }).onOk(() => {

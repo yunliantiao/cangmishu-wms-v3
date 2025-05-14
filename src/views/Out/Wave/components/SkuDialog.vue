@@ -2,7 +2,7 @@
   <q-dialog v-model="show" persistent>
     <q-card style="min-width: 700px">
       <q-card-section class="row items-center">
-        <div class="text-h6">选择SKU</div>
+        <div class="text-h6">{{ trans("选择SKU") }}</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
@@ -10,7 +10,7 @@
       <q-card-section>
         <q-input
           v-model="keyword"
-          placeholder="查询SKU"
+          :placeholder="trans('查询SKU')"
           outlined
           dense
           class="filter-item"
@@ -50,8 +50,8 @@
       </q-card-section>
 
       <q-card-actions align="right" class="bg-white text-primary">
-        <q-btn flat label="取消" v-close-popup />
-        <q-btn color="primary" label="确认" @click="onConfirm" />
+        <q-btn flat :label="trans('取消')" v-close-popup />
+        <q-btn color="primary" :label="trans('确认')" @click="onConfirm" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -60,6 +60,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import waveApi from "@/api/wave.js";
+import trans from "@/i18n";
 
 const show = ref(false);
 const keyword = ref("");
@@ -73,7 +74,7 @@ const columns = [
   { name: "tags_sku_qty", label: "SKU", field: "tags_sku_qty" },
   {
     name: "quantity",
-    label: "订单数",
+    label: trans("订单数"),
     field: "quantity",
     align: "right",
     sortable: true,

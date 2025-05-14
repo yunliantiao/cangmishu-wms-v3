@@ -2,7 +2,7 @@
   <q-dialog v-model="componentData.isOpen" persistent>
     <q-card style="width: 400px; max-width: 90vw">
       <q-card-section class="row items-center">
-        <div class="text-h6">分配拣货员</div>
+        <div class="text-h6">{{ trans("分配拣货员") }}</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
@@ -12,13 +12,13 @@
           <div class="col-12">
             <div class="row items-center">
               <div class="col-3">
-                <span class="text-subtitle2">拣货员</span>
+                <span class="text-subtitle2">{{ trans("拣货员") }}</span>
               </div>
               <div class="col-9">
                 <q-select
                   outlined
                   dense
-                  label="请选择拣货员"
+                  :label="trans('请选择拣货员')"
                   v-model="componentData.selectedPicker"
                   :options="props.pickerOptions"
                   option-label="label"
@@ -34,8 +34,13 @@
       </q-card-section>
 
       <q-card-actions align="right" class="q-px-md q-pb-md">
-        <q-btn flat label="取消" color="grey-7" v-close-popup />
-        <q-btn unelevated label="确认" color="primary" @click="handleConfirm" />
+        <q-btn flat :label="trans('取消')" color="grey-7" v-close-popup />
+        <q-btn
+          unelevated
+          :label="trans('确认')"
+          color="primary"
+          @click="handleConfirm"
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -43,6 +48,7 @@
 
 <script setup>
 import { reactive, defineProps, defineEmits, defineExpose } from "vue";
+import trans from "@/i18n";
 
 const props = defineProps({
   pickerOptions: {

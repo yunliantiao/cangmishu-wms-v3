@@ -12,14 +12,21 @@
           class="q-mr-sm"
           @click="$router.back()"
         />
-        <div class="text-subtitle1">新建货架位 > 批量添加</div>
+        <div class="text-subtitle1">
+          {{ trans("新建货架位") }} > {{ trans("批量添加") }}
+        </div>
       </div>
       <div class="row q-gutter-sm">
-        <q-btn outline color="primary" label="取消" @click="$router.back()" />
+        <q-btn
+          outline
+          color="primary"
+          :label="trans('取消')"
+          @click="$router.back()"
+        />
         <q-btn
           unelevated
           color="primary"
-          label="保存"
+          :label="trans('保存')"
           :loading="$store.state.btnLoading"
           @click="handleSubmit"
         />
@@ -28,29 +35,29 @@
 
     <div class="content">
       <div class="bg-white rounded-borders q-pa-lg">
-        <div class="text-subtitle2 q-mb-md">货架位信息</div>
+        <div class="text-subtitle2 q-mb-md">{{ trans("货架位信息") }}</div>
         <q-form @submit="handlePreview" class="location-form">
           <div class="row q-col-gutter-md">
             <div class="col-xs-12 col-sm-4">
               <div class="form-item">
                 <div class="form-label">
-                  货区类型 <span class="required">*</span>
+                  {{ trans("货区类型") }} <span class="required">*</span>
                 </div>
                 <q-select
                   outlined
                   dense
                   v-model="area_type"
                   :options="$store.state.areaTypeOptions"
-                  placeholder="请选择"
+                  :placeholder="trans('请选择货区类型')"
                   @update:model-value="getGoodsAreaList"
                   emit-valu
-                  :rules="[(val) => !!val || '请选择货区类型']"
+                  :rules="[(val) => !!val || trans('请选择货区类型')]"
                 >
                   <template v-slot:selected>
                     {{
                       $store.state.areaTypeOptions.find(
                         (item) => item.value === area_type.value
-                      )?.label || "请选择"
+                      )?.label || trans("请选择货区类型")
                     }}
                   </template>
                 </q-select>
@@ -60,7 +67,7 @@
             <div class="col-xs-12 col-sm-4">
               <div class="form-item">
                 <div class="form-label">
-                  货区编号 <span class="required">*</span>
+                  {{ trans("货区编号") }} <span class="required">*</span>
                 </div>
                 <q-select
                   outlined
@@ -70,14 +77,14 @@
                   option-label="code"
                   option-value="id"
                   emit-value
-                  placeholder="请选择"
-                  :rules="[(val) => !!val || '请选择货区编号']"
+                  :placeholder="trans('请选择货区编号')"
+                  :rules="[(val) => !!val || trans('请选择货区编号')]"
                 >
                   <template v-slot:selected>
                     {{
                       areaCodeOptions.find(
                         (item) => item.id === formData.warehouse_area_id
-                      )?.code || "请选择"
+                      )?.code || trans("请选择货区编号")
                     }}
                   </template>
                 </q-select>
@@ -89,7 +96,7 @@
             <div class="col-xs-12 col-sm-4">
               <div class="form-item">
                 <div class="form-label">
-                  货架位 <span class="required">*</span>
+                  {{ trans("货架位") }} <span class="required">*</span>
                 </div>
                 <div class="row q-col-gutter-sm">
                   <div class="col">
@@ -97,8 +104,8 @@
                       outlined
                       dense
                       v-model="formData.prefix"
-                      placeholder="前缀"
-                      :rules="[(val) => !!val || '请输入前缀']"
+                      :placeholder="trans('前缀')"
+                      :rules="[(val) => !!val || trans('请输入前缀')]"
                     />
                   </div>
                   <div class="col">
@@ -106,8 +113,8 @@
                       outlined
                       dense
                       v-model="formData.columns"
-                      placeholder="列"
-                      :rules="[(val) => !!val || '请输入列']"
+                      :placeholder="trans('列')"
+                      :rules="[(val) => !!val || trans('请输入列')]"
                     />
                   </div>
                   <div class="col">
@@ -115,8 +122,8 @@
                       outlined
                       dense
                       v-model="formData.levels"
-                      placeholder="行"
-                      :rules="[(val) => !!val || '请输入行']"
+                      :placeholder="trans('行')"
+                      :rules="[(val) => !!val || trans('请输入行')]"
                     />
                   </div>
                 </div>
@@ -126,14 +133,14 @@
             <div class="col-xs-12 col-sm-4">
               <div class="form-item">
                 <div class="form-label">
-                  连字符 <span class="required">*</span>
+                  {{ trans("连字符") }} <span class="required">*</span>
                 </div>
                 <q-input
                   outlined
                   dense
                   v-model="formData.connector"
-                  placeholder="-"
-                  :rules="[(val) => !!val || '请输入连字符']"
+                  :placeholder="trans('-')"
+                  :rules="[(val) => !!val || trans('请输入连字符')]"
                 />
               </div>
             </div>
@@ -198,19 +205,23 @@
             <q-btn
               outline
               color="primary"
-              label="预览"
+              :label="trans('预览')"
               class="q-px-xl"
               type="submit"
             />
             <div class="q-ml-md">
-              货架位编号格式为：前缀-列-层，如A01-01-01，点击“预览”可查看批量创建效果
+              {{
+                trans(
+                  "货架位编号格式为：前缀-列-层，如A01-01-01，点击“预览”可查看批量创建效果"
+                )
+              }}
             </div>
           </div>
         </q-form>
 
         <!-- 预览区域 -->
         <div v-if="previewList.length" class="preview-section q-mt-xl">
-          <div class="text-subtitle2 q-mb-md">预览</div>
+          <div class="text-subtitle2 q-mb-md">{{ trans("预览") }}</div>
           <div class="preview-grid">
             <div
               v-for="(item, index) in previewList"
@@ -308,7 +319,7 @@ const handlePreview = () => {
     !formData.value.levels
   ) {
     $q.notify({
-      message: "请填写完整的货架位信息",
+      message: trans("请填写完整的货架位信息"),
       color: "negative",
     });
     return;
@@ -322,7 +333,7 @@ const handleSubmit = () => {
   settingApi.batchCreateShelfLocation(formData.value).then((res) => {
     if (res.success) {
       $q.notify({
-        message: "批量创建成功",
+        message: trans("批量创建成功"),
         color: "positive",
       });
       router.back();

@@ -26,8 +26,11 @@
     >
       <!-- 无数据时的显示 -->
       <template v-slot:no-data>
-        <div v-if="!loading && (!rows || rows.length === 0)" class="full-width row flex-center q-my-lg">
-          <span class="text-grey">暂无数据</span>
+        <div
+          v-if="!loading && (!rows || rows.length === 0)"
+          class="full-width row flex-center q-my-lg"
+        >
+          <span class="text-grey">{{ trans("暂无数据") }}</span>
         </div>
       </template>
 
@@ -36,7 +39,12 @@
           <q-th style="padding: 0 8px">
             <q-checkbox color="primary" v-model="props.selected" />
           </q-th>
-          <q-th v-for="col in props.cols" :key="col.name" :props="props" class="font-bold font-14">
+          <q-th
+            v-for="col in props.cols"
+            :key="col.name"
+            :props="props"
+            class="font-bold font-14"
+          >
             {{ col.label }}
           </q-th>
         </q-tr>
@@ -53,45 +61,62 @@
               <div class="q-mr-sm">
                 <img
                   :src="
-                    props.row?.image || 'https://testoms.cangmishu.com/api/uploads/52331320-d813-40d8-a6db-3cf28f4938b1'
+                    props.row?.image ||
+                    'https://testoms.cangmishu.com/api/uploads/52331320-d813-40d8-a6db-3cf28f4938b1'
                   "
                   class="w-50 h-50 b-rd-4"
                   style="object-fit: cover"
                 />
               </div>
-              <div class="flex-c-start-start gap-10" style="white-space: normal; width: 300px">
-                <div class="text-primary hover-copy" @click="$copy(props.row.sku)">
-                  SKU: {{ props.row?.sku || '-' }}
+              <div
+                class="flex-c-start-start gap-10"
+                style="white-space: normal; width: 300px"
+              >
+                <div
+                  class="text-primary hover-copy"
+                  @click="$copy(props.row.sku)"
+                >
+                  SKU: {{ props.row?.sku || "-" }}
                 </div>
                 <div class="text-overflow-1">
-                  {{ props.row?.product?.name || '-' }}
+                  {{ props.row?.product?.name || "-" }}
                   <q-tooltip>{{ props.row?.product?.name }}</q-tooltip>
                 </div>
-                <div>规格: {{ props.row?.name || '-' }}</div>
+                <div>{{ trans("规格") }}: {{ props.row?.name || "-" }}</div>
               </div>
             </div>
           </q-td>
           <q-td key="customer" class="text-center">
-            {{ props.row?.customer?.name || '-' }}
+            {{ props.row?.customer?.name || "-" }}
           </q-td>
-          <q-td key="applySpec" class="text-center" style="white-space: pre-line">
+          <q-td
+            key="applySpec"
+            class="text-center"
+            style="white-space: pre-line"
+          >
             {{
-              `${props.row?.size_length || 0}*${props.row?.size_width || 0}*${props.row?.size_height || 0} cm\n${
-                props.row?.weight || 0
-              } g`
+              `${props.row?.size_length || 0}*${props.row?.size_width || 0}*${
+                props.row?.size_height || 0
+              } cm\n${props.row?.weight || 0} g`
             }}
           </q-td>
 
-          <q-td key="realSpec" class="text-center" style="white-space: pre-line">
+          <q-td
+            key="realSpec"
+            class="text-center"
+            style="white-space: pre-line"
+          >
             {{
-              `${props.row?.warehouse_size_length || 0}*${props.row?.warehouse_size_width || 0}*${
-                props.row?.warehouse_size_height || 0
-              } cm\n${props.row?.warehouse_weight || 0} g`
+              `${props.row?.warehouse_size_length || 0}*${
+                props.row?.warehouse_size_width || 0
+              }*${props.row?.warehouse_size_height || 0} cm\n${
+                props.row?.warehouse_weight || 0
+              } g`
             }}
           </q-td>
           <q-td key="timeInfo" class="text-center">
-            <div>创建: {{ props.row?.created_at || '-' }}</div>
-            <div>更新: {{ props.row?.updated_at || '-' }}</div>
+            <div>{{ trans("创建") }}: {{ props.row?.created_at || "-" }}</div>
+            <div>{{ trans("更新") }}: {{ props.row?.updated_at || "-" }}</div>
           </q-td>
           <!-- <q-td key="operations" class="text-center">
             <q-btn
@@ -109,7 +134,7 @@
       <!-- 底部选中记录数显示 -->
       <template v-slot:bottom>
         <div v-if="selected.length > 0" class="q-pa-sm text-grey-8 text-center">
-          已选择 {{ selected.length }} 条记录
+          {{ trans("已选择 {count} 条记录", { count: selected.length }) }}
         </div>
       </template>
     </q-table>
@@ -117,13 +142,14 @@
 </template>
 
 <script setup>
-import { useQuasar } from 'quasar';
-import { defineEmits, defineExpose, defineProps, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useQuasar } from "quasar";
+import { defineEmits, defineExpose, defineProps, ref } from "vue";
+import { useRouter } from "vue-router";
+import trans from "@/i18n";
 // import { useI18n } from "vue-i18n";
 // import EditSkuDialog from './EditSkuDialog.vue';
 // import PrintLabelDialog from './PrintLabelDialog.vue';
-import api from '@/api/index';
+import api from "@/api/index";
 
 // const { t } = useI18n();
 const $q = useQuasar();
@@ -147,44 +173,56 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['add', 'edit', 'copy', 'delete', 'print', 'import', 'page-change', 'void']);
+const emit = defineEmits([
+  "add",
+  "edit",
+  "copy",
+  "delete",
+  "print",
+  "import",
+  "page-change",
+  "void",
+]);
 
 // 表格数据
 const selected = ref([]);
 const columns = [
   {
-    name: 'skuInfo',
+    name: "skuInfo",
     required: true,
-    label: 'SKU信息',
-    align: 'left',
-    field: (row) => row?.sku || '',
-    style: 'width: 20%',
+    label: trans("SKU信息"),
+    align: "left",
+    field: (row) => row?.sku || "",
+    style: "width: 20%",
   },
   {
-    name: 'customer',
-    label: '客户信息',
-    field: (row) => row?.customer?.name || '',
-    align: 'center',
+    name: "customer",
+    label: trans("客户信息"),
+    field: (row) => row?.customer?.name || "",
+    align: "center",
   },
   {
-    name: 'applySpec',
-    label: '申报规格',
-    field: (row) => `${row.size_length || 0}*${row.size_width || 0}*${row.size_height || 0} cm\n${row.weight || 0} g`,
-    align: 'center',
-  },
-  {
-    name: 'realSpec',
-    label: '实际规格',
+    name: "applySpec",
+    label: trans("申报规格"),
     field: (row) =>
-      `${row.warehouse_size_length || 0}*${row.warehouse_size_width || 0}*${row.warehouse_size_height || 0} cm\n${
-        row.warehouse_weight || 0
-      } g`,
-    align: 'center',
+      `${row.size_length || 0}*${row.size_width || 0}*${
+        row.size_height || 0
+      } cm\n${row.weight || 0} g`,
+    align: "center",
   },
   {
-    name: 'timeInfo',
-    label: '时间',
-    align: 'center',
+    name: "realSpec",
+    label: trans("实际规格"),
+    field: (row) =>
+      `${row.warehouse_size_length || 0}*${row.warehouse_size_width || 0}*${
+        row.warehouse_size_height || 0
+      } cm\n${row.warehouse_weight || 0} g`,
+    align: "center",
+  },
+  {
+    name: "timeInfo",
+    label: trans("时间"),
+    align: "center",
   },
   // {
   //   name: "operations",
@@ -204,7 +242,7 @@ const printDialogVisible = ref(false);
 const handleEdit = (row) => {
   // editDialog.value.open(row.id);
   router.push({
-    name: 'edit',
+    name: "edit",
     params: {
       id: row.id,
     },
@@ -215,22 +253,24 @@ const handleEdit = (row) => {
 const handleDelete = async () => {
   if (selected.value.length === 0) {
     $q.notify({
-      message: '请选择要删除的商品',
-      color: 'warning',
+      message: trans("请选择要删除的商品"),
+      color: "warning",
     });
     return;
   }
 
   $q.dialog({
-    title: '确认删除',
-    message: `确定要删除选中的 ${selected.value.length} 个商品吗？`,
+    title: trans("确认删除"),
+    message: trans("确定要删除选中的 {count} 个商品吗？", {
+      count: selected.value.length,
+    }),
     cancel: {
-      label: '取消',
+      label: trans("取消"),
       flat: true,
     },
     ok: {
-      label: '确认',
-      color: 'negative',
+      label: trans("确认"),
+      color: "negative",
     },
     persistent: true,
   }).onOk(async () => {
@@ -241,10 +281,10 @@ const handleDelete = async () => {
 
       if (response.success) {
         selected.value = []; // 清空选中
-        emit('refresh'); // 刷新列表
+        emit("refresh"); // 刷新列表
       }
     } catch (error) {
-      console.error('删除失败:', error);
+      console.error("删除失败:", error);
     }
   });
 };
@@ -253,21 +293,23 @@ const handleDelete = async () => {
 const handleVoid = () => {
   if (selected.value.length === 0) {
     $q.notify({
-      message: '请选择要作废的商品',
-      color: 'warning',
+      message: trans("请选择要作废的商品"),
+      color: "warning",
     });
     return;
   }
 
-  console.log('选中的商品:', selected.value);
+  console.log("选中的商品:", selected.value);
 
   $q.dialog({
-    title: '确认作废',
-    message: `确定要作废选中的 ${selected.value.length} 个商品吗？`,
+    title: trans("确认作废"),
+    message: trans("确定要作废选中的 {count} 个商品吗？", {
+      count: selected.value.length,
+    }),
     cancel: true,
     persistent: true,
   }).onOk(() => {
-    emit('void', selected.value);
+    emit("void", selected.value);
   });
 };
 
@@ -275,8 +317,8 @@ const handleVoid = () => {
 const handlePrint = () => {
   if (selected.value.length === 0) {
     $q.notify({
-      message: t('请选择要打印的商品'),
-      color: 'warning',
+      message: trans("请选择要打印的商品"),
+      color: "warning",
     });
     return;
   }

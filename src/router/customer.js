@@ -1,6 +1,7 @@
 const Container = () => import(`../views/Layout/Container.vue`)
 
 const Opened = () => import(`../views/Customer/opened.vue`)
+import trans from "@/i18n";
 
 export default [
     {
@@ -9,7 +10,7 @@ export default [
         redirect: '/customer/opened',
         icon: 'supervisor_account',
         meta: {
-            name: '客户',
+            name: trans('客户'),
             icon: '',
         },
         children: [
@@ -19,8 +20,8 @@ export default [
                 id: 1001,
                 meta: {
                     level: 2,
-                    group: '客户',
-                    name: '已开户',
+                    group: trans('客户'),
+                    name: trans('已开户'),
                 },
             },
         ],

@@ -23,7 +23,7 @@
             option-label="name"
             emit-value
             clearable
-            label="仓库"
+            :label="trans('仓库')"
             class="warehouse-select"
             style="width: 150px"
           >
@@ -31,7 +31,7 @@
               <div v-if="pageParams.warehouse_id">
                 {{
                   warehouseList.find((o) => o.id === pageParams.warehouse_id)
-                    ?.name || "请选择"
+                    ?.name || trans("请选择")
                 }}
               </div>
             </template>
@@ -47,7 +47,7 @@
         <div class="col-auto">
           <q-btn
             color="primary"
-            label="查询"
+            :label="trans('查询')"
             icon="search"
             class="h-40"
             :loading="$store.state.btnLoading"
@@ -167,7 +167,7 @@
                   v-if="!props.row.is_partner_code_used"
                 >
                   <img
-                    src="@/assets/images/customer/edit-icon.png"
+                    src="@/assets/images/customer/auth.png"
                     class="cursor-pointer w-20 h-20"
                     alt="授权码"
                   />

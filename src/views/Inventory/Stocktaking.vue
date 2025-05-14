@@ -3,12 +3,12 @@
     <div class="row items-center justify-between q-pa-md bg-white q-mb-md">
       <div class="row items-center">
         <q-btn flat dense icon="arrow_back" @click="$router.back()" />
-        <div class="text-h6 q-ml-sm">盘点</div>
+        <div class="text-h6 q-ml-sm">{{ trans("盘点") }}</div>
       </div>
       <div>
         <q-btn
           outline
-          label="取消"
+          :label="trans('取消')"
           color="grey"
           class="q-mr-sm"
           @click="$router.back()"
@@ -16,7 +16,7 @@
         <q-btn
           outline
           class="q-mr-sm"
-          label="打印盘点单"
+          :label="trans('打印盘点单')"
           color="primary"
           :loading="$store.state.btnLoading"
           @click="printCountOrder()"
@@ -24,14 +24,14 @@
         <q-btn
           outline
           class="q-mr-sm"
-          label="保存"
+          :label="trans('保存')"
           color="primary"
           :loading="$store.state.btnLoading"
           @click="handleSubmit('save')"
         />
         <q-btn
           unelevated
-          label="提交"
+          :label="trans('提交')"
           color="primary"
           :loading="$store.state.btnLoading"
           @click="handleSubmit('start')"
@@ -41,7 +41,7 @@
     <div class="q-mb-md">
       <!-- 基本信息 -->
       <div class="bg-white rounded-borders q-pa-lg q-mb-md">
-        <div class="text-subtitle1 q-mb-md">基本信息</div>
+        <div class="text-subtitle1 q-mb-md">{{ trans("基本信息") }}</div>
         <q-form ref="formRef" class="q-gutter-md" @submit="handleSubmit">
           <div class="row q-mb-md">
             <div class="col-4">
@@ -49,7 +49,7 @@
                 outlined
                 v-model="formData.type"
                 :options="inventoryTypes"
-                label="盘点类型"
+                :label="trans('盘点类型')"
                 disable
                 :rules="rules.type"
                 emit-value
@@ -61,18 +61,18 @@
               </q-select>
             </div>
             <div class="col-4 q-ml-xl">
-              <div>0库存是否参加盘点</div>
+              <div>{{ trans("0库存是否参加盘点") }}</div>
               <q-radio
                 v-model="formData.is_zero_counting"
                 :val="true"
-                label="是"
+                :label="trans('是')"
                 disable
               />
               <span class="q-ml-md"></span>
               <q-radio
                 v-model="formData.is_zero_counting"
                 :val="false"
-                label="否"
+                :label="trans('否')"
                 disable
               />
             </div>
@@ -82,7 +82,7 @@
               <q-input
                 outlined
                 v-model="formData.remark"
-                label="备注"
+                :label="trans('备注')"
                 type="textarea"
                 rows="4"
                 disable
@@ -93,12 +93,12 @@
       </div>
       <div class="bg-white rounded-borders q-pa-lg">
         <div class="row items-center justify-between q-mb-lg">
-          <div class="text-subtitle1">盘点信息</div>
+          <div class="text-subtitle1">{{ trans("盘点信息") }}</div>
           <div>
             <q-btn
               outline
               color="primary"
-              label="导出"
+              :label="trans('导出')"
               icon-right="arrow_drop_down"
             >
               <q-menu>
@@ -107,7 +107,7 @@
                     <q-item-section>导入</q-item-section>
                   </q-item> -->
                   <q-item clickable v-close-popup @click="handleExport">
-                    <q-item-section>导出盘点数据</q-item-section>
+                    <q-item-section>{{ trans("导出盘点数据") }}</q-item-section>
                   </q-item>
                 </q-list>
               </q-menu>
@@ -119,12 +119,12 @@
             <q-radio
               v-model="countMode"
               val="fill_stock"
-              label="实盘库存为0，自动填充账面库存"
+              :label="trans('实盘库存为0，自动填充账面库存')"
             />
             <q-radio
               v-model="countMode"
               val="fill_zero"
-              label="实盘库存为0，自动填0"
+              :label="trans('实盘库存为0，自动填0')"
             />
           </div>
         </div>
@@ -142,46 +142,48 @@
               },
               {
                 name: 'sku',
-                label: '商品SKU',
+                label: trans('商品SKU'),
                 align: 'center',
                 field: (row) => row.product_spec_sku,
               },
               {
                 name: 'name',
-                label: '商品名称',
+                label: trans('商品名称'),
                 align: 'center',
                 field: (row) => row.product_spec_name,
               },
               {
                 name: 'customer',
-                label: '客户',
+                label: trans('客户'),
                 align: 'center',
                 field: 'customer',
               },
               {
                 name: 'location',
-                label: '货架位',
+                label: trans('货架位'),
                 align: 'center',
                 field: (row) =>
                   `${row.warehouse_location_code} [${
-                    row.warehouse_area_type === 'staging' ? '暂存区' : '拣货区'
+                    row.warehouse_area_type === 'staging'
+                      ? trans('暂存区')
+                      : trans('拣货区')
                   }]`,
               },
               {
                 name: 'system_qty',
-                label: '账面库存',
+                label: trans('账面库存'),
                 align: 'center',
                 field: 'total_qty',
               },
               {
                 name: 'counting_qty',
-                label: '实盘库存',
+                label: trans('实盘库存'),
                 align: 'center',
                 field: 'counting_qty',
               },
               {
                 name: 'difference',
-                label: '差异',
+                label: trans('差异'),
                 align: 'center',
                 field: (row) => row.counting_qty - row.total_qty,
                 style: (row) => {
@@ -242,7 +244,7 @@
                     type="number"
                     style="width: 100px; margin: 0 auto"
                     class="text-center"
-                    placeholder="请输入"
+                    :placeholder="trans('请输入')"
                   />
                 </q-td>
                 <q-td
@@ -272,6 +274,7 @@ import { useQuasar } from "quasar";
 import inventoryApi from "@/api/inventory";
 import settingApi from "@/api/setting";
 import { useRoute, useRouter } from "vue-router";
+import trans from "@/i18n";
 
 const route = useRoute();
 const router = useRouter();
@@ -279,12 +282,12 @@ const id = route.query.id;
 const $q = useQuasar();
 const formRef = ref(null);
 const rules = {
-  type: [(val) => !!val || "请选择盘点类型"],
+  type: [(val) => !!val || trans("请选择盘点类型")],
 };
 
 const inventoryTypes = ref([
-  { label: "商品+货架位", value: "product_location" },
-  { label: "货架位", value: "location_only" },
+  { label: trans("商品+货架位"), value: "product_location" },
+  { label: trans("货架位"), value: "location_only" },
 ]);
 
 const formData = ref({
@@ -299,19 +302,19 @@ const countMode = ref("fill_stock");
 const columns = [
   {
     name: "sku",
-    label: "商品SKU",
+    label: trans("商品SKU"),
     align: "left",
     field: "sku",
   },
   {
     name: "name",
-    label: "商品名称",
+    label: trans("商品名称"),
     align: "left",
     field: (row) => row.product?.name || "-",
   },
   {
     name: "customer",
-    label: "客户",
+    label: trans("客户"),
     align: "left",
     field: (row) => {
       const code = row.customer?.code || "-";
@@ -320,19 +323,19 @@ const columns = [
   },
   {
     name: "location",
-    label: "货架位",
+    label: trans("货架位"),
     align: "left",
     field: (row) => row.location || "B-001",
   },
   {
     name: "type",
-    label: "货区类型",
+    label: trans("货区类型"),
     align: "left",
-    field: (row) => row.type || "拣货区",
+    field: (row) => row.type || trans("拣货区"),
   },
   {
     name: "actions",
-    label: "操作",
+    label: trans("操作"),
     align: "center",
   },
 ];
@@ -348,7 +351,7 @@ const handleSubmit = (type) => {
   if (emptyItems.length > 0) {
     $q.notify({
       type: "warning",
-      message: "请填写所有商品的实盘库存",
+      message: trans("请填写所有商品的实盘库存"),
       position: "top",
     });
     return;

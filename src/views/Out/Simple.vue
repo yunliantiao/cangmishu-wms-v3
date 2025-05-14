@@ -233,7 +233,7 @@
                   @click="handlePrint(props.row)"
                   class="table-icon"
                 >
-                  <img src="@/assets/images/print.png" />
+                  <img src="@/assets/images/printmd.png" />
 
                   <q-tooltip>{{ trans("打印面单") }}</q-tooltip>
                 </q-btn>

@@ -8,7 +8,7 @@
           :color="step >= 1 ? 'green' : '#dcdfe6'"
           class="process-icon"
         />
-        <div class="process-text">待拣货</div>
+        <div class="process-text">{{ trans("待拣货") }}</div>
       </div>
       <div class="col-1 process-bar-box">
         <q-linear-progress
@@ -26,7 +26,7 @@
           :color="step >= 2 ? 'green' : 'grey'"
           class="process-icon"
         />
-        <div class="process-text">待包装</div>
+        <div class="process-text">{{ trans("待包装") }}</div>
       </div>
       <div class="col-1 process-bar-box">
         <q-linear-progress
@@ -44,7 +44,7 @@
           :color="step >= 3 ? 'green' : 'grey'"
           class="process-icon"
         />
-        <div class="process-text">包装中</div>
+        <div class="process-text">{{ trans("包装中") }}</div>
       </div>
       <div class="col-1 process-bar-box">
         <q-linear-progress
@@ -62,7 +62,7 @@
           :color="step >= 4 ? 'green' : 'grey'"
           class="process-icon"
         />
-        <div class="process-text">已结束</div>
+        <div class="process-text">{{ trans("已结束") }}</div>
       </div>
     </div>
   </div>
@@ -70,6 +70,7 @@
 
 <script setup>
 import { defineProps } from "vue";
+import trans from "@/i18n";
 
 const props = defineProps({
   step: {

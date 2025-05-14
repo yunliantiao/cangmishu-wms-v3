@@ -8,7 +8,7 @@
     :breakpoint="0"
   >
     <div class="logs-drawer">
-      <div class="logs-title">分拣记录</div>
+      <div class="logs-title">{{ trans("分拣记录") }}</div>
       <q-table
         :rows="componentData.list"
         :columns="componentData.columns"
@@ -20,7 +20,7 @@
       >
         <template v-slot:no-data>
           <div class="full-width row flex-center q-gutter-sm q-pa-lg">
-            <span class="text-grey">No Data</span>
+            <span class="text-grey">{{ trans("No Data") }} </span>
           </div>
         </template>
       </q-table>
@@ -30,14 +30,15 @@
 
 <script setup>
 import { reactive } from "vue";
+import trans from "@/i18n";
 
 const componentData = reactive({
   visible: false,
   list: [],
   columns: [
-    { name: "index", label: "分拣框", field: "index", align: "left" },
-    { name: "code", label: "商品标签", field: "code", align: "left" },
-    { name: "qty", label: "数量", field: "qty", align: "left" },
+    { name: "index", label: trans("分拣框"), field: "index", align: "left" },
+    { name: "code", label: trans("商品标签"), field: "code", align: "left" },
+    { name: "qty", label: trans("数量"), field: "qty", align: "left" },
   ],
 });
 

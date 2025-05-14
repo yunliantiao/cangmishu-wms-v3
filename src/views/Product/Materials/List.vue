@@ -2,9 +2,14 @@
   <div class="materials-list-page">
     <!-- 操作按钮区域 -->
     <div class="flex-between-center m-b-50">
-      <div class="font-bold text-h5">包材</div>
+      <div class="font-bold text-h5">{{ trans("包材") }}</div>
       <div class="">
-        <q-btn color="primary" icon="add" label="新建包材" @click="add" />
+        <q-btn
+          color="primary"
+          icon="add"
+          :label="trans('新建包材')"
+          @click="add"
+        />
       </div>
     </div>
 
@@ -27,14 +32,20 @@
             dense
             clearable
             v-model="pageData.search.keywords"
-            placeholder="标题"
+            :placeholder="trans('标题')"
             class="search-input"
             style="width: 200px"
             @keyup.enter="initList"
           />
         </div>
         <div class="row-auto">
-          <q-btn color="primary" icon="search" @click="initList" class="h-40" label="搜索" />
+          <q-btn
+            color="primary"
+            icon="search"
+            @click="initList"
+            class="h-40"
+            :label="trans('搜索')"
+          />
         </div>
       </div>
     </div>
@@ -42,8 +53,14 @@
     <div class="main-table">
       <!-- 操作栏 -->
       <div class="action-bar">
-        <span>选择 {{ pageData.selectedRows.length }}</span>
-        <q-btn flat color="primary" class="q-ml-md" label="打印标签" @click="printTags" />
+        <span>{{ trans("选择") }} {{ pageData.selectedRows.length }}</span>
+        <q-btn
+          flat
+          color="primary"
+          class="q-ml-md"
+          :label="trans('打印标签')"
+          @click="printTags"
+        />
       </div>
 
       <!-- 表格 -->
@@ -79,9 +96,17 @@
 
             <q-td>
               <div class="row items-center">
-                <img :src="props.row.image" class="material-img" v-if="props.row.image" />
+                <img
+                  :src="props.row.image"
+                  class="material-img"
+                  v-if="props.row.image"
+                />
                 <div v-else class="material-img no-img">
-                  <q-icon name="image_not_supported" size="32px" color="grey-5" />
+                  <q-icon
+                    name="image_not_supported"
+                    size="32px"
+                    color="grey-5"
+                  />
                   <div class="no-img-text">No Image</div>
                 </div>
                 <div class="ml-8">
@@ -94,18 +119,26 @@
             <q-td>{{ props.row.weight }}</q-td>
             <q-td>{{ props.row.price }}</q-td>
             <q-td>
-              <div>创建 {{ props.row.created_at }}</div>
-              <div>更新 {{ props.row.updated_at }}</div>
+              <div>{{ trans("创建") }} {{ props.row.created_at }}</div>
+              <div>{{ trans("更新") }} {{ props.row.updated_at }}</div>
             </q-td>
             <q-td>
               <div class="flex-center-center gap-24">
                 <div @click="edit(props.row)">
-                  <img src="@/assets/images/product/edit-icon.png" class="cursor-pointer w-20 h-20" alt="编辑" />
-                  <q-tooltip>编辑</q-tooltip>
+                  <img
+                    src="@/assets/images/product/edit-icon.png"
+                    class="cursor-pointer w-20 h-20"
+                    alt="编辑"
+                  />
+                  <q-tooltip>{{ trans("编辑") }}</q-tooltip>
                 </div>
                 <div @click="del(props.row)">
-                  <img src="@/assets/images/product/delete-icon.png" class="cursor-pointer w-20 h-20" alt="删除" />
-                  <q-tooltip>删除</q-tooltip>
+                  <img
+                    src="@/assets/images/product/delete-icon.png"
+                    class="cursor-pointer w-20 h-20"
+                    alt="删除"
+                  />
+                  <q-tooltip>{{ trans("删除") }}</q-tooltip>
                 </div>
               </div>
             </q-td>
@@ -118,38 +151,62 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
-import ProductApi from '@/api/product.js';
-import Form from './components/Form.vue';
-import { useQuasar } from 'quasar';
+import { onMounted, reactive, ref } from "vue";
+import ProductApi from "@/api/product.js";
+import Form from "./components/Form.vue";
+import { useQuasar } from "quasar";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 const pageData = reactive({
   search: {
-    keywords: '',
-    search_type: 'name',
-    search_mode: 'fuzzy',
+    keywords: "",
+    search_type: "name",
+    search_mode: "fuzzy",
   },
   // warehouses: ["USC"],
-  types: ['包材名称'],
   columns: [
-    { name: 'info', label: '包材信息', field: 'info', align: 'left', headerStyle: 'font-size:16px;font-weight:bold' },
-    { name: 'size', label: '尺寸 (cm)', field: 'size', align: 'left', headerStyle: 'font-size:16px;font-weight:bold' },
     {
-      name: 'weight',
-      label: '重量 (g)',
-      field: 'weight',
-      align: 'left',
-      headerStyle: 'font-size:16px;font-weight:bold',
+      name: "info",
+      label: trans("包材信息"),
+      field: "info",
+      align: "left",
+      headerStyle: "font-size:16px;font-weight:bold",
     },
-    { name: 'price', label: '售价', field: 'price', align: 'left', headerStyle: 'font-size:16px;font-weight:bold' },
-    { name: 'time', label: '时间', field: 'time', align: 'left', headerStyle: 'font-size:16px;font-weight:bold' },
     {
-      name: 'actions',
-      label: '操作',
-      field: 'actions',
-      align: 'center',
-      headerStyle: 'font-size:16px;font-weight:bold',
+      name: "size",
+      label: trans("尺寸 (cm)"),
+      field: "size",
+      align: "left",
+      headerStyle: "font-size:16px;font-weight:bold",
+    },
+    {
+      name: "weight",
+      label: trans("重量 (g)"),
+      field: "weight",
+      align: "left",
+      headerStyle: "font-size:16px;font-weight:bold",
+    },
+    {
+      name: "price",
+      label: trans("售价"),
+      field: "price",
+      align: "left",
+      headerStyle: "font-size:16px;font-weight:bold",
+    },
+    {
+      name: "time",
+      label: trans("时间"),
+      field: "time",
+      align: "left",
+      headerStyle: "font-size:16px;font-weight:bold",
+    },
+    {
+      name: "actions",
+      label: trans("操作"),
+      field: "actions",
+      align: "center",
+      headerStyle: "font-size:16px;font-weight:bold",
     },
   ],
   rows: [],
@@ -182,17 +239,17 @@ const edit = (row) => {
 
 const del = (row) => {
   $q.dialog({
-    title: '提示',
-    message: '确定删除所选包材吗?',
+    title: trans("提示"),
+    message: trans("确定删除所选包材吗?"),
     cancel: true,
     persistent: true,
     ok: {
-      label: '确认',
-      color: 'primary',
+      label: trans("确认"),
+      color: "primary",
     },
     cancel: {
-      label: '取消',
-      color: 'grey-7',
+      label: trans("取消"),
+      color: "grey-7",
     },
   }).onOk(() => {
     // TODO: 实现删除逻辑
@@ -211,8 +268,8 @@ const add = () => {
 const printTags = async () => {
   let codes = pageData.selectedRows.map((row) => row.code);
   const { data } = await ProductApi.printTags({ codes });
-  console.log('data', data);
-  window.open(data.data, '_blank');
+  console.log("data", data);
+  window.open(data.data, "_blank");
 };
 </script>
 

@@ -11,13 +11,13 @@
           class="filter-btn"
           @click="showCreateForm"
         >
-          新建拣货车
+          {{ trans("新建拣货车") }}
         </q-btn>
         <q-btn
           color="primary"
           icon="print"
           flat
-          label="打印"
+          :label="trans('打印')"
           @click="handlePrint"
         />
       </div>
@@ -66,7 +66,9 @@
               {{ props.row.wave_number }}
             </q-td>
             <q-td key="status" :props="props">
-              {{ props.row.status == "available" ? "空闲" : "占用" }}
+              {{
+                props.row.status == "available" ? trans("空闲") : trans("占用")
+              }}
             </q-td>
             <q-td key="created_at" :props="props">
               {{ props.row.created_at }}
@@ -85,7 +87,7 @@
                   @click="showEditForm(props.row)"
                 >
                   <img src="@/assets/images/edit.png" />
-                  <q-tooltip>编辑</q-tooltip>
+                  <q-tooltip>{{ trans("编辑") }}</q-tooltip>
                 </q-btn>
                 <q-btn
                   flat
@@ -95,7 +97,7 @@
                   @click="confirmDelete(props.row)"
                 >
                   <img src="@/assets/images/del.png" />
-                  <q-tooltip>删除</q-tooltip>
+                  <q-tooltip>{{ trans("删除") }}</q-tooltip>
                 </q-btn>
               </div>
             </q-td>
@@ -117,7 +119,7 @@ import { useQuasar, Dialog as QuasarDialog } from "quasar";
 import PickCarForm from "./components/PickerCarForm.vue";
 import PrintForm from "./components/PrintForm.vue";
 import Message from "@/utils/message.js";
-
+import trans from "@/i18n";
 const $q = useQuasar();
 const pickCarFormRef = ref(null);
 const printFormRef = ref(null);
@@ -131,49 +133,49 @@ const pageData = reactive({
 const columns = [
   {
     name: "code",
-    label: "拣货车编号",
+    label: trans("拣货车编号"),
     field: "code",
     align: "left",
   },
   {
     name: "name",
-    label: "名称",
+    label: trans("名称"),
     field: "name",
     align: "left",
   },
   {
     name: "size",
-    label: "尺寸",
+    label: trans("尺寸"),
     field: "size",
     align: "left",
   },
   {
     name: "wave_number",
-    label: "波次",
+    label: trans("波次"),
     field: "wave_number",
     align: "left",
   },
   {
     name: "status",
-    label: "状态",
+    label: trans("状态"),
     field: "status",
     align: "left",
   },
   {
     name: "created_at",
-    label: "创建时间",
+    label: trans("创建时间"),
     field: "created_at",
     align: "center",
   },
   {
     name: "description",
-    label: "描述",
+    label: trans("描述"),
     field: "description",
     align: "center",
   },
   {
     name: "actions",
-    label: "操作",
+    label: trans("操作"),
     field: "actions",
     align: "center",
   },
@@ -207,8 +209,8 @@ const showEditForm = (pickCar) => {
 
 const confirmDelete = (pickCar) => {
   QuasarDialog.create({
-    title: "确认删除",
-    message: `确定要删除拣货车 "${pickCar.code}" 吗？`,
+    title: trans("确认删除"),
+    message: trans("确定要删除拣货车 {code} 吗？", { code: pickCar.code }),
     cancel: true,
     persistent: true,
   }).onOk(() => {
@@ -221,18 +223,18 @@ const deletePickCar = async (id) => {
     const res = await settingApi.deletePickCar(id);
     if (res.success) {
       getPickCarList();
-      Message.notify("拣货车删除成功");
+      Message.notify(trans("拣货车删除成功"));
     }
   } catch (error) {
     console.error("删除拣货车失败", error);
-    Message.notify("删除拣货车失败");
+    Message.notify(trans("删除拣货车失败"));
   }
 };
 
 const handlePrint = () => {
   console.log(pageData.selectedRows);
   if (pageData.selectedRows.length === 0) {
-    Message.notify("请选择拣货车");
+    Message.notify(trans("请选择拣货车"));
     return;
   }
 
@@ -244,7 +246,7 @@ const handlePrintConfirm = async (form) => {
   const { data } = await settingApi.printPickCarLabel({ ...form, codes });
   console.log("data", data);
   window.open(data.data, "_blank");
-  Message.successMessage("打印成功");
+  Message.successMessage(trans("打印成功"));
 };
 </script>
 

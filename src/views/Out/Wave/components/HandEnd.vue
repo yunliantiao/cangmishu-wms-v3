@@ -3,7 +3,7 @@
     <q-card style="min-width: 340px">
       <q-card-section>
         <div class="text-h6">
-          以下包裹打印面单失败，结束作业后，包裹状态置为“异常”
+          {{ trans("以下包裹打印面单失败，结束作业后，包裹状态置为“异常”") }}
         </div>
       </q-card-section>
       <q-separator />
@@ -20,8 +20,8 @@
         </q-table>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn flat label="取消" @click="close" />
-        <q-btn color="primary" label="确认" @click="handleConfirm" />
+        <q-btn flat :label="trans('取消')" @click="close" />
+        <q-btn color="primary" :label="trans('确认')" @click="handleConfirm" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -30,6 +30,7 @@
 <script setup>
 import { reactive } from "vue";
 import Message from "@/utils/message.js";
+import trans from "@/i18n";
 
 const emit = defineEmits(["confirm"]);
 
@@ -39,19 +40,19 @@ const componentData = reactive({
   columns: [
     {
       name: "package_number",
-      label: "包裹号/运单号",
+      label: trans("包裹号/运单号"),
       field: "package_number",
       align: "left",
     },
     {
       name: "package_number",
-      label: "运单号",
+      label: trans("运单号"),
       field: "package_number",
       align: "left",
     },
     {
       name: "package_number",
-      label: "物流方式",
+      label: trans("物流方式"),
       field: "package_number",
       align: "left",
     },

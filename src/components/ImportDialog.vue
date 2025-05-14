@@ -2,7 +2,7 @@
   <q-dialog v-model="dialogVisible" persistent>
     <q-card style="min-width: 500px">
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">导入</div>
+        <div class="text-h6">{{ trans("导入") }}</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
@@ -23,9 +23,11 @@
             @change="handleFileChange"
           />
           <q-icon name="cloud_upload" size="48px" color="grey-6" />
-          <div class="text-grey-6 q-mt-sm">点击或拖拽文件到此处上传</div>
+          <div class="text-grey-6 q-mt-sm">
+            {{ trans("点击或拖拽文件到此处上传") }}
+          </div>
           <div class="text-grey-6 q-mt-xs text-caption">
-            支持 .xlsx, .xls, .csv 格式
+            {{ trans("支持 .xlsx, .xls, .csv 格式") }}
           </div>
           <div v-if="selectedFile" class="selected-file q-mt-md">
             <q-chip
@@ -45,17 +47,17 @@
             flat
             color="primary"
             icon="download"
-            label="下载导入模板"
+            :label="trans('下载导入模板')"
             @click="handleDownloadTemplate"
           />
         </div>
       </q-card-section>
 
       <q-card-actions align="right" class="q-pa-md">
-        <q-btn flat label="取消" color="grey-7" v-close-popup />
+        <q-btn flat :label="trans('取消')" color="grey-7" v-close-popup />
         <q-btn
           color="primary"
-          label="开始导入"
+          :label="trans('开始导入')"
           :loading="uploading"
           :disable="!selectedFile"
           @click="handleUpload"
@@ -69,7 +71,7 @@
 import { ref, computed } from "vue";
 import { useQuasar } from "quasar";
 import settingApi from "@/api/setting";
-
+import trans from "@/i18n";
 const $q = useQuasar();
 
 // Props
@@ -121,10 +123,10 @@ const validateAndSetFile = (file) => {
   if (!validTypes.includes(file.type)) {
     $q.notify({
       type: "negative",
-      message: t("请上传正确的文件格式(.xlsx, .xls, .csv)"),
+      message: trans("请上传正确的文件格式(.xlsx, .xls, .csv)"),
     });
     return;
-  }  
+  }
 
   selectedFile.value = file;
 };
@@ -143,7 +145,7 @@ const handleDownloadTemplate = async () => {
     const response = await settingApi.downloadTemplate({ type: props.type });
 
     // 获取文件名
-    const filename = `导入模板.xlsx`;
+    const filename = `${trans("导入模板")}.xlsx`;
 
     // 创建 Blob 对象
     const blob = new Blob([response], {
@@ -166,13 +168,13 @@ const handleDownloadTemplate = async () => {
 
     $q.notify({
       type: "positive",
-      message: "下载成功",
+      message: trans("下载成功"),
     });
   } catch (error) {
     console.error("下载模板失败:", error);
     $q.notify({
       type: "negative",
-      message: "下载失败",
+      message: trans("下载失败"),
     });
   }
 };
@@ -185,7 +187,7 @@ const handleUpload = async () => {
   try {
     const formData = new FormData();
 
-    if (props.type === "import_shelf") {     
+    if (props.type === "import_shelf") {
       formData.append("file", selectedFile.value);
       await settingApi.importTemplates(formData);
     } else {
@@ -195,7 +197,7 @@ const handleUpload = async () => {
 
     $q.notify({
       type: "positive",
-      message: "导入成功",
+      message: trans("导入成功"),
     });
 
     emit("success");
@@ -205,7 +207,7 @@ const handleUpload = async () => {
     console.error("导入失败:", error);
     $q.notify({
       type: "negative",
-      message: error.response?.data?.message || "导入失败",
+      message: error.response?.data?.message || trans("导入失败"),
     });
   } finally {
     uploading.value = false;

@@ -6,7 +6,7 @@
   >
     <q-card style="width: 90vw; max-width: 1400px">
       <q-card-section class="row items-center q-py-sm">
-        <div class="text-h6">选择商品</div>
+        <div class="text-h6">{{ trans("选择商品") }}</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
@@ -31,7 +31,7 @@
               outlined
               dense
               v-model="skuParams.keywords"
-              placeholder="批量搜索用逗号隔开"
+              :placeholder="trans('批量搜索用逗号隔开')"
               class="keywords-input"
               style="min-width: 200px"
             />
@@ -52,7 +52,7 @@
           <div class="col-12 col-sm-auto">
             <q-btn
               color="primary"
-              label="搜索"
+              :label="trans('搜索')"
               @click="getSkuList"
               class="full-width"
             />
@@ -83,25 +83,25 @@
                   },
                   {
                     name: 'sku',
-                    label: '商品SKU',
+                    label: trans('商品SKU'),
                     align: 'left',
                     field: 'sku',
                   },
                   {
                     name: 'name',
-                    label: '商品名称',
+                    label: trans('商品名称'),
                     align: 'left',
                     field: 'name',
                   },
                   {
                     name: 'customer',
-                    label: '客户',
+                    label: trans('客户'),
                     align: 'left',
                     field: (row) => 'test',
                   },
                   {
                     name: 'location',
-                    label: '货架位',
+                    label: trans('货架位'),
                     align: 'left',
                     field: (row) => 'B-01-01',
                   },
@@ -140,7 +140,7 @@
                       {{ props.row.product_spec_sku }}
                     </q-td>
                     <q-td key="name" :props="props">
-                      {{ props.row.product_name}}
+                      {{ props.row.product_name }}
                     </q-td>
                     <q-td key="customer" :props="props">
                       <div>{{ props.row.customer.name }}</div>
@@ -160,7 +160,7 @@
                 </template>
                 <template v-slot:no-data>
                   <div class="full-width row flex-center q-pa-md text-grey-7">
-                    暂无数据
+                    {{ trans("暂无数据") }}
                   </div>
                 </template>
               </q-table>
@@ -179,17 +179,23 @@
       </q-card-section>
 
       <q-card-actions align="right" class="q-pa-md">
-        <q-btn flat label="取消" color="grey" v-close-popup />
-        <q-btn unelevated label="确认" color="primary" @click="handleConfirm" />
+        <q-btn flat :label="trans('取消')" color="grey" v-close-popup />
+        <q-btn
+          unelevated
+          :label="trans('确认')"
+          color="primary"
+          @click="handleConfirm"
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script setup>
-import { ref, reactive, computed , watch } from "vue";
+import { ref, reactive, computed, watch } from "vue";
 import productApi from "@/api/product";
 import Pagination from "@/components/Pagination.vue";
+import trans from "@/i18n";
 
 const props = defineProps({
   modelValue: {
@@ -202,15 +208,15 @@ const emit = defineEmits(["update:modelValue", "confirm"]);
 
 // 搜索类型选项
 const searchTypeOptions = [
-  { label: "名字搜索", value: "name" },
-  { label: "SKU搜索", value: "sku" },
+  { label: trans("名字搜索"), value: "name" },
+  { label: trans("SKU搜索"), value: "sku" },
 ];
 
 // 搜索模式选项
 const searchModeOptions = [
-  { label: "精确搜索", value: "exact" },
-  { label: "模糊搜索", value: "fuzzy" },
-  { label: "前缀搜索", value: "prefix" },
+  { label: trans("精确搜索"), value: "exact" },
+  { label: trans("模糊搜索"), value: "fuzzy" },
+  { label: trans("前缀搜索"), value: "prefix" },
 ];
 
 // 商品列表数据

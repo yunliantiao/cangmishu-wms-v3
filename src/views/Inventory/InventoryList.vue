@@ -10,8 +10,8 @@
         align="left"
         narrow-indicator
       >
-        <q-tab name="list" label="库存清单" />
-        <q-tab name="flow" label="库存流水" />
+        <q-tab name="list" :label="trans('库存清单')" />
+        <q-tab name="flow" :label="trans('库存流水')" />
       </q-tabs>
       <q-separator />
     </div>
@@ -55,7 +55,7 @@
               emit-value
               map-options
               clearable
-              label="类型"
+              :label="trans('类型')"
               class="select-width"
             />
           </div>
@@ -79,13 +79,19 @@
           </div>
 
           <div class="col-auto">
-            <q-btn outline color="grey" label="重置" class="q-mr-sm h-40" @click="resetSearch" />
+            <q-btn
+              outline
+              color="grey"
+              :label="trans('重置')"
+              class="q-mr-sm h-40"
+              @click="resetSearch"
+            />
             <q-btn
               color="primary"
               :loading="$store.state.btnLoading"
               icon="search"
               class="h-40"
-              label="搜索"
+              :label="trans('搜索')"
               @click="onSearch"
             />
           </div>
@@ -117,7 +123,9 @@
             <div class="action-bar q-py-md">
               <div class="row items-center justify-between">
                 <div>
-                  <span class="q-mr-sm">选择 {{ selectedInventory.length }}</span>
+                  <span class="q-mr-sm"
+                    >{{ trans("选择") }} {{ selectedInventory.length }}</span
+                  >
                   <!-- <q-btn
                   color="primary"
                   flat
@@ -188,14 +196,17 @@
                           class="product-img"
                         />
                         <div class="info-container">
-                          <div class="text-primary hover-copy" @click="$copy(props.row.sku)">
+                          <div
+                            class="text-primary hover-copy"
+                            @click="$copy(props.row.sku)"
+                          >
                             SKU: {{ props.row?.sku }}
                           </div>
                           <div class="text-overflow-1">
                             {{ props.row?.product_name }}
                             <q-tooltip>{{ props.row?.product_name }}</q-tooltip>
                           </div>
-                          <div>规格: {{ props.row?.name }}</div>
+                          <div>{{ trans("规格") }}: {{ props.row?.name }}</div>
                         </div>
                       </div>
                     </q-td>
@@ -203,27 +214,55 @@
                       {{ props.row.customer.name }}
                     </q-td>
                     <q-td key="in_transit_qty" :props="props">
-                      <div class="cursor-pointer hover-number" @click="showDrawer('in_transit', props.row)">
+                      <div
+                        class="cursor-pointer hover-number"
+                        @click="showDrawer('in_transit', props.row)"
+                      >
                         {{ props.row.in_transit_qty }}
-                        <q-icon name="arrow_drop_down" size="xs" class="hover-icon" />
+                        <q-icon
+                          name="arrow_drop_down"
+                          size="xs"
+                          class="hover-icon"
+                        />
                       </div>
                     </q-td>
                     <q-td key="pending_receipt_qty" :props="props">
-                      <div class="cursor-pointer hover-number" @click="showDrawer('pending_receipt', props.row)">
+                      <div
+                        class="cursor-pointer hover-number"
+                        @click="showDrawer('pending_receipt', props.row)"
+                      >
                         {{ props.row.pending_receipt_qty }}
-                        <q-icon name="arrow_drop_down" size="xs" class="hover-icon" />
+                        <q-icon
+                          name="arrow_drop_down"
+                          size="xs"
+                          class="hover-icon"
+                        />
                       </div>
                     </q-td>
                     <q-td key="pending_shelf_qty" :props="props">
-                      <div class="cursor-pointer hover-number" @click="showDrawer('pending_shelf', props.row)">
+                      <div
+                        class="cursor-pointer hover-number"
+                        @click="showDrawer('pending_shelf', props.row)"
+                      >
                         {{ props.row.pending_shelf_qty }}
-                        <q-icon name="arrow_drop_down" size="xs" class="hover-icon" />
+                        <q-icon
+                          name="arrow_drop_down"
+                          size="xs"
+                          class="hover-icon"
+                        />
                       </div>
                     </q-td>
                     <q-td key="locked_qty" :props="props">
-                      <div class="cursor-pointer hover-number" @click="showDrawer('locked', props.row)">
+                      <div
+                        class="cursor-pointer hover-number"
+                        @click="showDrawer('locked', props.row)"
+                      >
                         {{ props.row.locked_qty }}
-                        <q-icon name="arrow_drop_down" size="xs" class="hover-icon" />
+                        <q-icon
+                          name="arrow_drop_down"
+                          size="xs"
+                          class="hover-icon"
+                        />
                       </div>
                     </q-td>
                     <q-td key="available_qty" :props="props">
@@ -240,7 +279,7 @@
                 <template v-slot:no-data>
                   <div class="full-width row flex-center q-gutter-sm">
                     <q-icon size="2em" name="sentiment_dissatisfied" />
-                    <span>暂无数据</span>
+                    <span>{{ trans("暂无数据") }}</span>
                   </div>
                 </template>
               </q-table>
@@ -262,7 +301,9 @@
             <div class="action-bar q-py-md">
               <div class="row items-center justify-between">
                 <div>
-                  <span class="q-mr-sm">选择 {{ selectedFlow.length }}</span>
+                  <span class="q-mr-sm"
+                    >{{ trans("选择") }} {{ selectedFlow.length }}</span
+                  >
                   <!-- <q-btn
                   color="primary"
                   flat
@@ -302,7 +343,11 @@
                     <q-th auto-width>
                       <q-checkbox v-model="props.selected" />
                     </q-th>
-                    <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                    <q-th
+                      v-for="col in props.cols"
+                      :key="col.name"
+                      :props="props"
+                    >
                       {{ col.label }}
                     </q-th>
                   </q-tr>
@@ -315,11 +360,19 @@
                       <q-td colspan="10">
                         <div class="group-header flex-between-center p-x-10">
                           <div>
-                            <span class="info-item q-mr-lg">客户: {{ props.row.customer.name }}</span>
-                            <span class="info-item q-mr-lg">类型: {{ props.row.type }}</span>
+                            <span class="info-item q-mr-lg"
+                              >{{ trans("客户") }}:
+                              {{ props.row.customer.name }}</span
+                            >
+                            <span class="info-item q-mr-lg"
+                              >{{ trans("类型") }}: {{ props.row.type }}</span
+                            >
                           </div>
                           <div>
-                            <span class="info-item">时间: {{ props.row.created_at }}</span>
+                            <span class="info-item"
+                              >{{ trans("时间") }}:
+                              {{ props.row.created_at }}</span
+                            >
                           </div>
                         </div>
                       </q-td>
@@ -332,14 +385,21 @@
                       <q-checkbox v-model="props.selected" />
                     </q-td>
                     <q-td key="product_info" style="width: 35%" :props="props">
-                      <div class="text-primary hover-copy" @click="$copy(props.row.sku)">SKU: {{ props.row?.sku }}</div>
+                      <div
+                        class="text-primary hover-copy"
+                        @click="$copy(props.row.sku)"
+                      >
+                        SKU: {{ props.row?.sku }}
+                      </div>
                       <div class="text-overflow-1">
                         {{ props.row?.product_name }}
                       </div>
-                      <div>规格: {{ props.row?.name }}</div>
+                      <div>{{ trans("规格") }}: {{ props.row?.name }}</div>
                     </q-td>
                     <q-td key="relevance_number" :props="props">
-                      <div>包裹号: {{ props.row.reference_number }}</div>
+                      <div>
+                        {{ trans("包裹号") }}: {{ props.row.reference_number }}
+                      </div>
                     </q-td>
                     <q-td key="source_number" :props="props">
                       {{ props.row.package_number }}
@@ -369,7 +429,8 @@
                             'text-negative': props.row.type != 'inbound',
                           }"
                         >
-                          {{ props.row.type == 'inbound' ? '+' : '-' }}{{ props.row.stock }}
+                          {{ props.row.type == "inbound" ? "+" : "-"
+                          }}{{ props.row.stock }}
                         </div>
                       </span>
                     </q-td>
@@ -384,7 +445,7 @@
                 <template v-slot:no-data>
                   <div class="full-width row flex-center q-gutter-sm">
                     <q-icon size="2em" name="sentiment_dissatisfied" />
-                    <span>暂无数据</span>
+                    <span>{{ trans("暂无数据") }}</span>
                   </div>
                 </template>
               </q-table>
@@ -451,21 +512,27 @@
             >
               <template v-slot:body="props">
                 <q-tr :props="props">
-                  <q-td v-for="col in props.cols" :key="col.name" :props="props">
+                  <q-td
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                  >
                     {{ col.value }}
                   </q-td>
                 </q-tr>
               </template>
               <template v-slot:no-data>
-                <div class="full-width row flex-center q-gutter-sm q-pa-md text-grey">
+                <div
+                  class="full-width row flex-center q-gutter-sm q-pa-md text-grey"
+                >
                   <q-icon size="2em" name="inbox" />
-                  <span>暂无数据</span>
+                  <span>{{ trans("暂无数据") }}</span>
                 </div>
               </template>
               <template v-slot:loading>
                 <div class="full-width row flex-center q-pa-md">
                   <q-spinner color="primary" size="2em" />
-                  <span class="q-ml-sm">加载中...</span>
+                  <span class="q-ml-sm">{{ trans("加载中...") }}</span>
                 </div>
               </template>
             </q-table>
@@ -485,76 +552,75 @@
 </template>
 
 <script setup>
-import customerApi from '@/api/customer';
-import inventoryApi from '@/api/inventory';
-import DatePickerNew from '@/components/DatePickerNew/Index.vue';
-import KeywordSearch from '@/components/KeywordSearch/Index.vue';
-import Pagination from '@/components/Pagination.vue';
-import { useQuasar } from 'quasar';
-import { onMounted, reactive, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import customerApi from "@/api/customer";
+import inventoryApi from "@/api/inventory";
+import DatePickerNew from "@/components/DatePickerNew/Index.vue";
+import KeywordSearch from "@/components/KeywordSearch/Index.vue";
+import Pagination from "@/components/Pagination.vue";
+import { useQuasar } from "quasar";
+import { onMounted, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 const router = useRouter();
 
 // 标签页切换控制
-const currentTab = ref('list'); // list: 库存清单, flow: 库存流水
-const inventoryTab = ref('all');
+const currentTab = ref("list"); // list: 库存清单, flow: 库存流水
+const inventoryTab = ref("all");
 
 // 库存清单筛选
-const categoryFilter = ref('全部类目');
-const categoryOptions = ['全部类目', '服装', '电子产品', '家居用品'];
 const searchType = ref([
   {
-    label: '按SKU',
-    value: 'sku',
+    label: trans("按SKU"),
+    value: "sku",
   },
   {
-    label: '按名称',
-    value: 'name',
+    label: trans("按名称"),
+    value: "name",
   },
 ]);
 const hideEmpty = ref(false);
 
 const searchTypeOptions = [
   {
-    label: '精确搜索',
-    value: 'exact',
+    label: trans("精确搜索"),
+    value: "exact",
   },
   {
-    label: '模糊搜索',
-    value: 'like',
+    label: trans("模糊搜索"),
+    value: "like",
   },
   {
-    label: '前缀搜索',
-    value: 'prefix',
+    label: trans("前缀搜索"),
+    value: "prefix",
   },
 ];
 
 // 库存流水筛选
-const start_date = ref('');
-const end_date = ref('');
-const logTypeFilter = ref('');
+const start_date = ref("");
+const end_date = ref("");
+const logTypeFilter = ref("");
 const logType = ref([
   {
-    label: '入库',
-    value: 'inbound',
+    label: trans("入库"),
+    value: "inbound",
   },
   {
-    label: '出库',
-    value: 'outbound',
+    label: trans("出库"),
+    value: "outbound",
   },
   {
-    label: '退货',
-    value: 'return',
+    label: trans("退货"),
+    value: "return",
   },
   {
-    label: '调整库存',
-    value: 'adjustment',
+    label: trans("调整库存"),
+    value: "adjustment",
   },
   {
-    label: '初始库存',
-    value: 'initial',
+    label: trans("初始库存"),
+    value: "initial",
   },
 ]);
 // 选中行
@@ -564,34 +630,34 @@ const selectedFlow = ref([]);
 // 库存清单表格列定义
 const inventoryColumns = [
   {
-    name: 'product_info',
-    label: '商品信息',
-    field: 'product_info',
-    align: 'left',
+    name: "product_info",
+    label: trans("商品信息"),
+    field: "product_info",
+    align: "left",
   },
   {
-    name: 'customer_info',
-    label: '客户信息',
-    field: 'customer_info',
-    align: 'left',
+    name: "customer_info",
+    label: trans("客户信息"),
+    field: "customer_info",
+    align: "left",
   },
   {
-    name: 'in_transit_qty',
-    label: '在途数',
-    field: 'in_transit_qty',
-    align: 'center',
+    name: "in_transit_qty",
+    label: trans("在途数"),
+    field: "in_transit_qty",
+    align: "center",
   },
   {
-    name: 'pending_receipt_qty',
-    label: '待收数',
-    field: 'pending_receipt_qty',
-    align: 'center',
+    name: "pending_receipt_qty",
+    label: trans("待收数"),
+    field: "pending_receipt_qty",
+    align: "center",
   },
   {
-    name: 'pending_shelf_qty',
-    label: '待上架',
-    field: 'pending_shelf_qty',
-    align: 'center',
+    name: "pending_shelf_qty",
+    label: trans("待上架"),
+    field: "pending_shelf_qty",
+    align: "center",
   },
   // {
   //   name: "locked_qty",
@@ -600,52 +666,52 @@ const inventoryColumns = [
   //   align: "center",
   // },
   {
-    name: 'locked_qty',
-    label: '锁定库存',
-    field: 'locked_qty',
-    align: 'center',
+    name: "locked_qty",
+    label: trans("锁定库存"),
+    field: "locked_qty",
+    align: "center",
   },
   {
-    name: 'available_qty',
-    label: '可用数',
-    field: 'available_qty',
-    align: 'center',
+    name: "available_qty",
+    label: trans("可用数"),
+    field: "available_qty",
+    align: "center",
   },
   {
-    name: 'defective_qty',
-    label: '不良品数',
-    field: 'defective_qty',
-    align: 'center',
+    name: "defective_qty",
+    label: trans("不良品数"),
+    field: "defective_qty",
+    align: "center",
   },
   {
-    name: 'total_qty',
-    label: '库存总数',
-    field: 'total_qty',
-    align: 'center',
+    name: "total_qty",
+    label: trans("库存总数"),
+    field: "total_qty",
+    align: "center",
   },
 ];
 
 const onSearch = () => {
-  if (currentTab.value == 'list') {
+  if (currentTab.value == "list") {
     getInventoryList();
   } else {
     getStockStatement();
   }
 };
 const resetSearch = () => {
-  start_date.value = '';
-  end_date.value = '';
-  logTypeFilter.value = '';
-  pageParams.search_type = 'name';
-  pageParams.search_mode = 'exact';
-  pageParams.keywords = '';
+  start_date.value = "";
+  end_date.value = "";
+  logTypeFilter.value = "";
+  pageParams.search_type = "name";
+  pageParams.search_mode = "exact";
+  pageParams.keywords = "";
   onSearch();
 };
 //
 const pageParams = reactive({
-  search_type: 'name',
-  search_mode: 'exact',
-  keywords: '',
+  search_type: "name",
+  search_mode: "exact",
+  keywords: "",
 });
 // 模拟库存清单数据
 const inventoryList = ref([]);
@@ -684,58 +750,58 @@ const getCustomerList = async () => {
 // 库存流水表格列定义
 const flowColumns = [
   {
-    name: 'product_info',
-    label: '商品信息',
-    field: 'product_info',
-    align: 'left',
+    name: "product_info",
+    label: trans("商品信息"),
+    field: "product_info",
+    align: "left",
   },
   {
-    name: 'relevance_number',
-    label: '关联单据号',
-    field: 'relevance_number',
-    align: 'left',
+    name: "relevance_number",
+    label: trans("关联单据号"),
+    field: "relevance_number",
+    align: "left",
   },
   {
-    name: 'source_number',
-    label: '来源单据号',
-    field: 'source_number',
-    align: 'left',
+    name: "source_number",
+    label: trans("来源单据号"),
+    field: "source_number",
+    align: "left",
   },
   {
-    name: 'batch_number',
-    label: '批次号',
-    field: 'batch_number',
-    align: 'center',
+    name: "batch_number",
+    label: trans("批次号"),
+    field: "batch_number",
+    align: "center",
   },
   {
-    name: 'location',
-    label: '货架位',
-    field: 'location',
-    align: 'center',
+    name: "location",
+    label: trans("货架位"),
+    field: "location",
+    align: "center",
   },
   {
-    name: 'original_stock',
-    label: '货架位原库存',
-    field: 'original_stock',
-    align: 'center',
+    name: "original_stock",
+    label: trans("货架位原库存"),
+    field: "original_stock",
+    align: "center",
   },
   {
-    name: 'stock_change',
-    label: '变化数量',
-    field: 'stock_change',
-    align: 'center',
+    name: "stock_change",
+    label: trans("变化数量"),
+    field: "stock_change",
+    align: "center",
   },
   {
-    name: 'batch_qty',
-    label: '批次剩余数量',
-    field: 'batch_qty',
-    align: 'center',
+    name: "batch_qty",
+    label: trans("批次剩余数量"),
+    field: "batch_qty",
+    align: "center",
   },
   {
-    name: 'stock_after',
-    label: '变动后库存存量',
-    field: 'stock_after',
-    align: 'center',
+    name: "stock_after",
+    label: trans("变动后库存存量"),
+    field: "stock_after",
+    align: "center",
   },
 ];
 // 库存流水数据
@@ -775,29 +841,31 @@ const showGroupHeader = (row, index) => {
 
 // 弹窗控制
 const dialogVisible = ref(false);
-const dialogTitle = ref('');
+const dialogTitle = ref("");
 const currentProduct = ref(null);
 const detailData = ref([]);
 const detailColumns = ref([
   {
-    name: 'relation_number',
-    label: '关联单据号',
-    field: 'relation_number',
-    align: 'left',
+    name: "relation_number",
+    label: trans("关联单据号"),
+    field: "relation_number",
+    align: "left",
   },
   {
-    name: 'relation_type',
-    label: '类型',
+    name: "relation_type",
+    label: trans("类型"),
     field: (row) => {
-      return row.relation_type === 'standard_inbound' ? '标准入库' : '--';
+      return row.relation_type === "standard_inbound"
+        ? trans("标准入库")
+        : "--";
     },
-    align: 'center',
+    align: "center",
   },
   {
-    name: 'relation_qty',
-    label: '数量',
-    field: 'relation_qty',
-    align: 'center',
+    name: "relation_qty",
+    label: trans("数量"),
+    field: "relation_qty",
+    align: "center",
   },
 ]);
 const tableLoading = ref(false);
@@ -808,7 +876,7 @@ const detailPageParams = reactive({
 });
 
 // 当前操作的类型
-const currentType = ref('');
+const currentType = ref("");
 
 // 获取详情数据
 const getStockDetail = () => {
@@ -820,7 +888,7 @@ const getStockDetail = () => {
   }
 
   switch (currentType.value) {
-    case 'in_transit':
+    case "in_transit":
       inventoryApi
         .getStockDetail(currentProduct.value.id, {
           ...detailPageParams,
@@ -835,7 +903,7 @@ const getStockDetail = () => {
           tableLoading.value = false;
         });
       break;
-    case 'pending_receipt':
+    case "pending_receipt":
       inventoryApi
         .getPendingInboundOrders(currentProduct.value.id, {
           ...detailPageParams,
@@ -850,7 +918,7 @@ const getStockDetail = () => {
           tableLoading.value = false;
         });
       break;
-    case 'pending_shelf':
+    case "pending_shelf":
       inventoryApi
         .getPendingShelfOrders(currentProduct.value.id, {
           ...detailPageParams,
@@ -865,7 +933,7 @@ const getStockDetail = () => {
           tableLoading.value = false;
         });
       break;
-    case 'locked':
+    case "locked":
       inventoryApi
         .getLockedStockOrders(currentProduct.value.id, {
           ...detailPageParams,
@@ -895,17 +963,17 @@ const showDrawer = async (type, row) => {
   detailPageParams.total = 0;
 
   switch (type) {
-    case 'in_transit':
-      dialogTitle.value = '在途数详情';
+    case "in_transit":
+      dialogTitle.value = trans("在途数详情");
       break;
-    case 'pending_receipt':
-      dialogTitle.value = '待收数详情';
+    case "pending_receipt":
+      dialogTitle.value = trans("待收数详情");
       break;
-    case 'pending_shelf':
-      dialogTitle.value = '待上架详情';
+    case "pending_shelf":
+      dialogTitle.value = trans("待上架详情");
       break;
-    case 'locked':
-      dialogTitle.value = '锁定库存详情';
+    case "locked":
+      dialogTitle.value = trans("锁定库存详情");
       break;
   }
 

@@ -8,7 +8,7 @@
         icon="add"
         @click="handleAddCategory(null)"
       >
-        新增分类
+        {{ trans("新增分类") }}
       </q-btn>
       <!-- 分类树 -->
       <div class="col-12">
@@ -33,7 +33,7 @@
                   @click.stop="handleAddCategory(prop.node)"
                 >
                   <img src="@/assets/images/add-1.png" />
-                  <q-tooltip>添加子分类</q-tooltip>
+                  <q-tooltip>{{ trans("添加子分类") }}</q-tooltip>
                 </q-btn>
                 <q-btn
                   flat
@@ -45,7 +45,7 @@
                   @click.stop="handleEditCategory(prop.node)"
                 >
                   <img src="@/assets/images/edit.png" />
-                  <q-tooltip>编辑</q-tooltip>
+                  <q-tooltip>{{ trans("编辑") }}</q-tooltip>
                 </q-btn>
                 <q-btn
                   flat
@@ -57,7 +57,7 @@
                   @click.stop="handleDeleteCategory(prop.node)"
                 >
                   <img src="@/assets/images/del.png" />
-                  <q-tooltip>删除</q-tooltip>
+                  <q-tooltip>{{ trans("删除") }}</q-tooltip>
                 </q-btn>
               </div>
             </div>
@@ -70,7 +70,9 @@
     <q-dialog v-model="showDialog" persistent>
       <q-card style="min-width: 350px">
         <q-card-section class="row items-center">
-          <div class="text-h6">{{ isEdit ? "编辑分类" : "新增分类" }}</div>
+          <div class="text-h6">
+            {{ isEdit ? trans("编辑分类") : trans("新增分类") }}
+          </div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
@@ -80,13 +82,18 @@
             <q-input
               filled
               v-model="form.name"
-              label="分类名称"
-              :rules="[(val) => !!val || '请输入分类名称']"
+              :label="trans('分类名称')"
+              :rules="[(val) => !!val || trans('请输入分类名称')]"
             />
             <div class="row justify-end q-mt-md">
-              <q-btn label="取消" color="primary" flat v-close-popup />
               <q-btn
-                label="确定"
+                :label="trans('取消')"
+                color="primary"
+                flat
+                v-close-popup
+              />
+              <q-btn
+                :label="trans('确定')"
                 type="submit"
                 color="primary"
                 class="q-ml-sm"
@@ -101,20 +108,23 @@
     <q-dialog v-model="showDeleteDialog" persistent>
       <q-card>
         <q-card-section class="row items-center">
-          <div class="text-h6">确认删除</div>
+          <div class="text-h6">{{ trans("确认删除") }}</div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
 
         <q-card-section>
-          确认删除分类？如该分类存在子分类，子分类数据将会被一并删除，且应用了该分类的商品将变成未分类！
+          {{
+            trans(
+              "确认删除分类？如该分类存在子分类，子分类数据将会被一并删除，且应用了该分类的商品将变成未分类！"
+            )
+          }}
         </q-card-section>
 
         <q-card-actions align="right">
-          <q-btn flat label="取消" color="primary" v-close-popup />
+          <q-btn :label="trans('取消')" color="primary" v-close-popup />
           <q-btn
-            flat
-            label="确定"
+            :label="trans('确定')"
             color="negative"
             @click="confirmDelete"
             v-close-popup
@@ -129,7 +139,7 @@
 import { ref, reactive } from "vue";
 import { useQuasar } from "quasar";
 import categoriesApi from "@/api/categories";
-
+import trans from "@/i18n";
 const $q = useQuasar();
 
 // 分类数据

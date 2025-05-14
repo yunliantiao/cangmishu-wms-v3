@@ -3,6 +3,7 @@ const WarehouseWarrant = () => import(`../views/Inbound/WarehouseWarrant.vue`)
 const Sign = () => import(`../views/Inbound/sign.vue`)
 const Receive = () => import(`../views/Inbound/receive.vue`)
 const Shelve = () => import(`../views/Inbound/shelve.vue`)
+import trans from "@/i18n";
 
 export default [
     {
@@ -11,7 +12,7 @@ export default [
         redirect: "/inbound/warehouseWarrant",
         icon: "save_as",
         meta: {
-            name: '入库管理',
+            name: trans('入库管理'),
             icon: '',
         },
         children: [
@@ -22,8 +23,8 @@ export default [
                 id: 1001,
                 meta: {
                     level: 2,
-                    group: '入库管理',
-                    name: '入库管理',
+                    group: trans('入库管理'),
+                    name: trans('入库管理'),
                 },
             },
             {
@@ -33,8 +34,8 @@ export default [
                 id: 1001,
                 meta: {
                     level: 2,
-                    group: '入库管理',
-                    name: '扫描签收',
+                    group: trans('入库管理'),
+                    name: trans('扫描签收'),
                 },
             },
             {
@@ -44,8 +45,8 @@ export default [
                 id: 1001,
                 meta: {
                     level: 2,
-                    group: '入库管理',
-                    name: '扫描收货',
+                    group: trans('入库管理'),
+                    name: trans('扫描收货'),
                 },
             },
             {
@@ -55,8 +56,8 @@ export default [
                 id: 1001,
                 meta: {
                     level: 2,
-                    group: '入库管理',
-                    name: '扫描上架',
+                    group: trans('入库管理'),
+                    name: trans('扫描上架'),
                 },
             },
         ],

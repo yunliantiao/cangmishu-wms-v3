@@ -83,7 +83,12 @@
               <q-item>
                 <q-item-section>
                   <q-item-label>
-                    <q-btn flat label="退出" color="grey-8" @click="logout" />
+                    <q-btn
+                      flat
+                      :label="trans('退出')"
+                      color="grey-8"
+                      @click="logout"
+                    />
                   </q-item-label>
                 </q-item-section>
               </q-item>
@@ -103,6 +108,7 @@ import { Dialog, useQuasar } from "quasar";
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
+import trans from "@/i18n";
 
 export default {
   name: "HeaderComponent",
@@ -152,16 +158,16 @@ export default {
     getWarehouseList();
     const logout = () => {
       Dialog.create({
-        title: "退出确认",
-        message: "确定要退出登录吗？",
+        title: trans("退出确认"),
+        message: trans("确定要退出登录吗？"),
         cancel: true,
         persistent: true,
         ok: {
-          label: "退出",
+          label: trans("退出"),
           color: "primary",
         },
         cancel: {
-          label: "取消",
+          label: trans("取消"),
           color: "grey-8",
         },
       })

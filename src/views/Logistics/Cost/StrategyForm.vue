@@ -3,7 +3,11 @@
     <!-- 头部区域 -->
     <div class="bg-white rounded-borders q-pa-md q-mb-md">
       <div class="text-h6">
-        <q-icon name="arrow_back" class="cursor-pointer" @click="router.back()"></q-icon>
+        <q-icon
+          name="arrow_back"
+          class="cursor-pointer"
+          @click="router.back()"
+        ></q-icon>
         新建物流计费策略
       </div>
     </div>
@@ -17,7 +21,13 @@
             策略名称
             <span class="text-red">*</span>
           </div>
-          <q-input v-model="form.name" dense outlined placeholder="请输入" :rules="[(val) => !!val || '必填']" />
+          <q-input
+            v-model="form.name"
+            dense
+            outlined
+            placeholder="请输入"
+            :rules="[(val) => !!val || '必填']"
+          />
         </div>
         <!-- 计费规则 -->
         <div class="col-4">
@@ -222,7 +232,10 @@
                 v-model="form.rule_settings.volume_weight_condition"
                 :options="[
                   { label: '全部', value: 'all' },
-                  { label: '大于1立方英尺', value: 'greater_than_1_cubic_foot' },
+                  {
+                    label: '大于1立方英尺',
+                    value: 'greater_than_1_cubic_foot',
+                  },
                 ]"
                 menu-anchor="bottom start"
                 placeholder="请选择"
@@ -269,7 +282,9 @@
       </div>
     </div>
 
-    <div class="rule-tip rounded-borders q-pa-md q-mb-md">若订单未匹配到以下设置的规则，则无法扣除物流费用</div>
+    <div class="rule-tip rounded-borders q-pa-md q-mb-md">
+      若订单未匹配到以下设置的规则，则无法扣除物流费用
+    </div>
 
     <!-- 分区规则 -->
     <div class="bg-white rounded-borders q-pa-md q-mb-md">
@@ -325,7 +340,10 @@
     </div>
 
     <!-- 运费计算 -->
-    <div v-if="form.calculation_type !== ''" class="bg-white rounded-borders q-pa-md q-mb-md">
+    <div
+      v-if="form.calculation_type !== ''"
+      class="bg-white rounded-borders q-pa-md q-mb-md"
+    >
       <div class="q-mb-md">运费计算</div>
       <!-- TODO: 按费率 rate -->
       <div class="row" v-if="form.calculation_type === 'rate'">
@@ -379,17 +397,24 @@
 
     <!-- 底部按钮区域 -->
     <div class="bg-white rounded-borders q-pa-md q-mb-md text-right">
-      <q-btn label="取消" padding="sm md" class="q-mr-md" color="primary" outline @click="onCancel" />
+      <q-btn
+        label="取消"
+        padding="sm md"
+        class="q-mr-md"
+        color="primary"
+        outline
+        @click="onCancel"
+      />
       <q-btn label="保存" padding="sm md" color="primary" @click="onSubmit" />
     </div>
   </div>
 </template>
 
 <script setup>
-import logisticsApi from '@/api/logistics';
-import { useQuasar } from 'quasar';
-import { computed, onMounted, reactive, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import logisticsApi from "@/api/logistics";
+import { useQuasar } from "quasar";
+import { computed, onMounted, reactive, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 const route = useRoute(); // 路由参数
 const router = useRouter();
 const strategyId = route.query.id; // 编辑时的策略id
@@ -397,29 +422,29 @@ const strategyId = route.query.id; // 编辑时的策略id
 const $q = useQuasar();
 
 const form = reactive({
-  name: '', // 策略名称
-  calculation_type: 'rate', // 计费方式: rate费率||rule规则
-  logistics_channel_id: '', // 物流渠道id
-  currency: '', // 币种 USD || CNY
-  remarks: '', // 备注
+  name: "", // 策略名称
+  calculation_type: "rate", // 计费方式: rate费率||rule规则
+  logistics_channel_id: "", // 物流渠道id
+  currency: "", // 币种 USD || CNY
+  remarks: "", // 备注
   rate_rules: {
     // todo 方式为rate时才有
-    operator: '', // 操作符 +-*/
+    operator: "", // 操作符 +-*/
     value: null, // 数字
   },
   // todo rule规则时
   rule_settings: {
-    unit_combination: 'kg/cm/m³', // 单位组合: kg/cm/m³
-    dimension_rounding: '', // 尺寸进位: round_up向上||round_none不进位
-    weight_rounding: '', // 重量进位 同上round
-    volume_weight_method: '', // 体积重计算公式: divide体积重系数||none
-    volume_weight_condition: '', // 体积重条件: all全部||greater_than_1_cubic_foot 大于1立方英尺
+    unit_combination: "kg/cm/m³", // 单位组合: kg/cm/m³
+    dimension_rounding: "", // 尺寸进位: round_up向上||round_none不进位
+    weight_rounding: "", // 重量进位 同上round
+    volume_weight_method: "", // 体积重计算公式: divide体积重系数||none
+    volume_weight_condition: "", // 体积重条件: all全部||greater_than_1_cubic_foot 大于1立方英尺
     volume_weight_coefficient: null, // 体积重系数  数字
   },
   // ? 重量段价格,根据分区规则来,数组
   zone_prices: [
     {
-      zone_rule_id: '', // 分区规则id
+      zone_rule_id: "", // 分区规则id
       weight_start: null, // 开始重量
       weight_end: null, // 结束重量
       sale_price: null, // 销售价格
@@ -430,7 +455,7 @@ const form = reactive({
   surcharges: [],
   // todo 运费计算:rule时只显示,rate时必填
   rate_rules: {
-    operator: '', // 操作符
+    operator: "", // 操作符
     value: null, // 数字
   },
 });
@@ -443,33 +468,48 @@ const zonesList = ref([]); // 分区规则列表
 
 const unitList = [
   {
-    label: 'kg/cm/m³',
-    value: 'kg/cm/m³',
+    label: "kg/cm/m³",
+    value: "kg/cm/m³",
   },
   {
-    label: 'lb/cm/m³',
-    value: 'lb/cm/m³',
+    label: "lb/cm/m³",
+    value: "lb/cm/m³",
   },
   {
-    label: 'lb/in/ft³',
-    value: 'lb/in/ft³',
+    label: "lb/in/ft³",
+    value: "lb/in/ft³",
   },
   {
-    label: 'oz/cm/m³',
-    value: 'oz/cm/m³',
+    label: "oz/cm/m³",
+    value: "oz/cm/m³",
   },
   {
-    label: 'oz/in/ft³',
-    value: 'oz/in/ft³',
+    label: "oz/in/ft³",
+    value: "oz/in/ft³",
   },
 ];
 
 const columns = [
-  { name: 'country_code', label: '国家/地区', align: 'left', field: 'country_code' },
-  { name: 'city', label: '城市', align: 'left', field: 'city' },
-  { name: 'postcode_start', label: '开始邮编', align: 'left', field: 'postcode_start' },
-  { name: 'postcode_end', label: '结束邮编', align: 'left', field: 'postcode_end' },
-  { name: 'actions', label: '操作', align: 'center' },
+  {
+    name: "country_code",
+    label: "国家/地区",
+    align: "left",
+    field: "country_code",
+  },
+  { name: "city", label: "城市", align: "left", field: "city" },
+  {
+    name: "postcode_start",
+    label: "开始邮编",
+    align: "left",
+    field: "postcode_start",
+  },
+  {
+    name: "postcode_end",
+    label: "结束邮编",
+    align: "left",
+    field: "postcode_end",
+  },
+  { name: "actions", label: "操作", align: "center" },
 ];
 
 const isEdit = computed(() => {
@@ -483,7 +523,9 @@ const onFilterChannels = (val, update, abort) => {
     if (!needle) {
       filterChannelList.value = channelList.value;
     } else {
-      filterChannelList.value = channelList.value.filter((opt) => opt.label.toLowerCase().includes(needle));
+      filterChannelList.value = channelList.value.filter((opt) =>
+        opt.label.toLowerCase().includes(needle)
+      );
     }
   });
 };
@@ -494,7 +536,9 @@ const onFilterFuels = (val, update, abort) => {
     if (!needle) {
       filterFuelList.value = fuelList.value;
     } else {
-      filterFuelList.value = fuelList.value.filter((opt) => opt.label.toLowerCase().includes(needle));
+      filterFuelList.value = fuelList.value.filter((opt) =>
+        opt.label.toLowerCase().includes(needle)
+      );
     }
   });
 };
@@ -514,7 +558,7 @@ const onSubmit = () => {
 const getChannelList = () => {
   logisticsApi
     .getChannelAllList({
-      group_type: 'ungroup',
+      group_type: "ungroup",
     })
     .then((res) => {
       const data = res.data.map((item) => ({
@@ -553,7 +597,7 @@ const getDetailForm = () => {
 // 提交新增
 const getAddForm = () => {
   const formData = getFormToObj();
-  console.log('formData::: ', JSON.parse(JSON.stringify(formData)));
+  console.log("formData::: ", JSON.parse(JSON.stringify(formData)));
   logisticsApi.addStrategy(formData).then((res) => {
     router.back();
   });
@@ -563,7 +607,7 @@ const getAddForm = () => {
 const getFormToObj = () => {
   let data = {};
 
-  if (form.calculation_type === 'rule') {
+  if (form.calculation_type === "rule") {
     data = {
       name: form.name,
       calculation_type: form.calculation_type,
@@ -575,7 +619,7 @@ const getFormToObj = () => {
         value: form.rate_rules.value,
       },
     };
-  } else if (form.calculation_type === 'rate') {
+  } else if (form.calculation_type === "rate") {
     data = {
       name: form.name,
       calculation_type: form.calculation_type,

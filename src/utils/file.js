@@ -4,6 +4,7 @@
  * @param {Number} limit 文件大小限制，默认为2MB
  * @returns {Promise}
  */
+import trans from "@/i18n";
 function getFile({
   limit,
   fileType,
@@ -27,7 +28,7 @@ function getFile({
         resolve(fileEle.files)
       } else {
         files.size / (1024 ** 2) > limit
-          ? reject(`文件不能超过${limit}MB!`)
+          ? reject(trans(`文件不能超过{limit}MB!`, { limit: limit }))
           : resolve(raw)
       }
       document.body.removeChild(fileEle)

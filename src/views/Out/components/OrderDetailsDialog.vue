@@ -11,7 +11,7 @@
     <q-card class="order-details-dialog" style="width: 80vw; max-width: 1400px">
       <!-- 对话框头部 -->
       <q-card-section class="dialog-header row items-center bg-white">
-        <div class="text-subtitle1">包裹详情</div>
+        <div class="text-subtitle1">{{ trans("包裹详情") }}</div>
         <q-space />
         <q-btn flat round dense icon="close" @click="dialogVisible = false" />
       </q-card-section>
@@ -100,7 +100,9 @@
 
           <!-- 商品信息卡片 -->
           <div class="info-card bg-white q-mb-md">
-            <div class="info-header q-px-md q-py-sm">商品信息</div>
+            <div class="info-header q-px-md q-py-sm">
+              {{ trans("商品信息") }}
+            </div>
 
             <div class="product-list q-pa-md">
               <q-table
@@ -135,7 +137,6 @@
                       </div>
                     </div>
                   </q-td>
-              
                 </template>
               </q-table>
             </div>
@@ -145,17 +146,19 @@
             <!-- 客户信息 -->
             <div class="col-12 col-md-6">
               <div class="info-card bg-white">
-                <div class="info-header q-px-md q-py-sm">客户信息</div>
+                <div class="info-header q-px-md q-py-sm">
+                  {{ trans("客户信息") }}
+                </div>
                 <div class="q-pa-md">
                   <div class="row q-col-gutter-md">
                     <div class="col-12 col-sm-6 info-row">
-                      <div class="info-label">客户代码</div>
+                      <div class="info-label">{{ trans("客户代码") }}</div>
                       <div class="info-value">
                         {{ order?.customer?.code || "" }}
                       </div>
                     </div>
                     <div class="col-12 col-sm-6 info-row">
-                      <div class="info-label">客户姓名</div>
+                      <div class="info-label">{{ trans("客户姓名") }}</div>
                       <div class="info-value">
                         {{ order?.customer?.name || "" }}
                       </div>
@@ -163,17 +166,19 @@
                   </div>
                 </div>
 
-                <div class="info-header q-px-md q-py-sm">物流信息</div>
+                <div class="info-header q-px-md q-py-sm">
+                  {{ trans("物流信息") }}
+                </div>
                 <div class="q-pa-md">
                   <div class="row q-col-gutter-md">
                     <div class="col-12 info-row">
-                      <div class="info-label">物流方式</div>
+                      <div class="info-label">{{ trans("物流方式") }}</div>
                       <div class="info-value">
                         {{ order?.shipping_method || "--" }}
                       </div>
                     </div>
                     <div class="col-12 info-row">
-                      <div class="info-label">运单号</div>
+                      <div class="info-label">{{ trans("运单号") }}</div>
                       <div class="info-value">
                         {{ order?.tracking_number || "--" }}
                       </div>
@@ -181,11 +186,13 @@
                   </div>
                 </div>
 
-                <div class="info-header q-px-md q-py-sm">包裹规格</div>
+                <div class="info-header q-px-md q-py-sm">
+                  {{ trans("包裹规格") }}
+                </div>
                 <div class="q-pa-md">
                   <div class="row q-col-gutter-md">
                     <div class="col-12 col-sm-6 info-row">
-                      <div class="info-label">包裹体积</div>
+                      <div class="info-label">{{ trans("包裹体积") }}</div>
                       <div class="info-value">
                         {{
                           order?.packages[0].size_length +
@@ -197,7 +204,7 @@
                       </div>
                     </div>
                     <div class="col-12 col-sm-6 info-row">
-                      <div class="info-label">包裹重量</div>
+                      <div class="info-label">{{ trans("包裹重量") }}</div>
                       <div class="info-value">
                         {{ order?.packages[0].actual_weight || "--" }}
                       </div>
@@ -210,59 +217,61 @@
             <!-- 收件人信息 -->
             <div class="col-12 col-md-6">
               <div class="info-card bg-white">
-                <div class="info-header q-px-md q-py-sm">收件人信息</div>
+                <div class="info-header q-px-md q-py-sm">
+                  {{ trans("收件人信息") }}
+                </div>
                 <div class="q-pa-md">
                   <div class="row q-col-gutter-md">
                     <div class="col-12 col-sm-6 info-row">
-                      <div class="info-label">收件人</div>
+                      <div class="info-label">{{ trans("收件人") }}</div>
                       <div class="info-value">
                         {{ order?.recipient?.first_name || "" }}
                       </div>
                     </div>
                     <div class="col-12 col-sm-6 info-row">
-                      <div class="info-label">电话</div>
+                      <div class="info-label">{{ trans("电话") }}</div>
                       <div class="info-value">
                         {{ order?.recipient?.phone || "" }}
                       </div>
                     </div>
                     <div class="col-12 col-sm-6 info-row">
-                      <div class="info-label">国家</div>
+                      <div class="info-label">{{ trans("国家") }}</div>
                       <div class="info-value">
                         {{ order?.recipient?.country || "" }}
                       </div>
                     </div>
                     <div class="col-12 col-sm-6 info-row">
-                      <div class="info-label">省/州</div>
+                      <div class="info-label">{{ trans("省/州") }}</div>
                       <div class="info-value">
                         {{ order?.recipient?.province || "" }}
                       </div>
                     </div>
                     <div class="col-12 col-sm-6 info-row">
-                      <div class="info-label">市/府</div>
+                      <div class="info-label">{{ trans("市/府") }}</div>
                       <div class="info-value">
                         {{ order?.recipient?.city || "" }}
                       </div>
                     </div>
                     <div class="col-12 col-sm-6 info-row">
-                      <div class="info-label">区/县</div>
+                      <div class="info-label">{{ trans("区/县") }}</div>
                       <div class="info-value">
                         {{ order?.recipient?.district || "" }}
                       </div>
                     </div>
                     <div class="col-12 col-sm-6 info-row">
-                      <div class="info-label">邮编</div>
+                      <div class="info-label">{{ trans("邮编") }}</div>
                       <div class="info-value">
                         {{ order?.recipient?.postcode || "" }}
                       </div>
                     </div>
                     <div class="col-12 info-row">
-                      <div class="info-label">地址1</div>
+                      <div class="info-label">{{ trans("地址1") }}</div>
                       <div class="info-value">
                         {{ order?.recipient?.address1 || "" }}
                       </div>
                     </div>
                     <div class="col-12 info-row">
-                      <div class="info-label">地址2</div>
+                      <div class="info-label">{{ trans("地址2") }}</div>
                       <div class="info-value">
                         {{ order?.recipient?.address2 || "" }}
                       </div>
@@ -281,6 +290,7 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import { useQuasar } from "quasar";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 
@@ -351,33 +361,36 @@ const productDetailColumns = [
   {
     name: "product",
     required: true,
-    label: "商品信息",
+    label: trans("商品信息"),
     align: "left",
     field: (row) => row,
     style: "width: 40%",
   },
   {
     name: "dimensions",
-    label: "商品实际规格",
+    label: trans("商品实际规格"),
     align: "center",
     field: (row) =>
       `${row.sku_size_length} × ${row.sku_size_width} × ${row.sku_size_height} cm`,
   },
   {
     name: "weight",
-    label: "实际重量",
+    label: trans("实际重量"),
     align: "center",
     field: (row) => `${row.sku_weight || "--"} g`,
   },
   {
     name: "location",
-    label: "货架位",
+    label: trans("货架位"),
     align: "center",
-    field: (row) => row?.stock_locations?.map(location => location.warehouse_location_code).join(', ') || "--",
+    field: (row) =>
+      row?.stock_locations
+        ?.map((location) => location.warehouse_location_code)
+        .join(", ") || "--",
   },
   {
     name: "quantity",
-    label: "数量",
+    label: trans("数量"),
     align: "center",
     field: "quantity",
   },

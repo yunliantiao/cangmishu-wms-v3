@@ -16,20 +16,36 @@
     >
       <!-- 无数据时的显示 -->
       <template v-slot:no-data>
-        <div v-if="!loading && (!rows || rows.length === 0)" class="full-width row flex-center q-my-lg">
-          <span class="text-grey">暂无数据</span>
+        <div
+          v-if="!loading && (!rows || rows.length === 0)"
+          class="full-width row flex-center q-my-lg"
+        >
+          <span class="text-grey">{{ trans("暂无数据") }} </span>
         </div>
       </template>
 
       <template v-slot:header="props">
         <q-tr :props="props">
           <q-th style="width: 48px; padding: 0 4px">
-            <q-btn size="sm" color="grey-7" flat dense disable icon="keyboard_arrow_right" />
+            <q-btn
+              size="sm"
+              color="grey-7"
+              flat
+              dense
+              disable
+              icon="keyboard_arrow_right"
+            />
           </q-th>
           <q-th auto-width style="padding: 0 8px">
             <q-checkbox color="primary" v-model="props.selected" />
           </q-th>
-          <q-th v-for="col in props.cols" :key="col.name" :props="props" :style="col.style" class="font-bold font-14">
+          <q-th
+            v-for="col in props.cols"
+            :key="col.name"
+            :props="props"
+            :style="col.style"
+            class="font-bold font-14"
+          >
             {{ col.label }}
           </q-th>
         </q-tr>
@@ -45,14 +61,19 @@
               flat
               dense
               @click="props.expand = !props.expand"
-              :icon="props.expand ? 'keyboard_arrow_down' : 'keyboard_arrow_right'"
+              :icon="
+                props.expand ? 'keyboard_arrow_down' : 'keyboard_arrow_right'
+              "
             />
           </q-td>
           <q-td auto-width style="padding: 0 8px">
             <q-checkbox color="primary" v-model="props.selected" />
           </q-td>
           <!-- SPU信息 -->
-          <q-td key="spuInfo" :style="columns.find((col) => col.name === 'spuInfo').style">
+          <q-td
+            key="spuInfo"
+            :style="columns.find((col) => col.name === 'spuInfo').style"
+          >
             <div class="row no-wrap items-center">
               <div class="q-mr-sm">
                 <img
@@ -65,28 +86,61 @@
                 />
               </div>
               <div class="ellipsis">
-                <div>{{ props.row?.name || '-' }}</div>
-                <div>SPU: {{ props.row?.id || '-' }}</div>
+                <div>{{ props.row?.name || "-" }}</div>
+                <div>SPU: {{ props.row?.id || "-" }}</div>
               </div>
             </div>
           </q-td>
-          <q-td key="status" class="text-center" :style="columns.find((col) => col.name === 'status').style">
-            <div>{{ props.row.allow_inbound ? '允许收货' : '暂停收货' }}</div>
+          <q-td
+            key="status"
+            class="text-center"
+            :style="columns.find((col) => col.name === 'status').style"
+          >
             <div>
-              {{ props.row.allow_order ? '允许接单' : '暂停接单' }}
+              {{
+                props.row.allow_inbound ? trans("允许收货") : trans("暂停收货")
+              }}
+            </div>
+            <div>
+              {{
+                props.row.allow_order ? trans("允许接单") : trans("暂停接单")
+              }}
             </div>
           </q-td>
-          <q-td key="category" class="text-center" :style="columns.find((col) => col.name === 'category').style">
-            {{ props.row?.category?.name || '-' }}
+          <q-td
+            key="category"
+            class="text-center"
+            :style="columns.find((col) => col.name === 'category').style"
+          >
+            {{ props.row?.category?.name || "-" }}
           </q-td>
-          <q-td key="creator" class="text-center" :style="columns.find((col) => col.name === 'creator').style">
-            {{ props.row?.customer?.name || '-' }}
+          <q-td
+            key="creator"
+            class="text-center"
+            :style="columns.find((col) => col.name === 'creator').style"
+          >
+            {{ props.row?.customer?.name || "-" }}
           </q-td>
-          <q-td key="createTime" class="text-center" :style="columns.find((col) => col.name === 'createTime').style">
-            {{ props.row?.updated_at || '-' }}
+          <q-td
+            key="createTime"
+            class="text-center"
+            :style="columns.find((col) => col.name === 'createTime').style"
+          >
+            {{ props.row?.updated_at || "-" }}
           </q-td>
-          <q-td key="operations" class="text-center" :style="columns.find((col) => col.name === 'operations').style">
-            <q-btn flat round color="primary" icon="edit" size="sm" @click="handleEdit(props.row)" />
+          <q-td
+            key="operations"
+            class="text-center"
+            :style="columns.find((col) => col.name === 'operations').style"
+          >
+            <q-btn
+              flat
+              round
+              color="primary"
+              icon="edit"
+              size="sm"
+              @click="handleEdit(props.row)"
+            />
             <!-- <q-btn
               flat
               round
@@ -116,42 +170,68 @@
                       <div class="q-mr-sm">
                         <img
                           :src="slotProps.row?.image"
-                          style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px"
+                          style="
+                            width: 50px;
+                            height: 50px;
+                            object-fit: cover;
+                            border-radius: 4px;
+                          "
                         />
                       </div>
                       <div class="ellipsis flex-c-start-start gap-10">
-                        <div class="text-primary">SKU: {{ slotProps.row?.sku || '-' }}</div>
-                        <div class="ellipsis">名称: {{ slotProps.row?.product?.name || '-' }}</div>
-                        <div>规格: {{ slotProps.row?.name || '-' }}</div>
+                        <div class="text-primary">
+                          SKU: {{ slotProps.row?.sku || "-" }}
+                        </div>
+                        <div class="ellipsis">
+                          {{ trans("名称") }}:
+                          {{ slotProps.row?.product?.name || "-" }}
+                        </div>
+                        <div>
+                          {{ trans("规格") }}: {{ slotProps.row?.name || "-" }}
+                        </div>
                       </div>
                     </div>
                   </q-td>
                 </template>
 
                 <template v-slot:body-cell-applySpec="slotProps">
-                  <q-td :props="slotProps" style="white-space: pre-line; text-align: center">
+                  <q-td
+                    :props="slotProps"
+                    style="white-space: pre-line; text-align: center"
+                  >
                     {{
-                      `${slotProps.row.size_length || 0}*${slotProps.row.size_width || 0}*${
-                        slotProps.row.size_height || 0
-                      } cm\n${slotProps.row.weight || 0} g`
+                      `${slotProps.row.size_length || 0}*${
+                        slotProps.row.size_width || 0
+                      }*${slotProps.row.size_height || 0} cm\n${
+                        slotProps.row.weight || 0
+                      } g`
                     }}
                   </q-td>
                 </template>
 
                 <template v-slot:body-cell-realSpec="slotProps">
-                  <q-td :props="slotProps" style="white-space: pre-line; text-align: center">
+                  <q-td
+                    :props="slotProps"
+                    style="white-space: pre-line; text-align: center"
+                  >
                     {{
-                      `${slotProps.row.warehouse_size_length || 0}*${slotProps.row.warehouse_size_width || 0}*${
-                        slotProps.row.warehouse_size_height || 0
-                      } cm\n${slotProps.row.warehouse_weight || 0} g`
+                      `${slotProps.row.warehouse_size_length || 0}*${
+                        slotProps.row.warehouse_size_width || 0
+                      }*${slotProps.row.warehouse_size_height || 0} cm\n${
+                        slotProps.row.warehouse_weight || 0
+                      } g`
                     }}
                   </q-td>
                 </template>
 
                 <template v-slot:body-cell-timeInfo="slotProps">
                   <q-td :props="slotProps" style="text-align: center">
-                    <div>创建: {{ slotProps.row.created_at || '-' }}</div>
-                    <div>更新: {{ slotProps.row.updated_at || '-' }}</div>
+                    <div>
+                      {{ trans("创建") }}: {{ slotProps.row.created_at || "-" }}
+                    </div>
+                    <div>
+                      {{ trans("更新") }}: {{ slotProps.row.updated_at || "-" }}
+                    </div>
                   </q-td>
                 </template>
               </q-table>
@@ -163,7 +243,7 @@
       <!-- 底部选中记录数显示 -->
       <template v-slot:bottom>
         <div v-if="selected.length > 0" class="q-pa-sm text-grey-8 text-center">
-          已选择 {{ selected.length }} 条记录
+          {{ trans("已选择 {count} 条记录", { count: selected.length }) }}
         </div>
       </template>
     </q-table>
@@ -171,10 +251,11 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits, defineExpose } from 'vue';
-import { useQuasar } from 'quasar';
-import { useRouter } from 'vue-router';
-import api from '@/api/index';
+import { ref, defineProps, defineEmits, defineExpose } from "vue";
+import { useQuasar } from "quasar";
+import { useRouter } from "vue-router";
+import api from "@/api/index";
+import trans from "@/i18n";
 
 const router = useRouter();
 const $q = useQuasar();
@@ -190,7 +271,16 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['add', 'edit', 'copy', 'delete', 'print', 'import', 'page-change', 'void']);
+const emit = defineEmits([
+  "add",
+  "edit",
+  "copy",
+  "delete",
+  "print",
+  "import",
+  "page-change",
+  "void",
+]);
 
 // 表格数据
 const selected = ref([]);
@@ -198,89 +288,92 @@ const selected = ref([]);
 // SPU表格列定义
 const columns = [
   {
-    name: 'spuInfo',
+    name: "spuInfo",
     required: true,
-    label: 'SPU',
-    align: 'left',
+    label: "SPU",
+    align: "left",
     field: (row) => row.name,
-    style: 'width: 25%',
+    style: "width: 25%",
   },
   {
-    name: 'status',
-    label: '状态',
-    field: 'status',
-    align: 'center',
-    style: 'width: 20%',
+    name: "status",
+    label: trans("状态"),
+    field: "status",
+    align: "center",
+    style: "width: 20%",
   },
   {
-    name: 'category',
-    label: '分类',
-    field: 'category',
-    align: 'center',
-    style: 'width: 20%',
+    name: "category",
+    label: trans("分类"),
+    field: "category",
+    align: "center",
+    style: "width: 20%",
   },
   {
-    name: 'creator',
-    label: '创建人员',
-    field: 'creator',
-    align: 'center',
-    style: 'width: 20%',
+    name: "creator",
+    label: trans("创建人员"),
+    field: "creator",
+    align: "center",
+    style: "width: 20%",
   },
   {
-    name: 'createTime',
-    label: '创建时间',
-    field: 'updated_at',
-    align: 'center',
-    style: 'width: 20%',
+    name: "createTime",
+    label: trans("创建时间"),
+    field: "updated_at",
+    align: "center",
+    style: "width: 20%",
   },
   {
-    name: 'operations',
-    label: '操作',
-    align: 'center',
-    style: 'width: 15%',
+    name: "operations",
+    label: trans("操作"),
+    align: "center",
+    style: "width: 15%",
   },
 ];
 
 // SKU表格列定义
 const skuColumns = [
   {
-    name: 'skuInfo',
+    name: "skuInfo",
     required: true,
-    label: 'SKU信息',
-    align: 'left',
-    field: (row) => row?.sku || '',
-    style: 'width: 35%;',
-    headerStyle: 'font-weight:bold;font-size:14px',
+    label: trans("SKU信息"),
+    align: "left",
+    field: (row) => row?.sku || "",
+    style: "width: 35%;",
+    headerStyle: "font-weight:bold;font-size:14px",
   },
   {
-    name: 'applySpec',
-    label: '申报规格',
-    field: (row) => `${row.size_length || 0}*${row.size_width || 0}*${row.size_height || 0} cm\n${row.weight || 0} g`,
-    align: 'center',
-    style: 'width: 20%',
-    headerStyle: 'font-weight:bold;font-size:14px',
-  },
-  {
-    name: 'realSpec',
-    label: '实际规格',
+    name: "applySpec",
+    label: trans("申报规格"),
     field: (row) =>
-      `${row.warehouse_size_length || 0}*${row.warehouse_size_width || 0}*${row.warehouse_size_height || 0} cm\n${
-        row.warehouse_weight || 0
-      } g`,
-    align: 'center',
-    style: 'width: 20%',
-    headerStyle: 'font-weight:bold;font-size:14px',
+      `${row.size_length || 0}*${row.size_width || 0}*${
+        row.size_height || 0
+      } cm\n${row.weight || 0} g`,
+    align: "center",
+    style: "width: 20%",
+    headerStyle: "font-weight:bold;font-size:14px",
   },
   {
-    name: 'timeInfo',
-    label: '时间',
-    align: 'center',
+    name: "realSpec",
+    label: trans("实际规格"),
+    field: (row) =>
+      `${row.warehouse_size_length || 0}*${row.warehouse_size_width || 0}*${
+        row.warehouse_size_height || 0
+      } cm\n${row.warehouse_weight || 0} g`,
+    align: "center",
+    style: "width: 20%",
+    headerStyle: "font-weight:bold;font-size:14px",
+  },
+  {
+    name: "timeInfo",
+    label: trans("时间"),
+    align: "center",
     format: (row) => ({
       created: row.created_at,
       updated: row.updated_at,
     }),
-    style: 'width: 15%',
-    headerStyle: 'font-weight:bold;font-size:14px',
+    style: "width: 15%",
+    headerStyle: "font-weight:bold;font-size:14px",
   },
 ];
 
@@ -293,22 +386,24 @@ const handleEdit = (row) => {
 const handleDelete = async () => {
   if (selected.value.length === 0) {
     $q.notify({
-      message: '请选择要删除的商品',
-      color: 'warning',
+      message: trans("请选择要删除的商品"),
+      color: "warning",
     });
     return;
   }
 
   $q.dialog({
-    title: '确认删除',
-    message: `确定要删除选中的 ${selected.value.length} 个商品吗？`,
+    title: trans("确认删除"),
+    message: trans("确定要删除选中的 {count} 个商品吗？", {
+      count: selected.value.length,
+    }),
     cancel: {
-      label: '取消',
+      label: trans("取消"),
       flat: true,
     },
     ok: {
-      label: '确认',
-      color: 'negative',
+      label: trans("确认"),
+      color: "negative",
     },
     persistent: true,
   }).onOk(async () => {
@@ -319,10 +414,10 @@ const handleDelete = async () => {
 
       if (response.success) {
         selected.value = []; // 清空选中
-        emit('refresh'); // 刷新列表
+        emit("refresh"); // 刷新列表
       }
     } catch (error) {
-      console.error('删除失败:', error);
+      console.error("删除失败:", error);
     }
   });
 };
@@ -330,15 +425,15 @@ const handleDelete = async () => {
 // 处理单个删除
 const handleSingleDelete = (row) => {
   $q.dialog({
-    title: '确认删除',
-    message: `确定要删除该商品吗？`,
+    title: trans("确认删除"),
+    message: trans("确定要删除该商品吗？"),
     cancel: {
-      label: '取消',
+      label: trans("取消"),
       flat: true,
     },
     ok: {
-      label: '确认',
-      color: 'negative',
+      label: trans("确认"),
+      color: "negative",
     },
     persistent: true,
   }).onOk(async () => {
@@ -348,10 +443,10 @@ const handleSingleDelete = (row) => {
       });
 
       if (response.success) {
-        emit('refresh'); // 刷新列表
+        emit("refresh"); // 刷新列表
       }
     } catch (error) {
-      console.error('删除失败:', error);
+      console.error("删除失败:", error);
     }
   });
 };

@@ -4,7 +4,7 @@
     <div class="header-bar">
       <div class="left">
         <span class="title"
-          >扫描包装&gt;{{ pageData.waveInfo.wave_number }}({{
+          >{{ trans("扫描包装") }}&gt;{{ pageData.waveInfo.wave_number }}({{
             getDesc(pageData.waveInfo.wave_type)
           }})</span
         >
@@ -13,11 +13,16 @@
         <q-btn
           color="primary"
           flat
-          label="挂起"
+          :label="trans('挂起')"
           class="mr-12"
           @click="handUp"
         />
-        <q-btn color="negative" flat label="结束作业" @click="handEnd" />
+        <q-btn
+          color="negative"
+          flat
+          :label="trans('结束作业')"
+          @click="handEnd"
+        />
       </div>
     </div>
 
@@ -25,19 +30,19 @@
     <div class="main-card">
       <!-- 操作区 -->
       <div class="action-bar">
-        <span>选择 {{ pageData.selectedRows.length }}</span>
+        <span>{{ trans("选择") }} {{ pageData.selectedRows.length }}</span>
         <q-btn
           color="primary"
           @click="handleBatchPrint"
           class="ml-16"
-          label="打印"
+          :label="trans('打印')"
         />
         <q-btn
           color="primary"
           @click="handleBatchCheckMaterials"
           outline
           class="ml-16"
-          label="批量选择包材"
+          :label="trans('批量选择包材')"
         />
       </div>
 
@@ -48,7 +53,7 @@
           <q-btn
             :flat="pageData.codeFilter != 'all'"
             color="primary"
-            label="全部"
+            :label="trans('全部')"
             @click="changeFilter('all')"
             class="btn-mini"
           />
@@ -66,26 +71,30 @@
 
       <div class="info-bar">
         <div>
-          面单打印：
+          {{ trans("面单打印") }}：
           <q-btn
             :flat="pageData.printFilter != 'all'"
             color="primary"
             @click="changePrintFilter('all')"
-            :label="`全部(${pageData.rows.length})`"
+            :label="trans('全部({count})', { count: pageData.rows.length })"
             class="btn-mini"
           />
           <q-btn
             :flat="pageData.printFilter != '1'"
             color="primary"
             @click="changePrintFilter('1')"
-            :label="`已打印(${printCount})`"
+            :label="trans('已打印({count})', { count: printCount })"
             class="btn-mini"
           />
           <q-btn
             :flat="pageData.printFilter != '0'"
             color="primary"
             @click="changePrintFilter('0')"
-            :label="`未打印(${pageData.rows.length - printCount})`"
+            :label="
+              trans('未打印({count})', {
+                count: pageData.rows.length - printCount,
+              })
+            "
             class="btn-mini"
           />
         </div>
@@ -151,7 +160,7 @@
               <q-select
                 dense
                 outlined
-                label="请选择包材"
+                :label="trans('请选择包材')"
                 v-model="props.row.packaging_material.id"
                 :options="pageData.materialsList"
                 emit-value
@@ -177,7 +186,7 @@
                 size="sm"
               >
                 <img src="@/assets/images/print.png" />
-                <q-tooltip>打印物流面单</q-tooltip>
+                <q-tooltip>{{ trans("打印物流面单") }}</q-tooltip>
               </q-btn>
 
               <q-btn
@@ -187,7 +196,7 @@
                 v-if="props.row.is_print_shipping_label"
                 @click="handleNotPrint(props.row)"
               >
-                <q-tooltip>标记为未打印</q-tooltip>
+                <q-tooltip>{{ trans("标记为未打印") }}</q-tooltip>
               </q-btn>
               <q-btn
                 flat
@@ -196,7 +205,7 @@
                 v-else
                 @click="handleNotPrint(props.row)"
               >
-                <q-tooltip>标记为已打印</q-tooltip>
+                <q-tooltip>{{ trans("标记为已打印") }}</q-tooltip>
               </q-btn>
             </q-td>
           </q-tr>
@@ -220,6 +229,7 @@ import Message from "@/utils/message.js";
 import { useQuasar } from "quasar";
 import CheckMaterial from "./components/CheckMaterial.vue";
 import HandEnd from "./components/HandEnd.vue";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 const route = useRoute();
@@ -234,16 +244,26 @@ const pageData = reactive({
   columns: [
     {
       name: "package_number",
-      label: "包裹号/运单号",
+      label: trans("包裹号/运单号"),
       field: "package_number",
       align: "left",
     },
-    { name: "customer", label: "客户信息", field: "customer", align: "left" },
-    { name: "product", label: "商品信息", field: "product", align: "left" },
-    { name: "qty", label: "数量", field: "qty", align: "left" },
-    { name: "pack", label: "包材信息 *", field: "pack", align: "left" },
-    { name: "print", label: "打印状态", field: "print", align: "left" },
-    { name: "actions", label: "操作", field: "actions", align: "left" },
+    {
+      name: "customer",
+      label: trans("客户信息"),
+      field: "customer",
+      align: "left",
+    },
+    {
+      name: "product",
+      label: trans("商品信息"),
+      field: "product",
+      align: "left",
+    },
+    { name: "qty", label: trans("数量"), field: "qty", align: "left" },
+    { name: "pack", label: trans("包材信息 *"), field: "pack", align: "left" },
+    { name: "print", label: trans("打印状态"), field: "print", align: "left" },
+    { name: "actions", label: trans("操作"), field: "actions", align: "left" },
   ],
   materialsList: [],
   codeFilter: "all",
@@ -267,16 +287,16 @@ watch(
 
     if (bool) {
       $q.dialog({
-        title: "包装作业已完成, 请结束作业",
-        message: "可前往“包裹管理”查看待发货的包裹",
+        title: trans("包装作业已完成, 请结束作业"),
+        message: trans("可前往“包裹管理”查看待发货的包裹"),
         cancel: true,
         persistent: true,
         ok: {
-          label: "结束作业",
+          label: trans("结束作业"),
           color: "primary",
         },
         cancel: {
-          label: "取消",
+          label: trans("取消"),
           color: "grey-7",
         },
       }).onOk(async () => {
@@ -325,7 +345,7 @@ const getMaterialsList = async () => {
 const handleBatchPrint = async () => {
   console.log("pageData.selectedRows", pageData.selectedRows);
   if (pageData.selectedRows.length == 0) {
-    return Message.notify("请选择要打印的包裹");
+    return Message.notify(trans("请选择要打印的包裹"));
   }
   // let ids = pageData.selectedRows.map(row=>row.id)
   // let {data} = await OutApi.printPackageOrder(ids)
@@ -335,7 +355,7 @@ const handleBatchPrint = async () => {
 const handleBatchCheckMaterials = async () => {
   console.log("pageData.selectedRows", pageData.selectedRows);
   if (pageData.selectedRows.length == 0) {
-    return Message.notify("请选择包裹");
+    return Message.notify(trans("请选择包裹"));
   }
   checkMaterialRef.value.open(pageData.materialsList);
 };
@@ -371,32 +391,32 @@ const getWaveInfo = async () => {
 
 const getDesc = (type) => {
   if (type == "single_item") {
-    return "单品单数";
+    return trans("单品单数");
   } else if (type == "multi_items") {
-    return "单品多件";
+    return trans("单品多件");
   } else if (type == "mixed_items") {
-    return "多品混包";
+    return trans("多品混包");
   }
 };
 
 const handlePrint = async (row) => {
   if (!row.packaging_material.id) {
-    return Message.notify("请选择包材");
+    return Message.notify(trans("请选择包材"));
   }
   let { data } = await OutApi.printPackageOrder(row.id);
   window.open(data.data, "_blank");
 
   $q.dialog({
-    title: "打印结果确认",
-    message: "是否打印成功",
+    title: trans("打印结果确认"),
+    message: trans("是否打印成功"),
     cancel: true,
     persistent: true,
     ok: {
-      label: "是",
+      label: trans("是"),
       color: "primary",
     },
     cancel: {
-      label: "否",
+      label: trans("否"),
       color: "grey-7",
     },
   }).onOk(async () => {
@@ -406,7 +426,7 @@ const handlePrint = async (row) => {
 
 const setPrint = async (row, is_printed) => {
   if (is_printed && !row.packaging_material.id) {
-    return Message.notify("请选择包材");
+    return Message.notify(trans("请选择包材"));
   }
   // 标记为未打印 将包材设置为空
   let params = {
@@ -445,16 +465,16 @@ const confirmMateria = (materialId) => {
 
 const handUp = () => {
   $q.dialog({
-    title: "确定挂起包装作业？",
-    message: "挂起后，波次状态保持为“包装中”",
+    title: trans("确定挂起包装作业？"),
+    message: trans("挂起后，波次状态保持为“包装中”"),
     cancel: true,
     persistent: true,
     ok: {
-      label: "确定",
+      label: trans("确定"),
       color: "primary",
     },
     cancel: {
-      label: "取消",
+      label: trans("取消"),
       color: "grey-7",
     },
   }).onOk(async () => {
@@ -471,16 +491,16 @@ const handEnd = () => {
     handEndRef.value.open(notPrintList);
   } else {
     $q.dialog({
-      title: "确定结束作业？",
-      message: "包装作业已全部完成！可前往“包裹管理”查看待发货的包裹",
+      title: trans("确定结束作业？"),
+      message: trans("包装作业已全部完成！可前往“包裹管理”查看待发货的包裹"),
       cancel: true,
       persistent: true,
       ok: {
-        label: "确定",
+        label: trans("确定"),
         color: "primary",
       },
       cancel: {
-        label: "取消",
+        label: trans("取消"),
         color: "grey-7",
       },
     }).onOk(async () => {
@@ -496,16 +516,18 @@ const handEndConfirm = async () => {
 
 const handleNotPrint = (row) => {
   $q.dialog({
-    title: "提示",
-    message: `确认标记为${row.is_print_shipping_label ? "未打印" : "已打印"}?`,
+    title: trans("提示"),
+    message: trans("确认标记为{status}?", {
+      status: row.is_print_shipping_label ? trans("未打印") : trans("已打印"),
+    }),
     cancel: true,
     persistent: true,
     ok: {
-      label: "是",
+      label: trans("是"),
       color: "primary",
     },
     cancel: {
-      label: "否",
+      label: trans("否"),
       color: "grey-7",
     },
   }).onOk(async () => {

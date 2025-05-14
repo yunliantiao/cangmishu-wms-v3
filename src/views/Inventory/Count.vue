@@ -1,7 +1,7 @@
 <template>
   <div class="count-page">
     <!-- 状态筛选导航 -->
-    <div class="status-nav bg-white rounded-borders q-pa-sm q-mb-md">
+    <!-- <div class="status-nav bg-white rounded-borders q-pa-sm q-mb-md">
       <div class="row q-gutter-x-md">
         <q-btn
           v-for="status in statusOptions"
@@ -13,8 +13,26 @@
           @click="handleStatusNav(status.value)"
         />
       </div>
-    </div>
+    </div> -->
     <div class="bg-white rounded-borders q-pa-md q-mb-md">
+      <div class="tabs-section q-mb-md">
+        <q-tabs
+          v-model="pageParams.status"
+          active-color="primary"
+          indicator-color="primary"
+          narrow-indicator
+          @update:model-value="handleStatusNav"
+          class="text-grey-8"
+        >
+          <q-tab
+            :name="item.value"
+            :label="item.label"
+            v-for="item in statusOptions"
+            :key="item.value"
+          />
+        </q-tabs>
+      </div>
+
       <div class="row q-col-gutter-sm">
         <div class="col-auto">
           <q-select
@@ -22,140 +40,56 @@
             dense
             v-model="pageParams.order_type"
             :options="[
-              { label: '商品+货架位', value: 'product_location' },
-              { label: '货架位', value: 'location_only' },
+              { label: trans('商品+货架位'), value: 'product_location' },
+              { label: trans('货架位'), value: 'location_only' },
             ]"
             emit-value
             map-options
             option-value="value"
             option-label="label"
-            class="search-type-select"
-            label="盘点类型"
+            class="filter-item"
+            :label="trans('盘点类型')"
             clearable
           />
         </div>
-        <div class="col-auto">
-          <q-select
-            outlined
-            dense
-            v-model="pageParams.date_type"
-            :options="$store.state.dateTypeOptions"
-            label="创建时间"
-            class="search-type-select"
-            emit-value
-            map-options
-            option-value="value"
-            option-label="label"
-            clearable
-          />
-        </div>
-        <div class="col-auto">
-          <div class="row q-col-gutter-sm">
-            <div class="col-auto">
-              <q-input
-                outlined
-                dense
-                v-model="pageParams.start_date"
-                label="开始时间"
-                readonly
-                class="date-input"
-              >
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy
-                      cover
-                      transition-show="scale"
-                      transition-hide="scale"
-                    >
-                      <q-date
-                        v-model="pageParams.start_date"
-                        mask="YYYY-MM-DD"
-                      />
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
-            </div>
-            <div class="col-auto self-center">To</div>
-            <div class="col-auto">
-              <q-input
-                outlined
-                dense
-                readonly
-                v-model="pageParams.end_date"
-                label="结束时间"
-                class="date-input"
-              >
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy
-                      cover
-                      transition-show="scale"
-                      transition-hide="scale"
-                    >
-                      <q-date v-model="pageParams.end_date" mask="YYYY-MM-DD" />
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
-            </div>
-          </div>
-        </div>
-        <div class="col-auto">
-          <div class="row items-center no-wrap search-group q-ml-md">
-            <q-select
-              outlined
-              dense
-              v-model="pageParams.search_type"
-              :options="[
-                {
-                  label: '商品SKU',
-                  value: 'sku',
-                },
-                {
-                  label: '盘点单号',
-                  value: 'number',
-                },
-              ]"
-              emit-value
-              map-options
-              option-value="value"
-              option-label="label"
-              class="search-type-select"
-            />
-            <q-input
-              outlined
-              dense
-              v-model="pageParams.keywords"
-              placeholder="关键字"
-              class="keywords-input"
-              style="min-width: 200px"
-            />
-            <q-select
-              outlined
-              dense
-              v-model="pageParams.search_mode"
-              :options="$store.state.searchModeOptions"
-              emit-value
-              map-options
-              option-value="value"
-              option-label="label"
-              class="search-mode-select"
-            />
-          </div>
-        </div>
+        <DatePicker
+          v-model:start_date="pageParams.start_date"
+          v-model:end_date="pageParams.end_date"
+          v-model:date_type="pageParams.date_type"
+          :dateList="$store.state.dateTypeOptions"
+        ></DatePicker>
+
+        <KeywordSearch
+          v-model:search_type="pageParams.search_type"
+          v-model:search_value="pageParams.keywords"
+          v-model:search_mode="pageParams.search_mode"
+          :searchTypeList="[
+            {
+              label: trans('商品SKU'),
+              value: 'sku',
+            },
+            {
+              label: trans('盘点单号'),
+              value: 'number',
+            },
+          ]"
+          :searchModeList="$store.state.searchModeOptions"
+        ></KeywordSearch>
         <div class="col-auto">
           <q-btn
             outline
             color="grey"
-            label="重置"
-            class="q-mr-sm"
+            :label="trans('重置')"
+            class="filter-btn"
             @click="resetSearch"
           />
+        </div>
+
+        <div class="col-auto">
           <q-btn
             color="primary"
-            icon="search"
-            label="搜索"
+            class="filter-btn"
+            :label="trans('搜索')"
             :loading="$store.state.btnLoading"
             @click="getCountList"
           />
@@ -164,14 +98,13 @@
     </div>
     <div class="q-pa-none page_table_action">
       <div class="row justify-between q-mb-sm">
-        <div class="row items-center">
-          <span class="q-mr-sm">选择 {{ selectedRows.length }}</span>
-        </div>
         <div>
           <q-btn
             color="primary"
-            label="创建盘点单"
+            :label="trans('创建盘点单')"
             icon="add"
+            flat
+            class="filter-btn"
             v-if="pageParams.status === 'pending'"
             @click="createCount"
             unelevated
@@ -185,38 +118,38 @@
           :columns="[
             {
               name: 'system_order_number',
-              label: '盘点单号',
+              label: trans('盘点单号'),
               align: 'left',
               field: 'system_order_number',
             },
             {
               name: 'type',
-              label: '盘点类型',
+              label: trans('盘点类型'),
               align: 'left',
               field: (row) =>
                 row.type === 'product_location' ? '商品+货架位' : '货架位',
             },
             {
               name: 'remark',
-              label: '备注',
+              label: trans('备注'),
               align: 'left',
               field: 'remark',
             },
             {
               name: 'created_by',
-              label: '创建人',
+              label: trans('创建人'),
               align: 'left',
               field: (row) => row.created_by?.name,
             },
             {
               name: 'created_at',
-              label: '创建时间',
+              label: trans('创建时间'),
               align: 'left',
               field: 'created_at',
             },
             {
               name: 'actions',
-              label: '操作',
+              label: trans('操作'),
               align: 'left',
             },
           ]"
@@ -257,7 +190,7 @@
                     icon="edit"
                     @click="handleEdit(props.row)"
                   >
-                    <q-tooltip>编辑</q-tooltip>
+                    <q-tooltip>{{ trans("编辑") }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     v-if="props.row.status === 'pending'"
@@ -267,7 +200,7 @@
                     icon="play_arrow"
                     @click="handleStartCount(props.row)"
                   >
-                    <q-tooltip>开始盘点</q-tooltip>
+                    <q-tooltip>{{ trans("开始盘点") }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     v-if="props.row.status === 'processing'"
@@ -278,7 +211,7 @@
                     class="q-ml-sm"
                     @click="takeStock(props.row)"
                   >
-                    <q-tooltip>盘点</q-tooltip>
+                    <q-tooltip>{{ trans("盘点") }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     v-if="props.row.status === 'processing'"
@@ -288,7 +221,7 @@
                     class="q-ml-sm"
                     @click="submitCount(props.row)"
                   >
-                    <q-tooltip>提交盘点结果</q-tooltip>
+                    <q-tooltip>{{ trans("提交盘点结果") }}</q-tooltip>
                   </q-btn>
 
                   <q-btn
@@ -300,7 +233,7 @@
                     class="q-ml-sm"
                     @click="handleExport(props.row)"
                   >
-                    <q-tooltip>导出盘点数据</q-tooltip>
+                    <q-tooltip>{{ trans("导出盘点数据") }}</q-tooltip>
                   </q-btn>
 
                   <q-btn
@@ -312,7 +245,7 @@
                     class="q-ml-sm"
                     @click="handlePrint(props.row)"
                   >
-                    <q-tooltip>打印盘点单</q-tooltip>
+                    <q-tooltip>{{ trans("打印盘点单") }}</q-tooltip>
                   </q-btn>
 
                   <q-btn
@@ -323,7 +256,7 @@
                     icon="delete"
                     @click="handleDelete(props.row)"
                   >
-                    <q-tooltip>删除</q-tooltip>
+                    <q-tooltip>{{ trans("删除") }}</q-tooltip>
                   </q-btn>
                   <q-btn
                     flat
@@ -333,7 +266,7 @@
                     icon="list_alt"
                     @click="viewDetails(props.row)"
                   >
-                    <q-tooltip>详情</q-tooltip>
+                    <q-tooltip>{{ trans("详情") }}</q-tooltip>
                   </q-btn>
                 </div>
               </q-td>
@@ -348,37 +281,37 @@
                     :columns="[
                       {
                         name: 'product_spec_sku',
-                        label: '商品SKU',
+                        label: trans('商品SKU'),
                         align: 'left',
                         field: 'product_spec_sku',
                       },
                       {
                         name: 'product_spec_name',
-                        label: '商品名称',
+                        label: trans('商品名称'),
                         align: 'left',
                         field: 'product_spec_name',
                       },
                       {
                         name: 'warehouse_location_code',
-                        label: '货架位',
+                        label: trans('货架位'),
                         align: 'left',
                         field: 'warehouse_location_code',
                       },
                       {
                         name: 'warehouse_area_type',
-                        label: '货区类型',
+                        label: trans('货区类型'),
                         align: 'left',
                         field: 'warehouse_area_type',
                       },
                       {
                         name: 'total_qty',
-                        label: '系统库存',
+                        label: trans('系统库存'),
                         align: 'right',
                         field: 'total_qty',
                       },
                       {
                         name: 'counting_qty',
-                        label: '盘点数量',
+                        label: trans('盘点数量'),
                         align: 'right',
                         field: 'counting_qty',
                       },
@@ -393,7 +326,7 @@
           </template>
           <template v-slot:no-data>
             <div class="full-width row flex-center q-pa-md text-grey">
-              暂无数据
+              {{ trans("暂无数据") }}
             </div>
           </template>
         </q-table>
@@ -419,27 +352,31 @@
     >
       <q-card class="detail-card" style="width: 80vw; max-width: 1400px">
         <q-card-section class="dialog-header row items-center bg-grey-2">
-          <div class="text-subtitle1 text-weight-medium">盘点单详情</div>
+          <div class="text-subtitle1 text-weight-medium">
+            {{ trans("盘点单详情") }}
+          </div>
           <q-space />
           <q-btn flat round dense icon="close" @click="close" />
         </q-card-section>
         <q-card-section class="dialog-body q-pa-md scroll" v-if="countOrder">
           <div class="row q-col-gutter-md q-mb-md">
             <div class="col-3">
-              <div class="text-grey">盘点类型</div>
+              <div class="text-grey">{{ trans("盘点类型") }}</div>
               <div>
                 {{
-                  countOrder.type === "location_only" ? "货架位" : "商品+货架位"
+                  countOrder.type === "location_only"
+                    ? trans("货架位")
+                    : trans("商品+货架位")
                 }}
               </div>
             </div>
             <div class="col-3">
-              <div class="text-grey">备注</div>
+              <div class="text-grey">{{ trans("备注") }}</div>
               <div>{{ countOrder.remark || "--" }}</div>
             </div>
           </div>
 
-          <div class="text-subtitle2 q-mb-sm">盘点信息</div>
+          <div class="text-subtitle2 q-mb-sm">{{ trans("盘点信息") }}</div>
           <q-table
             :rows="countOrder.items"
             :columns="detailColumns"
@@ -496,17 +433,19 @@
     <q-dialog v-model="errorDialogVisible">
       <q-card style="width: 90vw; max-width: 800px">
         <q-card-section>
-          <div class="text-h6">盘点</div>
+          <div class="text-h6">{{ trans("盘点") }}</div>
         </q-card-section>
         <q-card-section>
-          <div class="text-subtitle2 q-mb-sm">失败原因：{{ message }}</div>
+          <div class="text-subtitle2 q-mb-sm">
+            {{ trans("失败原因") }}:{{ message }}
+          </div>
           <q-markup-table flat bordered>
             <thead>
               <tr>
-                <th class="text-left">商品SKU</th>
-                <th class="text-left">货架位</th>
+                <th class="text-left">{{ trans("商品SKU") }}</th>
+                <th class="text-left">{{ trans("货架位") }}</th>
                 <th v-if="submitType == 'submitCountOrder'" class="text-left">
-                  原因
+                  {{ trans("原因") }}
                 </th>
               </tr>
             </thead>
@@ -514,13 +453,20 @@
               <tr v-for="item in errorList" :key="item.id">
                 <td>{{ item.product_spec_sku }}</td>
                 <td>{{ item.warehouse_location_code }}</td>
-                <td v-if="submitType == 'submitCountOrder'">实盘库存未填写</td>
+                <td v-if="submitType == 'submitCountOrder'">
+                  {{ trans("实盘库存未填写") }}
+                </td>
               </tr>
             </tbody>
           </q-markup-table>
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn flat label="关闭" color="primary" v-close-popup />
+          <q-btn
+            flat
+            label="{{ trans('关闭') }}"
+            color="primary"
+            v-close-popup
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -533,15 +479,18 @@ import { useRouter, useRoute } from "vue-router";
 import { useQuasar } from "quasar";
 import inventoryApi from "@/api/inventory";
 import Pagination from "@/components/Pagination.vue";
+import trans from "@/i18n";
+import DatePicker from "@/components/DatePickerNew/Index.vue";
+import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 
 const router = useRouter();
 const route = useRoute();
 const $q = useQuasar();
 
 const statusOptions = ref([
-  { label: "待盘点", value: "pending" },
-  { label: "盘点中", value: "processing" },
-  { label: "已完成", value: "completed" },
+  { label: trans("待盘点"), value: "pending" },
+  { label: trans("盘点中"), value: "processing" },
+  { label: trans("已完成"), value: "completed" },
 ]);
 
 const pageParams = ref({
@@ -550,7 +499,7 @@ const pageParams = ref({
   total: 0,
   order_type: "",
   status: "pending",
-  date_type: "",
+  date_type: "created_at",
   search_type: "sku",
   search_mode: "exact",
   keywords: "",
@@ -581,7 +530,7 @@ const getCountList = () => {
 
 const resetSearch = () => {
   pageParams.value.page = 1;
-  pageParams.value.date_type = "";
+  pageParams.value.date_type = "created_at";
   pageParams.value.search_type = "sku";
   pageParams.value.search_mode = "exact";
   pageParams.value.keywords = "";
@@ -636,16 +585,16 @@ const submitType = ref("startCount");
 // 开始盘点
 const handleStartCount = (row) => {
   $q.dialog({
-    title: "确认",
-    message: "确定要开始盘点吗？",
+    title: trans("确认"),
+    message: trans("确定要开始盘点吗？"),
     cancel: true,
     persistent: true,
     ok: {
-      label: "确认",
+      label: trans("确认"),
       color: "primary",
     },
     cancel: {
-      label: "取消",
+      label: trans("取消"),
       color: "grey-7",
     },
   }).onOk(() => {
@@ -675,16 +624,16 @@ const message = ref("");
 // 删除盘点单
 const handleDelete = (row) => {
   $q.dialog({
-    title: "确认",
-    message: "确定要删除该盘点单吗？",
+    title: trans("确认"),
+    message: trans("确定要删除该盘点单吗？"),
     cancel: true,
     persistent: true,
     ok: {
-      label: "确认",
+      label: trans("确认"),
       color: "primary",
     },
     cancel: {
-      label: "取消",
+      label: trans("取消"),
       color: "grey-7",
     },
   }).onOk(() => {
@@ -713,34 +662,49 @@ const handleExport = (row) => {
 
 const detailColumns = [
   { name: "index", label: "#", field: "index", align: "center" },
-  { name: "sku", label: "商品SKU", field: "product_spec_sku", align: "left" },
+  {
+    name: "sku",
+    label: trans("商品SKU"),
+    field: "product_spec_sku",
+    align: "left",
+  },
   {
     name: "name",
-    label: "商品名称",
+    label: trans("商品名称"),
     field: "product_spec_name",
     align: "left",
   },
-  { name: "customer", label: "客户", field: "customer_name", align: "left" },
-  { name: "location", label: "货架位", field: "location_code", align: "left" },
+  {
+    name: "customer",
+    label: trans("客户"),
+    field: "customer_name",
+    align: "left",
+  },
+  {
+    name: "location",
+    label: trans("货架位"),
+    field: "location_code",
+    align: "left",
+  },
   {
     name: "area_type",
-    label: "货区类型",
+    label: trans("货区类型"),
     field: "area_type_name",
     align: "left",
   },
   {
     name: "system_qty",
-    label: "账面库存",
+    label: trans("账面库存"),
     field: "system_qty",
     align: "center",
   },
   {
     name: "actual_qty",
-    label: "实盘库存",
+    label: trans("实盘库存"),
     field: "actual_qty",
     align: "center",
   },
-  { name: "diff", label: "差异", field: "diff_qty", align: "center" },
+  { name: "diff", label: trans("差异"), field: "diff_qty", align: "center" },
 ];
 
 const searchType = ref("sku");
@@ -764,13 +728,13 @@ onMounted(() => {
 :deep(.q-table) {
   thead tr {
     height: 40px;
-    background: #f5f7fa;
+    // background: #f5f7fa;
 
     th {
       padding: 8px 12px;
       font-weight: 500;
-      border-bottom: 1px solid #ebeef5;
-      border-right: 1px solid #ebeef5;
+      // border-bottom: 1px solid #ebeef5;
+      // border-right: 1px solid #ebeef5;
       white-space: nowrap;
 
       &:first-child {
@@ -798,5 +762,16 @@ onMounted(() => {
 
 .q-badge {
   padding: 4px 8px;
+}
+
+:deep(.q-tabs__content--align-center) {
+  justify-content: flex-start;
+}
+
+.q-tabs {
+  border-bottom: 1px solid #e6e6e6;
+  .q-tab {
+    min-height: 38px;
+  }
 }
 </style>

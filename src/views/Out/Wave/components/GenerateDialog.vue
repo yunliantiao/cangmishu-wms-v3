@@ -2,7 +2,7 @@
   <q-dialog v-model="componentData.isOpen" persistent>
     <q-card style="width: 900px; max-width: 90vw">
       <q-card-section class="row items-center">
-        <div class="text-h6">预览</div>
+        <div class="text-h6">{{ trans("预览") }}</div>
         <q-space />
         <q-btn
           icon="close"
@@ -23,7 +23,7 @@
               v-model="componentData.waveType"
               @update:model-value="handleWaveType"
               :options="componentData.waveTypeOptions"
-              label="全部波次类型"
+              :label="trans('全部波次类型')"
               class="filter-select"
               emit-value
               map-options
@@ -36,7 +36,7 @@
               dense
               v-model="componentData.logisticsGroup"
               :options="logisticsGroupOptions"
-              label="全部物流组 暂未开发"
+              :label="trans('全部物流组')"
               class="filter-select"
               emit-value
               map-options
@@ -46,13 +46,15 @@
 
         <div class="row items-center q-mb-md">
           <div class="col-auto">
-            <span>选择 {{ componentData.selectedRows.length }}</span>
+            <span
+              >{{ trans("选择") }} {{ componentData.selectedRows.length }}</span
+            >
           </div>
           <div class="col-auto q-ml-md">
             <q-btn
               color="primary"
               outline
-              label="分配拣货员"
+              :label="trans('分配拣货员')"
               @click="handleAssignPicker"
             />
           </div>
@@ -122,10 +124,10 @@
       </q-card-section>
 
       <q-card-actions align="right" class="q-px-md q-pb-md">
-        <q-btn flat label="取消" color="grey-7" v-close-popup />
+        <q-btn flat :label="trans('取消')" color="grey-7" v-close-popup />
         <q-btn
           unelevated
-          label="生成"
+          :label="trans('生成')"
           color="primary"
           @click="handleGenerate"
         />
@@ -145,6 +147,7 @@ import waveApi from "@/api/wave.js";
 import teamApi from "@/api/team.js";
 import { useQuasar } from "quasar";
 import PickerUser from "./PickerUser.vue";
+import trans from "@/i18n";
 
 import { useStore } from "vuex";
 const store = useStore();
@@ -168,15 +171,15 @@ const componentData = reactive({
   logisticsGroup: null,
   params: null,
   waveTypeOptions: [
-    { label: "全部波次类型", value: null },
-    { label: "单品单数", value: "single_item" },
-    { label: "单品多数", value: "multi_items" },
-    { label: "多品混包", value: "mixed_items" },
+    { label: trans("全部波次类型"), value: null },
+    { label: trans("单品单数"), value: "single_item" },
+    { label: trans("单品多数"), value: "multi_items" },
+    { label: trans("多品混包"), value: "mixed_items" },
   ],
   logisticsGroupOptions: [
-    { label: "全部物流组", value: null },
-    { label: "物流组 A", value: "group_a" },
-    { label: "物流组 B", value: "group_b" },
+    { label: trans("全部物流组"), value: null },
+    { label: trans("物流组 A"), value: "group_a" },
+    { label: trans("物流组 B"), value: "group_b" },
   ],
   pickerOptions: [],
   list: [],
@@ -189,35 +192,40 @@ const columns = [
   {
     name: "batch_number",
     align: "center",
-    label: "序号",
+    label: trans("序号"),
     field: "batch_number",
   },
-  { name: "wave_type", align: "left", label: "波次类型", field: "wave_type" },
+  {
+    name: "wave_type",
+    align: "left",
+    label: trans("波次类型"),
+    field: "wave_type",
+  },
   {
     name: "logisticsGroup",
     align: "left",
-    label: "物流组",
+    label: trans("物流组"),
     field: "logisticsGroup",
   },
   {
     name: "package_count",
     align: "center",
-    label: "包裹数量",
+    label: trans("包裹数量"),
     field: "package_count",
   },
   {
     name: "sku_type_count",
     align: "center",
-    label: "商品种类",
+    label: trans("商品种类"),
     field: "sku_type_count",
   },
   {
     name: "item_count",
     align: "center",
-    label: "商品数量",
+    label: trans("商品数量"),
     field: "item_count",
   },
-  { name: "picker", align: "center", label: "拣货员", field: "picker" },
+  { name: "picker", align: "center", label: trans("拣货员"), field: "picker" },
 ];
 
 // 分配拣货员
@@ -232,9 +240,9 @@ onMounted(() => {
 
 const getLabel = (value) => {
   let obj = {
-    single_item: "单品单数",
-    multi_items: "单品多数",
-    mixed_items: "多品混包",
+    single_item: trans("单品单数"),
+    multi_items: trans("单品多数"),
+    mixed_items: trans("多品混包"),
   };
   return obj[value];
 };
@@ -278,7 +286,7 @@ const initList = async () => {
     componentData.list = [];
     q.notify({
       type: "negative",
-      message: "没有可以预览的波次",
+      message: trans("没有可以预览的波次"),
     });
   }
 };
@@ -287,7 +295,7 @@ const handleGenerate = async () => {
   if (componentData.selectedRows.length == 0) {
     q.notify({
       type: "negative",
-      message: "请勾选包裹",
+      message: trans("请勾选包裹"),
     });
     return;
   }
@@ -298,7 +306,7 @@ const handleGenerate = async () => {
   if (!bool) {
     q.notify({
       type: "negative",
-      message: "需要选择拣货员才能生成波次",
+      message: trans("需要选择拣货员才能生成波次"),
     });
     return;
   }

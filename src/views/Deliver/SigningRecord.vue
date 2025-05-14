@@ -21,7 +21,7 @@
         </div>
         <div class="col-auto">
           <q-btn color="primary" @click="getList" class="filter-btn">
-            查询
+            {{ trans("查询") }}
           </q-btn>
         </div>
       </div>
@@ -55,7 +55,7 @@
                 class="table-icon"
               >
                 <img src="@/assets/images/print.png" />
-                <q-tooltip>打印</q-tooltip>
+                <q-tooltip>{{ trans("打印") }}</q-tooltip>
               </q-btn>
             </q-td>
           </q-tr>
@@ -63,7 +63,7 @@
         <template v-slot:no-data>
           <div class="full-width row flex-center q-gutter-sm">
             <q-icon size="2em" name="sentiment_dissatisfied" />
-            <span>暂无数据</span>
+            <span>{{ trans("暂无数据") }} </span>
           </div>
         </template>
       </q-table>
@@ -86,6 +86,7 @@ import outApi from "@/api/out";
 import DatePicker from "@/components/DatePickerNew/Index.vue";
 import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 import Pagination from "@/components/Pagination.vue";
+import trans from "@/i18n";
 
 const pageData = reactive({
   warehouse: "",
@@ -96,29 +97,29 @@ const pageData = reactive({
   columns: [
     {
       name: "deliver_sign_number",
-      label: "签单号",
+      label: trans("签单号"),
       field: "deliver_sign_number",
       align: "left",
     },
     {
       name: "logistics_group_name",
-      label: "物流组名称",
+      label: trans("物流组名称"),
       field: "logistics_group_name",
       align: "left",
     },
     {
       name: "package_quantity",
-      label: "包裹数量",
+      label: trans("包裹数量"),
       field: "package_quantity",
       align: "left",
     },
     {
       name: "created_at",
-      label: "生成时间",
+      label: trans("生成时间"),
       field: "created_at",
       align: "left",
     },
-    { name: "actions", label: "操作", field: "actions", align: "left" },
+    { name: "actions", label: trans("操作"), field: "actions", align: "left" },
   ],
   filter: {
     start_date: "",
@@ -132,13 +133,13 @@ const pageData = reactive({
   },
   loading: false,
   searchTypeList: [
-    { label: "运单号", value: "tracking_number" },
-    { label: "签单号", value: "deliver_sign_number" },
+    { label: trans("运单号"), value: "tracking_number" },
+    { label: trans("签单号"), value: "deliver_sign_number" },
   ],
   searchModeList: [
-    { label: "精确搜索", value: "exact" },
-    { label: "模糊搜索", value: "fuzzy" },
-    { label: "前缀搜索", value: "prefix" },
+    { label: trans("精确搜索"), value: "exact" },
+    { label: trans("模糊搜索"), value: "fuzzy" },
+    { label: trans("前缀搜索"), value: "prefix" },
   ],
 });
 

@@ -3,6 +3,7 @@ const Product = () => import(`../views/Product/Product.vue`)
 const ProductEdit = () => import(`../views/Product/Edit.vue`)
 const TagList = () => import(`../views/Product/Tag/List.vue`)
 const Materials = () => import(`../views/Product/Materials/List.vue`)
+import trans from "@/i18n";
 
 
 export default [
@@ -12,7 +13,7 @@ export default [
         component: Container,
         icon: 'article',
         meta: {
-            name: '商品',
+            name: trans('商品'),
             icon: '',
         },
         children: [
@@ -23,8 +24,8 @@ export default [
                 id: 1001,
                 meta: {
                     level: 2,
-                    group: '商品',
-                    name: '商品',
+                    group: trans('商品'),
+                    name: trans('商品'),
                 },
             },
             {
@@ -34,8 +35,8 @@ export default [
                 id: 1002,
                 meta: {
                     level: 3,
-                    group: '商品',
-                    name: '商品编辑',
+                    group: trans('商品'),
+                    name: trans('商品编辑'),
                 },
             },
             {
@@ -45,8 +46,8 @@ export default [
                 id: 1003,
                 meta: {
                     level: 2,
-                    group: '商品',
-                    name: '商品标记',
+                    group: trans('商品'),
+                    name: trans('商品标记'),
                 },
             },
             {
@@ -56,8 +57,8 @@ export default [
                 id: 1003,
                 meta: {
                     level: 2,
-                    group: '商品',
-                    name: '包材',
+                    group: trans('商品'),
+                    name: trans('包材'),
                 },
             }
         ]

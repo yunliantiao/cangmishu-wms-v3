@@ -3,7 +3,9 @@
     <q-card class="not-packing-dialog">
       <q-card-section class="row items-center q-pb-none">
         <q-icon name="warning" color="orange" class="q-mr-sm" />
-        <div class="text-subtitle1">存在以下未分拣完成/未打印的包裹</div>
+        <div class="text-subtitle1">
+          {{ trans("存在以下未分拣完成/未打印的包裹") }}
+        </div>
       </q-card-section>
       <q-card-section class="q-pt-none">
         <q-table
@@ -50,7 +52,7 @@
                 {{ props.row.package_number }}
               </q-td>
               <q-td>
-                {{ props.row.status < 2 ? "未打印" : "已打印" }}
+                {{ props.row.status < 2 ? trans("未打印") : trans("已打印") }}
               </q-td>
             </q-tr>
           </template>
@@ -63,14 +65,23 @@
       </q-card-section>
       <q-card-section class="q-pt-none">
         <div class="text-grey-7" style="font-size: 13px">
-          强制结束后，未完成分拣的包裹将被标记为“分拣异常”移入异常列表<br />
-          未完成打印的包裹将被标记为“面单打印失败”移入异常列表<br />
-          已打印面单的包裹可在“待发货”列表查看
+          {{
+            trans(
+              "强制结束后，未完成分拣的包裹将被标记为“分拣异常”移入异常列表"
+            )
+          }}<br />
+          {{ trans("未完成打印的包裹将被标记为“面单打印失败”移入异常列表")
+          }}<br />
+          {{ trans("已打印面单的包裹可在“待发货”列表查看") }}
         </div>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn flat label="取消" @click="close" />
-        <q-btn color="primary" label="强制结束" @click="handleConfirm" />
+        <q-btn flat :label="trans('取消')" @click="close" />
+        <q-btn
+          color="primary"
+          :label="trans('强制结束')"
+          @click="handleConfirm"
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -78,6 +89,7 @@
 
 <script setup>
 import { reactive } from "vue";
+import trans from "@/i18n";
 
 const emit = defineEmits(["confirm"]);
 
@@ -85,13 +97,28 @@ const componentData = reactive({
   visible: false,
   list: [],
   columns: [
-    { name: "index", label: "分拣框", field: "index", align: "left" },
-    { name: "product", label: "商品信息", field: "product", align: "left" },
-    { name: "wait_qty", label: "待分拣", field: "wait_qty", align: "left" },
-    { name: "package_no", label: "包裹号", field: "package_no", align: "left" },
+    { name: "index", label: trans("分拣框"), field: "index", align: "left" },
+    {
+      name: "product",
+      label: trans("商品信息"),
+      field: "product",
+      align: "left",
+    },
+    {
+      name: "wait_qty",
+      label: trans("待分拣"),
+      field: "wait_qty",
+      align: "left",
+    },
+    {
+      name: "package_no",
+      label: trans("包裹号"),
+      field: "package_no",
+      align: "left",
+    },
     {
       name: "print_status",
-      label: "面单状态",
+      label: trans("面单状态"),
       field: "print_status",
       align: "left",
     },

@@ -28,65 +28,68 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed, ref, watch } from 'vue';
-
+import { defineProps, defineEmits, computed, ref, watch } from "vue";
+import trans from "@/i18n";
 const props = defineProps({
   modelValue: {
     type: [String, Date, null],
-    default: ''
+    default: "",
   },
   label: {
     type: String,
-    default: ''
+    default: "",
   },
   placeholder: {
     type: String,
-    default: '请选择日期'
+    default: trans("请选择日期"),
   },
   mask: {
     type: String,
-    default: 'YYYY-MM-DD'
+    default: "YYYY-MM-DD",
   },
   rules: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   disable: {
     type: Boolean,
-    default: false
+    default: false,
   },
   options: {
     type: Function,
-    default: null
+    default: null,
   },
   color: {
     type: String,
-    default: 'primary'
+    default: "primary",
   },
   firstDayOfWeek: {
     type: Number,
-    default: 1 // 1 代表周一开始
+    default: 1, // 1 代表周一开始
   },
   // 使用中文语言配置
   useChineseLocale: {
     type: Boolean,
-    default: true
-  }
+    default: true,
+  },
 });
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(["update:modelValue"]);
 
 // 内部值，用于双向绑定
-const inputValue = ref(props.modelValue || '');
+const inputValue = ref(props.modelValue || "");
 
 // 监听外部值变化
-watch(() => props.modelValue, (newVal) => {
-  inputValue.value = newVal || '';
-});
+watch(
+  () => props.modelValue,
+  (newVal) => {
+    inputValue.value = newVal || "";
+  }
+);
 
 // 监听内部值变化，向外发送更新
 watch(inputValue, (newVal) => {
-  emit('update:modelValue', newVal);
+  emit("update:modelValue", newVal);
 });
 
 // 语言包配置
@@ -94,16 +97,58 @@ const locale = computed(() => {
   if (!props.useChineseLocale) {
     return undefined; // 使用默认语言配置
   }
-  
+
   try {
     return {
-      days: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
-      daysShort: ['日', '一', '二', '三', '四', '五', '六'],
-      months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
-      monthsShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+      days: [
+        trans("星期日"),
+        trans("星期一"),
+        trans("星期二"),
+        trans("星期三"),
+        trans("星期四"),
+        trans("星期五"),
+        trans("星期六"),
+      ],
+      daysShort: [
+        trans("日"),
+        trans("一"),
+        trans("二"),
+        trans("三"),
+        trans("四"),
+        trans("五"),
+        trans("六"),
+      ],
+      months: [
+        trans("一月"),
+        trans("二月"),
+        trans("三月"),
+        trans("四月"),
+        trans("五月"),
+        trans("六月"),
+        trans("七月"),
+        trans("八月"),
+        trans("九月"),
+        trans("十月"),
+        trans("十一月"),
+        trans("十二月"),
+      ],
+      monthsShort: [
+        trans("1月"),
+        trans("2月"),
+        trans("3月"),
+        trans("4月"),
+        trans("5月"),
+        trans("6月"),
+        trans("7月"),
+        trans("8月"),
+        trans("9月"),
+        trans("10月"),
+        trans("11月"),
+        trans("12月"),
+      ],
     };
   } catch (error) {
-    console.error('Error in DatePicker locale', error);
+    console.error("Error in DatePicker locale", error);
     return undefined;
   }
 });

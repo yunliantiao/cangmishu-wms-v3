@@ -3,7 +3,9 @@
     <q-card style="min-width: 500px; max-width: 500px">
       <q-card-section>
         <div class="text-h6">
-          {{ componentData.form.id ? "编辑拣货车" : "新建拣货车" }}
+          {{
+            componentData.form.id ? trans("编辑拣货车") : trans("新建拣货车")
+          }}
         </div>
       </q-card-section>
       <q-separator />
@@ -13,8 +15,8 @@
             outlined
             dense
             v-model="componentData.form.code"
-            label="拣货车编号 *"
-            :rules="[(val) => !!val || '必填']"
+            :label="trans('拣货车编号') + ' *'"
+            :rules="[(val) => !!val || trans('必填')]"
             class="q-mb-md"
             maxlength="32"
             clearable
@@ -23,8 +25,8 @@
             outlined
             dense
             v-model="componentData.form.name"
-            label="名称 *"
-            :rules="[(val) => !!val || '必填']"
+            :label="trans('名称') + ' *'"
+            :rules="[(val) => !!val || trans('必填')]"
             class="q-mb-md"
             maxlength="32"
             clearable
@@ -35,11 +37,12 @@
                 outlined
                 dense
                 v-model.number="componentData.form.size_length"
-                label="长 (cm) *"
+                :label="trans('长') + ' (cm) *'"
                 type="number"
                 :rules="[
                   (val) =>
-                    (val !== '' && val !== null && val !== undefined) || '必填',
+                    (val !== '' && val !== null && val !== undefined) ||
+                    trans('必填'),
                 ]"
                 min="0"
                 clearable
@@ -50,11 +53,12 @@
                 outlined
                 dense
                 v-model.number="componentData.form.size_width"
-                label="宽 (cm) *"
+                :label="trans('宽') + ' (cm) *'"
                 type="number"
                 :rules="[
                   (val) =>
-                    (val !== '' && val !== null && val !== undefined) || '必填',
+                    (val !== '' && val !== null && val !== undefined) ||
+                    trans('必填'),
                 ]"
                 min="0"
                 clearable
@@ -65,11 +69,12 @@
                 outlined
                 dense
                 v-model.number="componentData.form.size_height"
-                label="高 (cm) *"
+                :label="trans('高') + ' (cm) *'"
                 type="number"
                 :rules="[
                   (val) =>
-                    (val !== '' && val !== null && val !== undefined) || '必填',
+                    (val !== '' && val !== null && val !== undefined) ||
+                    trans('必填'),
                 ]"
                 min="0"
                 clearable
@@ -80,7 +85,7 @@
             outlined
             dense
             v-model.number="componentData.form.max_weight"
-            label="最大重量 (kg)"
+            :label="trans('最大重量') + ' (kg)'"
             type="number"
             min="0"
             class="q-mb-md"
@@ -90,7 +95,7 @@
             outlined
             dense
             v-model="componentData.form.description"
-            label="描述"
+            :label="trans('描述')"
             type="textarea"
             autogrow
             maxlength="200"
@@ -99,8 +104,8 @@
         </q-form>
       </q-card-section>
       <q-card-actions align="right">
-        <q-btn flat label="取消" @click="close" />
-        <q-btn color="primary" label="确认" @click="handleConfirm" />
+        <q-btn flat :label="trans('取消')" @click="close" />
+        <q-btn color="primary" :label="trans('确认')" @click="handleConfirm" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -110,6 +115,7 @@
 import { reactive, ref, nextTick } from "vue";
 import { useQuasar } from "quasar";
 import SettingApi from "@/api/setting";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 

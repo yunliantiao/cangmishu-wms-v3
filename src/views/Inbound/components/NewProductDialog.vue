@@ -10,8 +10,10 @@
       "
     >
       <q-card-section class="row items-center">
-        <div class="text-h6" v-if="boxNumber != 'NewSku'&&boxNumber">箱号:{{ boxNumber }}</div>
-        <div class="text-h6" v-else>新品维护</div>
+        <div class="text-h6" v-if="boxNumber != 'NewSku' && boxNumber">
+          {{ trans("箱号") }}:{{ boxNumber }}
+        </div>
+        <div class="text-h6" v-else>{{ trans("新品维护") }}</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
@@ -22,30 +24,30 @@
           <table class="custom-table">
             <thead>
               <tr>
-                <th width="25%">商品信息</th>
+                <th width="25%">{{ trans("商品信息") }}</th>
                 <th width="25%">
                   <div v-if="!boxNumber" class="header-with-action">
-                    <div>箱子</div>
+                    <div>{{ trans("箱子") }}</div>
                   </div>
                 </th>
                 <th width="30%" class="text-center">
                   <div>
-                    <div>实际体积</div>
-                    <q-btn flat dense class="all-btn" label="全部">
+                    <div>{{ trans("实际体积") }}</div>
+                    <q-btn flat dense class="all-btn" :label="trans('全部')">
                       <q-menu anchor="bottom middle" self="top middle">
                         <q-card style="min-width: 350px" class="q-pa-md">
                           <div class="q-mb-md">
                             <q-radio
                               v-model="dimensionsMode"
                               val="customer"
-                              label="应用客户申报尺寸"
+                              :label="trans('应用客户申报尺寸')"
                             />
                           </div>
                           <div class="q-mb-md">
                             <q-radio
                               v-model="dimensionsMode"
                               val="manual"
-                              label="统一修改为"
+                              :label="trans('统一修改为')"
                             />
                           </div>
 
@@ -54,7 +56,7 @@
                               <q-input
                                 outlined
                                 v-model="dimensions.length"
-                                label="长"
+                                :label="trans('长')"
                                 type="number"
                                 :disable="dimensionsMode !== 'manual'"
                                 dense
@@ -68,7 +70,7 @@
                               <q-input
                                 outlined
                                 v-model="dimensions.width"
-                                label="宽"
+                                :label="trans('宽')"
                                 type="number"
                                 :disable="dimensionsMode !== 'manual'"
                                 dense
@@ -82,7 +84,7 @@
                               <q-input
                                 outlined
                                 v-model="dimensions.height"
-                                label="高"
+                                :label="trans('高')"
                                 type="number"
                                 :disable="dimensionsMode !== 'manual'"
                                 dense
@@ -97,13 +99,13 @@
                           <div class="row justify-end">
                             <q-btn
                               flat
-                              label="取消"
+                              :label="trans('取消')"
                               color="grey-7"
                               v-close-popup
                             />
                             <q-btn
                               unelevated
-                              label="确认"
+                              :label="trans('确认')"
                               color="primary"
                               @click="applyBatchDimensions"
                               v-close-popup
@@ -116,36 +118,38 @@
                 </th>
                 <th width="20%">
                   <div class="header-with-action">
-                    <div>实际重量</div>
+                    <div>{{ trans("实际重量") }}</div>
                     <q-btn
                       flat
                       dense
                       color="primary"
                       class="all-btn"
-                      label="全部"
+                      :label="trans('全部')"
                       size="sm"
                     >
                       <q-menu anchor="bottom middle" self="top middle">
                         <q-card style="min-width: 300px" class="q-pa-md">
-                          <div class="text-subtitle2 q-mb-sm">实际重量设置</div>
+                          <div class="text-subtitle2 q-mb-sm">
+                            {{ trans("实际重量设置") }}
+                          </div>
                           <div class="q-mb-md">
                             <q-radio
                               v-model="weightMode"
                               val="customer"
-                              label="应用客户申报重量"
+                              :label="trans('应用客户申报重量')"
                             />
                           </div>
                           <div class="q-mb-md">
                             <q-radio
                               v-model="weightMode"
                               val="manual"
-                              label="统一修改为"
+                              :label="trans('统一修改为')"
                             />
                             <q-input
                               v-if="weightMode === 'manual'"
                               outlined
                               v-model="weight"
-                              label="重量"
+                              :label="trans('重量')"
                               type="number"
                               dense
                               class="q-mt-sm"
@@ -160,13 +164,13 @@
                           <div class="row justify-end">
                             <q-btn
                               flat
-                              label="取消"
+                              :label="trans('取消')"
                               color="grey-7"
                               v-close-popup
                             />
                             <q-btn
                               unelevated
-                              label="确认"
+                              :label="trans('确认')"
                               color="primary"
                               @click="applyBatchWeight"
                               v-close-popup
@@ -195,7 +199,7 @@
                         SKU: {{ product.product_spec_sku }}
                       </div>
                       <div class="product-spec">
-                        名称: {{ product.product_spec_name }}
+                        {{ trans("名称") }}: {{ product.product_spec_name }}
                       </div>
                     </div>
                   </div>
@@ -238,7 +242,8 @@
                   </div>
                   <div class="dimension-info">
                     <div class="customer-dim">
-                      客户申报: {{ product.product_spec_size_length }}×{{
+                      {{ trans("客户申报") }}:
+                      {{ product.product_spec_size_length }}×{{
                         product.product_spec_size_width
                       }}×{{ product.product_spec_size_height }} cm
                     </div>
@@ -267,7 +272,8 @@
                   </div>
                   <div class="weight-info">
                     <div class="customer-weight">
-                      客户申报: {{ product.product_spec_weight }}g
+                      {{ trans("客户申报") }}:
+                      {{ product.product_spec_weight }}g
                     </div>
                   </div>
                 </td>
@@ -278,8 +284,14 @@
       </q-card-section>
 
       <q-card-actions align="right" class="bg-white">
-        <q-btn flat label="取消" color="grey-7" v-close-popup />
-        <q-btn unelevated label="确认" :loading="$store.state.btnLoading" color="primary" @click="handleConfirm" />
+        <q-btn flat :label="trans('取消')" color="grey-7" v-close-popup />
+        <q-btn
+          unelevated
+          :label="trans('确认')"
+          :loading="$store.state.btnLoading"
+          color="primary"
+          @click="handleConfirm"
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -289,6 +301,7 @@
 import { ref, reactive, computed, onMounted, watch } from "vue";
 import { useQuasar } from "quasar";
 import inboundApi from "@/api/inbound";
+import trans from "@/i18n";
 
 const props = defineProps({
   visible: {
@@ -322,7 +335,7 @@ const productColumns = [
   {
     name: "product",
     required: true,
-    label: "商品信息",
+    label: trans("商品信息"),
     align: "left",
     field: (row) => row,
     style: "width: 60%",
@@ -330,13 +343,13 @@ const productColumns = [
   {
     name: "quantity",
     align: "center",
-    label: "数量",
+    label: trans("数量"),
     field: "quantity",
   },
   {
     name: "box_numbers",
     align: "center",
-    label: "箱子",
+    label: trans("箱子"),
     field: "box_numbers",
   },
 ];
@@ -401,7 +414,7 @@ const applyBatchDimensions = () => {
 
   $q.notify({
     type: "positive",
-    message: "已应用批量尺寸设置",
+    message: trans("已应用批量尺寸设置"),
   });
 };
 
@@ -423,7 +436,7 @@ const applyBatchWeight = () => {
 
   $q.notify({
     type: "positive",
-    message: "已应用批量重量设置",
+    message: trans("已应用批量重量设置"),
   });
 };
 
@@ -440,7 +453,7 @@ const applyFullQuantity = () => {
 
   $q.notify({
     type: "positive",
-    message: "已应用预报数量作为收货数量",
+    message: trans("已应用预报数量作为收货数量"),
   });
 };
 
@@ -468,7 +481,7 @@ const handleConfirm = () => {
         isVisible.value = false;
         $q.notify({
           type: "positive",
-          message: "商品信息已更新",
+          message: trans("商品信息已更新"),
         });
       }
     });

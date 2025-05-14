@@ -1,30 +1,30 @@
 <template>
   <div>
     <q-form @submit="onSubmit" class="login-form">
-      <h2 class="login-title">注册</h2>
+      <h2 class="login-title">{{ trans("注册") }}</h2>
       <q-input
         v-model="ruleForm.name"
         filled
         type="text"
-        label="用户名"
+        :label="trans('用户名')"
         class="q-mb-md"
-        :rules="[(val) => !!val || '请输入用户名']"
+        :rules="[(val) => !!val || trans('请输入用户名')]"
       />
       <q-input
         v-model="ruleForm.email"
         filled
         type="email"
-        label="邮箱"
+        :label="trans('邮箱')"
         class="q-mb-md"
-        :rules="[(val) => !!val || '请输入邮箱']"
+        :rules="[(val) => !!val || trans('请输入邮箱')]"
       />
       <q-input
         v-model="ruleForm.password"
         filled
         :type="isPwd ? 'password' : 'text'"
-        label="密码"
+        :label="trans('密码')"
         class="q-mb-md"
-        :rules="[(val) => !!val || '请输入密码']"
+        :rules="[(val) => !!val || trans('请输入密码')]"
       >
         <template v-slot:append>
           <q-icon
@@ -39,9 +39,9 @@
         v-model="ruleForm.password_confirmation"
         filled
         :type="isPwd ? 'password' : 'text'"
-        label="确认密码"
+        :label="trans('确认密码')"
         class="q-mb-md"
-        :rules="[(val) => !!val || '请输入确认密码']"
+        :rules="[(val) => !!val || trans('请输入确认密码')]"
       >
         <template v-slot:append>
           <q-icon
@@ -69,7 +69,7 @@
       </div> -->
     </q-form>
     <q-btn
-      label="注册"
+      :label="trans('注册')"
       type="submit"
       color="primary"
       @click="onSubmit"
@@ -77,11 +77,11 @@
       :loading="$store.state.btnLoading"
     />
     <div class="login-options">
-      <span>已经有账号？</span>
+      <span>{{ trans("已经有账号？") }}</span>
       <q-btn
         flat
         color="primary"
-        label="登录"
+        :label="trans('登录')"
         class="register-link"
         @click="cancel"
       />
@@ -97,7 +97,7 @@ import api from "@/api/index";
 import warehouseApi from "@/api/warehouse";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-
+import trans from "@/i18n";
 const $q = useQuasar();
 const emit = defineEmits(["update:modelValue"]);
 const router = useRouter();
@@ -142,7 +142,7 @@ const cancel = () => {
 const onSubmit = () => {
   if (ruleForm.value.password !== ruleForm.value.password_confirmation) {
     $q.notify({
-      message: "两次密码不一致",
+      message: trans("两次密码不一致"),
       color: "negative",
     });
     return;
@@ -159,14 +159,14 @@ const onSubmit = () => {
         router.push("/");
       } else {
         $q.notify({
-          message: res.message || "注册失败",
+          message: res.message || trans("注册失败"),
           color: "negative",
         });
       }
     })
     .catch((error) => {
       $q.notify({
-        message: error?.message || "注册请求失败",
+        message: error?.message || trans("注册请求失败"),
         color: "negative",
       });
     });

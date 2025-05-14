@@ -2,7 +2,9 @@
   <q-dialog v-model="isOpen" persistent>
     <q-card style="width: 500px">
       <q-card-section class="row items-center">
-        <div class="text-h6">{{ isEdit ? "编辑标记" : "新增标记" }}</div>
+        <div class="text-h6">
+          {{ isEdit ? trans("编辑标记") : trans("新增标记") }}
+        </div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
@@ -12,7 +14,7 @@
           <div class="form-row">
             <div class="form-label">
               <span class="text-subtitle2"
-                >标记名称 <span class="text-red">*</span></span
+                >{{ trans("标记名称") }} <span class="text-red">*</span></span
               >
             </div>
             <div class="form-field">
@@ -22,8 +24,8 @@
                     outlined
                     dense
                     v-model="formData.name"
-                    placeholder="请输入"
-                    :rules="[(val) => !!val || '标记名称不能为空']"
+                    :placeholder="trans('请输入')"
+                    :rules="[(val) => !!val || trans('标记名称不能为空')]"
                   />
                 </div>
                 <div class="col-auto q-ml-sm">
@@ -52,7 +54,7 @@
 
           <div class="form-row" style="margin-top: 30px">
             <div class="form-label form-label-top">
-              <span class="text-subtitle2">备注</span>
+              <span class="text-subtitle2">{{ trans("备注") }}</span>
             </div>
             <div class="form-field">
               <q-input
@@ -60,7 +62,7 @@
                 v-model="formData.description"
                 type="textarea"
                 rows="4"
-                placeholder="请输入备注信息"
+                :placeholder="trans('请输入备注信息')"
               />
             </div>
           </div>
@@ -68,8 +70,13 @@
       </q-card-section>
 
       <q-card-actions align="right" class="q-px-md q-pb-md">
-        <q-btn flat label="取消" color="grey-7" v-close-popup />
-        <q-btn unelevated label="确认" color="primary" @click="onSubmit" />
+        <q-btn flat :label="trans('取消')" color="grey-7" v-close-popup />
+        <q-btn
+          unelevated
+          :label="trans('确认')"
+          color="primary"
+          @click="onSubmit"
+        />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -77,7 +84,7 @@
 
 <script setup>
 import { ref, defineProps, defineEmits, watch } from "vue";
-
+import trans from "@/i18n";
 const props = defineProps({
   visible: {
     type: Boolean,
