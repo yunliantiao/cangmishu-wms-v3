@@ -6,26 +6,26 @@
         <!-- 包裹类型选择 -->
         <div class="col-12">
           <div class="row items-center">
-            <div class="text-subtitle2 q-mr-md">包裹类型</div>
+            <div class="text-subtitle2 q-mr-md">{{ trans("包裹类型") }}</div>
             <q-checkbox
               v-model="packageTypes.allTypes"
               @update:model-value="checkAll"
-              label="全部"
+              :label="trans('全部')"
             />
             <q-checkbox
               @update:model-value="(value) => otherBox(value, 'singleUnit')"
               v-model="packageTypes.singleUnit"
-              label="单品单数"
+              :label="trans('单品单数')"
             />
             <q-checkbox
               @update:model-value="(value) => otherBox(value, 'multiProducts')"
               v-model="packageTypes.multiProducts"
-              label="单品多数"
+              :label="trans('单品多数')"
             />
             <q-checkbox
               v-model="packageTypes.multiSku"
               @update:model-value="(value) => otherBox(value, 'multiSku')"
-              label="多品混包"
+              :label="trans('多品混包')"
             />
           </div>
         </div>
@@ -44,7 +44,7 @@
             map-options
             emit-value
             clearable
-            label="客户"
+            :label="trans('客户')"
             class="filter-item"
           />
         </div>
@@ -61,7 +61,7 @@
             map-options
             emit-value
             clearable
-            label="全部平台"
+            :label="trans('全部平台')"
             class="select-width"
           />
         </div>
@@ -78,7 +78,7 @@
             @update:model-value="handleRefresh"
             emit-value
             clearable
-            label="全部订单来源"
+            :label="trans('全部订单来源')"
             class="select-width"
           />
         </div>
@@ -95,7 +95,7 @@
             map-options
             emit-value
             clearable
-            label="商品标记"
+            :label="trans('商品标记')"
             class="select-width"
           />
         </div>
@@ -112,7 +112,7 @@
             :multiple="true"
             emit-value
             clearable
-            label="商品分类"
+            :label="trans('商品分类')"
             class="select-width"
           />
         </div>
@@ -129,7 +129,7 @@
             emit-value
             :multiple="true"
             clearable
-            label="货区"
+            :label="trans('货区')"
             class="select-width"
           />
         </div>
@@ -139,7 +139,7 @@
             outlined
             dense
             v-model="skuMap.labels"
-            label="SKU*数量"
+            :label="trans('SKU*数量')"
             class="select-width"
           >
             <template v-slot:append>
@@ -172,7 +172,7 @@
             <q-btn
               outline
               color="primary"
-              label="重置"
+              :label="trans('重置')"
               class="filter-btn"
               @click="resetFilters"
             />
@@ -181,7 +181,7 @@
           <div class="col-auto">
             <q-btn
               color="primary"
-              label="查询"
+              :label="trans('查询')"
               class="filter-btn"
               @click="initList"
             />
@@ -207,19 +207,19 @@
         <div class="col-14 col-md-5">
           <div class="row q-col-gutter-md">
             <div class="col-4 text-center">
-              <div class="text-subtitle2">包裹数量</div>
+              <div class="text-subtitle2">{{ trans("包裹数量") }}</div>
               <div class="text-h4 text-primary">
                 {{ searchResult.total_package_count }}
               </div>
             </div>
             <div class="col-4 text-center">
-              <div class="text-subtitle2">商品种类</div>
+              <div class="text-subtitle2">{{ trans("商品种类") }}</div>
               <div class="text-h4 text-primary">
                 {{ searchResult.total_sku_count }}
               </div>
             </div>
             <div class="col-4 text-center">
-              <div class="text-subtitle2">商品数量</div>
+              <div class="text-subtitle2">{{ trans("商品数量") }}</div>
               <div class="text-h4 text-primary">
                 {{ searchResult.total_item_count }}
               </div>
@@ -230,7 +230,7 @@
             <div class="col-md-6">
               <div class="row items-center">
                 <div class="col-2 text-subtitle2">
-                  分类规则 <span class="text-red">*</span>
+                  {{ trans("分类规则") }} <span class="text-red">*</span>
                 </div>
                 <div class="col-8 flex">
                   <q-select
@@ -243,7 +243,7 @@
                     map-options
                     emit-value
                     @update:model-value="ruleChange"
-                    label="分类规则"
+                    :label="trans('分类规则')"
                     class="full-width"
                   >
                   </q-select>
@@ -251,7 +251,11 @@
                 <div class="col-2">
                   <q-btn flat round icon="help_outline">
                     <q-tooltip anchor="top middle" self="center middle">
-                      按系统规则分波即根据包裹类型分为单品波次和多品混包波次；按包裹汇总分波即为筛选的包裹合到一起分波，不按照包裹类型区分
+                      {{
+                        trans(
+                          "按系统规则分波即根据包裹类型分为单品波次和多品混包波次；按包裹汇总分波即为筛选的包裹合到一起分波，不按照包裹类型区分"
+                        )
+                      }}
                     </q-tooltip>
                   </q-btn>
                 </div>
@@ -261,7 +265,7 @@
             <div class="col-md-6">
               <div class="row items-center gap-20px">
                 <div class="col-2 text-subtitle2">
-                  包裹排序 <span class="text-red">*</span>
+                  {{ trans("包裹排序") }} <span class="text-red">*</span>
                 </div>
                 <div class="col-8">
                   <q-select
@@ -273,7 +277,7 @@
                     option-value="value"
                     map-options
                     emit-value
-                    label="排序"
+                    :label="trans('排序')"
                     class="full-width"
                   />
                 </div>
@@ -283,7 +287,7 @@
             <div class="col-md-6" v-if="settings.showOtherRules">
               <div class="row items-center gap-20px">
                 <div class="col-2 text-subtitle2">
-                  包裹数量上限 <span class="text-red">*</span>
+                  {{ trans("包裹数量上限") }} <span class="text-red">*</span>
                 </div>
                 <div class="col-8">
                   <q-input
@@ -291,7 +295,7 @@
                     :rules="[(val) => val > 0]"
                     dense
                     v-model="settings.package_limit"
-                    label="请输入"
+                    :label="trans('请输入')"
                   >
                   </q-input>
                 </div>
@@ -308,7 +312,7 @@
                 <div class="col-8">
                   <q-checkbox
                     v-model="settings.package_limit_not_enough"
-                    label="数量不足上线的包裹生成尾波"
+                    :label="trans('数量不足上线的包裹生成尾波')"
                   />
                 </div>
               </div>
@@ -320,10 +324,10 @@
               <q-btn
                 color="primary"
                 icon="done"
-                label="生成"
+                :label="trans('生成')"
                 @click="generateWave"
               />
-              <div class="q-mt-sm text-grey-7">前往设置波次规则 ></div>
+              <!-- <div class="q-mt-sm text-grey-7">前往设置波次规则 ></div> -->
             </div>
           </div>
         </div>
@@ -353,6 +357,7 @@ import GenerateWave from "./components/GenerateDialog.vue";
 import { getTodayDate, getThirtyDaysAgoDate } from "@/utils/common.js";
 import DatePickerNew from "@/components/DatePickerNew/Index.vue";
 import KeywordSearch from "@/components/KeywordSearch/Index.vue";
+import trans from "@/i18n";
 
 import { useQuasar } from "quasar";
 const q = useQuasar();
@@ -479,88 +484,88 @@ const platformOptions = ref([
 ]);
 const orderSourceOptions = ref([
   {
-    label: "ERP推送",
+    label: trans("ERP推送"),
     value: "erp_push",
   },
   {
-    label: "OMS创建",
+    label: trans("OMS创建"),
     value: "oms_create",
   },
   {
-    label: "平台推送",
+    label: trans("平台推送"),
     value: "platform_push",
   },
 ]);
 const productMarkOptions = ref([]);
 const productCategoryOptions = ref([
   {
-    label: "商品分类",
+    label: trans("商品分类"),
     value: "product_category",
   },
 ]);
 const regionOptions = ref([]);
 const timeOptions = ref([
   {
-    label: "生成时间",
+    label: trans("生成时间"),
     value: "created_at",
   },
 ]);
 const productSkuOptions = ref([
-  { label: "SKU 类型", value: "product_spec_sku" },
-  { label: "产品名称", value: "product_name" },
-  { label: "系统订单号", value: "system_order_number" },
-  { label: "ERP单号", value: "order_number" },
+  { label: trans("SKU 类型"), value: "product_spec_sku" },
+  { label: trans("产品名称"), value: "product_name" },
+  { label: trans("系统订单号"), value: "system_order_number" },
+  { label: trans("ERP单号"), value: "order_number" },
 ]);
 const templateOptions = ref([
   {
-    label: "筛选模板",
+    label: trans("筛选模板"),
     value: "template",
   },
 ]);
 const sortRuleOptions = ref([
   {
-    label: "系统规则",
+    label: trans("系统规则"),
     value: "system_rule",
   },
   {
-    label: "包裹汇总规则",
+    label: trans("包裹汇总规则"),
     value: "package_group_rule",
   },
 ]);
 const packageOrderOptions = ref([
   {
-    label: "按创建时间顺序排序",
+    label: trans("按创建时间顺序排序"),
     value: "created_at_sort",
   },
   {
-    label: "按SKU顺序排序",
+    label: trans("按SKU顺序排序"),
     value: "sku_sort",
   },
   {
-    label: "按货架位拣货优先级排序",
+    label: trans("按货架位拣货优先级排序"),
     value: "location_sort",
   },
   {
-    label: "按商品数量从大到小排序",
+    label: trans("按商品数量从大到小排序"),
     value: "quantity_sort",
   },
   {
-    label: "按货区编码顺序排序",
+    label: trans("按货区编码顺序排序"),
     value: "area_sort",
   },
 ]);
 
 const searchModeOptions = ref([
   {
-    label: "精确搜索",
+    label: trans("精确搜索"),
     value: "exact",
   },
   {
-    label: "模糊搜索",
+    label: trans("模糊搜索"),
     value: "fuzzy",
   },
   {
-    label: "前缀",
+    label: trans("前缀"),
     value: "prefix",
   },
 ]);
@@ -682,14 +687,14 @@ const initList = async () => {
   if (!params.start_date) {
     q.notify({
       color: "red",
-      message: "请选择开始日期",
+      message: trans("请选择开始日期"),
     });
     return;
   }
   if (!params.end_date) {
     q.notify({
       color: "red",
-      message: "请选择结束日期",
+      message: trans("请选择结束日期"),
     });
     return;
   }

@@ -1,13 +1,15 @@
 <template>
   <div class="scan-sign-page q-pa-md">
-    <div class="text-h5 text-center q-mb-lg">扫描签收</div>
+    <div class="text-h5 text-center q-mb-lg">{{ trans("扫描签收") }}</div>
 
     <div class="scan-container q-mx-auto" style="max-width: 800px">
       <!-- 扫描输入框 -->
       <q-input
         outlined
         v-model="scanCode"
-        placeholder="请扫描入库单号/退货单号/运单号/ERP单号/平台订单号/箱唛"
+        :placeholder="
+          trans('请扫描入库单号/退货单号/运单号/ERP单号/平台订单号/箱唛')
+        "
         class="q-mb-xs"
         ref="scanInput"
         @keyup.enter="handleScan"
@@ -18,7 +20,7 @@
       </q-input>
 
       <div class="text-caption text-grey q-mb-lg">
-        <q-icon name="info" size="xs" /> 请先切换成[EN]输入法
+        <q-icon name="info" size="xs" /> {{ trans("请先切换成[EN]输入法") }}
       </div>
 
       <!-- 结果展示区 -->
@@ -28,8 +30,10 @@
       >
         <div class="text-center q-mb-lg">
           <q-icon name="check_circle" color="green" size="md" class="q-mr-sm" />
-          <span class="text-h6 text-green">签收成功!</span>
-          <div class="text-subtitle2 q-mt-sm">单据状态已更为"待入库"！</div>
+          <span class="text-h6 text-green">{{ trans("签收成功!") }}</span>
+          <div class="text-subtitle2 q-mt-sm">
+            {{ trans("单据状态已更为“待入库”！") }}
+          </div>
         </div>
 
         <q-separator class="q-mb-md" />
@@ -37,53 +41,55 @@
         <!-- 详细信息表格 -->
         <div class="row q-col-gutter-md">
           <div class="col-6 col-md-3">
-            <div class="text-grey">客户</div>
+            <div class="text-grey">{{ trans("客户") }}</div>
             <div>{{ scanData.customer?.name }}</div>
           </div>
           <div class="col-6 col-md-3">
-            <div class="text-grey">入库单号</div>
+            <div class="text-grey">{{ trans("入库单号") }}</div>
             <div>{{ scanData.system_order_number }}</div>
           </div>
           <div class="col-6 col-md-3">
-            <div class="text-grey">自定义单号</div>
+            <div class="text-grey">{{ trans("自定义单号") }}</div>
             <div>{{ scanData.custom_order_number }}</div>
           </div>
 
           <div class="col-6 col-md-3">
-            <div class="text-grey">运单号</div>
+            <div class="text-grey">{{ trans("运单号") }}</div>
             <div>{{ scanData.tracking_number }}</div>
           </div>
           <div class="col-6 col-md-3">
-            <div class="text-grey">到仓方式</div>
+            <div class="text-grey">{{ trans("到仓方式") }}</div>
             <div>
               {{
-                scanData.arrival_method == "express_parcel" ? "快递" : "箱子"
+                scanData.arrival_method == "express_parcel"
+                  ? trans("快递")
+                  : trans("箱子")
               }}
             </div>
           </div>
 
           <div class="col-6 col-md-3">
-            <div class="text-grey">SKU种类</div>
+            <div class="text-grey">{{ trans("SKU种类") }}</div>
             <div>{{ itemList.length }}</div>
           </div>
           <div class="col-6 col-md-3" v-if="scanData.arrival_method == 'box'">
-            <div class="text-grey">箱数</div>
+            <div class="text-grey">{{ trans("箱数") }}</div>
             <div>{{ scanData.total_box_qty }}</div>
           </div>
           <div class="col-6 col-md-3">
-            <div class="text-grey">商品数量</div>
+            <div class="text-grey">{{ trans("商品数量") }}</div>
             <div>{{ totalQuantity }}</div>
           </div>
 
           <div class="col-12">
-            <div class="text-grey">商品信息</div>
+            <div class="text-grey">{{ trans("商品信息") }}</div>
             <div>{{ scanData.productInfo }}</div>
           </div>
         </div>
 
         <!-- 商品明细表格 -->
         <div class="q-mt-md">
-          <div class="text-subtitle2 q-mb-sm">商品明细</div>
+          <div class="text-subtitle2 q-mb-sm">{{ trans("商品明细") }}</div>
           <q-table
             :rows="itemList"
             :columns="itemColumns"
@@ -108,7 +114,10 @@
                 >
                   <div class="product-info">
                     <img
-                      :src="props.row.product_spec_image||'https://testoms.cangmishu.com/api/uploads/52331320-d813-40d8-a6db-3cf28f4938b1'"
+                      :src="
+                        props.row.product_spec_image ||
+                        'https://testoms.cangmishu.com/api/uploads/52331320-d813-40d8-a6db-3cf28f4938b1'
+                      "
                       class="product-img"
                       @error="handleImgError"
                     />
@@ -147,6 +156,7 @@ import { ref, onMounted, nextTick } from "vue";
 import { useQuasar } from "quasar";
 import { useRoute } from "vue-router";
 import inboundApi from "@/api/inbound";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 const scanCode = ref("");
@@ -164,28 +174,28 @@ const itemList = ref([]);
 const itemColumns = [
   {
     name: "product_spec_sku",
-    label: "SKU",
+    label: trans("SKU"),
     field: "product_spec_sku",
     align: "left",
     style: "width: 120px",
   },
   {
     name: "product_name",
-    label: "商品信息",
+    label: trans("商品信息"),
     field: "product_name",
     align: "left",
     style: "width: 300px; max-width: 300px",
   },
   {
     name: "quantity",
-    label: "数量",
+    label: trans("数量"),
     field: "quantity",
     align: "center",
     style: "width: 80px",
   },
   {
     name: "size",
-    label: "尺寸(cm)",
+    label: trans("尺寸(cm)"),
     field: (row) =>
       `${row.product_spec_size_length}×${row.product_spec_size_width}×${row.product_spec_size_height}`,
     align: "center",
@@ -193,7 +203,7 @@ const itemColumns = [
   },
   {
     name: "weight",
-    label: "重量(g)",
+    label: trans("重量(g)"),
     field: "product_spec_weight",
     align: "center",
     style: "width: 100px",

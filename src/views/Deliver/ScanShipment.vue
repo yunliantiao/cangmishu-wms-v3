@@ -47,8 +47,9 @@
         :rows-per-page="0"
       >
         <template v-slot:no-data>
-          <div class="full-width row flex-center q-gutter-sm q-pa-lg">
-            <span class="text-grey">No Data</span>
+          <div class="full-width row flex-center q-gutter-sm">
+            <q-icon size="2em" name="sentiment_dissatisfied" />
+            <span>暂无数据</span>
           </div>
         </template>
 

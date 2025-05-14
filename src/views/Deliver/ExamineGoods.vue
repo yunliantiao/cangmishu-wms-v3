@@ -61,8 +61,8 @@
         :columns="pageData.columns"
         row-key="id"
         flat
-        hide-bottom
         class="examine-table"
+        hide-pagination
         :loading="pageData.loading"
         :rows-per-page-options="[0]"
         :rows-per-page="0"

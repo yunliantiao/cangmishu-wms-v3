@@ -1,7 +1,7 @@
 <template>
   <div class="scan-page">
     <div class="scan-header">
-      <div class="title">扫描分拣</div>
+      <div class="title">{{ trans("扫描分拣") }}</div>
     </div>
 
     <div class="scan-input-container">
@@ -10,7 +10,7 @@
         <input
           type="text"
           class="scan-input"
-          placeholder="请扫描或输入波次号"
+          :placeholder="trans('请扫描或输入波次号')"
           @keyup.enter="search"
           v-model="scanValue"
           ref="scanInput"
@@ -18,7 +18,7 @@
       </div>
       <div class="input-hint">
         <q-icon name="info_outline" size="16px" color="grey-7" />
-        <span>请先切换为EN输入法</span>
+        <span>{{ trans("请先切换为EN输入法") }}</span>
       </div>
     </div>
   </div>
@@ -29,6 +29,7 @@ import { ref, onMounted, nextTick } from "vue";
 import outApi from "@/api/out.js";
 import Message from "@/utils/message.js";
 import { useRouter } from "vue-router";
+import trans from "@/i18n";
 
 const router = useRouter();
 const scanInput = ref(null);
@@ -43,7 +44,7 @@ onMounted(() => {
 const search = async () => {
   // WA0042E900011
   if (scanValue.value.length == 0) {
-    Message.notify("请扫描或输入波次号");
+    Message.notify(trans("请扫描或输入波次号"));
     return;
   }
   const { data } = await outApi.getOrderInfoByWaveOrder({
@@ -52,7 +53,7 @@ const search = async () => {
   console.log("data", data);
 
   if (!data.is_print_pick_label) {
-    Message.notify("该波次未打印拣货标签");
+    Message.notify(trans("该波次未打印拣货标签"));
     return;
   }
 

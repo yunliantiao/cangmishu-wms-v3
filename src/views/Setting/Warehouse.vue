@@ -16,7 +16,7 @@
         separator="horizontal"
         class="warehouse-table"
         hide-bottom
-        :loading="$store.state.btnLoading"
+        :loading="loading"
       >
         <template v-slot:body="props">
           <q-tr :props="props">
@@ -65,10 +65,15 @@
                 <q-btn
                   flat
                   round
-                  color="grey-7"
-                  icon="menu_open"
+                  class="table-icon"
+                  size="sm"
                   @click="toggleInbound(props.row)"
                 >
+                  <img
+                    src="@/assets/images/stop.png"
+                    v-if="props.row.allow_inbound"
+                  />
+                  <img src="@/assets/images/start.png" v-else />
                   <q-tooltip
                     >{{ props.row.allow_inbound ? "暂停收货" : "允许收货" }}
                   </q-tooltip>
@@ -76,10 +81,15 @@
                 <q-btn
                   flat
                   round
-                  color="grey-7"
-                  icon="exit_to_app"
+                  class="table-icon"
+                  size="sm"
                   @click="toggleOrder(props.row)"
                 >
+                  <img
+                    src="@/assets/images/stop-order.png"
+                    v-if="props.row.allow_order"
+                  />
+                  <img src="@/assets/images/start-order.png" v-else />
                   <q-tooltip
                     >{{ props.row.allow_order ? "暂停接单" : "允许接单" }}
                   </q-tooltip>
@@ -88,6 +98,7 @@
                   flat
                   round
                   color="grey-7"
+                  size="sm"
                   class="table-icon"
                   @click="showEditForm(props.row)"
                 >
@@ -127,6 +138,7 @@ const $q = useQuasar();
 const formVisible = ref(false);
 const editMode = ref(false);
 const currentWarehouse = ref({});
+const loading = ref(false);
 
 // 表格列定义
 const columns = [
@@ -185,6 +197,7 @@ const warehouseList = ref([]);
 
 // 获取仓库列表
 const getWarehouseList = async () => {
+  loading.value = true;
   try {
     const res = await warehouseApi.getWarehouseList();
     if (res.success) {
@@ -192,6 +205,8 @@ const getWarehouseList = async () => {
     }
   } catch (error) {
     console.error("获取仓库列表失败", error);
+  } finally {
+    loading.value = false;
   }
 };
 

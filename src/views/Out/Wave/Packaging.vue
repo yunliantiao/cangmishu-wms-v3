@@ -170,11 +170,12 @@
               <q-btn
                 flat
                 round
-                color="grey-7"
                 v-if="!props.row.is_print_shipping_label"
-                icon="print"
                 @click="handlePrint(props.row)"
+                class="table-icon"
+                size="sm"
               >
+                <img src="@/assets/images/print.png" />
                 <q-tooltip>打印物流面单</q-tooltip>
               </q-btn>
 

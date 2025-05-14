@@ -4,13 +4,13 @@
     <div class="scan-header rounded-borders q-pa-lg q-mb-md">
       <template v-if="!orderData">
         <div class="text-h5 text-weight-medium text-center q-mb-lg">
-          扫描收货
+          {{ trans("扫描收货") }}
         </div>
         <div class="scan-container q-mx-auto" style="max-width: 800px">
           <q-input
             outlined
             v-model="scanCode"
-            placeholder="请扫描入库单号、ERP单号、运单号或箱唛"
+            :placeholder="trans('请扫描入库单号、ERP单号、运单号或箱唛')"
             class="scan-input"
             ref="scanInput"
             @keyup.enter="handleScan"
@@ -25,26 +25,26 @@
             </template>
             <template v-slot:append>
               <q-icon name="help_outline" class="cursor-pointer">
-                <q-tooltip
-                  >支持扫描入库单号、ERP单号、运单号或箱唛编号</q-tooltip
-                >
+                <q-tooltip>{{
+                  trans("支持扫描入库单号、ERP单号、运单号或箱唛编号")
+                }}</q-tooltip>
               </q-icon>
             </template>
           </q-input>
           <div class="text-caption text-grey q-mt-sm">
             <q-icon name="info_outline" size="xs" class="q-mr-xs" />
-            请先切换成[EN]输入法
+            {{ trans("请先切换成[EN]输入法") }}
           </div>
         </div>
       </template>
-      
+
       <!-- 已扫描时显示标题和操作按钮 -->
       <template v-else>
         <div class="row justify-between items-center">
           <div class="text-h6">
-            扫描收货
+            {{ trans("扫描收货") }}
             <span class="text-primary q-ml-sm"
-              >ERP单号/入库单号 {{ inboundInfo }}</span
+              >{{ trans("ERP单号/入库单号") }} {{ inboundInfo }}</span
             >
           </div>
           <div class="row q-gutter-sm">
@@ -52,7 +52,7 @@
               color="grey-6"
               @click="resetOrder"
               icon="restart_alt"
-              label="重置"
+              :label="trans('重置')"
               flat
               class="bg-grey-2"
             />
@@ -68,7 +68,7 @@
             <q-btn
               color="primary"
               icon="content_paste_search"
-              label="新品维护"
+              :label="trans('新品维护')"
               outline
               :loading="$store.state.btnLoading"
               v-if="arrivalMethod == 'box' && currentProducts.length"
@@ -78,7 +78,7 @@
             <q-btn
               color="primary"
               icon="check_circle"
-              label="确认收货"
+              :label="trans('确认收货')"
               unelevated
               :loading="$store.state.btnLoading"
               @click="handleConfirm"
@@ -87,7 +87,7 @@
         </div>
       </template>
     </div>
-    
+
     <!-- 订单详情区域 -->
     <div
       v-if="orderData"
@@ -95,20 +95,20 @@
     >
       <div class="row q-col-gutter-lg">
         <div class="col-6 col-md-3">
-          <div class="info-label">客户</div>
+          <div class="info-label">{{ trans("客户") }}</div>
           <div class="info-value">{{ orderData?.customer?.name }}</div>
         </div>
         <div class="col-6 col-md-3">
-          <div class="info-label">运单号</div>
+          <div class="info-label">{{ trans("运单号") }}</div>
           <div class="info-value">{{ orderData.tracking_number }}</div>
         </div>
         <div class="col-6 col-md-3">
-          <div class="info-label">备注</div>
+          <div class="info-label">{{ trans("备注") }}</div>
           <div class="info-value">{{ orderData.remark || "--" }}</div>
         </div>
       </div>
     </div>
-    
+
     <!-- 按箱收货 -->
     <div
       v-if="orderData && arrivalMethod == 'express_parcel'"
@@ -128,8 +128,8 @@
         @product-scan="handleProductScanFromComponent"
         @update-products="handleUpdateProducts"
         ref="receivingParcelRef"
-        />
-      </div>
+      />
+    </div>
     <!-- 包裹收货 -->
     <div
       v-if="orderData && arrivalMethod == 'box'"
@@ -163,6 +163,7 @@ import ReceivingParcel from "./components/ReceivingParcel.vue";
 import ParcelReceipt from "./components/ParcelReceipt.vue";
 import NewProductDialog from "./components/NewProductDialog.vue";
 import { useRoute, useRouter } from "vue-router";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 const route = useRoute();
@@ -173,7 +174,7 @@ const scanCode = ref("");
 const scanInput = ref(null);
 const orderData = ref(null);
 const productScanCode = ref("");
-const scanType = ref("逐个扫描");
+const scanType = ref(trans("逐个扫描"));
 const selectedProducts = ref([]);
 const loading = ref(false);
 const scanning = ref(false);
@@ -296,7 +297,9 @@ const handleProductScan = async () => {
     } else {
       $q.notify({
         type: "warning",
-        message: `未找到商品: ${productScanCode.value}`,
+        message: trans(`未找到商品: {goodsName}`, {
+          goodsName: productScanCode.value,
+        }),
         position: "top",
       });
     }
@@ -304,7 +307,7 @@ const handleProductScan = async () => {
     console.error("商品扫描错误:", error);
     $q.notify({
       type: "negative",
-      message: "扫描失败，请重试",
+      message: trans("扫描失败，请重试"),
       position: "top",
     });
   } finally {
@@ -322,13 +325,13 @@ const handlePrint = async () => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     $q.notify({
       type: "positive",
-      message: "打印成功",
+      message: trans("打印成功"),
     });
   } catch (error) {
     console.error("打印错误:", error);
     $q.notify({
       type: "negative",
-      message: "打印失败，请重试",
+      message: trans("打印失败，请重试"),
     });
   } finally {
     printing.value = false;
@@ -381,7 +384,7 @@ const handleConfirm = async () => {
     if (!parcelReceiptRef.value) {
       $q.notify({
         type: "negative",
-        message: "未找到包裹收货组件",
+        message: trans("未找到包裹收货组件"),
       });
       return;
     }
@@ -403,15 +406,16 @@ const handleConfirm = async () => {
       if (boxNumberList.value.length) {
         $q.notify({
           type: "warning",
-          message:
-            "以下箱子收货数量小于申报数量，同一个箱子不支持多次收货，请确认！",
+          message: trans(
+            "以下箱子收货数量小于申报数量，同一个箱子不支持多次收货，请确认！"
+          ),
           html: true,
           position: "center",
           timeout: 0,
           actions: [
-            { label: "取消", color: "white", handler: () => {} },
+            { label: trans("取消"), color: "white", handler: () => {} },
             {
-              label: "确定",
+              label: trans("确定"),
               color: "white",
               handler: () => {
                 handleConfirmBox(parasm);
@@ -432,7 +436,7 @@ const handleConfirm = async () => {
   } else {
     return $q.notify({
       type: "negative",
-      message: "未知的收货方式",
+      message: trans("未知的收货方式"),
     });
   }
   handleConfirmBox(parasm);
@@ -452,14 +456,14 @@ const handleConfirmBox = (parasm) => {
       } else {
         $q.notify({
           type: "negative",
-          message: res.message || "确认失败，请重试",
+          message: res.message || trans("确认失败，请重试"),
         });
       }
     })
     .catch((err) => {
       $q.notify({
         type: "negative",
-        message: "系统异常，请稍后再试",
+        message: trans("系统异常，请稍后再试"),
       });
     });
 };
@@ -480,7 +484,6 @@ const resetOrder = () => {
   scanCode.value = "";
   products.value = [];
   characteristic.value = false;
-
 };
 
 const addShelfLocation = (row) => {
@@ -521,7 +524,7 @@ const applyBatchDimensions = () => {
   if (targetProducts.length === 0) {
     $q.notify({
       type: "warning",
-      message: "请先选择商品",
+      message: trans("请先选择商品"),
     });
     return;
   }
@@ -544,7 +547,7 @@ const applyBatchWeight = () => {
   if (targetProducts.length === 0) {
     $q.notify({
       type: "warning",
-      message: "请先选择商品",
+      message: trans("请先选择商品"),
     });
     return;
   }
@@ -557,7 +560,9 @@ const applyBatchWeight = () => {
 
   $q.notify({
     type: "positive",
-    message: `已为${targetProducts.length}个商品设置重量`,
+    message: trans(`已为{count}个商品设置重量`, {
+      count: targetProducts.length,
+    }),
   });
 
   showWeightDialog.value = false;
@@ -575,7 +580,7 @@ const handlePrintSelected = () => {
   // 实现打印选中商品逻辑
   $q.notify({
     type: "info",
-    message: "正在准备打印选中商品...",
+    message: trans("正在准备打印选中商品..."),
   });
 };
 
@@ -583,7 +588,7 @@ const handlePrintAll = () => {
   // 实现打印全部商品逻辑
   $q.notify({
     type: "info",
-    message: "正在准备打印全部商品...",
+    message: trans("正在准备打印全部商品..."),
   });
 };
 
@@ -598,7 +603,7 @@ const handleParcelPrint = (parcels) => {
   // 可以调用打印服务或API
   $q.notify({
     type: "info",
-    message: "正在准备打印包裹...",
+    message: trans("正在准备打印包裹..."),
   });
 };
 
@@ -618,7 +623,7 @@ const handleUpdateProductsFromDialog = (updatedProducts) => {
 
     $q.notify({
       type: "positive",
-      message: "商品信息已更新",
+      message: trans("商品信息已更新"),
     });
   }
 };
@@ -735,7 +740,7 @@ const getProductsFrom = () => {
     ) {
       return $q.notify({
         type: "negative",
-        message: "请填写尺寸和重量",
+        message: trans("请填写尺寸和重量"),
       });
     }
     extractedProducts.push({
@@ -804,8 +809,8 @@ onMounted(() => {
   border: 1px solid rgba(0, 0, 0, 0.12);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
-  
-  .order-info {
+
+.order-info {
   .info-label {
     color: rgba(0, 0, 0, 0.6);
     font-size: 0.875rem;
@@ -815,21 +820,21 @@ onMounted(() => {
   .info-value {
     font-size: 1rem;
     font-weight: 500;
-    }
   }
-  
-  .products-section {
+}
+
+.products-section {
   .section-header {
     border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   }
-  }
-  
+}
+
 // 表格和表单样式
 .q-table {
-    th {
-      font-weight: 500;
-      font-size: 14px;
-      color: rgba(0, 0, 0, 0.85);
+  th {
+    font-weight: 500;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.85);
     padding: 12px;
     background-color: #f5f7fa;
     white-space: nowrap;

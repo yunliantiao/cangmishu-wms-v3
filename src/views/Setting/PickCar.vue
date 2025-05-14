@@ -52,6 +52,9 @@
               *
               {{ props.row.size_height }}
             </q-td>
+            <q-td key="wave_number" :props="props">
+              {{ props.row.wave_number }}
+            </q-td>
             <q-td key="status" :props="props">
               {{ props.row.status == "available" ? "空闲" : "占用" }}
             </q-td>
@@ -132,6 +135,12 @@ const columns = [
     name: "size",
     label: "尺寸",
     field: "size",
+    align: "left",
+  },
+  {
+    name: "wave_number",
+    label: "波次",
+    field: "wave_number",
     align: "left",
   },
   {

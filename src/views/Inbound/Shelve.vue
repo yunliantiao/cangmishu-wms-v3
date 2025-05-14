@@ -2,12 +2,14 @@
   <div class="shelve-page">
     <!-- 扫描区域 -->
     <div v-if="!orderData" class="scan-header rounded-borders q-pa-lg q-mb-md">
-      <div class="text-h5 text-center text-weight-medium q-mb-lg">扫描上架</div>
+      <div class="text-h5 text-center text-weight-medium q-mb-lg">
+        {{ trans("扫描上架") }}
+      </div>
       <div class="scan-container q-mx-auto" style="max-width: 800px">
         <q-input
           outlined
           v-model="scanCode"
-          placeholder="请扫描入库单号、ERP单号、运单号或箱唛"
+          :placeholder="trans('请扫描入库单号、ERP单号、运单号或箱唛')"
           class="scan-input"
           ref="scanInput"
           @keyup.enter="handleScan"
@@ -24,13 +26,15 @@
           </template>
           <template v-slot:append>
             <q-icon name="help_outline" class="cursor-pointer" size="sm">
-              <q-tooltip>支持扫描入库单号、ERP单号、运单号或箱唛编号</q-tooltip>
+              <q-tooltip>{{
+                trans("支持扫描入库单号、ERP单号、运单号或箱唛编号")
+              }}</q-tooltip>
             </q-icon>
           </template>
         </q-input>
         <div class="text-caption text-grey q-mt-sm">
           <q-icon name="info_outline" size="xs" class="q-mr-xs" />
-          请先切换成[EN]输入法
+          {{ trans("请先切换成[EN]输入法") }}
         </div>
       </div>
     </div>
@@ -40,9 +44,9 @@
       <!-- 顶部导航 -->
       <div class="row scan-header q-mb-md q-pa-lg justify-between items-center">
         <div class="text-h6">
-          扫描上架
+          {{ trans("扫描上架") }}
           <span class="text-primary q-ml-sm"
-            >ERP单号/入库单号 {{ inboundInfo }}</span
+            >{{ trans("ERP单号/入库单号") }} {{ inboundInfo }}</span
           >
         </div>
         <div class="row q-gutter-sm">
@@ -50,14 +54,14 @@
             color="grey-6"
             @click="resetOrder"
             icon="restart_alt"
-            label="重置"
+            :label="trans('重置')"
             flat
             class="bg-grey-2"
           />
           <q-btn
             color="primary"
             icon="print"
-            label="打印上架单"
+            :label="trans('打印上架单')"
             outline
             :loading="$store.state.btnLoading"
             @click="handlePrint"
@@ -66,7 +70,7 @@
           <q-btn
             color="primary"
             icon="check_circle"
-            label="确认上架"
+            :label="trans('确认上架')"
             unelevated
             :loading="$store.state.btnLoading"
             @click="handleConfirm"
@@ -79,17 +83,17 @@
       <div class="order-info bg-white q-pa-md rounded-borders">
         <div class="row q-col-gutter-lg">
           <div class="col-6 col-md-3">
-            <div class="info-label">客户</div>
+            <div class="info-label">{{ trans("客户") }}</div>
             <div class="info-value">{{ orderData.customer.name }}</div>
           </div>
           <div class="col-6 col-md-3">
-            <div class="info-label">运单号</div>
+            <div class="info-label">{{ trans("运单号") }}</div>
             <div class="info-value">
               {{ orderData.tracking_number || "--" }}
             </div>
           </div>
           <div class="col-6 col-md-3">
-            <div class="info-label">备注</div>
+            <div class="info-label">{{ trans("备注") }}</div>
             <div class="info-value">{{ orderData.remark || "--" }}</div>
           </div>
         </div>
@@ -104,7 +108,7 @@
           <q-radio
             v-model="arrivalMethod"
             val="express_parcel"
-            label="按商品上架"
+            :label="trans('按商品上架')"
             class="q-mr-lg"
             @click="handleShelveMode"
             :disable="ShelfMode"
@@ -113,7 +117,7 @@
             @click="handleShelveMode"
             v-model="arrivalMethod"
             val="box"
-            label="按箱上架"
+            :label="trans('按箱上架')"
             :disable="ShelfMode"
           />
         </div>
@@ -127,7 +131,9 @@
         <div class="q-pa-md">
           <div class="row justify-between q-mb-md">
             <div class="row items-center">
-              <span class="q-mr-sm">选择 {{ selectedProducts.length }} </span>
+              <span class="q-mr-sm"
+                >{{ trans("选择") }} {{ selectedProducts.length }}
+              </span>
             </div>
             <div class="row items-center">
               <!-- <q-checkbox
@@ -169,7 +175,7 @@
             selection="multiple"
             separator="horizontal"
             :loading="loading"
-            no-data-label="暂无数据"
+            :no-data-label="trans('暂无数据')"
             binary-state-sort
             hide-bottom
           >
@@ -178,7 +184,10 @@
               <q-td :props="props">
                 <div class="row items-start">
                   <img
-                    :src="props.row.product_spec_image||'https://testoms.cangmishu.com/api/uploads/52331320-d813-40d8-a6db-3cf28f4938b1'"
+                    :src="
+                      props.row.product_spec_image ||
+                      'https://testoms.cangmishu.com/api/uploads/52331320-d813-40d8-a6db-3cf28f4938b1'
+                    "
                     width="50"
                     height="50"
                     class="product-img q-mr-md"
@@ -200,7 +209,9 @@
 
             <!-- 上架货架位列 -->
             <template v-slot:header-cell-shelfLocation="props">
-              <q-th :props="props" class="text-center"> 上架货架位 </q-th>
+              <q-th :props="props" class="text-center">
+                {{ trans("上架货架位") }}
+              </q-th>
             </template>
 
             <template v-slot:body-cell-shelfLocation="props">
@@ -226,7 +237,7 @@
                     new-value-mode="add"
                     class="location-select"
                     style="width: 150px"
-                    placeholder="请选择"
+                    :placeholder="trans('请选择')"
                   />
                   <q-btn
                     :disabled="props.row.shelfLocations.length <= 1"
@@ -247,7 +258,7 @@
                     dense
                     color="primary"
                     icon="add"
-                    label="添加货架位"
+                    :label="trans('添加货架位')"
                     v-if="!isSuccess"
                     class="q-mt-xs"
                     @click="addShelfLocation(props.row)"
@@ -260,13 +271,13 @@
             <!-- 上架数量列 -->
             <template v-slot:header-cell-shelfQty="props">
               <q-th :props="props" class="text-center">
-                <div>上架数量</div>
+                <div>{{ trans("上架数量") }}</div>
                 <q-btn
                   flat
                   dense
                   color="primary"
                   class="all-btn"
-                  label="全部"
+                  :label="trans('全部')"
                   :disable="isSuccess"
                   @click="applyBatchProductQuantity"
                 />
@@ -295,7 +306,7 @@
                     "
                     class="quantity-input"
                     style="width: 70px"
-                    placeholder="数量"
+                    :placeholder="trans('数量')"
                   />
                 </div>
               </q-td>
@@ -340,7 +351,9 @@
               </q-input>
             </div> -->
             <div class="row items-center">
-              <span class="q-mr-sm">选择 {{ selectedProducts.length }} </span>
+              <span class="q-mr-sm"
+                >{{ trans("选择") }} {{ selectedProducts.length }}
+              </span>
             </div>
           </div>
 
@@ -352,7 +365,7 @@
             :pagination="boxPagination"
             separator="horizontal"
             :loading="loading"
-            no-data-label="暂无数据"
+            :no-data-label="trans('暂无数据')"
             binary-state-sort
             hide-bottom
             v-model:selected="selectedProducts"
@@ -398,7 +411,7 @@
                   map-options
                   emit-value
                   style="width: 150px"
-                  placeholder="请选择"
+                  :placeholder="trans('请选择')"
                 />
               </q-td>
             </template>
@@ -428,7 +441,7 @@
                   type="number"
                   class="quantity-input"
                   style="width: 70px"
-                  placeholder="数量"
+                  :placeholder="trans('数量') "
                 />
               </q-td>
             </template> -->
@@ -436,7 +449,7 @@
         </div>
       </div>
     </template>
-    </div>
+  </div>
 </template>
 
 <script setup>
@@ -446,6 +459,7 @@ import inboundApi from "@/api/inbound";
 import settingApi from "@/api/setting";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 const store = useStore();
@@ -465,8 +479,8 @@ const selectedProducts = ref([]);
 const searchQuery = ref("");
 const productFilter = ref("all");
 const productFilterOptions = [
-  { label: "全部", value: "all" },
-  { label: "商品SKU", value: "sku" },
+  { label: trans("全部"), value: "all" },
+  { label: trans("商品SKU"), value: "sku" },
 ];
 const showShelfedItems = ref(false);
 
@@ -506,38 +520,38 @@ const productColumns = [
   {
     name: "product",
     required: true,
-    label: "商品",
+    label: trans("商品"),
     align: "left",
     field: (row) => row,
   },
   {
     name: "requestQty",
     align: "center",
-    label: "申报数量",
+    label: trans("申报数量"),
     field: "quantity",
   },
   {
     name: "receivedQty",
     align: "center",
-    label: "收货数量",
+    label: trans("收货数量"),
     field: "received_quantity",
   },
   {
     name: "shelvedQty",
     align: "center",
-    label: "已上架",
+    label: trans("已上架"),
     field: "shelf_quantity",
   },
   {
     name: "shelfLocation",
     align: "center",
-    label: "上架货架位",
+    label: trans("上架货架位"),
     field: (row) => row.shelfLocations,
   },
   {
     name: "shelfQty",
     align: "center",
-    label: "上架数量",
+    label: trans("上架数量"),
     field: (row) => {
       return row.shelfLocations.reduce(
         (sum, loc) => sum + (loc.quantity || 0),
@@ -551,33 +565,33 @@ const boxColumns = [
   {
     name: "boxNumber",
     required: true,
-    label: "箱号",
+    label: trans("箱号"),
     align: "left",
     field: "box_number",
   },
   {
     name: "dimensions",
     align: "center",
-    label: "箱子尺寸",
+    label: trans("箱子尺寸"),
     field: (row) => row,
   },
   {
     name: "weight",
     align: "center",
-    label: "箱子重量",
+    label: trans("箱子重量"),
     field: "weight",
     format: (val) => `${val || "--"} g`,
   },
   {
     name: "items",
     align: "center",
-    label: "商品SKU",
+    label: trans("商品SKU"),
     field: (row) => row.items,
   },
   {
     name: "shelfLocation",
     align: "center",
-    label: "上架货架位",
+    label: trans("上架货架位"),
     field: (row) => row.shelf_location,
   },
   //   {
@@ -645,7 +659,9 @@ const handleShelfQtyUpdate = (row, maxQuantity, index) => {
     row.shelfLocations[index].quantity = availableQty;
     $q.notify({
       type: "warning",
-      message: `超出可上架数量，当前货架位最多可上架${availableQty}个`,
+      message: trans("超出可上架数量，当前货架位最多可上架{count}个", {
+        count: availableQty,
+      }),
       position: "top",
     });
   }
@@ -894,7 +910,7 @@ const applyBatchBoxQuantity = () => {
 
   $q.notify({
     type: "positive",
-    message: "已应用商品数量作为上架数量",
+    message: trans("已应用商品数量作为上架数量"),
   });
 };
 
@@ -935,7 +951,7 @@ const applyBatchProductQuantity = () => {
 
   $q.notify({
     type: "positive",
-    message: "已应用待上架数量（收货数量 - 已上架数量）作为上架数量",
+    message: trans("已应用待上架数量（收货数量 - 已上架数量）作为上架数量"),
   });
 };
 

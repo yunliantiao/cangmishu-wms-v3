@@ -14,7 +14,7 @@
             map-options
             emit-value
             clearable
-            label="订单来源"
+            :label="trans('订单来源')"
             class="filter-item"
           />
         </div>
@@ -29,7 +29,7 @@
             map-options
             emit-value
             clearable
-            label="平台"
+            :label="trans('平台')"
             class="filter-item"
           />
         </div>
@@ -44,7 +44,7 @@
             clearable
             v-model="pageParams.order_status"
             :options="orderStatusOptions"
-            label="订单状态"
+            :label="trans('订单状态')"
             class="filter-item"
           />
         </div>
@@ -59,7 +59,7 @@
             map-options
             emit-value
             clearable
-            label="拦截状态"
+            :label="trans('拦截状态')"
             class="filter-item"
           />
         </div>
@@ -86,14 +86,14 @@
           <q-btn
             outline
             color="primary"
-            label="重置"
+            :label="trans('重置')"
             class="q-mr-sm filter-btn"
             @click="resetSearch"
           />
           <q-btn
             color="primary"
             class="filter-btn"
-            label="查询"
+            :label="trans('查询')"
             :loading="$store.state.btnLoading"
             @click="getOutboundOrder"
           />
@@ -129,10 +129,11 @@
                     <span
                       class="info-item q-mr-md hover-copy"
                       @click="$copy(props.row.system_order_number)"
-                      >包裹号: {{ props.row.system_order_number }}</span
+                      >{{ trans("包裹号") }}:
+                      {{ props.row.system_order_number }}</span
                     >
                     <span class="info-item q-mr-md"
-                      >客户: {{ props.row.customer.name }}</span
+                      >{{ trans("客户") }}: {{ props.row.customer.name }}</span
                     >
                     <span class="info-item q-mr-md">
                       {{ props.row.source }}</span
@@ -193,7 +194,7 @@
             </q-td>
             <q-td key="time" :props="props">
               <div class="text-grey-8">
-                <div>创建: {{ props.row.created_at }}</div>
+                <div>{{ trans("创建") }}: {{ props.row.created_at }}</div>
               </div>
             </q-td>
             <q-td key="status" :props="props">
@@ -208,8 +209,8 @@
                 <div>
                   {{
                     isPrint(props.row, "is_print_pick_label")
-                      ? "已打印"
-                      : "待打单"
+                      ? trans("已打印")
+                      : trans("待打单")
                   }}
                 </div>
               </div>
@@ -225,7 +226,7 @@
                 >
                   <img src="@/assets/images/print.png" />
 
-                  <q-tooltip>打印拣货单</q-tooltip>
+                  <q-tooltip>{{ trans("打印拣货单") }}</q-tooltip>
                 </q-btn>
                 <q-btn
                   flat
@@ -236,7 +237,7 @@
                 >
                   <img src="@/assets/images/print.png" />
 
-                  <q-tooltip>打印面单</q-tooltip>
+                  <q-tooltip>{{ trans("打印面单") }}</q-tooltip>
                 </q-btn>
                 <q-btn
                   flat
@@ -246,7 +247,7 @@
                   class="table-icon"
                 >
                   <img src="@/assets/images/detail.png" />
-                  <q-tooltip>详情</q-tooltip>
+                  <q-tooltip>{{ trans("详情") }}</q-tooltip>
                 </q-btn>
               </div>
             </q-td>
@@ -256,7 +257,7 @@
         <template v-slot:no-data="{ icon, filter }">
           <div class="full-width row flex-center q-gutter-sm">
             <q-icon size="2em" name="sentiment_dissatisfied" />
-            <span> 无数据 </span>
+            <span>{{ trans("无数据") }}</span>
             <q-icon size="2em" :name="filter ? 'filter_b_and_w' : icon" />
           </div>
         </template>
@@ -290,6 +291,7 @@ import OrderDetailsDialog from "./components/OrderDetailsDialog.vue";
 import outApi from "@/api/out";
 import DatePickerNew from "@/components/DatePickerNew/Index.vue";
 import KeywordSearch from "@/components/KeywordSearch/Index.vue";
+import trans from "@/i18n";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -321,30 +323,30 @@ const isStatusActive = (status) => {
 
 const orderSourceOptions = ref([
   {
-    label: "ERP推送",
+    label: trans("ERP推送"),
     value: "erp_push",
   },
   {
-    label: "OMS创建",
+    label: trans("OMS创建"),
     value: "oms_create",
   },
   {
-    label: "平台推送",
+    label: trans("平台推送"),
     value: "platform_push",
   },
 ]);
 
 const receivedStatusOptions = ref([
   {
-    label: "待收货",
+    label: trans("待收货"),
     value: "pending",
   },
   {
-    label: "部分收货",
+    label: trans("部分收货"),
     value: "partially_received",
   },
   {
-    label: "已收货",
+    label: trans("已收货"),
     value: "fully_received",
   },
 ]);
@@ -370,44 +372,44 @@ const platformOptions = [
 
 const orderStatusOptions = ref([
   {
-    label: "待发货",
+    label: trans("待发货"),
     value: "pending_shipment",
   },
   {
-    label: "拣货中",
+    label: trans("拣货中"),
     value: "picking",
   },
   {
-    label: "已拣货",
+    label: trans("已拣货"),
     value: "picked",
   },
   {
-    label: "已发货",
+    label: trans("已发货"),
     value: "shipped",
   },
   {
-    label: "异常",
+    label: trans("异常"),
     value: "exception",
   },
 ]);
 
 const interceptStatusOptions = ref([
   {
-    label: "已拦截",
+    label: trans("已拦截"),
     value: "intercept_requested",
   },
   {
-    label: "未拦截",
+    label: trans("未拦截"),
     value: "no_intercept",
   },
 ]);
 const timeFilterOptions = [
   {
-    label: "创建时间",
+    label: trans("创建时间"),
     value: "created_at",
   },
-  { label: "发货时间", value: "shipped_at" },
-  { label: "取消时间", value: "cancel_at" },
+  { label: trans("发货时间"), value: "shipped_at" },
+  { label: trans("取消时间"), value: "cancel_at" },
 ];
 
 const searchFieldOptions = [
@@ -415,13 +417,13 @@ const searchFieldOptions = [
     label: "sku",
     value: "sku",
   },
-  { label: "订单号", value: "order_number" },
+  { label: trans("订单号"), value: "order_number" },
   {
-    label: "包裹号",
+    label: trans("包裹号"),
     value: "package_number",
   },
-  { label: "追踪号", value: "tracking_number" },
-  { label: "ERP单号", value: "erp_package_number" },
+  { label: trans("追踪号"), value: "tracking_number" },
+  { label: trans("ERP单号"), value: "erp_package_number" },
 ];
 
 const isPrint = (row, type) => {
@@ -457,7 +459,7 @@ const pageParams = reactive({
 const columns = [
   {
     name: "packageInfo",
-    label: "包裹信息",
+    label: trans("包裹信息"),
     field: "packageInfo",
     align: "left",
   },
@@ -469,31 +471,31 @@ const columns = [
   //   },
   {
     name: "printStatus",
-    label: "面单打印",
+    label: trans("面单打印"),
     field: "printStatus",
     align: "center",
   },
   {
     name: "recipient",
-    label: "收货人&地区",
+    label: trans("收货人&地区"),
     field: "recipient",
     align: "left",
   },
   {
     name: "time",
-    label: "时间",
+    label: trans("时间"),
     field: "time",
     align: "left",
   },
   {
     name: "status",
-    label: "状态",
+    label: trans("状态"),
     field: "status",
     align: "center",
   },
   {
     name: "actions",
-    label: "操作",
+    label: trans("操作"),
     field: "actions",
     align: "center",
   },
@@ -504,14 +506,14 @@ const productDetailColumns = [
   {
     name: "product",
     required: true,
-    label: "商品信息",
+    label: trans("商品信息"),
     align: "left",
     field: (row) => row,
     style: "width: 40%",
   },
   {
     name: "dimensions",
-    label: "商品实际规格",
+    label: trans("商品实际规格"),
     align: "center",
     field: (row) =>
       `${
@@ -524,20 +526,20 @@ const productDetailColumns = [
   },
   {
     name: "weight",
-    label: "实际重量",
+    label: trans("实际重量"),
     align: "center",
     field: (row) =>
       `${row.product_spec_actual_weight || row.product_spec_weight || "--"} g`,
   },
   {
     name: "location",
-    label: "货架位",
+    label: trans("货架位"),
     align: "center",
     field: (row) => row.location || row.storage_location || "--",
   },
   {
     name: "quantity",
-    label: "数量",
+    label: trans("数量"),
     align: "center",
     field: "quantity",
   },
@@ -586,8 +588,8 @@ const getOutboundOrder = () => {
 const handleSetPendingShipment = () => {
   if (!selectedRows.value.length) {
     $q.notify({
-      title: "提示",
-      message: "请选择包裹",
+      title: trans("提示"),
+      message: trans("请选择包裹"),
       type: "negative",
       position: "top",
     });
@@ -638,14 +640,14 @@ const handlePicking = (item) => {
     if (res.success) {
       window.open(res.data.data, "_blank");
       $q.dialog({
-        title: "提示",
-        message: "拣货单打印结果确认是否打印成功？",
+        title: trans("提示"),
+        message: trans("拣货单打印结果确认是否打印成功？"),
         ok: {
-          label: "是",
+          label: trans("是"),
           color: "primary",
         },
         cancel: {
-          label: "否",
+          label: trans("否"),
           color: "grey",
         },
         persistent: true,
@@ -675,14 +677,14 @@ const handlePrint = (type) => {
       if (res.success) {
         window.open(res.data.data, "_blank");
         $q.dialog({
-          title: "提示",
-          message: "面单打印结果确认是否打印成功？",
+          title: trans("提示"),
+          message: trans("面单打印结果确认是否打印成功？"),
           ok: {
-            label: "是",
+            label: trans("是"),
             color: "primary",
           },
           cancel: {
-            label: "否",
+            label: trans("否"),
             color: "grey",
           },
           persistent: true,
