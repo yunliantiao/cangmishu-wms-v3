@@ -5,37 +5,43 @@
       <div class="col-12 col-xs-12 col-sm-8 col-md-8">
         <div class="top-bar">
           <div class="item">
-            <div class="label">已预报</div>
-            <div class="value">1000</div>
+            <div class="label">{{ trans('已预报') }}</div>
+            <div class="value">
+              {{ reportObj.inbound_orders_count.reported_count }}
+            </div>
           </div>
           <div class="line"></div>
           <div class="item">
-            <div class="label">已预报</div>
-            <div class="value">1000</div>
+            <div class="label">{{ trans('运输中') }}</div>
+            <div class="value">
+              {{ reportObj.inbound_orders_count.in_transit_count }}
+            </div>
           </div>
           <div class="line"></div>
           <div class="item">
-            <div class="label">已预报</div>
-            <div class="value">1000</div>
+            <div class="label">{{ trans('待入库') }}</div>
+            <div class="value"></div>
           </div>
           <div class="line"></div>
           <div class="item">
-            <div class="label">已预报</div>
-            <div class="value">1000</div>
+            <div class="label">{{ trans('入库中') }}</div>
+            <div class="value">
+              {{ reportObj.inbound_orders_count.inbound_processing_count }}
+            </div>
           </div>
         </div>
       </div>
       <div class="col-12 col-xs-12 col-sm-4 col-md-4">
         <div class="contact-box bg-white">
-          <div class="text-subtitle1 q-mb-md">联系我们</div>
+          <div class="text-subtitle1 q-mb-md">{{ trans('联系我们') }}</div>
           <div class="line q-mb-md"></div>
-          <div class="q-mb-md row items-center">
+          <div class="q-mb-md row items-center" @click="onClickPhone('15576601706')">
             <q-icon name="phone" size="xs" class="q-mr-sm" />
-            <span>+86 15576601706</span>
+            <span class="hover-copy">+86 15576601706</span>
           </div>
-          <div class="row items-center">
+          <div class="row items-center" @click="onClickEmail('Hubinjie@Tongxiao.Tech')">
             <q-icon name="email" size="xs" class="q-mr-sm" />
-            <span>Hubinjie@Tongxiao.Tech</span>
+            <span class="hover-copy">Hubinjie@Tongxiao.Tech</span>
           </div>
         </div>
       </div>
@@ -59,8 +65,8 @@
           <q-card-section class="p-0 m-b-16">
             <div class="row items-center justify-between">
               <div>
-                <span class="text-h6 font-bold">单量统计</span>
-                <span class="text-grey-7">(单)</span>
+                <span class="text-h6 font-bold">{{ trans('单量统计') }}</span>
+                <span class="text-grey-7">({{ trans('单') }})</span>
               </div>
 
               <!-- <q-btn-toggle
@@ -97,14 +103,18 @@
             <div class="row type-btn q-col-gutter-sm">
               <div>
                 <div class="item item-1 col-12 col-sm-4 col-md-3">
-                  <div class="label">一件代发</div>
-                  <div class="value">1360</div>
+                  <div class="label">{{ trans('一件代发') }}</div>
+                  <div class="value">
+                    {{ chartDataObj.seriesData1.reduce((a, b) => a + b, 0) }}
+                  </div>
                 </div>
               </div>
               <div>
                 <div class="item item-2 col-12 col-sm-4 col-md-3">
-                  <div class="label">标准入库</div>
-                  <div class="value">704</div>
+                  <div class="label">{{ trans('标准入库') }}</div>
+                  <div class="value">
+                    {{ chartDataObj.seriesData2.reduce((a, b) => a + b, 0) }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -118,7 +128,7 @@
         <q-card class="common-card b-rd-16 notice-box" v-show="false">
           <q-card-section class="p-20">
             <div class="flex-between-center">
-              <div class="text-subtitle1 font-bold">系统公告</div>
+              <div class="text-subtitle1 font-bold">{{ trans('系统公告') }}</div>
               <q-btn flat color="primary" size="sm" icon="chevron_right" dense />
             </div>
             <q-scroll-area class="notice-list">
@@ -132,7 +142,7 @@
 
         <q-card class="common-card b-rd-16 p-20 down-box">
           <q-card-section class="p-0 m-b-20">
-            <div class="text-subtitle1 font-bold">下载PDA</div>
+            <div class="text-subtitle1 font-bold">{{ trans('下载') }} PDA</div>
           </q-card-section>
           <q-card-section class="down-list p-0">
             <div class="item">
@@ -154,7 +164,7 @@
         <q-card class="capacity-box common-card b-rd-16 p-20">
           <q-card-section class="p-0 q-mb-md">
             <div class="flex-between-center">
-              <span class="text-h6 font-bold">库容</span>
+              <span class="text-h6 font-bold">{{ trans('库容') }}</span>
               <q-select
                 v-model="selectedOption"
                 :options="[{ label: 'SKU数量', value: 'sku' }]"
@@ -170,12 +180,12 @@
           <q-card-section class="p-0">
             <div class="row">
               <div class="col-12 col-xs-12 col-sm-4 col-md-4">
-                <div class="statistic-label q-mb-md">在库总数(个)</div>
+                <div class="statistic-label q-mb-md">{{ trans('在库总数') }} ({{ trans('个') }})</div>
                 <div class="text-h5 font-bold q-mb-md">123</div>
 
-                <div class="capacity-item capacity-item-1">商品库存</div>
-                <div class="capacity-item capacity-item-2">B2B库存</div>
-                <div class="capacity-item capacity-item-3">FBA退货库存</div>
+                <div class="capacity-item capacity-item-1">{{ trans('商品库存') }}</div>
+                <div class="capacity-item capacity-item-2">{{ trans('B2B库存') }}</div>
+                <div class="capacity-item capacity-item-3">{{ trans('FBA退货库存') }}</div>
               </div>
               <div class="col-12 col-xs-12 col-sm-8 col-md-8">
                 <div id="capacity-chart" style="width: 100%; height: 200px"></div>
@@ -188,7 +198,7 @@
         <q-card class="help-box common-card b-rd-16 p-20">
           <q-card-section class="p-0">
             <div class="flex-between-center q-mb-md">
-              <div class="text-subtitle1 font-bold">帮助中心</div>
+              <div class="text-subtitle1 font-bold">{{ trans('帮助中心') }}</div>
               <q-btn flat color="primary" size="sm" icon="chevron_right" dense />
             </div>
             <q-scroll-area class="help-list">
@@ -208,11 +218,13 @@
 </template>
 
 <script>
+import homeApi from '@/api/home';
 import Dialog from '@/components/Dialog.vue';
 import WarehouseForm from '@/components/WarehouseForm.vue';
+import trans from '@/i18n';
 import * as echarts from 'echarts';
 import { Notify } from 'quasar';
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue';
 
 export default {
   name: 'PanelPage',
@@ -231,7 +243,7 @@ export default {
       localStorage.setItem('warehouseId', data.id);
       dialogVisible.value = false;
       Notify.create({
-        message: '仓库创建成功',
+        message: trans('仓库创建成功'),
         color: 'positive',
       });
       window.location.reload();
@@ -240,35 +252,35 @@ export default {
     const totalList = computed(() => {
       return [
         {
-          label: '待生成/待打单',
-          value: 0,
-        },
-        {
           label: '待发货',
-          value: 0,
-        },
-        {
-          label: '获取运单号',
-          value: 0,
+          value: reportObj.outbound_orders_count.pending_shipment_count,
         },
         {
           label: '待移货',
-          value: 0,
+          value: reportObj.outbound_orders_count.pending_transfer_count,
         },
         {
           label: '待拣货',
-          value: 0,
+          value: reportObj.outbound_orders_count.pending_pick_count,
         },
         {
           label: '待包装',
-          value: 0,
+          value: reportObj.outbound_orders_count.pending_pack_count,
+        },
+        {
+          label: '包装中',
+          value: reportObj.outbound_orders_count.packing_count,
+        },
+        {
+          label: '异常订单',
+          value: reportObj.outbound_orders_count.exception_count,
         },
       ];
     });
     const timeRange = ref('week');
 
     // 图表数据-订单量
-    const chartData = ref({
+    const chartData = computed(() => ({
       grid: {
         left: 10,
         right: 10,
@@ -288,7 +300,7 @@ export default {
       },
       xAxis: {
         type: 'category',
-        data: ['2022-07-01', '2022-07-02', '2022-07-03', '2022-07-04', '2022-07-05', '2022-07-06', '2022-07-07'],
+        data: chartDataObj.value.xAxisData,
         axisTick: {
           alignWithLabel: true,
           inside: true,
@@ -311,7 +323,7 @@ export default {
           name: '一件代发',
           type: 'line',
           smooth: true,
-          data: [260, 150, 270, 230, 380, 330, 400],
+          data: chartDataObj.value.seriesData1,
           areaStyle: {
             opacity: 0.7, // 增加不透明度以更好显示渐变
             color: {
@@ -337,7 +349,7 @@ export default {
           name: '标准入库',
           type: 'line',
           smooth: true,
-          data: [70, 20, 30, 60, 150, 110, 160],
+          data: chartDataObj.value.seriesData2,
           areaStyle: {
             opacity: 0.7,
             color: {
@@ -359,7 +371,7 @@ export default {
           },
         },
       ],
-    });
+    }));
     const chartRef = ref(null);
     let chartInstance = null;
     const initChart = () => {
@@ -383,7 +395,7 @@ export default {
 
     const chartRef2 = ref(null);
     let chartInstance2 = null;
-    const chartData2 = ref({
+    const chartData2 = reactive({
       color: ['#5745C5', '#69C096', '#409EFF'], // 在这里定义颜色数组
       series: [
         {
@@ -417,7 +429,7 @@ export default {
       chartRef2.value = document.getElementById('capacity-chart');
       if (!chartRef2.value) return;
       chartInstance2 = echarts.init(chartRef2.value);
-      chartInstance2.setOption(chartData2.value);
+      chartInstance2.setOption(chartData2);
     };
 
     // 公告列表
@@ -455,16 +467,99 @@ export default {
     ]);
     // 时间选项
     const timeOptions = [
-      { label: '昨天', value: 'yesterday' },
-      { label: '今天', value: 'today' },
-      { label: '星期', value: 'week' },
-      { label: '月', value: 'month' },
-      { label: '年', value: 'year' },
+      { label: trans('昨天'), value: 'yesterday' },
+      { label: trans('今天'), value: 'today' },
+      { label: trans('星期'), value: 'week' },
+      { label: trans('月'), value: 'month' },
+      { label: trans('年'), value: 'year' },
     ];
+
+    // 所有数据
+    const reportObj = reactive({
+      // 扣费记录统计
+      deduction_records_count: {
+        pending_count: 0, // 待处理扣费数量
+        rejected_count: 0, // 已拒绝扣费数量
+        approved_count: 0, // 已通过扣费数量
+      },
+      // 入库订单统计
+      inbound_orders_count: {
+        reported_count: 0, // 已预报入库单数量
+        in_transit_count: 0, // 运输中入库单数量
+        inbound_processing_count: 0, // 入库处理中数量
+      },
+      // 出库订单统计
+      outbound_orders_count: {
+        pending_shipment_count: 0, // 待发货数量
+        pending_transfer_count: 0, // 待移货数量
+        pending_pick_count: 0, // 待拣货数量
+        pending_pack_count: 0, // 待包装数量
+        packing_count: 0, // 包装中数量
+        exception_count: 0, // 异常订单数量
+      },
+      // 充值记录统计
+      recharge_records_count: {
+        pending_count: 0, // 待处理充值数量
+        rejected_count: 0, // 已拒绝充值数量
+        approved_count: 0, // 已通过充值数量
+      },
+    });
+    const getReport = () => {
+      homeApi.getHomeReport().then((res) => {
+        Object.assign(reportObj, res.data);
+      });
+    };
+
+    // 图表数据
+    const chartObj = reactive({
+      inbound_orders: [],
+      outbound_orders: [],
+    });
+    const chartDataObj = ref({
+      xAxisData: [],
+      seriesData1: [],
+      seriesData2: [],
+    });
+    const getHomeChart = () => {
+      homeApi.getHomeChart().then((res) => {
+        Object.assign(chartObj, res.data);
+        setChartData();
+      });
+    };
+    const setChartData = () => {
+      chartDataObj.value.xAxisData = chartObj.inbound_orders?.map((item) => item.date) || [];
+      chartDataObj.value.seriesData1 = chartObj.inbound_orders?.map((item) => item.count) || [];
+      chartDataObj.value.seriesData2 = chartObj.outbound_orders?.map((item) => item.count) || [];
+      initChart();
+      initChart2();
+    };
+
+    const onClickEmail = (email) => {
+      window.location.href = `mailto:${email}`;
+    };
+
+    const onClickPhone = (phone) => {
+      // 检查是否是移动设备
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+      if (isMobile) {
+        // 移动设备使用 tel: 协议
+        window.location.href = `tel:+86${phone}`;
+      } else {
+        // PC端复制到剪贴板
+        navigator.clipboard.writeText(phone).then(() => {
+          Notify.create({
+            message: trans('电话号码已复制到剪贴板'),
+            color: 'positive',
+          });
+        });
+      }
+    };
+
     onMounted(() => {
+      getReport();
+      getHomeChart();
       nextTick(() => {
-        initChart();
-        initChart2();
         window.addEventListener('resize', handleResize);
       });
     });
@@ -482,6 +577,11 @@ export default {
       noticeList,
       timeOptions,
       selectedOption,
+      trans,
+      reportObj,
+      chartDataObj,
+      onClickEmail,
+      onClickPhone,
       handleWarehouseCreated,
       confirm,
     };

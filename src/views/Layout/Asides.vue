@@ -1,6 +1,6 @@
 <template>
   <div class="fixed-sidebar" :class="{ 'sidebar-hidden': !isOpen }">
-    <q-list padding class="rounded-borders route-menu">
+    <q-list v-show="isOpen" padding class="rounded-borders route-menu">
       <!-- 遍历路由 -->
       <template v-for="route in routerMap" :key="route.path">
         <!-- 当有多个子菜单时显示可展开的父菜单 -->
@@ -60,6 +60,10 @@
         </q-item>
       </template>
     </q-list>
+
+    <div v-if="isOpen" class="fix-menu" @click="toggleLeftDrawer">
+      <q-icon name="chevron_left" />
+    </div>
   </div>
 </template>
 
@@ -120,11 +124,17 @@ export default {
       return children.filter((child) => child.meta && child.meta.level === 2);
     }
 
+    // 切换侧边栏状态
+    function toggleLeftDrawer() {
+      store.dispatch('toggleLeftDrawer');
+    }
+
     return {
       isOpen,
       isCollapse,
       isMobile,
       routerMap,
+      toggleLeftDrawer,
       getLevel2Routes,
       isRouteActive,
       hasMultipleChildren,
@@ -147,6 +157,25 @@ export default {
   border-right: 1px solid rgba(0, 31, 77, 0.06);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+  overflow: visible;
+
+  .fix-menu {
+    position: absolute;
+    right: -10px;
+    top: 100px;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #d1d5db;
+    color: #2c3e50;
+    transition: all 0.3s ease-in-out;
+  }
 }
 
 .sidebar-hidden {
@@ -171,6 +200,7 @@ export default {
   background-color: #ffffff;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   padding: 20px;
+  transition: all 0.25s ease;
 
   // 父级菜单项,会与子级route-item重叠,所以用!important
   .menu-header {
