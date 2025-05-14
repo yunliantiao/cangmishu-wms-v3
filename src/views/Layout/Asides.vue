@@ -16,7 +16,8 @@
         >
           <template v-slot:header>
             <div class="menu-header-content">
-              <q-icon :name="route.icon" size="sm" class="menu-icon" />
+              <!-- <q-icon :name="route.icon" size="sm" class="menu-icon" /> -->
+              <img :src="getImg(route)" alt="" class="img-icon" />
               <div class="menu-title">
                 {{ route.meta?.name || route.name || route.path }}
               </div>
@@ -57,7 +58,8 @@
           active-class="q-item--active"
         >
           <div class="menu-header-content">
-            <q-icon :name="route.icon" size="sm" class="menu-icon" />
+            <!-- <q-icon :name="route.icon" size="sm" class="menu-icon" /> -->
+            <img :src="getImg(route)" alt="" class="img-icon" />
             <div class="menu-title">
               {{ route.meta?.name || route.name || route.path }}
             </div>
@@ -134,9 +136,20 @@ export default {
       store.dispatch("toggleLeftDrawer");
     }
 
-    const toPath = (path, route) => {
-      console.log("path", path);
-      console.log("route", route);
+    const getImg = (route) => {
+      let imgUrl = "";
+      // 多个子路由时,只显示灰色
+      if (hasMultipleChildren(route)) {
+        imgUrl = `/src/assets/images/asides/${route.icon}.png`;
+        console.log(`imgUrl -->`, imgUrl);
+      } else {
+        // 单个时,需要判断是否为激活状态,显示高亮
+        const isActive = isRouteActive(route);
+        imgUrl = `/src/assets/images/asides/${route.icon}${
+          isActive ? "-select" : ""
+        }.png`;
+      }
+      return imgUrl;
     };
 
     return {
@@ -144,7 +157,7 @@ export default {
       isCollapse,
       isMobile,
       routerMap,
-      toPath,
+      getImg,
       toggleLeftDrawer,
       getLevel2Routes,
       isRouteActive,
@@ -187,7 +200,7 @@ export default {
     color: #2c3e50;
     transition: all 0.3s ease-in-out;
     &:hover {
-      background-color: rgba($color: #2c3e50, $alpha: 0.5);
+      background-color: rgba($color: #2c3e50, $alpha: 0.8);
       color: #ffffff;
     }
   }
@@ -285,6 +298,11 @@ export default {
     .q-icon {
       color: $primary !important;
     }
+  }
+
+  .img-icon {
+    width: 24px;
+    height: 24px;
   }
 }
 
