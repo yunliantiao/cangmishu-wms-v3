@@ -6,7 +6,7 @@ export default [
     path: "deliver",
     component: () => import("@/views/Layout/Container.vue"),
     redirect: "/deliver/examine/goods",
-    icon: "print",
+    icon: "send",
     meta: {
       name: trans("发货管理"),
       icon: "",
