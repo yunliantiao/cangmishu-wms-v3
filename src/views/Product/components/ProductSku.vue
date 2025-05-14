@@ -59,12 +59,13 @@
                   style="object-fit: cover"
                 />
               </div>
-              <div class="ellipsis flex-c-start-start gap-10">
+              <div class="flex-c-start-start gap-10" style="white-space: normal; width: 300px">
                 <div class="text-primary hover-copy" @click="$copy(props.row.sku)">
                   SKU: {{ props.row?.sku || '-' }}
                 </div>
-                <div class="ellipsis font-bold">
+                <div class="text-overflow-1">
                   {{ props.row?.product?.name || '-' }}
+                  <q-tooltip>{{ props.row?.product?.name }}</q-tooltip>
                 </div>
                 <div>规格: {{ props.row?.name || '-' }}</div>
               </div>
@@ -116,8 +117,8 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits, defineExpose } from 'vue';
 import { useQuasar } from 'quasar';
+import { defineEmits, defineExpose, defineProps, ref } from 'vue';
 import { useRouter } from 'vue-router';
 // import { useI18n } from "vue-i18n";
 // import EditSkuDialog from './EditSkuDialog.vue';
@@ -157,6 +158,7 @@ const columns = [
     label: 'SKU信息',
     align: 'left',
     field: (row) => row?.sku || '',
+    style: 'width: 20%',
   },
   {
     name: 'customer',
@@ -319,13 +321,6 @@ defineExpose({
   //     background: #f5f5f5;
   //   }
   // }
-
-  .ellipsis {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 300px;
-  }
 }
 
 .preview-box {

@@ -59,128 +59,42 @@
               class="select-width"
             />
           </div>
-          <div class="row col-auto justify-center" v-if="currentTab == 'flow'">
-            <q-input
-              outlined
-              dense
-              clearable
-              readonly
-              v-model="start_date"
-              label="开始时间"
-              class="date-input start-date"
-            >
-              <template v-slot:append>
-                <q-icon name="event" class="cursor-pointer">
-                  <q-popup-proxy
-                    cover
-                    transition-show="scale"
-                    transition-hide="scale"
-                  >
-                    <q-date
-                      v-model="start_date"
-                      mask="YYYY-MM-DD"
-                      class="date-picker"
-                      color="primary"
-                      today-btn
-                    />
-                  </q-popup-proxy>
-                </q-icon>
-              </template>
-            </q-input>
-            <div class="date-separator">~</div>
-            <q-input
-              outlined
-              dense
-              clearable
-              readonly
-              v-model="end_date"
-              label="结束时间"
-              class="date-input end-date"
-            >
-              <template v-slot:append>
-                <q-icon name="event" class="cursor-pointer">
-                  <q-popup-proxy
-                    cover
-                    transition-show="scale"
-                    transition-hide="scale"
-                  >
-                    <q-date
-                      v-model="end_date"
-                      mask="YYYY-MM-DD"
-                      class="date-picker"
-                      color="primary"
-                      today-btn
-                    />
-                  </q-popup-proxy>
-                </q-icon>
-              </template>
-            </q-input>
+          <!-- 时间筛选 -->
+          <div class="col-auto" v-if="currentTab == 'flow'">
+            <DatePickerNew
+              v-model:start_date="start_date"
+              v-model:end_date="end_date"
+              :showSelect="false"
+            ></DatePickerNew>
           </div>
+
+          <!-- 关键词搜索模块 -->
           <div class="col-auto">
-            <q-select
-              outlined
-              dense
-              v-model="pageParams.search_type"
-              :options="searchType"
-              option-value="value"
-              option-label="label"
-              emit-value
-              map-options
-              clearable
-              label="搜索模式"
-              class="select-width"
-            />
+            <KeywordSearch
+              v-model:search_mode="pageParams.search_mode"
+              v-model:search_type="pageParams.search_type"
+              v-model:search_value="pageParams.keywords"
+              :searchTypeList="searchType"
+            ></KeywordSearch>
           </div>
+
           <div class="col-auto">
-            <q-input
-              outlined
-              dense
-              v-model="pageParams.keywords"
-              label="关键字"
-              style="width: 250px"
-              clearable
-              class="select-width"
-            >
-              <template v-slot:append>
-                <q-icon name="search" />
-              </template>
-            </q-input>
-          </div>
-          <div class="col-auto">
-            <q-select
-              outlined
-              dense
-              v-model="pageParams.search_mode"
-              :options="searchTypeOptions"
-              clearable
-              map-options
-              emit-value
-              option-value="value"
-              label="搜索模式"
-              class="select-width"
-            />
-          </div>
-          <div class="col-auto">
-            <q-btn
-              outline
-              color="grey"
-              label="重置"
-              class="q-mr-sm"
-              @click="resetSearch"
-            />
+            <q-btn outline color="grey" label="重置" class="q-mr-sm h-40" @click="resetSearch" />
             <q-btn
               color="primary"
               :loading="$store.state.btnLoading"
               icon="search"
+              class="h-40"
               label="搜索"
-              @click="search"
+              @click="onSearch"
             />
           </div>
         </div>
       </div>
 
       <q-tab-panels v-model="currentTab" animated>
-        <q-tab-panel name="list" class="q-pa-none page_table_action">
+        <!-- TODO: 库存清单 -->
+        <q-tab-panel name="list" class="q-pa-none">
           <!-- <div class="tab-buttons q-py-xs">
             <q-tabs
               v-model="inventoryTab"
@@ -198,12 +112,13 @@
             </q-tabs>
           </div> -->
 
-          <!-- 操作按钮区域 -->
-          <div class="action-bar q-px-sm page_table_action q-py-xs">
-            <div class="row items-center justify-between">
-              <div>
-                <span class="q-mr-sm">选择 {{ selectedInventory.length }}</span>
-                <!-- <q-btn
+          <div class="main-table">
+            <!-- 操作按钮区域 -->
+            <div class="action-bar q-py-md">
+              <div class="row items-center justify-between">
+                <div>
+                  <span class="q-mr-sm">选择 {{ selectedInventory.length }}</span>
+                  <!-- <q-btn
                   color="primary"
                   flat
                   icon="get_app"
@@ -217,314 +132,272 @@
                   label="打印标签"
                   class="q-ml-sm"
                 /> -->
+                </div>
+              </div>
+            </div>
+
+            <!-- 库存清单表格 -->
+            <div class="inventory-table bg-white">
+              <q-table
+                :rows="inventoryList"
+                :columns="inventoryColumns"
+                row-key="id"
+                flat
+                bordered
+                separator="horizontal"
+                selection="multiple"
+                class="flow-table-style"
+                v-model:selected="selectedInventory"
+                hide-pagination
+                :loading="$store.state.btnLoading"
+                :pagination="{
+                  page: listParams.page,
+                  rowsPerPage: 0,
+                }"
+              >
+                <template v-slot:header="props">
+                  <q-tr :props="props">
+                    <q-th auto-width>
+                      <q-checkbox v-model="props.selected" />
+                    </q-th>
+                    <q-th
+                      v-for="col in props.cols"
+                      :key="col.name"
+                      :props="props"
+                      :class="{
+                        'text-right': col.align === 'right',
+                      }"
+                    >
+                      {{ col.label }}
+                    </q-th>
+                  </q-tr>
+                </template>
+
+                <template v-slot:body="props">
+                  <q-tr :props="props" class="inventory-row">
+                    <q-td auto-width>
+                      <q-checkbox v-model="props.selected" />
+                    </q-td>
+                    <q-td key="product_info" style="width: 35%" :props="props">
+                      <div class="product-info">
+                        <img
+                          :src="
+                            props.row.image ||
+                            'https://testoms.cangmishu.com/api/uploads/52331320-d813-40d8-a6db-3cf28f4938b1'
+                          "
+                          class="product-img"
+                        />
+                        <div class="info-container">
+                          <div class="text-primary hover-copy" @click="$copy(props.row.sku)">
+                            SKU: {{ props.row?.sku }}
+                          </div>
+                          <div class="text-overflow-1">
+                            {{ props.row?.product_name }}
+                            <q-tooltip>{{ props.row?.product_name }}</q-tooltip>
+                          </div>
+                          <div>规格: {{ props.row?.name }}</div>
+                        </div>
+                      </div>
+                    </q-td>
+                    <q-td key="customer_info" :props="props">
+                      {{ props.row.customer.name }}
+                    </q-td>
+                    <q-td key="in_transit_qty" :props="props">
+                      <div class="cursor-pointer hover-number" @click="showDrawer('in_transit', props.row)">
+                        {{ props.row.in_transit_qty }}
+                        <q-icon name="arrow_drop_down" size="xs" class="hover-icon" />
+                      </div>
+                    </q-td>
+                    <q-td key="pending_receipt_qty" :props="props">
+                      <div class="cursor-pointer hover-number" @click="showDrawer('pending_receipt', props.row)">
+                        {{ props.row.pending_receipt_qty }}
+                        <q-icon name="arrow_drop_down" size="xs" class="hover-icon" />
+                      </div>
+                    </q-td>
+                    <q-td key="pending_shelf_qty" :props="props">
+                      <div class="cursor-pointer hover-number" @click="showDrawer('pending_shelf', props.row)">
+                        {{ props.row.pending_shelf_qty }}
+                        <q-icon name="arrow_drop_down" size="xs" class="hover-icon" />
+                      </div>
+                    </q-td>
+                    <q-td key="locked_qty" :props="props">
+                      <div class="cursor-pointer hover-number" @click="showDrawer('locked', props.row)">
+                        {{ props.row.locked_qty }}
+                        <q-icon name="arrow_drop_down" size="xs" class="hover-icon" />
+                      </div>
+                    </q-td>
+                    <q-td key="available_qty" :props="props">
+                      {{ props.row.available_qty }}
+                    </q-td>
+                    <q-td key="defective_qty" :props="props">
+                      {{ props.row.defective_qty }}
+                    </q-td>
+                    <q-td key="total_qty" :props="props">
+                      {{ props.row.total_qty }}
+                    </q-td>
+                  </q-tr>
+                </template>
+                <template v-slot:no-data>
+                  <div class="full-width row flex-center q-gutter-sm">
+                    <q-icon size="2em" name="sentiment_dissatisfied" />
+                    <span>暂无数据</span>
+                  </div>
+                </template>
+              </q-table>
+              <div class="q-pa-md">
+                <Pagination
+                  :total-count="listParams.total"
+                  v-model:page="listParams.page"
+                  v-model:rows-per-page="listParams.per_page"
+                  @page-change="getInventoryList"
+                />
               </div>
             </div>
           </div>
-
-          <!-- 库存清单表格 -->
-          <div class="inventory-table bg-white">
-            <q-table
-              :rows="inventoryList"
-              :columns="inventoryColumns"
-              row-key="id"
-              flat
-              bordered
-              separator="horizontal"
-              selection="multiple"
-              v-model:selected="selectedInventory"
-              hide-pagination
-              class="inventory-table-style"
-              :loading="$store.state.btnLoading"
-              :pagination="{
-                page: listParams.page,
-                rowsPerPage: 0,
-              }"
-            >
-              <template v-slot:header="props">
-                <q-tr :props="props">
-                  <q-th auto-width>
-                    <q-checkbox v-model="props.selected" />
-                  </q-th>
-                  <q-th
-                    v-for="col in props.cols"
-                    :key="col.name"
-                    :props="props"
-                    :class="{
-                      'text-right': col.align === 'right',
-                    }"
-                  >
-                    {{ col.label }}
-                  </q-th>
-                </q-tr>
-              </template>
-
-              <template v-slot:body="props">
-                <q-tr :props="props" class="inventory-row">
-                  <q-td auto-width>
-                    <q-checkbox v-model="props.selected" />
-                  </q-td>
-                  <q-td key="product_info" :props="props">
-                    <div class="product-info">
-                      <img
-                        :src="
-                          props.row.image ||
-                          'https://testoms.cangmishu.com/api/uploads/52331320-d813-40d8-a6db-3cf28f4938b1'
-                        "
-                        class="product-img"
-                      />
-                      <div class="info-container">
-                        <div class="sku-code">SKU：{{ props.row.sku }}</div>
-                        <div class="product-name">
-                          名称：{{ props.row.product_name }}
-                        </div>
-                        <div class="sku-code">规格：{{ props.row.name }}</div>
-                      </div>
-                    </div>
-                  </q-td>
-                  <q-td key="customer_info" :props="props">
-                    {{ props.row.customer.name }}
-                  </q-td>
-                  <q-td key="in_transit_qty" :props="props">
-                    <div
-                      class="cursor-pointer hover-number"
-                      @click="showDrawer('in_transit', props.row)"
-                    >
-                      {{ props.row.in_transit_qty }}
-                      <q-icon
-                        name="arrow_drop_down"
-                        size="xs"
-                        class="hover-icon"
-                      />
-                    </div>
-                  </q-td>
-                  <q-td key="pending_receipt_qty" :props="props">
-                    <div
-                      class="cursor-pointer hover-number"
-                      @click="showDrawer('pending_receipt', props.row)"
-                    >
-                      {{ props.row.pending_receipt_qty }}
-                      <q-icon
-                        name="arrow_drop_down"
-                        size="xs"
-                        class="hover-icon"
-                      />
-                    </div>
-                  </q-td>
-                  <q-td key="pending_shelf_qty" :props="props">
-                    <div
-                      class="cursor-pointer hover-number"
-                      @click="showDrawer('pending_shelf', props.row)"
-                    >
-                      {{ props.row.pending_shelf_qty }}
-                      <q-icon
-                        name="arrow_drop_down"
-                        size="xs"
-                        class="hover-icon"
-                      />
-                    </div>
-                  </q-td>
-                  <q-td key="locked_qty" :props="props">
-                    <div
-                      class="cursor-pointer hover-number"
-                      @click="showDrawer('locked', props.row)"
-                    >
-                      {{ props.row.locked_qty }}
-                      <q-icon
-                        name="arrow_drop_down"
-                        size="xs"
-                        class="hover-icon"
-                      />
-                    </div>
-                  </q-td>
-                  <q-td
-                    key="available_qty"
-                    :props="props"
-                    class="text-weight-bold"
-                  >
-                    {{ props.row.available_qty }}
-                  </q-td>
-                  <q-td key="defective_qty" :props="props">
-                    {{ props.row.defective_qty }}
-                  </q-td>
-                  <q-td key="total_qty" :props="props">
-                    {{ props.row.total_qty }}
-                  </q-td>
-                </q-tr>
-              </template>
-              <template v-slot:no-data>
-                <div class="full-width row flex-center q-gutter-sm">
-                  <q-icon size="2em" name="sentiment_dissatisfied" />
-                  <span>暂无数据</span>
-                </div>
-              </template>
-            </q-table>
-            <div class="q-pa-md">
-              <Pagination
-                :total-count="listParams.total"
-                v-model:page="listParams.page"
-                v-model:rows-per-page="listParams.per_page"
-                @page-change="getInventoryList"
-              />
-            </div>
-          </div>
         </q-tab-panel>
-        <!-- 库存流水面板 -->
-        <q-tab-panel name="flow" class="q-pa-none page_table_action">
-          <!-- 操作按钮区域 -->
-          <div class="action-bar q-px-sm q-py-xs">
-            <div class="row items-center justify-between">
-              <div>
-                <span class="q-mr-sm">选择 {{ selectedFlow.length }}</span>
-                <!-- <q-btn
+        <!-- TODO: 库存流水面板 -->
+        <q-tab-panel name="flow" class="q-pa-none">
+          <div class="main-table">
+            <!-- 操作按钮区域 -->
+            <div class="action-bar q-py-md">
+              <div class="row items-center justify-between">
+                <div>
+                  <span class="q-mr-sm">选择 {{ selectedFlow.length }}</span>
+                  <!-- <q-btn
                   color="primary"
                   flat
                   icon="get_app"
                   label="导出"
                   class="q-ml-sm"
                 /> -->
-              </div>
-              <div>
-                <!-- <q-btn outline color="primary" icon="today" label="创建时间">
+                </div>
+                <div>
+                  <!-- <q-btn outline color="primary" icon="today" label="创建时间">
                   <q-icon name="arrow_downward" size="xs" />
                 </q-btn> -->
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- 库存流水表格 -->
-          <div class="flow-table bg-white">
-            <q-table
-              :rows="flowList"
-              :columns="flowColumns"
-              row-key="id"
-              flat
-              bordered
-              separator="horizontal"
-              selection="multiple"
-              v-model:selected="selectedFlow"
-              hide-pagination
-              class="inventory-table-style flow-table-style"
-              :loading="$store.state.btnLoading"
-              :pagination="{
-                page: flowParams.page,
-                rowsPerPage: 0,
-              }"
-            >
-              <template v-slot:header="props">
-                <q-tr :props="props" class="flow-header-row">
-                  <q-th auto-width>
-                    <q-checkbox v-model="props.selected" />
-                  </q-th>
-                  <q-th
-                    v-for="col in props.cols"
-                    :key="col.name"
-                    :props="props"
-                  >
-                    {{ col.label }}
-                  </q-th>
-                </q-tr>
-              </template>
-
-              <template v-slot:body="props">
-                <!-- Group header row -->
-                <template v-if="showGroupHeader(props.row, props.pageIndex)">
-                  <q-tr class="group-header-row">
-                    <q-td colspan="10">
-                      <div class="row group-header items-center">
-                        <div class="col-12 flex justify-between">
-                          <div>
-                            <span class="info-item q-mr-md"
-                              >客户: {{ props.row.customer.name }}</span
-                            >
-                            <span class="info-item q-mr-md"
-                              >类型: {{ props.row.type }}</span
-                            >
-                          </div>
-                          <div>
-                            <span class="info-item"
-                              >时间: {{ props.row.created_at }}</span
-                            >
-                          </div>
-                        </div>
-                      </div>
-                    </q-td>
+            <!-- 库存流水表格 -->
+            <div class="flow-table bg-white">
+              <q-table
+                :rows="flowList"
+                :columns="flowColumns"
+                row-key="id"
+                flat
+                separator="horizontal"
+                selection="multiple"
+                v-model:selected="selectedFlow"
+                hide-pagination
+                class="flow-table-style"
+                :loading="$store.state.btnLoading"
+                :pagination="{
+                  page: flowParams.page,
+                  rowsPerPage: 0,
+                }"
+              >
+                <template v-slot:header="props">
+                  <q-tr :props="props" class="flow-header-row">
+                    <q-th auto-width>
+                      <q-checkbox v-model="props.selected" />
+                    </q-th>
+                    <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                      {{ col.label }}
+                    </q-th>
                   </q-tr>
                 </template>
 
-                <!-- Data row -->
-                <q-tr :props="props" class="data-row">
-                  <q-td auto-width>
-                    <q-checkbox v-model="props.selected" />
-                  </q-td>
-                  <q-td key="product_info" style="width: 200px" :props="props">
-                    <div>
-                      SKU: {{ props.row.sku }}<br />
-                      名称: {{ props.row.product_name }}<br />
-                      规格：{{ props.row.name }}
-                    </div>
-                  </q-td>
-                  <q-td key="relevance_number" :props="props">
-                    <div>
-                      包裹号: {{ props.row.reference_number }}
-                    </div>
-                  </q-td>
-                  <q-td key="source_number" :props="props">
-                    {{ props.row.package_number }}
-                  </q-td>
-                  <q-td key="batch_number" :props="props">
-                    {{ props.row.inbound_batch_number }}
-                  </q-td>
-                  <q-td key="location" :props="props">
-                    {{ props.row.warehouse_location_code }}
-                  </q-td>
-                  <q-td key="original_stock" :props="props">
-                    {{ props.row.orgin_stock }}
-                  </q-td>
-                  <q-td key="stock_change" :props="props">
-                    <span>
-                      <div
-                        v-if="props.row.type == 'adjustment'"
-                        :class="{
-                          'text-negative': props.row.stock < 0,
-                        }"
-                      >
-                        {{ props.row.stock }}
-                      </div>
-                      <div
-                        v-else
-                        :class="{
-                          'text-negative': props.row.type != 'inbound',
-                        }"
-                      >
-                        {{ props.row.type == "inbound" ? "+" : "-"
-                        }}{{ props.row.stock }}
-                      </div>
-                    </span>
-                  </q-td>
-                  <q-td key="batch_qty" :props="props">
-                    {{ props.row.inbound_batch_stock_after }}
-                  </q-td>
-                  <q-td key="stock_after" :props="props">
-                    {{ props.row.stock_after }}
-                  </q-td>
-                </q-tr>
-              </template>
-              <template v-slot:no-data>
-                <div class="full-width row flex-center q-gutter-sm">
-                  <q-icon size="2em" name="sentiment_dissatisfied" />
-                  <span>暂无数据</span>
-                </div>
-              </template>
-            </q-table>
+                <template v-slot:body="props">
+                  <!-- Group header row -->
+                  <template v-if="showGroupHeader(props.row, props.pageIndex)">
+                    <q-tr class="group-header-row">
+                      <q-td colspan="10">
+                        <div class="group-header flex-between-center p-x-10">
+                          <div>
+                            <span class="info-item q-mr-lg">客户: {{ props.row.customer.name }}</span>
+                            <span class="info-item q-mr-lg">类型: {{ props.row.type }}</span>
+                          </div>
+                          <div>
+                            <span class="info-item">时间: {{ props.row.created_at }}</span>
+                          </div>
+                        </div>
+                      </q-td>
+                    </q-tr>
+                  </template>
 
-            <!-- 分页 -->
-            <div class="q-pa-md">
-              <Pagination
-                :total-count="flowParams.total"
-                v-model:page="flowParams.page"
-                v-model:rows-per-page="flowParams.per_page"
-                @page-change="getStockStatement"
-              />
+                  <!-- Data row -->
+                  <q-tr :props="props" class="data-row">
+                    <q-td auto-width>
+                      <q-checkbox v-model="props.selected" />
+                    </q-td>
+                    <q-td key="product_info" style="width: 35%" :props="props">
+                      <div class="text-primary hover-copy" @click="$copy(props.row.sku)">SKU: {{ props.row?.sku }}</div>
+                      <div class="text-overflow-1">
+                        {{ props.row?.product_name }}
+                      </div>
+                      <div>规格: {{ props.row?.name }}</div>
+                    </q-td>
+                    <q-td key="relevance_number" :props="props">
+                      <div>包裹号: {{ props.row.reference_number }}</div>
+                    </q-td>
+                    <q-td key="source_number" :props="props">
+                      {{ props.row.package_number }}
+                    </q-td>
+                    <q-td key="batch_number" :props="props">
+                      {{ props.row.inbound_batch_number }}
+                    </q-td>
+                    <q-td key="location" :props="props">
+                      {{ props.row.warehouse_location_code }}
+                    </q-td>
+                    <q-td key="original_stock" :props="props">
+                      {{ props.row.orgin_stock }}
+                    </q-td>
+                    <q-td key="stock_change" :props="props">
+                      <span>
+                        <div
+                          v-if="props.row.type == 'adjustment'"
+                          :class="{
+                            'text-negative': props.row.stock < 0,
+                          }"
+                        >
+                          {{ props.row.stock }}
+                        </div>
+                        <div
+                          v-else
+                          :class="{
+                            'text-negative': props.row.type != 'inbound',
+                          }"
+                        >
+                          {{ props.row.type == 'inbound' ? '+' : '-' }}{{ props.row.stock }}
+                        </div>
+                      </span>
+                    </q-td>
+                    <q-td key="batch_qty" :props="props">
+                      {{ props.row.inbound_batch_stock_after }}
+                    </q-td>
+                    <q-td key="stock_after" :props="props">
+                      {{ props.row.stock_after }}
+                    </q-td>
+                  </q-tr>
+                </template>
+                <template v-slot:no-data>
+                  <div class="full-width row flex-center q-gutter-sm">
+                    <q-icon size="2em" name="sentiment_dissatisfied" />
+                    <span>暂无数据</span>
+                  </div>
+                </template>
+              </q-table>
+
+              <!-- 分页 -->
+              <div class="q-pa-md">
+                <Pagination
+                  :total-count="flowParams.total"
+                  v-model:page="flowParams.page"
+                  v-model:rows-per-page="flowParams.per_page"
+                  @page-change="getStockStatement"
+                />
+              </div>
             </div>
           </div>
         </q-tab-panel>
@@ -578,19 +451,13 @@
             >
               <template v-slot:body="props">
                 <q-tr :props="props">
-                  <q-td
-                    v-for="col in props.cols"
-                    :key="col.name"
-                    :props="props"
-                  >
+                  <q-td v-for="col in props.cols" :key="col.name" :props="props">
                     {{ col.value }}
                   </q-td>
                 </q-tr>
               </template>
               <template v-slot:no-data>
-                <div
-                  class="full-width row flex-center q-gutter-sm q-pa-md text-grey"
-                >
+                <div class="full-width row flex-center q-gutter-sm q-pa-md text-grey">
                   <q-icon size="2em" name="inbox" />
                   <span>暂无数据</span>
                 </div>
@@ -618,74 +485,76 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch } from "vue";
-import { useQuasar } from "quasar";
-import { useRouter } from "vue-router";
-import inventoryApi from "@/api/inventory";
-import Pagination from "@/components/Pagination.vue";
-import customerApi from "@/api/customer";
+import customerApi from '@/api/customer';
+import inventoryApi from '@/api/inventory';
+import DatePickerNew from '@/components/DatePickerNew/Index.vue';
+import KeywordSearch from '@/components/KeywordSearch/Index.vue';
+import Pagination from '@/components/Pagination.vue';
+import { useQuasar } from 'quasar';
+import { onMounted, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const $q = useQuasar();
 const router = useRouter();
 
 // 标签页切换控制
-const currentTab = ref("list");
-const inventoryTab = ref("all");
+const currentTab = ref('list'); // list: 库存清单, flow: 库存流水
+const inventoryTab = ref('all');
 
 // 库存清单筛选
-const categoryFilter = ref("全部类目");
-const categoryOptions = ["全部类目", "服装", "电子产品", "家居用品"];
+const categoryFilter = ref('全部类目');
+const categoryOptions = ['全部类目', '服装', '电子产品', '家居用品'];
 const searchType = ref([
   {
-    label: "按SKU",
-    value: "sku",
+    label: '按SKU',
+    value: 'sku',
   },
   {
-    label: "按名称",
-    value: "name",
+    label: '按名称',
+    value: 'name',
   },
 ]);
 const hideEmpty = ref(false);
 
 const searchTypeOptions = [
   {
-    label: "精确搜索",
-    value: "exact",
+    label: '精确搜索',
+    value: 'exact',
   },
   {
-    label: "模糊搜索",
-    value: "like",
+    label: '模糊搜索',
+    value: 'like',
   },
   {
-    label: "前缀搜索",
-    value: "prefix",
+    label: '前缀搜索',
+    value: 'prefix',
   },
 ];
 
 // 库存流水筛选
-const start_date = ref("");
-const end_date = ref("");
-const logTypeFilter = ref("");
+const start_date = ref('');
+const end_date = ref('');
+const logTypeFilter = ref('');
 const logType = ref([
   {
-    label: "入库",
-    value: "inbound",
+    label: '入库',
+    value: 'inbound',
   },
   {
-    label: "出库",
-    value: "outbound",
+    label: '出库',
+    value: 'outbound',
   },
   {
-    label: "退货",
-    value: "return",
+    label: '退货',
+    value: 'return',
   },
   {
-    label: "调整库存",
-    value: "adjustment",
+    label: '调整库存',
+    value: 'adjustment',
   },
   {
-    label: "初始库存",
-    value: "initial",
+    label: '初始库存',
+    value: 'initial',
   },
 ]);
 // 选中行
@@ -695,34 +564,34 @@ const selectedFlow = ref([]);
 // 库存清单表格列定义
 const inventoryColumns = [
   {
-    name: "product_info",
-    label: "商品信息",
-    field: "product_info",
-    align: "left",
+    name: 'product_info',
+    label: '商品信息',
+    field: 'product_info',
+    align: 'left',
   },
   {
-    name: "customer_info",
-    label: "客户信息",
-    field: "customer_info",
-    align: "left",
+    name: 'customer_info',
+    label: '客户信息',
+    field: 'customer_info',
+    align: 'left',
   },
   {
-    name: "in_transit_qty",
-    label: "在途数",
-    field: "in_transit_qty",
-    align: "center",
+    name: 'in_transit_qty',
+    label: '在途数',
+    field: 'in_transit_qty',
+    align: 'center',
   },
   {
-    name: "pending_receipt_qty",
-    label: "待收数",
-    field: "pending_receipt_qty",
-    align: "center",
+    name: 'pending_receipt_qty',
+    label: '待收数',
+    field: 'pending_receipt_qty',
+    align: 'center',
   },
   {
-    name: "pending_shelf_qty",
-    label: "待上架",
-    field: "pending_shelf_qty",
-    align: "center",
+    name: 'pending_shelf_qty',
+    label: '待上架',
+    field: 'pending_shelf_qty',
+    align: 'center',
   },
   // {
   //   name: "locked_qty",
@@ -731,52 +600,52 @@ const inventoryColumns = [
   //   align: "center",
   // },
   {
-    name: "locked_qty",
-    label: "锁定库存",
-    field: "locked_qty",
-    align: "center",
+    name: 'locked_qty',
+    label: '锁定库存',
+    field: 'locked_qty',
+    align: 'center',
   },
   {
-    name: "available_qty",
-    label: "可用数",
-    field: "available_qty",
-    align: "center",
+    name: 'available_qty',
+    label: '可用数',
+    field: 'available_qty',
+    align: 'center',
   },
   {
-    name: "defective_qty",
-    label: "不良品数",
-    field: "defective_qty",
-    align: "center",
+    name: 'defective_qty',
+    label: '不良品数',
+    field: 'defective_qty',
+    align: 'center',
   },
   {
-    name: "total_qty",
-    label: "库存总数",
-    field: "total_qty",
-    align: "center",
+    name: 'total_qty',
+    label: '库存总数',
+    field: 'total_qty',
+    align: 'center',
   },
 ];
 
-const search = () => {
-  if (currentTab.value == "list") {
+const onSearch = () => {
+  if (currentTab.value == 'list') {
     getInventoryList();
   } else {
     getStockStatement();
   }
 };
 const resetSearch = () => {
-  start_date.value = "";
-  end_date.value = "";
-  logTypeFilter.value = "";
-  pageParams.search_type = "name";
-  pageParams.search_mode = "exact";
-  pageParams.keywords = "";
-  search();
+  start_date.value = '';
+  end_date.value = '';
+  logTypeFilter.value = '';
+  pageParams.search_type = 'name';
+  pageParams.search_mode = 'exact';
+  pageParams.keywords = '';
+  onSearch();
 };
 //
 const pageParams = reactive({
-  search_type: "name",
-  search_mode: "exact",
-  keywords: "",
+  search_type: 'name',
+  search_mode: 'exact',
+  keywords: '',
 });
 // 模拟库存清单数据
 const inventoryList = ref([]);
@@ -815,58 +684,58 @@ const getCustomerList = async () => {
 // 库存流水表格列定义
 const flowColumns = [
   {
-    name: "product_info",
-    label: "商品信息",
-    field: "product_info",
-    align: "left",
+    name: 'product_info',
+    label: '商品信息',
+    field: 'product_info',
+    align: 'left',
   },
   {
-    name: "relevance_number",
-    label: "关联单据号",
-    field: "relevance_number",
-    align: "left",
+    name: 'relevance_number',
+    label: '关联单据号',
+    field: 'relevance_number',
+    align: 'left',
   },
   {
-    name: "source_number",
-    label: "来源单据号",
-    field: "source_number",
-    align: "left",
+    name: 'source_number',
+    label: '来源单据号',
+    field: 'source_number',
+    align: 'left',
   },
   {
-    name: "batch_number",
-    label: "批次号",
-    field: "batch_number",
-    align: "center",
+    name: 'batch_number',
+    label: '批次号',
+    field: 'batch_number',
+    align: 'center',
   },
   {
-    name: "location",
-    label: "货架位",
-    field: "location",
-    align: "center",
+    name: 'location',
+    label: '货架位',
+    field: 'location',
+    align: 'center',
   },
   {
-    name: "original_stock",
-    label: "货架位原库存",
-    field: "original_stock",
-    align: "center",
+    name: 'original_stock',
+    label: '货架位原库存',
+    field: 'original_stock',
+    align: 'center',
   },
   {
-    name: "stock_change",
-    label: "变化数量",
-    field: "stock_change",
-    align: "center",
+    name: 'stock_change',
+    label: '变化数量',
+    field: 'stock_change',
+    align: 'center',
   },
   {
-    name: "batch_qty",
-    label: "批次剩余数量",
-    field: "batch_qty",
-    align: "center",
+    name: 'batch_qty',
+    label: '批次剩余数量',
+    field: 'batch_qty',
+    align: 'center',
   },
   {
-    name: "stock_after",
-    label: "变动后库存存量",
-    field: "stock_after",
-    align: "center",
+    name: 'stock_after',
+    label: '变动后库存存量',
+    field: 'stock_after',
+    align: 'center',
   },
 ];
 // 库存流水数据
@@ -906,29 +775,29 @@ const showGroupHeader = (row, index) => {
 
 // 弹窗控制
 const dialogVisible = ref(false);
-const dialogTitle = ref("");
+const dialogTitle = ref('');
 const currentProduct = ref(null);
 const detailData = ref([]);
 const detailColumns = ref([
   {
-    name: "relation_number",
-    label: "关联单据号",
-    field: "relation_number",
-    align: "left",
+    name: 'relation_number',
+    label: '关联单据号',
+    field: 'relation_number',
+    align: 'left',
   },
   {
-    name: "relation_type",
-    label: "类型",
+    name: 'relation_type',
+    label: '类型',
     field: (row) => {
-      return row.relation_type === "standard_inbound" ? "标准入库" : "--";
+      return row.relation_type === 'standard_inbound' ? '标准入库' : '--';
     },
-    align: "center",
+    align: 'center',
   },
   {
-    name: "relation_qty",
-    label: "数量",
-    field: "relation_qty",
-    align: "center",
+    name: 'relation_qty',
+    label: '数量',
+    field: 'relation_qty',
+    align: 'center',
   },
 ]);
 const tableLoading = ref(false);
@@ -939,7 +808,7 @@ const detailPageParams = reactive({
 });
 
 // 当前操作的类型
-const currentType = ref("");
+const currentType = ref('');
 
 // 获取详情数据
 const getStockDetail = () => {
@@ -951,7 +820,7 @@ const getStockDetail = () => {
   }
 
   switch (currentType.value) {
-    case "in_transit":
+    case 'in_transit':
       inventoryApi
         .getStockDetail(currentProduct.value.id, {
           ...detailPageParams,
@@ -966,7 +835,7 @@ const getStockDetail = () => {
           tableLoading.value = false;
         });
       break;
-    case "pending_receipt":
+    case 'pending_receipt':
       inventoryApi
         .getPendingInboundOrders(currentProduct.value.id, {
           ...detailPageParams,
@@ -981,7 +850,7 @@ const getStockDetail = () => {
           tableLoading.value = false;
         });
       break;
-    case "pending_shelf":
+    case 'pending_shelf':
       inventoryApi
         .getPendingShelfOrders(currentProduct.value.id, {
           ...detailPageParams,
@@ -996,7 +865,7 @@ const getStockDetail = () => {
           tableLoading.value = false;
         });
       break;
-    case "locked":
+    case 'locked':
       inventoryApi
         .getLockedStockOrders(currentProduct.value.id, {
           ...detailPageParams,
@@ -1026,17 +895,17 @@ const showDrawer = async (type, row) => {
   detailPageParams.total = 0;
 
   switch (type) {
-    case "in_transit":
-      dialogTitle.value = "在途数详情";
+    case 'in_transit':
+      dialogTitle.value = '在途数详情';
       break;
-    case "pending_receipt":
-      dialogTitle.value = "待收数详情";
+    case 'pending_receipt':
+      dialogTitle.value = '待收数详情';
       break;
-    case "pending_shelf":
-      dialogTitle.value = "待上架详情";
+    case 'pending_shelf':
+      dialogTitle.value = '待上架详情';
       break;
-    case "locked":
-      dialogTitle.value = "锁定库存详情";
+    case 'locked':
+      dialogTitle.value = '锁定库存详情';
       break;
   }
 
@@ -1054,6 +923,13 @@ onMounted(() => {
 <style lang="scss" scoped>
 .inventory-page {
   padding: 0;
+
+  .q-tab-panels {
+    background-color: transparent;
+  }
+
+  .action-bar {
+  }
 
   .tabs-container {
     border-radius: 4px;
@@ -1148,80 +1024,53 @@ onMounted(() => {
     }
   }
 
-  .action-bar {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    // background-color: #f5f7fa;
+  .product-info {
+    display: flex;
+    align-items: flex-start;
+    align-items: center;
+
+    .product-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      margin-right: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      object-fit: cover;
+    }
+
+    .info-container {
+      display: flex;
+      flex-direction: column;
+
+      .sku-code {
+        font-weight: 500;
+        color: $primary;
+        font-size: 14px;
+      }
+
+      .product-name {
+        color: rgba(0, 0, 0, 0.85);
+      }
+    }
+  }
+
+  // 对应tr标签
+  .group-header-row {
+    background-color: #f8fafc;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+    td {
+      background-color: #ebeef5;
+    }
+
+    .group-header {
+      .info-item {
+        color: rgba(0, 0, 0, 0.75);
+      }
+    }
   }
 
   .inventory-table-style {
-    border: 1px solid rgba(0, 0, 0, 0.07);
-
-    th {
-      font-weight: 500;
-      font-size: 13px;
-      color: rgba(0, 0, 0, 0.85);
-      padding: 8px 16px;
-      background-color: #f5f7fa;
-      white-space: nowrap;
-      height: 42px;
-    }
-
-    td {
-      font-size: 13px;
-      padding: 8px 16px;
-      color: rgba(0, 0, 0, 0.75);
-      white-space: normal;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-      height: 48px;
-    }
-
-    .q-checkbox {
-      width: 32px;
-    }
-
-    tbody tr {
-      &:nth-child(even) {
-        background-color: rgba(0, 0, 0, 0.01);
-      }
-
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.02);
-      }
-
-      &.selected {
-        background-color: rgba(25, 118, 210, 0.05);
-      }
-    }
-
-    .product-info {
-      display: flex;
-      align-items: flex-start;
-
-      .product-img {
-        width: 40px;
-        height: 40px;
-        border-radius: 4px;
-        margin-right: 12px;
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        object-fit: cover;
-      }
-
-      .info-container {
-        display: flex;
-        flex-direction: column;
-
-        .sku-code {
-          font-weight: 500;
-          margin-bottom: 2px;
-          color: rgba(0, 0, 0, 0.85);
-        }
-
-        .product-name {
-          color: rgba(0, 0, 0, 0.85);
-        }
-      }
-    }
-
     .text-negative {
       color: #f44336;
     }
@@ -1243,46 +1092,22 @@ onMounted(() => {
   }
 
   .flow-table-style {
-    border: 1px solid rgba(0, 0, 0, 0.07);
-
     th {
-      font-weight: 500;
-      font-size: 13px;
-      color: rgba(0, 0, 0, 0.85);
-      padding: 8px 16px;
-      background-color: #f5f7fa;
-      white-space: nowrap;
-      height: 40px;
+      // font-weight: 500;
+      // font-size: 13px;
+      // color: rgba(0, 0, 0, 0.85);
+      // padding: 8px 16px;
+      // background-color: #f5f7fa;
+      // white-space: nowrap;
+      // height: 40px;
     }
 
     td {
-      font-size: 13px;
-      padding: 8px 12px;
-      color: rgba(0, 0, 0, 0.75);
+      // font-size: 13px;
+      // padding: 8px 12px;
+      // color: rgba(0, 0, 0, 0.75);
       white-space: normal;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    .group-header-row {
-      background-color: #f8fafc;
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
-
-      td {
-        padding: 10px 16px;
-        background-color: #ebeef5;
-      }
-    }
-
-    .group-header {
-      color: rgba(0, 0, 0, 0.85);
-      font-weight: 500;
-      font-size: 13px;
-
-      .info-item {
-        color: rgba(0, 0, 0, 0.75);
-        padding-right: 8px;
-        text-align: right;
-      }
+      // border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .data-row {
@@ -1304,53 +1129,53 @@ onMounted(() => {
   }
 }
 
-:deep(.q-date) {
-  border-radius: 8px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+// :deep(.q-date) {
+//   border-radius: 8px;
+//   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 
-  .q-date__header {
-    background: var(--q-primary);
-    padding: 16px;
-    border-radius: 8px 8px 0 0;
-  }
+//   .q-date__header {
+//     background: var(--q-primary);
+//     padding: 16px;
+//     border-radius: 8px 8px 0 0;
+//   }
 
-  .q-date__content {
-    padding: 12px;
-  }
+//   .q-date__content {
+//     padding: 12px;
+//   }
 
-  .q-date__calendar-item {
-    height: 32px;
-    width: 32px;
+//   .q-date__calendar-item {
+//     height: 32px;
+//     width: 32px;
 
-    &:hover:not(.q-date__calendar-item--active) {
-      background: rgba(0, 0, 0, 0.04);
-    }
+//     &:hover:not(.q-date__calendar-item--active) {
+//       background: rgba(0, 0, 0, 0.04);
+//     }
 
-    &.q-date__calendar-item--active {
-      background: var(--q-primary);
-      color: white;
-      font-weight: 500;
-    }
-  }
+//     &.q-date__calendar-item--active {
+//       background: var(--q-primary);
+//       color: white;
+//       font-weight: 500;
+//     }
+//   }
 
-  .q-date__today {
-    color: var(--q-primary);
-    font-weight: 500;
-  }
+//   .q-date__today {
+//     color: var(--q-primary);
+//     font-weight: 500;
+//   }
 
-  .q-date__navigation {
-    height: 36px;
+//   .q-date__navigation {
+//     height: 36px;
 
-    .q-btn {
-      margin: 0 4px;
-      padding: 4px;
+//     .q-btn {
+//       margin: 0 4px;
+//       padding: 4px;
 
-      &:hover {
-        background: rgba(0, 0, 0, 0.04);
-      }
-    }
-  }
-}
+//       &:hover {
+//         background: rgba(0, 0, 0, 0.04);
+//       }
+//     }
+//   }
+// }
 
 // 响应式布局优化
 @media (max-width: 600px) {
@@ -1368,7 +1193,6 @@ onMounted(() => {
 }
 
 .hover-number {
-  color: var(--q-primary);
   font-weight: 500;
   padding: 4px 8px;
   border-radius: 4px;
@@ -1390,23 +1214,6 @@ onMounted(() => {
 .inventory-row:hover {
   .hover-number .hover-icon {
     opacity: 1;
-  }
-}
-
-.info-item {
-  margin-bottom: 12px;
-  color: rgba(0, 0, 0, 0.85);
-  font-size: 14px;
-
-  .label {
-    color: rgba(0, 0, 0, 0.45);
-    margin-right: 12px;
-    display: inline-block;
-    width: 60px;
-  }
-
-  .info-value {
-    font-weight: 500;
   }
 }
 
@@ -1504,4 +1311,4 @@ onMounted(() => {
 .product-info {
   flex-shrink: 0;
 }
-</style> 
+</style>
