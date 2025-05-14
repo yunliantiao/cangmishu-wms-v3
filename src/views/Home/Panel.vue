@@ -146,11 +146,11 @@
           </q-card-section>
           <q-card-section class="down-list p-0">
             <div class="item">
-              <q-icon name="img:/src/assets/images/home/apple.png" size="24px" class="q-mr-sm" />
+              <img src="@/assets/images/home/apple.png" class="w-24 h-24 q-mr-sm" />
               <div class="text-subtitle2">App Store</div>
             </div>
             <div class="item">
-              <q-icon name="img:/src/assets/images/home/android.png" size="24px" class="q-mr-sm" />
+              <img src="@/assets/images/home/android.png" class="w-24 h-24 q-mr-sm" />
               <div class="text-subtitle2">Android</div>
             </div>
           </q-card-section>
