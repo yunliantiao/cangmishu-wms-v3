@@ -20,7 +20,7 @@
           @click="handUp"
         />
         <q-btn
-          color="negative"
+          color="primary"
           class="rt-btn"
           :label="trans('结束作业')"
           @click="handEnd"
@@ -28,70 +28,95 @@
       </div>
     </div>
 
+    <div class="action-bar">
+      <span>{{ trans("选择") }} {{ pageData.selectedRows.length }}</span>
+      <q-btn
+        color="primary"
+        @click="handleBatchPrint"
+        :label="trans('打印')"
+        class="btn print"
+      />
+      <q-btn
+        color="primary"
+        class="btn"
+        flat
+        @click="handleBatchCheckMaterials"
+        outline
+        :label="trans('批量选择包材')"
+      />
+    </div>
+
     <!-- 主体卡片 -->
     <div class="main-card">
       <!-- 操作区 -->
-      <div class="action-bar">
-        <span>{{ trans("选择") }} {{ pageData.selectedRows.length }}</span>
-        <q-btn
-          color="primary"
-          @click="handleBatchPrint"
-          class="ml-16"
-          :label="trans('打印')"
-        />
-        <q-btn
-          color="primary"
-          @click="handleBatchCheckMaterials"
-          outline
-          class="ml-16"
-          :label="trans('批量选择包材')"
-        />
-      </div>
 
       <!-- 商品与面单打印信息 -->
       <div class="info-bar">
         <div>
           商品编码：
           <q-btn
-            :flat="pageData.codeFilter != 'all'"
-            color="primary"
+            flat
+            :color="pageData.codeFilter == 'all' ? 'primary' : '#1f1f1f'"
             :label="trans('全部')"
+            :style="
+              pageData.codeFilter == 'all'
+                ? 'background: #DAD4FF !important; color: #5745C5 !important;'
+                : ''
+            "
             @click="changeFilter('all')"
             class="btn-mini"
           />
           <q-btn
+            flat
             v-for="(item, index) in pageData.skus"
             :key="index"
-            :flat="pageData.codeFilter != item"
-            color="primary"
+            :style="
+              pageData.codeFilter == item
+                ? 'background: #DAD4FF !important; color: #5745C5 !important;'
+                : ''
+            "
             :label="item"
             @click="changeFilter(item)"
             class="btn-mini"
           />
         </div>
       </div>
-
       <div class="info-bar">
         <div>
           {{ trans("面单打印") }}：
           <q-btn
-            :flat="pageData.printFilter != 'all'"
-            color="primary"
+            flat
+            :color="pageData.printFilter == 'all' ? 'primary' : '#1f1f1f'"
+            :style="
+              pageData.printFilter == 'all'
+                ? 'background: #DAD4FF !important; color: #5745C5 !important;'
+                : ''
+            "
             @click="changePrintFilter('all')"
             :label="trans('全部({count})', { count: pageData.rows.length })"
             class="btn-mini"
           />
           <q-btn
-            :flat="pageData.printFilter != '1'"
-            color="primary"
+            flat
+            :color="pageData.printFilter == '1' ? 'primary' : '#1f1f1f'"
             @click="changePrintFilter('1')"
             :label="trans('已打印({count})', { count: printCount })"
+            :style="
+              pageData.printFilter == '1'
+                ? 'background: #DAD4FF !important; color: #5745C5 !important;'
+                : ''
+            "
             class="btn-mini"
           />
           <q-btn
-            :flat="pageData.printFilter != '0'"
-            color="primary"
+            flat
+            :color="pageData.printFilter == '0' ? 'primary' : '#1f1f1f'"
             @click="changePrintFilter('0')"
+            :style="
+              pageData.printFilter == '0'
+                ? 'background: #DAD4FF !important; color: #5745C5 !important;'
+                : ''
+            "
             :label="
               trans('未打印({count})', {
                 count: pageData.rows.length - printCount,
@@ -101,7 +126,8 @@
           />
         </div>
       </div>
-
+    </div>
+    <div class="main-card">
       <!-- 表格 -->
       <q-table
         :rows="list"
@@ -109,7 +135,6 @@
         v-model:selected="pageData.selectedRows"
         row-key="id"
         flat
-        bordered
         selection="multiple"
         hide-bottom
         class="pack-table"
@@ -128,37 +153,39 @@
 
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td auto-width>
+            <q-td auto-width align="center">
               <q-checkbox v-model="props.selected" size="sm" />
             </q-td>
 
-            <q-td>{{ props.row.package_number }}</q-td>
-            <q-td>
+            <q-td align="center">{{ props.row.package_number }}</q-td>
+            <q-td align="center">
               {{ props.row.customer?.name }}
               <span class="customer-code"
                 >[{{ props.row.customer?.code }}]</span
               >
             </q-td>
-            <q-td>
+            <q-td width="300">
               <div
                 class="product-info"
                 v-for="item in props.row.items"
                 :key="item.id"
               >
                 <img :src="item.sku_image" class="product-img" />
-                <div>
-                  <div>{{ item.sku }}</div>
+                <div class="goods-info">
+                  <div class="sku">{{ item.sku }}</div>
                   <div class="product-name">{{ item.product_name }}</div>
-                  <div>{{ item.sku_name }}</div>
+                  <div class="other">
+                    {{ item.sku_name }} x {{ item.quantity }}
+                  </div>
                 </div>
               </div>
             </q-td>
-            <q-td>
+            <q-td align="center">
               <span v-for="item in props.row.items" :key="item.id">
                 {{ item.quantity }}
               </span>
             </q-td>
-            <q-td>
+            <q-td align="center">
               <q-select
                 dense
                 outlined
@@ -170,15 +197,24 @@
                 class="pack-select"
               />
             </q-td>
-            <q-td>
-              <q-icon
+            <q-td align="center">
+              <q-td>
+                <span class="table-icon">
+                  <img
+                    src="@/assets/images/print.png"
+                    v-if="!props.row.is_print_shipping_label"
+                  />
+                  <img src="@/assets/images/print-success.png" v-else />
+                </span>
+              </q-td>
+              <!-- <q-icon
                 name="lock"
                 :style="{
                   color: props.row.is_print_shipping_label ? 'green' : '#888',
                 }"
-              />
+              /> -->
             </q-td>
-            <q-td>
+            <q-td align="center">
               <q-btn
                 flat
                 round
@@ -194,19 +230,21 @@
               <q-btn
                 flat
                 round
-                icon="print_disabled"
+                class="table-icon"
                 v-if="props.row.is_print_shipping_label"
                 @click="handleNotPrint(props.row)"
               >
+                <img src="@/assets/images/set-not-print.png" />
                 <q-tooltip>{{ trans("标记为未打印") }}</q-tooltip>
               </q-btn>
               <q-btn
                 flat
                 round
-                icon="bookmark"
+                class="table-icon"
                 v-else
                 @click="handleNotPrint(props.row)"
               >
+                <img src="@/assets/images/set-print.png" />
                 <q-tooltip>{{ trans("标记为已打印") }}</q-tooltip>
               </q-btn>
             </q-td>
@@ -248,24 +286,39 @@ const pageData = reactive({
       name: "package_number",
       label: trans("包裹号/运单号"),
       field: "package_number",
-      align: "left",
+      align: "center",
     },
     {
       name: "customer",
       label: trans("客户信息"),
       field: "customer",
-      align: "left",
+      align: "center",
     },
     {
       name: "product",
       label: trans("商品信息"),
       field: "product",
-      align: "left",
+      align: "center",
     },
-    { name: "qty", label: trans("数量"), field: "qty", align: "left" },
-    { name: "pack", label: trans("包材信息 *"), field: "pack", align: "left" },
-    { name: "print", label: trans("打印状态"), field: "print", align: "left" },
-    { name: "actions", label: trans("操作"), field: "actions", align: "left" },
+    { name: "qty", label: trans("数量"), field: "qty", align: "center" },
+    {
+      name: "pack",
+      label: trans("包材信息 *"),
+      field: "pack",
+      align: "center",
+    },
+    {
+      name: "print",
+      label: trans("打印状态"),
+      field: "print",
+      align: "center",
+    },
+    {
+      name: "actions",
+      label: trans("操作"),
+      field: "actions",
+      align: "center",
+    },
   ],
   materialsList: [],
   codeFilter: "all",
@@ -571,39 +624,56 @@ const handleNotPrint = (row) => {
     .right {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 20px;
       .rt-btn {
-        padding: 8px 16px;
+        padding: 0 20px;
+        height: 42px;
+        border-radius: 9px 9px 9px 9px;
       }
     }
   }
-  .main-card {
-    background: #fff;
-    border-radius: 8px;
-    margin: 32px 40px 0 40px;
-    padding: 24px 24px 40px 24px;
-    min-height: 400px;
-    .action-bar {
-      display: flex;
-      align-items: center;
-      margin-bottom: 16px;
-      .ml-16 {
-        margin-left: 16px;
-      }
+
+  .action-bar {
+    display: flex;
+    align-items: center;
+
+    width: 1400px;
+    margin: 20px auto;
+    gap: 20px;
+    .btn {
+      height: 32px;
+      border-radius: 9px 9px 9px 9px;
     }
+    .print {
+      padding: 0 32px;
+    }
+  }
+
+  .main-card {
+    width: 1400px;
+    background: #ffffff;
+    border-radius: 16px 16px 16px 16px;
+    margin: 20px auto;
+    padding: 20px;
+
     .info-bar {
       display: flex;
       align-items: center;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
+      &:last-child {
+        margin-bottom: 0px;
+      }
       .sku {
         font-weight: 500;
         margin-left: 8px;
       }
       .btn-mini {
         min-width: 40px;
-        padding: 0 8px;
-        font-size: 13px;
-        height: 24px;
+        padding: 0 20px;
+        font-weight: 400;
+        font-size: 14px;
+        height: 32px;
+        border-radius: 9px 9px 9px 9px;
       }
       .ml-32 {
         margin-left: 32px;
@@ -611,11 +681,8 @@ const handleNotPrint = (row) => {
     }
     .pack-table {
       margin-top: 8px;
-      :deep(.q-table__middle) {
-        background: #fff;
-      }
+
       :deep(th) {
-        background: #f5f6fa;
         font-weight: 500;
         font-size: 14px;
         color: #333;
@@ -629,17 +696,41 @@ const handleNotPrint = (row) => {
     .product-info {
       display: flex;
       align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
       .product-img {
-        width: 40px;
-        height: 40px;
+        width: 70px;
+        height: 70px;
         object-fit: contain;
-        margin-right: 8px;
         border: 1px solid #eee;
         border-radius: 4px;
       }
-      .product-name {
-        color: #888;
-        font-size: 13px;
+      .goods-info {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        .sku {
+          font-weight: 500;
+          font-size: 14px;
+          color: #5745c5;
+          line-height: 16px;
+        }
+        .product-name {
+          font-weight: 400;
+          font-size: 14px;
+          color: #1f1f1f;
+          line-height: 16px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          width: 200px;
+        }
+        .other {
+          font-weight: 500;
+          font-size: 12px;
+          color: #666666;
+          line-height: 14px;
+        }
       }
     }
     .customer-code {
@@ -648,7 +739,7 @@ const handleNotPrint = (row) => {
       margin-left: 4px;
     }
     .pack-select {
-      width: 120px;
+      width: 200px;
     }
   }
 }
