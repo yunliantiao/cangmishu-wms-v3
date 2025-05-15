@@ -13,10 +13,11 @@ export default [
     },
     children: [
       {
-        path: "examine/goods",
+        path: "examine",
         id: 1901,
-        name: "examineGoods",
-        component: () => import("@/views/Deliver/ExamineGoods.vue"),
+        name: "examine",
+        // component: () => import("@/views/Deliver/ExamineGoods.vue"),
+        redirect: "/examine/goods",
         meta: {
           level: 2,
           group: trans("发货管理"),

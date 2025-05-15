@@ -1,6 +1,13 @@
 <template>
   <div class="scan-page">
-    <div class="scan-header">
+    <ScanTop
+      ref="scanTopRef"
+      :title="trans('扫描分拣')"
+      :placeholder="trans('请扫描或输入波次号')"
+      v-model:scanValue="scanValue"
+      @confirm="search"
+    ></ScanTop>
+    <!-- <div class="scan-header">
       <div class="title">{{ trans("扫描分拣") }}</div>
     </div>
 
@@ -20,7 +27,7 @@
         <q-icon name="info_outline" size="16px" color="grey-7" />
         <span>{{ trans("请先切换为EN输入法") }}</span>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -30,6 +37,7 @@ import outApi from "@/api/out.js";
 import Message from "@/utils/message.js";
 import { useRouter } from "vue-router";
 import trans from "@/i18n";
+import ScanTop from "@/components/ScanTop/Index.vue";
 
 const router = useRouter();
 const scanInput = ref(null);
@@ -74,13 +82,8 @@ const search = async () => {
 
 <style scoped>
 .scan-page {
-  width: 100%;
-  height: 100vh;
-  /* background-color: #f0f2f5; */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 60px;
+  min-height: 100vh;
+  background-color: #f4f5f8;
 }
 
 .scan-header {

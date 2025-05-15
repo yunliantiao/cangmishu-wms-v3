@@ -1,8 +1,15 @@
 <template>
   <div class="shelve-page">
     <!-- 扫描区域 -->
-    <div v-if="!orderData" class="scan-header rounded-borders q-pa-lg q-mb-md">
-      <div class="text-h5 text-center text-weight-medium q-mb-lg">
+    <div v-if="!orderData">
+      <ScanTop
+        :title="trans('扫描上架')"
+        ref="scanTopRef"
+        :placeholder="trans('请扫描入库单号、ERP单号、运单号或箱唛')"
+        v-model:scanValue="scanCode"
+        @confirm="handleScan"
+      ></ScanTop>
+      <!-- <div class="text-h5 text-center text-weight-medium q-mb-lg">
         {{ trans("扫描上架") }}
       </div>
       <div class="scan-container q-mx-auto" style="max-width: 800px">
@@ -36,7 +43,7 @@
           <q-icon name="info_outline" size="xs" class="q-mr-xs" />
           {{ trans("请先切换成[EN]输入法") }}
         </div>
-      </div>
+      </div> -->
     </div>
 
     <!-- 订单信息区域 -->
@@ -460,6 +467,7 @@ import settingApi from "@/api/setting";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 import trans from "@/i18n";
+import ScanTop from "@/components/ScanTop/Index.vue";
 
 const $q = useQuasar();
 const store = useStore();
@@ -490,6 +498,7 @@ const boxSearchQuery = ref("");
 const boxFilter = ref("all");
 
 const showShelfedBoxes = ref(false);
+const scanTopRef = ref(null);
 
 // 货架位
 const shelfOptions = ref([]);
@@ -959,13 +968,6 @@ const applyBatchProductQuantity = () => {
 onMounted(() => {
   // 获取货架位列表
   getShelfLocations();
-
-  // 聚焦扫描输入框
-  nextTick(() => {
-    if (scanInput.value) {
-      scanInput.value.focus();
-    }
-  });
   if (route.query.number) {
     scanCode.value = route.query.number;
     handleScan();
@@ -1102,18 +1104,18 @@ onMounted(() => {
   }
 
   // 输入框统一样式
-  :deep(.q-field) {
-    .q-field__control {
-      &:hover {
-        border-color: var(--q-primary);
-      }
+  // :deep(.q-field) {
+  //   .q-field__control {
+  //     &:hover {
+  //       border-color: var(--q-primary);
+  //     }
 
-      &:focus-within {
-        border-color: var(--q-primary);
-        box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
-      }
-    }
-  }
+  //     &:focus-within {
+  //       border-color: var(--q-primary);
+  //       box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+  //     }
+  //   }
+  // }
 
   // 按钮样式调整
   .q-btn {

@@ -197,6 +197,8 @@ const boxNumber = ref("");
 const showNewSkuDialog = ref(false);
 const currentProducts = ref([]);
 
+const scanTopRef = ref(null);
+
 // 商品数据
 const products = ref([]);
 
@@ -267,6 +269,8 @@ const handleScan = () => {
             handleConfirm();
           }
         }
+
+        scanTopRef.value.focus();
       }
     });
 };
@@ -787,9 +791,7 @@ const isNewSku = (item) => {
 
 onMounted(() => {
   // 页面加载后自动聚焦到扫描输入框
-  nextTick(() => {
-    scanInput.value.focus();
-  });
+
   if (route.query.number) {
     scanCode.value = route.query.number;
     handleScan();

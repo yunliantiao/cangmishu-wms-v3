@@ -51,7 +51,7 @@
 
       <q-space />
 
-      <q-btn-toggle
+      <!-- <q-btn-toggle
         v-model="language"
         class="m-r-20"
         no-caps
@@ -64,7 +64,11 @@
           { label: '中文简体', value: 'zh_CN' },
           { label: 'ENGLISH', value: 'en' },
         ]"
-      />
+      /> -->
+
+      <div class="language-select" @click="changeLanguage">
+        <img src="@/assets/images/language.png" alt="" />
+      </div>
       <div class="q-gutter-sm row items-center no-wrap">
         <!-- <q-btn round flat>
           <q-avatar size="26px">
@@ -122,9 +126,14 @@ export default {
     const language = ref(localLanguage);
     store.commit("changeLanguage", language.value);
 
-    const changeLanguage = (value) => {
-      window.localStorage.setItem("language", value);
-      store.commit("changeLanguage", value);
+    const changeLanguage = () => {
+      if (language.value == "zh_CN") {
+        language.value = "en";
+      } else {
+        language.value = "zh_CN";
+      }
+      window.localStorage.setItem("language", language.value);
+      store.commit("changeLanguage", language.value);
     };
 
     // 从Vuex获取侧边栏状态
@@ -200,4 +209,23 @@ export default {
 
 <style lang="scss" scoped>
 /* 如有需要可添加样式 */
+
+.language-select {
+  width: 40px;
+  height: 40px;
+  background: #f5f7fa;
+  border-radius: 99px 99px 99px 99px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 32px;
+  cursor: pointer;
+  &:hover {
+    background: #bbbcbd;
+  }
+  img {
+    width: 20px;
+    height: 20px;
+  }
+}
 </style>

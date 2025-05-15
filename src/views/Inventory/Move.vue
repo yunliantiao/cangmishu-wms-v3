@@ -323,7 +323,6 @@
             <q-table
               v-if="moveDetails.items?.length"
               flat
-              bordered
               :rows="moveDetails.items"
               :columns="moveColumns"
               row-key="id"
@@ -884,7 +883,6 @@ const getTotalTransferCount = (row) => {
 
   :deep(.q-table__card) {
     box-shadow: none;
-    border: 1px solid rgba(0, 0, 0, 0.12);
   }
 
   .product-info-cell {

@@ -205,7 +205,7 @@
                   round
                   size="sm"
                   class="table-icon"
-                  :disable="!props.row.pack_by?.is_self"
+                  :disable="props.row.pack_by && !props.row.pack_by?.is_self"
                   v-if="['packing', 'picking'].includes(props.row.status)"
                   @click="handlePack(props.row)"
                 >
@@ -426,6 +426,12 @@ const columns = computed(() => {
       field: "status",
     },
     {
+      name: "pack_by",
+      align: "center",
+      label: trans("打包员"),
+      field: "pack_by",
+    },
+    {
       name: "created_at",
       align: "center",
       label: trans("时间"),
@@ -444,15 +450,6 @@ const columns = computed(() => {
       field: "actions",
     },
   ];
-
-  if (pageData.filterOptions.status == "packing") {
-    list.splice(6, 0, {
-      name: "pack_by",
-      align: "center",
-      label: trans("打包员"),
-      field: "pack_by",
-    });
-  }
 
   return list;
 });
@@ -659,6 +656,9 @@ const handlePack = (row) => {
   if (row.wave_type == "mixed_items") {
     router.push({
       path: "/out/wave/pigeonholes",
+      query: {
+        number: row.wave_number,
+      },
     });
   } else {
     router.push({

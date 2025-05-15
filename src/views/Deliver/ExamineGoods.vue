@@ -1,7 +1,62 @@
 <template>
   <div class="examine-goods-page">
+    <div class="scan-top">
+      <div class="scan-title">
+        {{ trans("扫描验货") }}
+      </div>
+      <div class="center-box">
+        <div class="input-box">
+          <div class="scan-input">
+            <q-select
+              outlined
+              :label="trans('物流组')"
+              v-model="pageData.group"
+              :options="pageData.groupOptions"
+              class="scan-filter-item"
+            />
+            <q-input
+              class="input-box"
+              v-model="pageData.packageNo"
+              ref="inputRef"
+              :loading="$store.state.btnLoading"
+              borderless
+              :placeholder="trans('请扫描运单号/包裹号')"
+              @keyup.enter="search"
+            />
+          </div>
+
+          <div class="scan-input">
+            <q-input
+              class="input-box"
+              :disable="pageData.rows.length === 0"
+              v-model="pageData.sku"
+              ref="inputRef"
+              :loading="$store.state.btnLoading"
+              borderless
+              :placeholder="trans('请扫描商品标签')"
+              @keyup.enter="search"
+            />
+          </div>
+        </div>
+        <div class="btn-box">
+          <q-btn
+            color="primary"
+            flat
+            style="width: 106px; height: 60px"
+            :label="trans('重置')"
+            outline
+            @click="resetFilter"
+          />
+        </div>
+      </div>
+      <div class="scan-desc">
+        <img src="@/assets/images/warning.png" alt="" />
+        {{ trans("请先切换成[EN]输入法") }}
+      </div>
+    </div>
+
     <!-- 顶部筛选栏 -->
-    <div class="search-bar">
+    <!-- <div class="search-bar">
       <div class="row q-col-gutter-sm">
         <div class="col-auto">
           <q-select
@@ -44,16 +99,10 @@
           />
         </div>
       </div>
-    </div>
-    <div class="tip-bar row items-center q-mt-xs q-ml-sm q-mt-md">
-      <q-icon name="info" color="grey-5" size="18px" class="q-mr-xs" />
-      <span class="text-grey-6" style="font-size: 13px">{{
-        trans("请先切换成EN输入法")
-      }}</span>
-    </div>
+    </div> -->
 
     <!-- 表格 -->
-    <div class="main-table">
+    <div class="scan-main-table">
       <!-- <div class="table-header row items-center q-px-md q-py-sm">
         <q-space />
         <q-btn flat round icon="settings" />
@@ -209,7 +258,6 @@ const search = async () => {
       return row;
     });
   } catch (error) {
-    Message.notify(trans("获取订单信息失败"));
   } finally {
     pageData.loading = false;
   }
@@ -248,22 +296,8 @@ const examine = async () => {
 
 <style scoped lang="scss">
 .examine-goods-page {
-  .filter-bar {
-    background: #ffffff;
-    box-shadow: 0px 1px 10px 1px rgba(102, 102, 102, 0.08);
-    border-radius: 16px 16px 16px 16px;
-    padding: 32px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-  .filter-select,
-  .filter-input {
-    min-width: 180px;
-  }
-  .tip-bar {
-    min-height: 32px;
-  }
+  min-height: 100vh;
+  background-color: #f4f5f8;
   .main-table {
     .table-header {
       border-bottom: 1px solid #f0f0f0;
@@ -304,6 +338,97 @@ const examine = async () => {
         border-radius: 4px;
         background: #fafbfc;
       }
+    }
+  }
+}
+
+.scan-top {
+  height: 198px;
+  background: #f2f0ff;
+  border-radius: 0px 0px 0px 0px;
+  padding: 0 calc((100vw - 1400px) / 2);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  .scan-title {
+    font-weight: 600;
+    font-size: 24px;
+    color: #1f1f1f;
+    line-height: 30px;
+    margin-bottom: 20px;
+  }
+  .scan-input {
+    margin-bottom: 10px;
+    padding: 7px;
+    height: 64px;
+    background: #ffffff;
+    border-radius: 16px 16px 16px 16px;
+    border: 2px solid #5745c5;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    img {
+      width: 26px;
+      height: 26px;
+    }
+    .input-box {
+      flex: 1;
+      font-size: 16px;
+      color: #1f1f1f;
+    }
+  }
+  .scan-desc {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    font-size: 12px;
+    color: #666666;
+    line-height: 14px;
+    gap: 7px;
+    img {
+      width: 12px;
+      height: 12px;
+    }
+  }
+}
+.center-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .input-box {
+    display: flex;
+    gap: 20px;
+    .scan-input {
+      &:nth-child(1) {
+        width: 600px;
+      }
+    }
+  }
+
+  .btn-box {
+    width: 110px;
+    height: 64px;
+    background: #ffffff;
+    border-radius: 16px 16px 16px 16px;
+    border: 2px solid #5745c5;
+    overflow: hidden;
+    :deep(.q-btn__content) {
+      font-weight: 600 !important;
+      font-size: 18px !important;
+      color: #5745c5 !important;
+    }
+  }
+}
+
+.scan-filter-item {
+  width: 200px;
+  :deep(.q-field__control) {
+    background: #e8e4ff !important;
+    border-radius: 9px 9px 9px 9px !important;
+    min-height: 50px !important;
+    height: 50px !important;
+    &:before {
+      border: none !important;
     }
   }
 }

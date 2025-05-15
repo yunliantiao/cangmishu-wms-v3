@@ -46,6 +46,30 @@ const constantRouterMap = [
         name: 'Receive',
         component: () => import('@/views/Inbound/Receive.vue'),
     },
+    // 扫描上架
+    {
+        path: '/inbound/shelve',
+        name: 'Shelve',
+        component: () => import('@/views/Inbound/Shelve.vue'),
+    },
+    // 扫描出库
+    {
+        path: '/scan/wave',
+        name: 'ScanWave',
+        component: () => import('@/views/Out/Wave/SortOut.vue'),
+    },
+    // 扫描包装
+    {
+        path: '/scan/packing',
+        name: 'ScanPacking',
+        component: () => import('@/views/Out/Wave/ScanPacking.vue'),
+    },
+    // 扫描验货
+    {
+        path: '/examine/goods',
+        name: 'ExamineGoods',
+        component: () => import('@/views/Deliver/ExamineGoods.vue'),
+    },
     {
         path: '/Test',
         name: 'Test',

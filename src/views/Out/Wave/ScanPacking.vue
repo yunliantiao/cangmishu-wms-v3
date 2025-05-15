@@ -1,6 +1,13 @@
 <template>
   <div class="scan-page">
-    <div class="scan-header">
+    <ScanTop
+      ref="scanTopRef"
+      :title="trans('扫描包装')"
+      :placeholder="trans('请扫描或输入波次号')"
+      v-model:scanValue="pageData.scanValue"
+      @confirm="search"
+    ></ScanTop>
+    <!-- <div class="scan-header">
       <div class="title">{{ trans("扫描包装") }}</div>
     </div>
 
@@ -20,80 +27,81 @@
         <q-icon name="info_outline" size="16px" color="grey-7" />
         <span>{{ trans("请先切换为EN输入法") }}</span>
       </div>
+    </div> -->
+
+    <div class="scan-main-table">
+      <q-table
+        :rows="pageData.waveData"
+        :columns="pageData.columns"
+        row-key="id"
+        flat
+        style="width: 100%"
+        separator="horizontal"
+        :loading="pageData.loading"
+        :hide-pagination="true"
+        :pagination="{ rowsPerPage: 0 }"
+      >
+        <template v-slot:body="props">
+          <q-tr :props="props">
+            <q-td key="wave_number" :props="props">
+              {{ props.row.wave_number }}
+            </q-td>
+
+            <q-td key="wave_type" :props="props">
+              {{ getTypeDesc(props.row.wave_type) }}
+            </q-td>
+
+            <q-td key="logistics_group_ids" :props="props">
+              {{ props.row.logistics_group_ids }}暂无
+            </q-td>
+
+            <q-td key="package_count" :props="props">
+              {{ props.row.package_count }}
+            </q-td>
+
+            <q-td key="sku_type_count" :props="props">
+              {{ props.row.sku_type_count }}
+            </q-td>
+
+            <q-td key="picker" :props="props">
+              {{ props.row.pick_by?.name }}
+            </q-td>
+
+            <q-td key="picker" :props="props">
+              {{ props.row.pack_by?.name }}
+            </q-td>
+
+            <q-td key="status" :props="props">
+              {{ getStatusDesc(props.row.status) }}
+            </q-td>
+
+            <q-td key="actions" :props="props">
+              <q-btn
+                flat
+                round
+                class="table-icon"
+                size="sm"
+                @click="handlePack(props.row)"
+              >
+                <img src="@/assets/images/package.png" />
+                <q-tooltip>{{ trans("开始打包") }}</q-tooltip>
+              </q-btn>
+
+              <q-btn
+                flat
+                round
+                class="table-icon"
+                size="sm"
+                @click="handlePrint(props.row)"
+              >
+                <img src="@/assets/images/print.png" />
+                <q-tooltip>{{ trans("打印") }}</q-tooltip>
+              </q-btn>
+            </q-td>
+          </q-tr>
+        </template>
+      </q-table>
     </div>
-
-    <q-table
-      :rows="pageData.waveData"
-      :columns="pageData.columns"
-      row-key="id"
-      flat
-      bordered
-      style="width: 80%; margin-top: 20px"
-      separator="horizontal"
-      :loading="pageData.loading"
-      :hide-pagination="true"
-      :pagination="{ rowsPerPage: 0 }"
-    >
-      <template v-slot:body="props">
-        <q-tr :props="props">
-          <q-td key="wave_number" :props="props">
-            {{ props.row.wave_number }}
-          </q-td>
-
-          <q-td key="wave_type" :props="props">
-            {{ getTypeDesc(props.row.wave_type) }}
-          </q-td>
-
-          <q-td key="logistics_group_ids" :props="props">
-            {{ props.row.logistics_group_ids }}暂无
-          </q-td>
-
-          <q-td key="package_count" :props="props">
-            {{ props.row.package_count }}
-          </q-td>
-
-          <q-td key="sku_type_count" :props="props">
-            {{ props.row.sku_type_count }}
-          </q-td>
-
-          <q-td key="picker" :props="props">
-            {{ props.row.pick_by?.name }}
-          </q-td>
-
-          <q-td key="picker" :props="props">
-            {{ props.row.pack_by?.name }}
-          </q-td>
-
-          <q-td key="status" :props="props">
-            {{ getStatusDesc(props.row.status) }}
-          </q-td>
-
-          <q-td key="actions" :props="props">
-            <q-btn
-              flat
-              round
-              class="table-icon"
-              size="sm"
-              @click="handlePack(props.row)"
-            >
-              <img src="@/assets/images/package.png" />
-              <q-tooltip>{{ trans("开始打包") }}</q-tooltip>
-            </q-btn>
-
-            <q-btn
-              flat
-              round
-              class="table-icon"
-              size="sm"
-              @click="handlePrint(props.row)"
-            >
-              <img src="@/assets/images/print.png" />
-              <q-tooltip>{{ trans("打印") }}</q-tooltip>
-            </q-btn>
-          </q-td>
-        </q-tr>
-      </template>
-    </q-table>
   </div>
 </template>
 
@@ -104,6 +112,7 @@ import outApi from "@/api/out.js";
 import Message from "@/utils/message.js";
 import { useRouter } from "vue-router";
 import trans from "@/i18n";
+import ScanTop from "@/components/ScanTop/Index.vue";
 
 const router = useRouter();
 const scanInput = ref(null);
@@ -264,13 +273,8 @@ const handlePack = (row) => {
 
 <style scoped>
 .scan-page {
-  width: 100%;
-  height: 100vh;
-  /* background-color: #f0f2f5; */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: 60px;
+  min-height: 100vh;
+  background-color: #f4f5f8;
 }
 
 .scan-header {

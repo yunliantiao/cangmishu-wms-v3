@@ -2,7 +2,7 @@ const Container = () => import(`../views/Layout/Container.vue`)
 const WarehouseWarrant = () => import(`../views/Inbound/WarehouseWarrant.vue`)
 // const Sign = () => import(`../views/Inbound/sign.vue`)
 // const Receive = () => import(`../views/Inbound/receive.vue`)
-const Shelve = () => import(`../views/Inbound/shelve.vue`)
+// const Shelve = () => import(`../views/Inbound/shelve.vue`)
 import trans from "@/i18n";
 
 export default [
@@ -53,7 +53,8 @@ export default [
             {
                 path: 'shelve',
                 name: 'shelve',
-                component: Shelve,
+                // component: Shelve,
+                redirect: '/inbound/shelve',
                 id: 1001,
                 meta: {
                     level: 2,

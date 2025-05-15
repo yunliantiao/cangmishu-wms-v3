@@ -4,10 +4,10 @@ const OutboundOrder = () => import(`../views/Out/OutboundOrder.vue`)
 const Wave = () => import(`../views/Out/Wave/Index.vue`)
 const WaveList = () => import(`../views/Out/Wave/List.vue`)
 const WaveInfo = () => import(`../views/Out/Wave/Info.vue`)
-const SortOut = () => import(`../views/Out/Wave/SortOut.vue`)
+// const SortOut = () => import(`../views/Out/Wave/SortOut.vue`)
 const Pigeonholes = () => import(`../views/Out/Wave/Pigeonholes.vue`)
 const Packaging = () => import(`../views/Out/Wave/Packaging.vue`)
-const ScanPacking = () => import(`../views/Out/Wave/ScanPacking.vue`)
+// const ScanPacking = () => import(`../views/Out/Wave/ScanPacking.vue`)
 import trans from "@/i18n";
 export default [
     {
@@ -65,9 +65,9 @@ export default [
                 },
             },
             {
-                path: 'wave/sort/out',
+                path: 'sort/out',
                 name: 'SortOut',
-                component: SortOut,
+                redirect: "/scan/wave",
                 id: 1005,
                 meta: {
                     level: 2,
@@ -77,8 +77,9 @@ export default [
             },
             {
                 path: 'wave/scan/packing',
-                name: 'ScanPacking',
-                component: ScanPacking,
+                name: 'WaveScanPacking',
+                // component: ScanPacking,
+                redirect: '/scan/packing',
                 id: 1009,
                 meta: {
                     level: 2,
