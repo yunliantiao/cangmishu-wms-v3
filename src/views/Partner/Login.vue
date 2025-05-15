@@ -67,9 +67,14 @@ const handleLogin = async () => {
     pageData.token = tempToken;
 
     // 调用登录API
-    const res = await indexApi.quickLogin({ token: tempToken });
-    store.commit("UPDATE_TOKEN", res.data.token);
-    store.commit("UPDATE_USER_INFO", res.data.user);
+    const { data } = await indexApi.quickLogin({ token: tempToken });
+
+    let warehouseId = data?.user?.default_warehouse?.id;
+    if (warehouseId) {
+      localStorage.setItem("warehouseId", warehouseId);
+    }
+    store.commit("UPDATE_TOKEN", data.token);
+    store.commit("UPDATE_USER_INFO", data.user);
     router.push("/");
     // 更新状态
     pageData.loading = false;

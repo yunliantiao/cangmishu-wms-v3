@@ -101,6 +101,15 @@
 
     <!-- 数据表格 -->
     <div class="main-table">
+      <q-btn
+        color="primary"
+        icon="print"
+        :label="trans('批量打印')"
+        outline
+        flat
+        :loading="$store.state.btnLoading"
+        @click="handleBatchPrint"
+      />
       <q-table
         :rows="packages"
         :columns="columns"
@@ -300,6 +309,7 @@ import outApi from "@/api/out";
 import DatePickerNew from "@/components/DatePickerNew/Index.vue";
 import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 import trans from "@/i18n";
+import Message from "@/utils/message.js";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -729,6 +739,26 @@ onMounted(() => {
   // 初始化逻辑，可以加载数据等
   getOutboundOrder();
 });
+
+const handleBatchPrint = async () => {
+  console.log("批量打印");
+  let ids = [];
+  selectedRows.value.forEach((item) => {
+    item.packages.forEach((ele) => {
+      ids.push(ele.id);
+    });
+  });
+  if (!ids.length) {
+    Message.notify("请选择包裹");
+    return;
+  }
+  let params = {
+    ids: ids,
+  };
+  const { data } = await outApi.batchPrintOrder(params);
+  console.log("data", data);
+  window.open(data.data, "_blank");
+};
 </script>
 
 <style lang="scss">
@@ -843,6 +873,10 @@ onMounted(() => {
       padding-right: 8px;
     }
   }
+}
+
+.main-table {
+  padding-top: 10px;
 }
 </style>
 

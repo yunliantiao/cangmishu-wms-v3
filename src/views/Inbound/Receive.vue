@@ -1,6 +1,7 @@
 <template>
   <div class="scan-receive-page">
     <ScanTop
+      v-if="!orderData"
       :title="trans('扫描收货')"
       :placeholder="trans('请扫描入库单号、ERP单号、运单号或箱唛')"
       ref="scanTopRef"
@@ -8,98 +9,61 @@
       @confirm="handleScan"
     />
     <!-- 标题和扫描区域 -->
-    <div class="scan-header rounded-borders q-pa-lg q-mb-md">
-      <!-- <template v-if="!orderData">
-        <div class="text-h5 text-weight-medium text-center q-mb-lg">
-          {{ trans("扫描收货") }}
-        </div>
-        <div class="scan-container q-mx-auto" style="max-width: 800px">
-          <q-input
-            outlined
-            v-model="scanCode"
-            :placeholder="trans('请扫描入库单号、ERP单号、运单号或箱唛')"
-            class="scan-input"
-            ref="scanInput"
-            @keyup.enter="handleScan"
-            :loading="$store.state.btnLoading"
-          >
-            <template v-slot:prepend>
-              <q-icon
-                name="qr_code_scanner"
-                class="cursor-pointer"
-                @click="handleScan"
-              />
-            </template>
-            <template v-slot:append>
-              <q-icon name="help_outline" class="cursor-pointer">
-                <q-tooltip>{{
-                  trans("支持扫描入库单号、ERP单号、运单号或箱唛编号")
-                }}</q-tooltip>
-              </q-icon>
-            </template>
-          </q-input>
-          <div class="text-caption text-grey q-mt-sm">
-            <q-icon name="info_outline" size="xs" class="q-mr-xs" />
-            {{ trans("请先切换成[EN]输入法") }}
-          </div>
-        </div>
-      </template> -->
-
+    <div class="scan-header" v-if="orderData">
       <!-- 已扫描时显示标题和操作按钮 -->
-      <template v-if="orderData">
-        <div class="row justify-between items-center">
-          <div class="text-h6">
-            {{ trans("扫描收货") }}
-            <span class="text-primary q-ml-sm"
-              >{{ trans("ERP单号/入库单号") }} {{ inboundInfo }}</span
-            >
-          </div>
-          <div class="row q-gutter-sm">
-            <q-btn
-              color="grey-6"
-              @click="resetOrder"
-              icon="restart_alt"
-              :label="trans('重置')"
-              flat
-              class="bg-grey-2"
-            />
-            <!-- <q-btn
-              color="primary"
-              icon="print"
-              label="打印上架单"
-              outline
-              :loading="$store.state.btnLoading"
-              v-if="arrivalMethod == 'express_parcel'"
-              @click="handlePrint"
-            /> -->
-            <q-btn
-              color="primary"
-              icon="content_paste_search"
-              :label="trans('新品维护')"
-              outline
-              :loading="$store.state.btnLoading"
-              v-if="arrivalMethod == 'box' && currentProducts.length"
-              @click="handleNewSku"
-            />
+      <div class="head-box">
+        <span class="header-title">
+          {{ trans("扫描收货") }}
+        </span>
+        <span class="head-title-2">{{ trans("ERP单号/入库单号") }}</span>
+        <span class="head-number">{{ inboundInfo }}</span>
+      </div>
+      <div class="btn-box">
+        <q-btn
+          color="primary"
+          @click="resetOrder"
+          :label="trans('重置')"
+          class="btn"
+          outline
+        />
+        <q-btn
+          color="primary"
+          :label="trans('新品维护')"
+          class="btn"
+          :loading="$store.state.btnLoading"
+          v-if="arrivalMethod == 'box' && currentProducts.length"
+          @click="handleNewSku"
+        />
 
-            <q-btn
-              color="primary"
-              icon="check_circle"
-              :label="trans('确认收货')"
-              unelevated
-              :loading="$store.state.btnLoading"
-              @click="handleConfirm"
-            />
-          </div>
-        </div>
-      </template>
+        <q-btn
+          color="primary"
+          :label="trans('确认收货')"
+          unelevated
+          class="btn"
+          :loading="$store.state.btnLoading"
+          @click="handleConfirm"
+        />
+      </div>
     </div>
 
     <!-- 订单详情区域 -->
-    <div
-      v-if="orderData"
-      class="order-info bg-white q-pa-lg q-mb-md rounded-borders"
-    >
+    <div v-if="orderData" class="order-info">
+      <div class="info-item">
+        <span class="info-label">{{ trans("客户") }}</span>
+        <span class="info-value">{{ orderData?.customer?.name }}</span>
+      </div>
+
+      <div class="info-item">
+        <span class="info-label">{{ trans("运单号") }}</span>
+        <span class="info-value">{{ orderData.tracking_number }}</span>
+      </div>
+
+      <div class="info-item">
+        <span class="info-label">{{ trans("备注") }}</span>
+        <span class="info-value">{{ orderData.remark || "--" }}</span>
+      </div>
+
+      <!-- 
       <div class="row q-col-gutter-lg">
         <div class="col-6 col-md-3">
           <div class="info-label">{{ trans("客户") }}</div>
@@ -113,13 +77,13 @@
           <div class="info-label">{{ trans("备注") }}</div>
           <div class="info-value">{{ orderData.remark || "--" }}</div>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <!-- 按箱收货 -->
     <div
       v-if="orderData && arrivalMethod == 'express_parcel'"
-      class="products-section bg-white rounded-borders"
+      class="products-section"
     >
       <ReceivingParcel
         :products="products"
@@ -801,10 +765,42 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .scan-header {
-  background-color: #f5f7fa;
-  .scan-container {
-    .scan-input {
-      margin-bottom: 0.5rem;
+  padding: 0 calc((100vw - 1400px) / 2);
+  background: #ffffff;
+  border-radius: 0px 0px 0px 0px;
+  display: flex;
+  height: 80px;
+  justify-content: space-between;
+  align-items: center;
+  .head-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    .header-title {
+      font-weight: 600;
+      font-size: 24px;
+      color: #1f1f1f;
+    }
+    .head-title-2 {
+      font-weight: 500;
+      font-size: 14px;
+      color: #666666;
+    }
+    .head-number {
+      font-weight: bold;
+      font-size: 16px;
+      color: #5745c5;
+    }
+  }
+
+  .btn-box {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    .btn {
+      border-radius: 9px 9px 9px 9px;
+      padding: 0 32px;
+      height: 42px;
     }
   }
 }
@@ -813,30 +809,48 @@ onMounted(() => {
   margin: 0 5px;
 }
 
-// 通用卡片样式
-.order-info,
-.products-section {
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
+// // 通用卡片样式
+// .order-info,
+// .products-section {
+//   // border: 1px solid rgba(0, 0, 0, 0.12);
+//   // box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+// }
 
 .order-info {
-  .info-label {
-    color: rgba(0, 0, 0, 0.6);
-    font-size: 0.875rem;
-    margin-bottom: 0.25rem;
-  }
+  padding: 20px;
+  width: 1400px;
+  background: #ffffff;
+  border-radius: 16px 16px 16px 16px;
+  height: 60px;
+  display: flex;
+  gap: 20px;
+  margin: 20px auto;
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    .info-label {
+      font-weight: 500;
+      font-size: 14px;
+      color: #666666;
+    }
 
-  .info-value {
-    font-size: 1rem;
-    font-weight: 500;
+    .info-value {
+      font-weight: bold;
+      font-size: 16px;
+      color: #1f1f1f;
+      width: 200px;
+    }
   }
 }
 
 .products-section {
-  .section-header {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-  }
+  width: 1400px;
+  background: #ffffff;
+  border-radius: 16px 16px 16px 16px;
+  padding: 20px;
+  margin: 0 auto;
 }
 
 // 表格和表单样式

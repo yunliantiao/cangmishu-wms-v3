@@ -1,72 +1,72 @@
 <template>
   <div class="move-create-page">
-    <div class="row items-center justify-between q-pa-md bg-white q-mb-md">
-      <div class="row items-center">
-        <q-btn flat dense icon="arrow_back" @click="$router.back()" />
+    <div class="page-header">
+      <div class="left-back">
+        <!-- <q-btn flat dense icon="arrow_back" @click="$router.back()" /> -->
+        <img src="@/assets/images/back.png" />
         <div class="text-h6 q-ml-sm">{{ trans("创建调整单") }}</div>
       </div>
-      <div>
+      <div class="right-btn">
         <q-btn
           outline
           :label="trans('取消')"
-          color="grey"
-          class="q-mr-sm"
+          color="primary"
+          class="btn"
           @click="$router.back()"
         />
         <q-btn
           unelevated
           color="primary"
-          :label="trans('保存')"
+          :label="trans('确认')"
           :loading="loading"
+          class="btn"
           @click="handleSave"
         />
       </div>
     </div>
 
-    <div class="q-mb-md">
+    <div class="form-box">
       <!-- 基本信息 -->
-      <div class="bg-white rounded-borders q-pa-lg q-mb-md">
-        <div class="text-subtitle1 q-mb-md">{{ trans("基本信息") }}</div>
-        <q-form ref="formRef" class="q-gutter-md" @submit="handleSave">
-          <div class="row q-mb-md">
-            <div class="col-4">
-              <q-select
-                outlined
-                v-model="formData.type"
-                :options="moveTypeOptions"
-                :label="trans('调整类型')"
-                :rules="rules.type"
-                emit-value
-                map-options
-              >
-                <template v-slot:append>
-                  <span class="text-red">*</span>
-                </template>
-              </q-select>
-            </div>
+      <div class="form-title">{{ trans("基本信息") }}</div>
+      <q-form ref="formRef" class="q-gutter-md" @submit="handleSave">
+        <div class="row">
+          <div class="col-4">
+            <q-select
+              outlined
+              dense
+              v-model="formData.type"
+              :options="moveTypeOptions"
+              :label="trans('调整类型')"
+              class="filter-item global-mt"
+              :rules="rules.type"
+              emit-value
+              map-options
+            >
+              <template v-slot:append>
+                <span class="text-red">*</span>
+              </template>
+            </q-select>
           </div>
-          <div class="row">
-            <div class="col-8">
-              <q-input
-                outlined
-                v-model="formData.remark"
-                :label="trans('备注')"
-                type="textarea"
-                rows="4"
-              />
-            </div>
+        </div>
+        <div class="row" style="margin-top: -2px">
+          <div class="col-8">
+            <q-input
+              outlined
+              v-model="formData.remark"
+              :label="trans('备注')"
+              type="textarea"
+              rows="4"
+            />
           </div>
-        </q-form>
-      </div>
+        </div>
+      </q-form>
 
-      <div class="bg-white rounded-borders q-pa-lg">
-        <div class="row items-center justify-between q-mb-lg">
-          <div class="text-subtitle1">{{ trans("调整信息") }}</div>
+      <div class="bg-white rounded-borders global-mt">
+        <div class="row items-center justify-between">
           <q-btn
-            outline
+            flat
             color="primary"
             :label="trans('选择商品')"
-            icon="add"
             @click="showProductSelector = true"
           />
         </div>
@@ -86,7 +86,7 @@
               <div class="row items-center justify-center">
                 <div>{{ trans("调整数量") }}</div>
                 <div class="batch-btn" @click="showBatchQuantityDialog">
-                  {{ trans("批量") }}
+                  ({{ trans("批量") }})
                 </div>
               </div>
             </q-th>
@@ -141,10 +141,8 @@
                       dense
                       round
                       size="sm"
-                      icon="add"
-                      :label="trans('添加')"
                       color="primary"
-                      class="shadow-1"
+                      class="table-icon"
                       v-if="
                         props.row.moveOutShelfSkuVos.length > 1 &&
                         props.row.moveOutShelfSkuVos.length !=
@@ -157,7 +155,9 @@
                           quantity_type: 'sub',
                         })
                       "
-                    />
+                    >
+                      <img src="@/assets/images/add-1.png" />
+                    </q-btn>
                     <q-btn
                       v-if="props.row.moveOutLocation.length > 1"
                       flat
@@ -187,7 +187,7 @@
               </q-td>
               <q-td key="quantity" :props="props">
                 <div class="row items-center justify-center q-gutter-x-sm">
-                  <q-select
+                  <!-- <q-select
                     outlined
                     dense
                     v-model="props.row.moveOutLocation[0].quantity_type"
@@ -206,6 +206,19 @@
                     type="number"
                     style="width: 100px"
                     :placeholder="trans('请输入')"
+                  /> -->
+
+                  <KeywordSearch
+                    :options="[
+                      { label: trans('增加'), value: 'add' },
+                      { label: trans('减少'), value: 'sub' },
+                    ]"
+                    :showSearchMode="false"
+                    :placeholder="trans('请输入')"
+                    v-model:search_value="props.row.moveOutLocation[0].quantity"
+                    v-model:search_type="
+                      props.row.moveOutLocation[0].quantity_type
+                    "
                   />
                 </div>
               </q-td>
@@ -219,11 +232,15 @@
                   round
                   dense
                   size="sm"
-                  color="grey-6"
-                  icon="delete"
-                  class="shadow-1"
+                  class="table-icon"
                   @click="handleDeleteItem(props.row)"
-                />
+                >
+                  <img src="@/assets/images/del.png" />
+
+                  <q-tooltip>
+                    {{ trans("删除") }}
+                  </q-tooltip>
+                </q-btn>
               </q-td>
             </q-tr>
 
@@ -410,6 +427,7 @@ import inventoryApi from "@/api/inventory";
 import Pagination from "@/components/Pagination.vue";
 import ProductSelector from "./components/ProductSelector.vue";
 import trans from "@/i18n";
+import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -742,8 +760,53 @@ const handleBatchSetQuantity = () => {
 
 <style lang="scss" scoped>
 .move-create-page {
+  min-height: 100vh;
+  background: #f4f5f8;
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 calc((100vw - 1400px) / 2);
+    height: 80px;
+    background: #ffffff;
+    border-radius: 0px 0px 0px 0px;
+
+    .left-back {
+      font-weight: 600;
+      font-size: 20px;
+      color: #1f1f1f;
+      gap: 6px;
+      display: flex;
+      align-items: center;
+      img {
+        width: 24px;
+        height: 24px;
+      }
+    }
+    .right-btn {
+      display: flex;
+      gap: 20px;
+      .btn {
+        width: 130px;
+        height: 44px;
+        border-radius: 9px 9px 9px 9px;
+      }
+    }
+  }
+
+  .form-box {
+    padding: 20px;
+    width: 1400px;
+    margin: 20px auto;
+    background: #ffffff;
+    border-radius: 16px 16px 16px 16px;
+    .form-title {
+      font-weight: 600;
+      font-size: 20px;
+      color: #1f1f1f;
+    }
+  }
   :deep(.q-table) {
-    border: 1px solid #ebeef5;
     border-radius: 4px;
 
     thead tr {
@@ -752,9 +815,7 @@ const handleBatchSetQuantity = () => {
         font-weight: 500;
         font-size: 14px;
         color: rgba(0, 0, 0, 0.85);
-        background-color: #f5f7fa;
         padding: 16px;
-        border: 1px solid #ebeef5;
       }
     }
 
@@ -828,10 +889,11 @@ const handleBatchSetQuantity = () => {
 
 .batch-btn {
   cursor: pointer;
-  color: #0064fa;
-  font-weight: 500;
-  margin-left: 10px;
+  font-weight: 600;
   font-size: 12px;
+  color: #1f1f1f;
+  margin-left: 10px;
+  color: #5745c5;
 }
 
 .modal_content {

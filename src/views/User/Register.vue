@@ -4,25 +4,25 @@
       <h2 class="login-title">{{ trans("注册") }}</h2>
       <q-input
         v-model="ruleForm.name"
-        filled
         type="text"
+        outlined
         :label="trans('用户名')"
         class="q-mb-md"
         :rules="[(val) => !!val || trans('请输入用户名')]"
       />
       <q-input
         v-model="ruleForm.email"
-        filled
         type="email"
+        outlined
         :label="trans('邮箱')"
         class="q-mb-md"
         :rules="[(val) => !!val || trans('请输入邮箱')]"
       />
       <q-input
         v-model="ruleForm.password"
-        filled
         :type="isPwd ? 'password' : 'text'"
         :label="trans('密码')"
+        outlined
         class="q-mb-md"
         :rules="[(val) => !!val || trans('请输入密码')]"
       >
@@ -175,31 +175,31 @@ const onSubmit = () => {
 
 <style scoped lang="scss">
 .form-container {
-  width: 100%;
-  max-width: 380px;
   padding: 0 10px;
 }
 
 .login-title {
-  text-align: center;
-  font-size: 24px;
-  font-weight: 500;
-  margin-bottom: 24px;
-  color: #333;
+  font-weight: bold;
+  font-size: 2rem;
+  color: #1f1f1f;
+  margin-bottom: 80px;
 }
 .login-btn {
-  height: 42px;
+  height: 60px;
   font-size: 15px;
   font-weight: 500;
-  border-radius: 4px;
+  border-radius: 9px 9px 9px 9px;
   margin-top: 16px;
-  background-color: #0f1f3d !important;
+  font-weight: bold;
+  font-size: 24px;
+  color: #ffffff;
 }
 .login-options {
   display: flex;
   align-items: center;
-  margin-top: 12px;
-  font-size: 13px;
+  justify-content: center;
+  margin-top: 2rem;
+  font-size: 1rem;
 
   span {
     color: #666;
@@ -264,6 +264,16 @@ const onSubmit = () => {
         width: 100%;
       }
     }
+  }
+}
+
+@media (max-width: 767px) {
+  .login-title {
+    margin-bottom: 1rem;
+  }
+
+  .login-form-section {
+    width: 100%;
   }
 }
 </style>

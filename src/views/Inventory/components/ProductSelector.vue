@@ -13,7 +13,15 @@
 
       <q-card-section class="scroll">
         <div class="row items-center q-col-gutter-sm q-mb-md flex-wrap">
-          <div class="col-12 col-sm-auto">
+          <KeywordSearch
+            :searchTypeList="searchTypeOptions"
+            :searchModeList="searchModeOptions"
+            :placeholder="trans('批量搜索用逗号隔开')"
+            v-model:search_value="skuParams.keywords"
+            v-model:search_type="skuParams.search_type"
+            v-model:search_mode="skuParams.search_mode"
+          />
+          <!-- <div class="col-12 col-sm-auto">
             <q-select
               outlined
               dense
@@ -35,8 +43,8 @@
               class="keywords-input"
               style="min-width: 200px"
             />
-          </div>
-          <div class="col-12 col-sm-auto">
+          </div> -->
+          <!-- <div class="col-12 col-sm-auto">
             <q-select
               outlined
               dense
@@ -48,13 +56,13 @@
               option-label="label"
               class="search-mode-select"
             />
-          </div>
+          </div> -->
           <div class="col-12 col-sm-auto">
             <q-btn
               color="primary"
               :label="trans('搜索')"
               @click="getSkuList"
-              class="full-width"
+              class="filter-btn"
             />
           </div>
           <div class="col-12 col-sm-grow">
@@ -153,6 +161,7 @@ import { ref, reactive, watch } from "vue";
 import productApi from "@/api/product";
 import Pagination from "@/components/Pagination.vue";
 import trans from "@/i18n";
+import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 
 const props = defineProps({
   modelValue: {
@@ -185,7 +194,7 @@ const skuParams = reactive({
   page: 1,
   per_page: 10,
   total: 0,
-  search_mode: "fuzzy",
+  search_mode: "exact",
   search_type: "sku",
   keywords: "",
 });

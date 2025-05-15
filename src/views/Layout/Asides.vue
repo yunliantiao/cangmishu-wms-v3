@@ -16,8 +16,12 @@
         >
           <template v-slot:header>
             <div class="menu-header-content">
-              <!-- <q-icon :name="route.icon" size="sm" class="menu-icon" /> -->
-              <img :src="getImg(route)" alt="" class="img-icon" />
+              <img
+                v-if="getImg(route)"
+                :src="getImg(route)"
+                alt=""
+                class="img-icon"
+              />
               <div class="menu-title">
                 {{ route.meta?.name || route.name || route.path }}
               </div>
@@ -25,23 +29,22 @@
           </template>
 
           <!-- 子菜单项 -->
-          <!-- :to="`/${route.path}/${childRoute.path}`" -->
-          <!-- @click="toPath(`/${route.path}/${childRoute.path}`, childRoute)" -->
-
           <q-item
             v-for="childRoute in getLevel2Routes(route.children)"
             :key="childRoute.path"
             v-ripple
             clickable
             :to="`/${route.path}/${childRoute.path}`"
+            @click.stop.prevent="
+              toPath(`/${route.path}/${childRoute.path}`, childRoute)
+            "
             class="route-item"
             active-class="q-item--active"
           >
-            <!-- <q-item-section avatar class="submenu-icon">
-              <q-icon name="circle" size="xs" />
-            </q-item-section> -->
             <q-item-section class="submenu-title">
-              <q-item-label>{{ childRoute.meta?.name || childRoute.name }}</q-item-label>
+              <q-item-label>{{
+                childRoute.meta?.name || childRoute.name
+              }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-expansion-item>
@@ -56,8 +59,12 @@
           active-class="q-item--active"
         >
           <div class="menu-header-content">
-            <!-- <q-icon :name="route.icon" size="sm" class="menu-icon" /> -->
-            <img :src="getImg(route)" alt="" class="img-icon" />
+            <img
+              v-if="getImg(route)"
+              :src="getImg(route)"
+              alt=""
+              class="img-icon"
+            />
             <div class="menu-title">
               {{ route.meta?.name || route.name || route.path }}
             </div>
@@ -73,20 +80,23 @@
 </template>
 
 <script>
-import { useQuasar } from 'quasar';
-import { computed, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import { useStore } from 'vuex';
-import { routerMap } from '../../router';
+import { useQuasar } from "quasar";
+import { computed, watch, ref, reactive } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useStore } from "vuex";
+import { routerMap } from "../../router";
 
 export default {
-  name: 'AsidesComponent',
+  name: "AsidesComponent",
 
   setup() {
     const router = useRouter();
     const route = useRoute();
     const store = useStore();
     const $q = useQuasar();
+
+    // 图标缓存
+    const iconCache = reactive({});
 
     // 从Vuex获取侧边栏状态
     const isOpen = computed(() => store.state.leftDrawerOpen);
@@ -104,7 +114,7 @@ export default {
     watch(route, () => {
       if (isMobile.value && isOpen.value) {
         // 发射事件通知父组件关闭侧边栏
-        store.dispatch('setLeftDrawer', false);
+        store.dispatch("setLeftDrawer", false);
       }
     });
 
@@ -131,20 +141,64 @@ export default {
 
     // 切换侧边栏状态
     function toggleLeftDrawer() {
-      store.dispatch('toggleLeftDrawer');
+      store.dispatch("toggleLeftDrawer");
     }
 
+    // 预加载所有图标
+    const preloadIcons = () => {
+      routerMap.forEach((route) => {
+        if (route.icon) {
+          // 加载默认图标
+          import(`../../assets/images/asides/${route.icon}.png`)
+            .then((module) => {
+              const cacheKey = `${route.icon}`;
+              iconCache[cacheKey] = module.default;
+            })
+            .catch((error) =>
+              console.error(`无法加载图标: ${route.icon}`, error)
+            );
+
+          // 加载选中态图标
+          import(`../../assets/images/asides/${route.icon}-select.png`)
+            .then((module) => {
+              const cacheKey = `${route.icon}-select`;
+              iconCache[cacheKey] = module.default;
+            })
+            .catch((error) =>
+              console.error(`无法加载选中态图标: ${route.icon}-select`, error)
+            );
+        }
+      });
+    };
+
+    // 组件初始化时预加载图标
+    preloadIcons();
+
+    // 获取图标路径
     const getImg = (route) => {
-      let imgUrl = '';
-      // 多个子路由时,只显示灰色
-      if (hasMultipleChildren(route)) {
-        imgUrl = `/src/assets/images/asides/${route.icon}.png`;
+      if (!route.icon) return "";
+
+      const isActive = isRouteActive(route);
+      const hasMulti = hasMultipleChildren(route);
+
+      // 多子菜单时使用普通图标
+      if (hasMulti) {
+        const cacheKey = route.icon;
+        return iconCache[cacheKey] || "";
       } else {
-        // 单个时,需要判断是否为激活状态,显示高亮
-        const isActive = isRouteActive(route);
-        imgUrl = `/src/assets/images/asides/${route.icon}${isActive ? '-select' : ''}.png`;
+        // 单子菜单时根据激活状态选择图标
+        const cacheKey = isActive ? `${route.icon}-select` : route.icon;
+        return iconCache[cacheKey] || "";
       }
-      return imgUrl;
+    };
+
+    const toPath = (path, childRoute) => {
+      if (childRoute.redirect && !childRoute?.is_self) {
+        let origin = window.location.origin;
+        window.open(origin + childRoute.redirect, "_blank");
+      } else {
+        router.push(path);
+      }
     };
 
     return {
@@ -152,6 +206,7 @@ export default {
       isCollapse,
       isMobile,
       routerMap,
+      toPath,
       getImg,
       toggleLeftDrawer,
       getLevel2Routes,
@@ -221,7 +276,7 @@ export default {
 
 .route-menu {
   background-color: #ffffff;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   padding: 20px;
   transition: all 0.25s ease;
 

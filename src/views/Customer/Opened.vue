@@ -381,7 +381,7 @@
             </q-select>
           </div>
           <!-- 仓库分配全宽度显示 -->
-          <div class="col-12">
+          <!-- <div class="col-12">
             <div class="row items-center form-label">
               <div class="text-subtitle2 q-mr-sm">{{ trans("分配仓库") }}</div>
             </div>
@@ -401,19 +401,6 @@
                 class="warehouse-header row items-center bg-grey-2 q-px-md q-py-xs"
               >
                 <div class="col-4 text-subtitle2">{{ trans("计费模板") }}</div>
-                <!-- <div class="col-4 text-subtitle2">开启/关闭</div>
-                <div class="col-4 text-subtitle2">
-                  <div class="row items-center">
-                    <div>计费模板</div>
-                    <div class="text-negative q-ml-sm">*</div>
-                    <q-icon
-                      name="help_outline"
-                      size="16px"
-                      color="grey-7"
-                      class="q-ml-xs"
-                    />
-                  </div>
-                </div> -->
               </div>
               <div
                 class="warehouse-row row items-center q-px-md q-py-sm border-bottom"
@@ -426,12 +413,13 @@
                     :options="billingOptions"
                     option-value="id"
                     option-label="name"
+                    emit-value
                     :placeholder="trans('请选择')"
                   />
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
 
           <!-- 备注全宽度显示 -->
           <div class="col-12">
@@ -482,6 +470,14 @@ import { useStore } from "vuex";
 import Code from "./components/code.vue";
 import trans from "@/i18n";
 
+const billingOptions = ref([]);
+const getBillingTemplate = async () => {
+  const { data } = await customerApi.getBillingTemplate();
+  console.log("data", data);
+
+  billingOptions.value = data.items;
+};
+
 const store = useStore();
 const customerIdOptions = [
   { label: trans("客户代码"), value: "code" },
@@ -513,7 +509,6 @@ const formData = reactive({
 // 表单选项
 const phoneCodes = ["+86"];
 const currencyOptions = ["USD", "CNY"];
-const billingOptions = [{ name: trans("标准计费"), id: 1 }];
 
 const customers = ref([]);
 const warehouseList = ref([]);
@@ -718,6 +713,7 @@ const handGetCode = async (row) => {
 
 // Initialize filtered countries
 onMounted(() => {
+  getBillingTemplate();
   filteredCountries.value = store.state.countries;
 });
 </script>

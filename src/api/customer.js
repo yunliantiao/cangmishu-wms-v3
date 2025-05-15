@@ -12,5 +12,8 @@ export default {
   // 获取所有客户 不带分页
   getAllUser: () => GET('customers/all'),
   // 获取授权码
-  getAuthorizationCode: (id) => GET(`customers/${id}/partner-auth-code`)
+  getAuthorizationCode: (id) => GET(`customers/${id}/partner-auth-code`),
+
+  // 获取计费模板
+  getBillingTemplate: () => GET(`fees/templates`),
 };

@@ -82,6 +82,18 @@ const constantRouterMap = [
         name: 'wavePackaging',
         component: () => import('@/views/Out/Wave/Packaging.vue'),
     },
+    // 分拣页面
+    {
+        path: '/wave/pigeonholes',
+        name: 'wavePigeonholes',
+        component: () => import('@/views/Out/Wave/Pigeonholes.vue'),
+    },
+    // 创建调整单
+    {
+        path: '/adjust/create',
+        name: 'adjustCreate',
+        component: () => import('@/views/Inventory/CreateAdjust.vue'),
+    },
     {
         path: '/Test',
         name: 'Test',

@@ -758,6 +758,10 @@ const searchFieldOptions = [
     value: "system_order_number",
   },
   {
+    label: trans("自定义单号"),
+    value: "custom_order_number",
+  },
+  {
     label: trans("运单号"),
     value: "tracking_number",
   },

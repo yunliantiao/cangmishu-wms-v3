@@ -1,91 +1,13 @@
 <template>
   <div class="products-section bg-white rounded-borders">
-    <div class="section-header q-px-lg q-py-md">
-      <div class="row justify-between items-center q-mb-md">
-        <div class="text-subtitle1 text-weight-medium">
-          {{ trans("收货商品") }}
-        </div>
-        <div style="width: 400px">
-          <!-- <q-input
-            outlined
-            dense
-            v-model="productScanCode"
-            placeholder="请扫描商品标签"
-            @keyup.enter="handleProductScan"
-            :loading="productScanning"
-            class="product-scan-input"
-          >
-            <template v-slot:prepend>
-              <q-icon
-                name="qr_code_scanner"
-                class="cursor-pointer"
-                @click="handleProductScan"
-              />
-            </template>
-            <template v-slot:append>
-              <q-btn-dropdown flat dense>
-                <template v-slot:label>
-                  <div class="row items-center no-wrap">
-                    <span>{{ scanType }}</span>
-                    <q-icon name="arrow_drop_down" size="xs" />
-                  </div>
-                </template>
-                <q-list>
-                  <q-item
-                    clickable
-                    v-for="type in scanTypeOptions"
-                    :key="type"
-                    v-close-popup
-                    @click="scanType = type"
-                  >
-                    <q-item-section>{{ type }}</q-item-section>
-                  </q-item>
-                </q-list>
-              </q-btn-dropdown>
-            </template>
-          </q-input> -->
-        </div>
-      </div>
+    <div class="table-head">
+      <span>
+        {{ trans("收货商品") }}
+      </span>
 
-      <!-- 批量操作区域 -->
-      <div class="row justify-between items-center q-mb-md">
-        <div class="row items-center">
-          <!-- <span
-            >选择
-            {{ selectedProducts.length > 0 ? selectedProducts.length : 0 }}
-          </span>
-          <q-btn-dropdown
-            color="primary"
-            label="批量操作"
-            icon="settings"
-            flat
-            :disable="!selectedProducts.length"
-            class="q-ml-sm"
-          >
-            <q-list>
-              <q-item clickable v-close-popup @click="handleBatchDimensions">
-                <q-item-section>设置实测尺寸</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup @click="handleBatchWeight">
-                <q-item-section>设置实测重量</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup @click="handlePrintSelected">
-                <q-item-section>打印选中商品</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup @click="handlePrintAll">
-                <q-item-section>打印全部商品</q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown> -->
-        </div>
-
-        <div class="row items-center">
-          <span class="text-weight-medium q-mr-sm"
-            >{{ trans("商品类目/商品总数") }} : {{ totalItems }} /
-            {{ totalItems }}</span
-          >
-        </div>
-      </div>
+      <span class="table-number">
+        {{ trans("商品类目/商品总数") }} : {{ totalItems }} /{{ totalItems }}
+      </span>
     </div>
 
     <!-- 商品表格 -->
@@ -94,7 +16,6 @@
       :columns="columns"
       row-key="id"
       flat
-      bordered
       separator="horizontal"
       selection="multiple"
       v-model:selected="selectedProducts"
@@ -111,13 +32,14 @@
           <q-th
             v-for="col in props.cols"
             :key="col.name"
+            align="center"
             :props="props"
             :class="{ 'text-primary': col.subLabel }"
           >
             {{ col.label }}
-            <div
+            <span
               v-if="col.subLabel"
-              class="text-caption text-primary q-mt-xs cursor-pointer"
+              class="table-filter"
               @click="
                 col.name === 'dimensions'
                   ? showBatchDimensionsDialog()
@@ -130,8 +52,8 @@
                   : null
               "
             >
-              {{ col.subLabel }}
-            </div>
+              ({{ col.subLabel }})
+            </span>
           </q-th>
         </q-tr>
       </template>
@@ -142,67 +64,66 @@
             <q-checkbox v-model="props.selected" size="sm" />
           </q-td>
           <q-td key="product" :props="props">
-            <div class="row no-wrap">
-              <div style="width: 210px; white-space: break-spaces">
-                <div class="text-weight-medium">
-                  {{ props.row.product_name }}
-                </div>
-                <div class="text-caption text-grey-8">
-                  {{ props.row.product_spec_sku }}
-                </div>
-                <div class="text-caption text-grey-8">
-                  {{ props.row.product_spec_name }}
-                </div>
+            <div class="product-info">
+              <div class="product-name">
+                {{ props.row.product_name }}
+              </div>
+              <div class="product-sku">
+                {{ props.row.product_spec_sku }}
+              </div>
+              <div class="product-spec">
+                {{ props.row.product_spec_name }}
               </div>
             </div>
           </q-td>
           <q-td key="dimensions" :props="props">
-            <div class="dimensions-row">
-              <div class="col mr-1">
+            <div class="flex">
+              <div class="dimensions-row">
                 <q-input
                   dense
-                  outlined
+                  borderless
+                  style="height: 34px; margin: 0 !important; width: 60px"
+                  size="sm"
                   type="number"
                   v-model="props.row.size_length"
                   class="input-spacing"
                 />
-              </div>
-              <div class="col-auto px-1">×</div>
-              <div class="col mr-1">
                 <q-input
                   dense
-                  outlined
+                  borderless
+                  style="height: 34px; margin: 0 !important; width: 60px"
+                  size="sm"
                   type="number"
                   v-model="props.row.size_width"
                   class="input-spacing"
                 />
-              </div>
-              <div class="col-auto px-1">×</div>
-              <div class="col mr-1">
                 <q-input
                   dense
-                  outlined
+                  borderless
+                  size="sm"
                   type="number"
+                  style="height: 34px; margin: 0 !important; width: 60px"
                   v-model="props.row.size_height"
                   class="input-spacing"
                 />
+                <div class="cm-text">CM</div>
               </div>
-              <div class="col-auto px-1">cm</div>
             </div>
-            <div class="text-caption text-grey">
-              {{ trans("申报") }}: {{ props.row.product_spec_size_length }} ×
+            <div class="text-description">
+              {{ trans("客户申报") }}:
+              {{ props.row.product_spec_size_length }} ×
               {{ props.row.product_spec_size_width }} ×
               {{ props.row.product_spec_size_height }} cm
             </div>
             <div
-              class="text-caption"
+              class="text-description"
               :class="{ 'text-negative': hasVolumeDiff(props.row) }"
             >
               {{ trans("体积") }}: {{ updateVolume(props.row) }}
             </div>
           </q-td>
           <q-td key="weight" :props="props">
-            <div class="weight-row">
+            <!-- <div class="weight-row">
               <div class="col mr-1">
                 <q-input
                   dense
@@ -214,22 +135,44 @@
                 />
               </div>
               <div class="col-auto px-1">g</div>
+            </div> -->
+
+            <div class="flex">
+              <div class="dimensions-row">
+                <q-input
+                  dense
+                  borderless
+                  style="height: 34px; margin: 0 !important; width: 60px"
+                  size="sm"
+                  type="number"
+                  v-model="props.row.product_spec_actual_weight"
+                  class="input-spacing"
+                  @update:model-value="checkWeightDiff(props.row)"
+                />
+                <div class="cm-text">G</div>
+              </div>
             </div>
-            <div class="text-caption text-grey">
+            <div class="text-description">
               {{ trans("申报") }}: {{ props.row.product_spec_weight }} g
             </div>
           </q-td>
           <q-td key="quantityExpected" :props="props">
-            <div class="text-center">
-              {{ props.row.quantity }}
-            </div>
-            <div>
-              <span class="success_num">{{ props.row.received_quantity }}</span>
-              /{{ props.row.quantity }}
+            <div class="flex-center">
+              <div>
+                <div class="text-center">
+                  {{ props.row.quantity }}
+                </div>
+                <div>
+                  <span class="success_num">{{
+                    props.row.received_quantity
+                  }}</span>
+                  /{{ props.row.quantity }}
+                </div>
+              </div>
             </div>
           </q-td>
-          <q-td key="receivedQuantity" :props="props">
-            <q-input
+          <q-td key="receivedQuantity" align="center" :props="props">
+            <!-- <q-input
               dense
               outlined
               type="number"
@@ -237,57 +180,85 @@
               min="0"
               :max="props.row.quantity"
               class="input-spacing"
-            />
+            /> -->
+            <div class="flex-center">
+              <div class="dimensions-row">
+                <q-input
+                  dense
+                  borderless
+                  style="height: 34px; margin: 0 !important; width: 100px"
+                  size="sm"
+                  min="0"
+                  type="number"
+                  v-model="props.row.put_away_quantity"
+                  class="input-spacing"
+                />
+              </div>
+            </div>
           </q-td>
           <q-td key="shelfLocation" :props="props">
             <div class="shelf-location-cell">
-              <div
-                v-for="(shelf, index) in props.row.shelfLocations || []"
-                :key="index"
-                class="shelf-item q-mb-xs"
-              >
-                <q-select
-                  outlined
-                  dense
-                  v-model="shelf.location"
-                  :options="shelfLocationOptions"
-                  option-label="code"
-                  option-value="id"
-                  use-input
-                  fill-input
-                  hide-selected
-                  input-debounce="0"
-                  @filter="filterShelfLocations"
-                  class="shelf-select input-spacing"
+              <div class="huogui-box">
+                <div
+                  v-for="(shelf, index) in props.row.shelfLocations || []"
+                  :key="index"
+                  class="shelf-item q-mb-xs"
                 >
-                  <template v-slot:no-option>
-                    <q-item>
-                      <q-item-section class="text-grey">
-                        {{ trans("未找到匹配的货架位") }}
-                      </q-item-section>
-                    </q-item>
-                  </template>
-                </q-select>
-                <q-btn
-                  flat
-                  round
-                  dense
-                  icon="clear"
-                  size="xs"
-                  @click="removeShelfLocation(props.row, index)"
-                  class="delete-btn"
-                  :disabled="props.row.shelfLocations.length <= 1"
-                />
+                  <div class="select-input">
+                    <q-select
+                      dense
+                      v-model="shelf.location"
+                      :options="shelfLocationOptions"
+                      option-label="code"
+                      option-value="id"
+                      fill-input
+                      use-input
+                      hide-selected
+                      borderless
+                      input-debounce="0"
+                      @filter="filterShelfLocations"
+                      class="huojia-select"
+                    >
+                      <template v-slot:no-option>
+                        <q-item>
+                          <q-item-section class="text-grey">
+                            {{ trans("未找到匹配的货架位") }}
+                          </q-item-section>
+                        </q-item>
+                      </template>
+                    </q-select>
+                    <div class="shelf-qty-item">
+                      <q-input
+                        borderless
+                        dense
+                        :placeholder="trans('数量')"
+                        type="number"
+                        v-model="shelf.quantity"
+                        class="huojia-input"
+                      />
+                    </div>
+                  </div>
+                  <q-btn
+                    flat
+                    round
+                    dense
+                    icon="clear"
+                    size="ms"
+                    @click="removeShelfLocation(props.row, index)"
+                    class="delete-btn"
+                    :disabled="props.row.shelfLocations.length <= 1"
+                  />
+                </div>
               </div>
               <div
-                class="text-primary add-shelf-link q-mt-xs"
+                class="text-description add-btn"
                 @click="addShelfLocation(props.row)"
               >
                 {{ trans("添加货架位") }}
               </div>
             </div>
           </q-td>
-          <q-td key="shelfQty" :props="props">
+          <!-- <q-td key="shelfQty" :props="props">
             <div class="shelf-qty-cell">
               <div
                 v-for="(shelf, index) in props.row.shelfLocations || []"
@@ -303,7 +274,7 @@
                 />
               </div>
             </div>
-          </q-td>
+          </q-td> -->
         </q-tr>
       </template>
     </q-table>
@@ -552,15 +523,15 @@ const columns = [
   {
     name: "shelfLocation",
     align: "center",
-    label: trans("上架货架位"),
+    label: trans("上架货架位*数量"),
   },
-  {
-    name: "shelfQty",
-    align: "center",
-    label: trans("上架数量"),
-    subLabel: trans("全部"),
-    field: "shelfQty",
-  },
+  // {
+  //   name: "shelfQty",
+  //   align: "center",
+  //   label: trans("上架数量"),
+  //   subLabel: trans("全部"),
+  //   field: "shelfQty",
+  // },
 ];
 
 const receivedAuantity = (receivedQuantity) => {
@@ -965,8 +936,8 @@ defineExpose({
 }
 
 .order-info {
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  // border: 1px solid rgba(0, 0, 0, 0.12);
+  // box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 
   .info-label {
     color: rgba(0, 0, 0, 0.6);
@@ -981,12 +952,8 @@ defineExpose({
 }
 
 .products-section {
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-
-  .section-header {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-  }
+  // border: 1px solid rgba(0, 0, 0, 0.12);
+  // box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 
   .product-scan-input {
     .q-field__control {
@@ -1000,7 +967,7 @@ defineExpose({
       font-size: 14px;
       color: rgba(0, 0, 0, 0.85);
       padding: 12px;
-      background-color: #f5f7fa;
+      background: #fbfaff;
       white-space: nowrap;
       vertical-align: middle;
     }
@@ -1010,13 +977,6 @@ defineExpose({
       font-size: 14px;
       color: rgba(0, 0, 0, 0.75);
       vertical-align: top;
-
-      .q-input,
-      .q-select,
-      :deep(.q-input),
-      :deep(.q-select) {
-        margin: 5px 0 !important;
-      }
     }
 
     .q-checkbox {
@@ -1124,7 +1084,6 @@ defineExpose({
   align-items: flex-start;
 }
 
-.dimensions-row,
 .weight-row {
   display: flex;
   align-items: center;
@@ -1138,5 +1097,165 @@ defineExpose({
 /* 全局强制应用到Quasar输入框 */
 .q-field.q-field--outlined {
   margin: 5px 0 !important;
+}
+
+.table-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  span {
+    &:nth-child(1) {
+      font-weight: bold;
+      font-size: 16px;
+      color: #1f1f1f;
+    }
+    &:nth-child(2) {
+      font-weight: 500;
+      font-size: 12px;
+      color: #5745c5;
+    }
+  }
+}
+.table-filter {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: #5745c5;
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  .product-name {
+    font-weight: 500;
+    font-size: 14px;
+    color: #1f1f1f;
+  }
+  .product-sku {
+    font-weight: 500;
+    font-size: 12px;
+    color: #666666;
+  }
+  .product-spec {
+    font-weight: 500;
+    font-size: 12px;
+    color: #666666;
+  }
+}
+.dimensions-row {
+  display: flex;
+  border: 1px solid #f0f0f0;
+  border-radius: 9px 9px 9px 9px;
+  height: 34px;
+  overflow: hidden;
+  :deep(.q-input) {
+    margin: 0 !important;
+  }
+  .q-field__control {
+    padding: 0 !important;
+    height: 34px !important;
+  }
+  :deep(.q-field__native) {
+    padding: 0 10px !important;
+    height: 34px !important;
+  }
+  .q-field__control-container {
+    height: 34px !important;
+  }
+  :deep(.q-input) {
+    margin: 0 !important;
+  }
+  .q-field--dense .q-field__control {
+    height: 34px !important;
+  }
+  .q-select {
+    margin: 0 !important;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+    -webkit-appearance: textfield;
+    appearance: textfield;
+  }
+
+  .cm-text {
+    background: #f0f0f0;
+    border-radius: 0px 0px 0px 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
+    font-size: 12px;
+    color: #1f1f1f;
+    width: 60px;
+  }
+}
+.text-description {
+  font-weight: 500;
+  font-size: 12px;
+  color: #666666;
+  line-height: 14px;
+  margin-top: 6px;
+  text-align: left !important;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+.select-input {
+  display: flex;
+  border-radius: 9px 9px 9px 9px;
+  border: 1px solid #f0f0f0;
+  gap: 20px;
+  padding: 0 10px;
+  .huojia-select {
+    width: 182px;
+    height: 32px;
+    :deep(.q-field__native) {
+      min-height: 32px !important;
+      height: 32px;
+    }
+  }
+  .huojia-input {
+    width: 98px;
+    height: 34px;
+    border-left: 1px solid #f0f0f0;
+  }
+
+  .q-field__control {
+    padding: 0 !important;
+    height: 34px !important;
+  }
+  :deep(.q-field__native) {
+    padding: 0 10px !important;
+    height: 34px !important;
+  }
+  .q-field__control-container {
+    height: 34px !important;
+  }
+  :deep(.q-input) {
+    margin: 0 !important;
+  }
+  .q-field--dense .q-field__control {
+    height: 34px !important;
+  }
+  :deep(.q-select) {
+    margin: 0 !important;
+  }
+}
+.add-btn {
+  cursor: pointer;
+  color: #5745c5;
+}
+
+.huogui-box {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 </style>

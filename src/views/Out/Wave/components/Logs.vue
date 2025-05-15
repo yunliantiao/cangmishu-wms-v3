@@ -43,6 +43,8 @@ const componentData = reactive({
 });
 
 const open = (list = []) => {
+  console.log("list", list);
+
   componentData.list = list;
   componentData.visible = true;
 };

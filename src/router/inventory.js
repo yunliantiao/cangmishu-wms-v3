@@ -3,7 +3,7 @@ const InventoryList = () => import(`../views/Inventory/InventoryList.vue`)
 const Move = () => import(`../views/Inventory/Move.vue`)
 const CreateMove = () => import(`../views/Inventory/CreateMove.vue`)
 const Adjust = () => import(`../views/Inventory/Adjust.vue`)
-const CreateAdjust = () => import(`../views/Inventory/CreateAdjust.vue`)
+// const CreateAdjust = () => import(`../views/Inventory/CreateAdjust.vue`)
 const Count = () => import(`../views/Inventory/Count.vue`)
 const CreateCount = () => import(`../views/Inventory/CreateCount.vue`)
 const Stocktaking = () => import(`../views/Inventory/Stocktaking.vue`)
@@ -63,8 +63,10 @@ export default [
             {
                 path: 'create-adjust',
                 name: 'create-adjust',
-                component: CreateAdjust,
+                // component: CreateAdjust,
+                redirect: '/adjust/create',
                 id: 1005,
+                is_self: true,
                 meta: {
                     level: 3,
                     group: trans('库存管理'),

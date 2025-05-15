@@ -53,4 +53,7 @@ export default {
 
     // 获取pdf
     getShipmentPdf: (id) => GET(`packages/deliver-sign/${id}/pdf`),
+
+    // 简易打单批量打印
+    batchPrintOrder: (data) => POST(`packages/batch-print-shipping-label`, data),
 }

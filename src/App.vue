@@ -1,6 +1,8 @@
 <template>
   <div>
-    <router-view />
+    <q-layout>
+      <router-view />
+    </q-layout>
   </div>
 </template>
 

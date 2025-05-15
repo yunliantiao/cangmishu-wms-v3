@@ -8,6 +8,7 @@ export default defineConfig({
   server: {
     port: 8888,
   },
+  publicDir: './public',
   plugins: [
     vue({
       template: { transformAssetUrls },

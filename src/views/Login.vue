@@ -22,20 +22,20 @@
       <div class="login-form-section">
         <div class="form-container">
           <q-form @submit="onSubmit" v-show="loginType == 1" class="login-form">
-            <h2 class="login-title">{{ trans("登录") }}</h2>
+            <div class="login-title">{{ trans("登录") }}</div>
             <q-input
               v-model="ruleForm.email"
-              filled
               type="email"
-              :label="trans('邮箱')"
+              outlined
+              :placeholder="trans('邮箱')"
               class="q-mb-md"
               :rules="[(val) => !!val || trans('请输入邮箱')]"
             />
             <q-input
               v-model="ruleForm.password"
-              filled
               :type="isPwd ? 'password' : 'text'"
-              :label="trans('密码')"
+              :placeholder="trans('密码')"
+              outlined
               class="q-mb-md"
               :rules="[(val) => !!val || trans('请输入密码')]"
             >
@@ -43,6 +43,7 @@
                 <q-icon
                   :name="isPwd ? 'visibility_off' : 'visibility'"
                   class="cursor-pointer"
+                  v-if="ruleForm.password"
                   @click="isPwd = !isPwd"
                 />
               </template>
@@ -81,7 +82,7 @@
                 class="register-link"
                 @click="loginType = 2"
               />
-              <q-space />
+              <!-- <q-space /> -->
               <!-- <q-btn
                 flat
                 color="primary"
@@ -129,6 +130,10 @@ export default {
     const onSubmit = async () => {
       api.login(ruleForm.value).then((res) => {
         if (res.success) {
+          let warehouseId = res.data?.user?.default_warehouse?.id;
+          if (warehouseId) {
+            localStorage.setItem("warehouseId", warehouseId);
+          }
           store.commit("UPDATE_TOKEN", res.data.token);
           store.commit("UPDATE_USER_INFO", res.data.user);
           router.push("/");
@@ -263,27 +268,25 @@ export default {
 
 .login-form-section {
   width: 50%;
-  flex: 0 0 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px;
+  padding: 40px 0;
   background-color: white;
   box-sizing: border-box;
 }
 
 .form-container {
-  width: 100%;
-  max-width: 380px;
+  width: 60%;
+
   padding: 0 10px;
 }
 
 .login-title {
-  text-align: center;
-  font-size: 24px;
-  font-weight: 500;
-  margin-bottom: 24px;
-  color: #333;
+  font-weight: bold;
+  font-size: 2.25rem;
+  color: #1f1f1f;
+  margin-bottom: 5rem;
 }
 
 .q-form {
@@ -296,7 +299,7 @@ export default {
   :deep(.q-field__control) {
     // height: 50px;
     border-radius: 4px;
-    background-color: #f5f5f5;
+    background-color: white;
   }
 
   :deep(.q-field__native) {
@@ -333,19 +336,22 @@ export default {
 }
 
 .login-btn {
-  height: 42px;
+  height: 60px;
   font-size: 15px;
   font-weight: 500;
-  border-radius: 4px;
+  border-radius: 9px 9px 9px 9px;
   margin-top: 16px;
-  background-color: #0f1f3d !important;
+  font-weight: bold;
+  font-size: 24px;
+  color: #ffffff;
 }
 
 .login-options {
   display: flex;
   align-items: center;
-  margin-top: 12px;
-  font-size: 13px;
+  justify-content: center;
+  margin-top: 2rem;
+  font-size: 1rem;
 
   span {
     color: #666;
@@ -365,8 +371,20 @@ export default {
 
 // 响应式适配
 @media (max-width: 767px) {
+  .login-container {
+    min-height: 100vh;
+  }
   .login-wrapper {
     flex-direction: column;
+  }
+
+  .login-title {
+    margin-bottom: 1rem;
+  }
+
+  .form-container {
+    width: 80%;
+    padding: 0 10px;
   }
 
   .login-info-section,
@@ -381,7 +399,7 @@ export default {
   }
 
   .login-form-section {
-    height: 60%;
+    height: 80%;
     padding: 20px;
   }
 
@@ -397,6 +415,12 @@ export default {
   .feature-list li {
     font-size: 14px;
     margin-bottom: 6px;
+  }
+}
+
+.q-field__control {
+  &:before {
+    background: transparent !important;
   }
 }
 </style> 

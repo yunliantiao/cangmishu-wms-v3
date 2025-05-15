@@ -13,39 +13,29 @@
           }}</span
         >
         <q-btn
-          color="negative"
-          flat
+          color="primary"
+          outline
           class="end-btn"
           :label="trans('结束作业')"
           @click="handleEnd"
         />
         <q-btn
           color="primary"
-          outline
-          icon="history"
+          class="end-btn"
           @click="showLogs"
           :label="trans('分拣记录')"
         />
       </div>
     </div>
 
+    <ScanTop
+      :placeholder="trans('请扫描商品标签')"
+      v-model:scanValue="pageData.keyword"
+      @confirm="search"
+    />
+
     <!-- 主体卡片 -->
     <div class="main-card">
-      <!-- 商品标签输入 -->
-      <div class="input-row">
-        <q-input
-          outlined
-          class="tag-input"
-          v-model="pageData.keyword"
-          :label="trans('请扫描商品标签')"
-          @keyup.enter="search"
-        />
-      </div>
-      <div class="input-tip">
-        <q-icon name="info" size="16px" color="grey-7" />
-        <span>{{ trans("请先切换或[EN]输入法") }}</span>
-      </div>
-
       <!-- 分拣信息 -->
       <div class="sort-info-title">{{ trans("分拣信息") }}</div>
       <div class="sort-info-row">
@@ -56,14 +46,16 @@
           <div
             :class="{
               'sort-box': true,
-              success: item.status == 2 && item.material_id,
+              success: item.status == 2,
             }"
             v-for="(item, index) in pageData.packages"
             :key="item.id"
           >
-            {{ index + 1 }}
+            <span>
+              {{ index + 1 }}
+            </span>
             <div class="operation-btn" v-if="item.status > 0">
-              <q-btn-dropdown color="primary" icon="print">
+              <q-btn-dropdown flat color="primary" icon="print" size="sm">
                 <q-list>
                   <q-item
                     clickable
@@ -80,7 +72,7 @@
                     clickable
                     v-if="item.status == 1"
                     v-close-popup
-                    @click="handleIsPrint(item)"
+                    @click="handleIsPrint(item, index)"
                   >
                     <q-item-section>
                       <q-item-label>{{ trans("标记为已打印") }}</q-item-label>
@@ -99,29 +91,16 @@
                   </q-item>
                 </q-list>
               </q-btn-dropdown>
-              <!-- <q-btn
-                v-if="item.status == 1"
-                color="primary"
-                label="打印"
-                @click="handlePrint(item)"
-              />
-              <q-select
-                dense
-                v-if="item.status == 2"
-                outlined
-                label="包材"
-                v-model="item.material_id"
-                :options="pageData.materialsList"
-                emit-value
-                map-options
-                class="pack-select"
-              /> -->
+            </div>
+            <div class="package-no" v-if="item.status > 0">
+              {{ item.package_number }}
             </div>
           </div>
         </div>
       </div>
     </div>
     <Logs ref="logsRef"></Logs>
+
     <NotPacking ref="notPackingRef" @confirm="handleEndWave"></NotPacking>
     <CheckMaterial
       :confirm-text="'打印'"
@@ -142,6 +121,7 @@ import { useQuasar } from "quasar";
 import NotPacking from "./components/NotPacking.vue";
 import CheckMaterial from "./components/CheckMaterial.vue";
 import trans from "@/i18n";
+import ScanTop from "@/components/ScanTop/Index.vue";
 
 const $q = useQuasar();
 const route = useRoute();
@@ -165,38 +145,45 @@ watch(
   () => pageData.packages,
   () => {
     // 用做页面顶部完成数和未完成数
-    let count = 0;
-
-    // 当回车后 修改了包裹的已入框数量后 进入到监听的回调 在这里处理包裹的状态 待入框 ->选包材 待打印->完成打印
-    // status 0:待入框
-    // 1:入框完成(待打印)
-    // 2:打印完成
-
-    pageData.packages.forEach((item) => {
-      let itemSuccess = true;
-      item.boxes.forEach((box) => {
-        if (box.inFrame != box.quantity) {
-          itemSuccess = false;
-        }
-      });
-      if (item.status == 0 && itemSuccess) {
-        item.status = 1;
-        showCheckMaterial(item);
-      }
-
-      if (item.status == 2 && item.material_id) {
-        count++;
-      }
-    });
-
-    pageData.successCount = count;
-    // 如果所有的都已经处理完成了   弹窗提示已经完成包装，是否结束作业
-    if (pageData.successCount == pageData.packages.length) {
-      successWave();
-    }
+    watchPackages();
   },
   { deep: true }
 );
+
+const watchPackages = () => {
+  let count = 0;
+
+  // 当回车后 修改了包裹的已入框数量后 进入到监听的回调 在这里处理包裹的状态 待入框 ->选包材 待打印->完成打印
+  // status 0:待入框
+  // 1:入框完成(待打印)
+  // 2:打印完成
+  console.log("pageData.packages", pageData.packages);
+
+  pageData.packages.forEach((item) => {
+    let itemSuccess = true;
+    item.boxes.forEach((box) => {
+      if (box.inFrame != box.quantity) {
+        itemSuccess = false;
+      }
+    });
+    if (item.status == 0 && itemSuccess) {
+      item.status = 1;
+      showCheckMaterial(item);
+    }
+
+    if (item.status == 2) {
+      count++;
+    }
+  });
+
+  pageData.successCount = count;
+  console.log("pageData.successCount", pageData.successCount);
+
+  // 如果所有的都已经处理完成了   弹窗提示已经完成包装，是否结束作业
+  if (pageData.successCount == pageData.packages.length) {
+    successWave();
+  }
+};
 
 onMounted(() => {
   let number = route.query.number;
@@ -241,6 +228,9 @@ const handleNotPrint = (item) => {
 // 标记为已打印
 const handleIsPrint = (item) => {
   item.status = 2;
+  item.boxes.forEach((box) => {
+    box.inFrame = box.quantity;
+  });
 };
 
 const handleEndWave = async () => {
@@ -373,20 +363,21 @@ const handleEnd = () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 40px 0 40px;
-    height: 50px;
-    font-size: 16px;
-    font-weight: 500;
+    padding: 0 calc((100vw - 1400px) / 2);
+
+    height: 80px;
     background: #fff;
 
     .left {
       .wave-no {
+        font-weight: 600;
         font-size: 20px;
-        font-weight: bold;
-        margin-right: 8px;
+        color: #1f1f1f;
       }
       .wave-type {
-        color: #888;
+        font-weight: 500;
+        font-size: 16px;
+        color: #666666;
       }
     }
 
@@ -399,10 +390,14 @@ const handleEnd = () => {
         color: #888;
       }
       .progress {
-        color: #1976d2;
+        font-weight: 600;
+        font-size: 16px;
+        color: #1f1f1f;
       }
       .end-btn {
-        margin-left: 12px;
+        width: 130px;
+        height: 44px;
+        border-radius: 9px 9px 9px 9px;
       }
     }
   }
@@ -415,13 +410,14 @@ const handleEnd = () => {
   }
 
   .main-card {
-    background: #fff;
-    border-radius: 8px;
-    margin: 32px 40px 0 40px;
-    padding: 32px 32px 40px 32px;
-    min-height: 400px;
     position: relative;
-
+    background: #ffffff;
+    border-radius: 16px 16px 16px 16px;
+    min-height: 400px;
+    width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    margin-top: 20px;
     .input-row {
       margin-bottom: 8px;
       display: flex;
@@ -442,21 +438,22 @@ const handleEnd = () => {
     }
 
     .sort-info-title {
-      font-weight: bold;
-      margin-bottom: 16px;
-      margin-top: 16px;
+      font-weight: 600;
+      font-size: 20px;
+      color: #1f1f1f;
+      margin-bottom: 20px;
     }
 
     .sort-info-row {
       display: flex;
       align-items: flex-start;
-      gap: 32px;
+      gap: 20px;
 
       .product-img-placeholder {
         width: 180px;
         height: 180px;
-        background: #0076ff;
-        border-radius: 4px;
+        background: #5745c5;
+        border-radius: 16px 16px 16px 16px;
         flex-shrink: 0;
 
         font-size: 40px;
@@ -473,20 +470,35 @@ const handleEnd = () => {
 
         .sort-box {
           width: 180px;
-          height: 80px;
-          border: 1px solid #dbe2ea;
+          height: 50px;
+          border: 1px solid #e0e0e0;
           display: flex;
-          align-items: center;
-          padding: 0 20px;
-          font-size: 20px;
-          font-weight: 500;
+          font-weight: 600;
+          font-size: 12px;
+          color: #000000;
+          line-height: 14px;
           position: relative;
+          span {
+            padding-top: 9px;
+            padding-left: 10px;
+          }
+
+          .package-no {
+            font-weight: 500;
+            font-size: 10px;
+            color: #5745c5;
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+          }
           .operation-btn {
             position: absolute;
-            right: 10px;
-            top: 10px;
+            right: 0px;
             .pack-select {
               width: 100px;
+            }
+            :deep(.q-btn-dropdown__arrow) {
+              margin-left: 0 !important;
             }
           }
         }
@@ -496,7 +508,7 @@ const handleEnd = () => {
 }
 
 .success {
-  background: #0076ff;
+  background: #f2f0ff;
   color: white;
 }
 </style>

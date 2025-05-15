@@ -5,7 +5,7 @@ const Wave = () => import(`../views/Out/Wave/Index.vue`)
 const WaveList = () => import(`../views/Out/Wave/List.vue`)
 const WaveInfo = () => import(`../views/Out/Wave/Info.vue`)
 // const SortOut = () => import(`../views/Out/Wave/SortOut.vue`)
-const Pigeonholes = () => import(`../views/Out/Wave/Pigeonholes.vue`)
+// const Pigeonholes = () => import(`../views/Out/Wave/Pigeonholes.vue`)
 // const Packaging = () => import(`../views/Out/Wave/Packaging.vue`)
 // const ScanPacking = () => import(`../views/Out/Wave/ScanPacking.vue`)
 import trans from "@/i18n";
@@ -102,7 +102,8 @@ export default [
             {
                 path: 'wave/pigeonholes',
                 name: 'pigeonholes',
-                component: Pigeonholes,
+                // component: Pigeonholes,
+                redirect: '/wave/pigeonholes',
                 id: 1007,
                 meta: {
                     level: 3,
