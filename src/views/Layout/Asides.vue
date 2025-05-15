@@ -41,9 +41,7 @@
               <q-icon name="circle" size="xs" />
             </q-item-section> -->
             <q-item-section class="submenu-title">
-              <q-item-label>{{
-                childRoute.meta?.name || childRoute.name
-              }}</q-item-label>
+              <q-item-label>{{ childRoute.meta?.name || childRoute.name }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-expansion-item>
@@ -68,21 +66,21 @@
       </template>
     </q-list>
 
-    <div v-if="isOpen" class="fix-menu" @click="toggleLeftDrawer">
+    <!-- <div v-if="isOpen" class="fix-menu" @click="toggleLeftDrawer">
       <q-icon name="chevron_left" />
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
-import { useQuasar } from "quasar";
-import { computed, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useStore } from "vuex";
-import { routerMap } from "../../router";
+import { useQuasar } from 'quasar';
+import { computed, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+import { routerMap } from '../../router';
 
 export default {
-  name: "AsidesComponent",
+  name: 'AsidesComponent',
 
   setup() {
     const router = useRouter();
@@ -106,7 +104,7 @@ export default {
     watch(route, () => {
       if (isMobile.value && isOpen.value) {
         // 发射事件通知父组件关闭侧边栏
-        store.dispatch("setLeftDrawer", false);
+        store.dispatch('setLeftDrawer', false);
       }
     });
 
@@ -133,11 +131,11 @@ export default {
 
     // 切换侧边栏状态
     function toggleLeftDrawer() {
-      store.dispatch("toggleLeftDrawer");
+      store.dispatch('toggleLeftDrawer');
     }
 
     const getImg = (route) => {
-      let imgUrl = "";
+      let imgUrl = '';
       // 多个子路由时,只显示灰色
       if (hasMultipleChildren(route)) {
         imgUrl = `/src/assets/images/asides/${route.icon}.png`;
@@ -145,9 +143,7 @@ export default {
       } else {
         // 单个时,需要判断是否为激活状态,显示高亮
         const isActive = isRouteActive(route);
-        imgUrl = `/src/assets/images/asides/${route.icon}${
-          isActive ? "-select" : ""
-        }.png`;
+        imgUrl = `/src/assets/images/asides/${route.icon}${isActive ? '-select' : ''}.png`;
       }
       return imgUrl;
     };
@@ -226,7 +222,7 @@ export default {
 
 .route-menu {
   background-color: #ffffff;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   padding: 20px;
   transition: all 0.25s ease;
 
