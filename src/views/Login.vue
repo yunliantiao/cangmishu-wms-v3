@@ -3,19 +3,39 @@
     <div class="login-wrapper">
       <!-- 左侧显示信息区域 -->
       <div class="login-info-section">
-        <div class="logo-container">
-          <!-- <img src="../../assets/logo.png" alt="Logo" class="logo"> -->
+        <img
+          v-if="language == 'zh_CN'"
+          src="@/assets/images/login/title.png"
+          class="title-logo"
+          alt=""
+        />
+        <img
+          v-else
+          src="@/assets/images/login/title-en.png"
+          class="title-logo"
+          alt=""
+        />
+        <div class="page-title-desc">
+          {{ trans("一款简单高效的云仓管理系统") }}
+        </div>
+        <div class="page-title-desc-2">
+          {{
+            trans(
+              "服务于履约服务商，专用于仓库管理、库存管理、代发货管理、如Dropshipping服务商"
+            )
+          }}
+        </div>
+        <img src="@/assets/images/login/login-bg.png" class="login-bg" alt="" />
+        <!-- <div class="logo-container">
           <span class="logo-text">{{ trans("仓秘书WMS") }}</span>
         </div>
         <div class="info-content">
           <h1 class="info-title">{{ trans("电商仓储管理系统！") }}</h1>
           <ul class="feature-list">
-            <!-- <li>免注册费！免年费！免ERP对接费、物流对接费！</li> -->
             <li>{{ trans("对接大量物流，解锁全球！") }}</li>
-            <!-- <li>支持中、英、西、葡、印尼、越、泰等多国语言！</li> -->
             <li>{{ trans("一对一指导，帮助您快速上手！") }}</li>
           </ul>
-        </div>
+        </div> -->
       </div>
 
       <!-- 右侧登录表单区域 -->
@@ -122,6 +142,9 @@ export default {
     const $q = useQuasar();
     const loginType = ref(1); //==
 
+    const language = ref("");
+    language.value = localStorage.getItem("language");
+
     const ruleForm = ref({
       email: "",
       password: "",
@@ -161,6 +184,7 @@ export default {
       loading,
       ruleForm,
       loginType,
+      language,
       onSubmit,
       refreshCaptcha,
       goToResetPassword,
@@ -198,14 +222,23 @@ export default {
 .login-info-section {
   width: 50%;
   flex: 0 0 50%;
-  background: #2979ff;
+  background: linear-gradient(225deg, #de4b9c 0%, #2f22ac 100%);
+  border-radius: 0px 0px 0px 0px;
   color: white;
   padding: 40px;
-  display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
+  .title-logo {
+    width: 169px;
+  }
+  .login-bg {
+    position: absolute;
+    top: 30%;
+    left: 10%;
+    width: 80%;
+  }
 
   /* 移除之前的背景图和渐变效果，使其与参考图片一致 */
   &::before,
@@ -423,4 +456,22 @@ export default {
     background: transparent !important;
   }
 }
-</style> 
+
+.page-title-desc {
+  font-weight: bold;
+  font-size: 40px;
+  color: #ffffff;
+  text-align: left;
+  width: 100%;
+  margin-top: 4rem;
+}
+.page-title-desc-2 {
+  font-weight: 500;
+  font-size: 16px;
+  color: #ffffff;
+  text-align: left;
+  width: 100%;
+  margin-bottom: 30px;
+  margin-top: 20px;
+}
+</style>

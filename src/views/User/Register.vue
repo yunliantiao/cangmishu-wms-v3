@@ -37,7 +37,7 @@
 
       <q-input
         v-model="ruleForm.password_confirmation"
-        filled
+        outlined
         :type="isPwd ? 'password' : 'text'"
         :label="trans('确认密码')"
         class="q-mb-md"
