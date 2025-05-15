@@ -1,28 +1,27 @@
 <template>
   <div class="inventory-page">
-    <div class="tab-header">
-      <q-tabs
-        v-model="currentTab"
-        dense
-        class="text-primary"
-        active-color="primary"
-        indicator-color="primary"
-        align="left"
-        narrow-indicator
-      >
-        <q-tab name="list" :label="trans('库存清单')" />
-        <q-tab name="flow" :label="trans('库存流水')" />
-      </q-tabs>
-      <q-separator />
-    </div>
     <!-- 顶部标签页 -->
     <div class="tabs-container q-pa-none">
       <div class="search-bar q-pa-md">
+        <q-tabs
+          v-model="currentTab"
+          dense
+          class="text-primary"
+          active-color="primary"
+          indicator-color="primary"
+          align="left"
+          narrow-indicator
+        >
+          <q-tab name="list" :label="trans('库存清单')" />
+          <q-tab name="flow" :label="trans('库存流水')" />
+        </q-tabs>
+        <q-separator class="q-mb-md" />
         <div class="row q-col-gutter-sm">
           <div class="col-auto" v-if="currentTab == 'flow'">
             <q-select
               outlined
               dense
+              size="sm"
               v-model="logTypeFilter"
               :options="logType"
               option-value="value"
@@ -98,9 +97,9 @@
             <div class="action-bar q-py-md">
               <div class="row items-center justify-between">
                 <div>
-                  <span class="q-mr-sm"
+                  <!-- <span class="q-mr-sm"
                     >{{ trans("选择") }} {{ selectedInventory.length }}</span
-                  >
+                  > -->
                   <!-- <q-btn
                   color="primary"
                   flat
@@ -126,7 +125,6 @@
                 :columns="inventoryColumns"
                 row-key="id"
                 flat
-                bordered
                 separator="horizontal"
                 selection="multiple"
                 class="flow-table-style"
@@ -141,7 +139,7 @@
                 <template v-slot:header="props">
                   <q-tr :props="props">
                     <q-th auto-width>
-                      <q-checkbox v-model="props.selected" />
+                      <q-checkbox v-model="props.selected" size="sm" />
                     </q-th>
                     <q-th
                       v-for="col in props.cols"
@@ -159,7 +157,7 @@
                 <template v-slot:body="props">
                   <q-tr :props="props" class="inventory-row">
                     <q-td auto-width>
-                      <q-checkbox v-model="props.selected" />
+                      <q-checkbox v-model="props.selected" size="sm" />
                     </q-td>
                     <q-td key="product_info" style="width: 35%" :props="props">
                       <div class="product-info">
@@ -316,7 +314,7 @@
                 <template v-slot:header="props">
                   <q-tr :props="props" class="flow-header-row">
                     <q-th auto-width>
-                      <q-checkbox v-model="props.selected" />
+                      <q-checkbox v-model="props.selected" size="sm" />
                     </q-th>
                     <q-th
                       v-for="col in props.cols"
@@ -357,7 +355,7 @@
                   <!-- Data row -->
                   <q-tr :props="props" class="data-row">
                     <q-td auto-width>
-                      <q-checkbox v-model="props.selected" />
+                      <q-checkbox v-model="props.selected" size="sm" />
                     </q-td>
                     <q-td key="product_info" style="width: 35%" :props="props">
                       <div

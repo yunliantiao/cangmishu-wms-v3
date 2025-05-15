@@ -43,7 +43,14 @@
           ></q-input>
         </div>
         <div class="col-auto">
-          <q-btn outline color="grey" padding="sm md" label="重置" class="q-mr-sm" @click="onResetSearch" />
+          <q-btn
+            outline
+            color="grey"
+            padding="sm md"
+            label="重置"
+            class="q-mr-sm"
+            @click="onResetSearch"
+          />
           <q-btn
             color="primary"
             icon="search"
@@ -60,7 +67,12 @@
       <div class="header-operation q-mb-md">
         <div>
           <span class="q-mr-xs">选择 {{ selectedChannel.length }}</span>
-          <q-btn flat text-color="blue" label="新建物流组" @click="onCreateGroup()" />
+          <q-btn
+            flat
+            text-color="blue"
+            label="新建物流组"
+            @click="onCreateGroup()"
+          />
         </div>
       </div>
 
@@ -83,7 +95,7 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td auto-width>
-              <q-checkbox v-model="props.selected" />
+              <q-checkbox v-model="props.selected" size="sm" />
             </q-td>
             <q-td key="code" :props="props">
               {{ props.row.code }}
@@ -92,7 +104,7 @@
               {{ props.row.name }}
             </q-td>
             <q-td key="is_custom" :props="props">
-              {{ props.row.is_custom ? '自定义物流商' : '对接物流商' }}
+              {{ props.row.is_custom ? "自定义物流商" : "对接物流商" }}
             </q-td>
             <q-td key="group" :props="props">
               {{ props.row.group && props.row.group.name }}
@@ -112,11 +124,31 @@
               /> -->
             </q-td>
             <q-td key="action" :props="props">
-              <q-btn v-if="!props.row.group" icon="add" color="primary" size="sm" flat round @click="onAdd(props.row)">
-                <q-tooltip anchor="top middle" :offset="[30, 30]">加入物流组</q-tooltip>
+              <q-btn
+                v-if="!props.row.group"
+                icon="add"
+                color="primary"
+                size="sm"
+                flat
+                round
+                @click="onAdd(props.row)"
+              >
+                <q-tooltip anchor="top middle" :offset="[30, 30]"
+                  >加入物流组</q-tooltip
+                >
               </q-btn>
-              <q-btn v-else icon="logout" color="primary" size="sm" flat round @click="onRemove(props.row)">
-                <q-tooltip anchor="top middle" :offset="[30, 30]">退出物流组</q-tooltip>
+              <q-btn
+                v-else
+                icon="logout"
+                color="primary"
+                size="sm"
+                flat
+                round
+                @click="onRemove(props.row)"
+              >
+                <q-tooltip anchor="top middle" :offset="[30, 30]"
+                  >退出物流组</q-tooltip
+                >
               </q-btn>
             </q-td>
           </q-tr>
@@ -153,12 +185,12 @@
 </template>
 
 <script setup>
-import logisticsApi from '@/api/logistics';
-import Pagination from '@/components/Pagination.vue';
-import { useQuasar } from 'quasar';
-import { onMounted, reactive, ref } from 'vue';
-import { useRoute } from 'vue-router';
-import ChannelGroupDialog from './components/ChannelGroupDialog.vue'; // 渠道组弹窗
+import logisticsApi from "@/api/logistics";
+import Pagination from "@/components/Pagination.vue";
+import { useQuasar } from "quasar";
+import { onMounted, reactive, ref } from "vue";
+import { useRoute } from "vue-router";
+import ChannelGroupDialog from "./components/ChannelGroupDialog.vue"; // 渠道组弹窗
 
 const $q = useQuasar();
 const route = useRoute();
@@ -174,66 +206,66 @@ const editItem = ref({}); // 编辑item
 const pageParams = reactive({
   page: 1,
   per_page: 10,
-  is_enabled: '', // 1:启用 0:停用
-  search_type: '',
-  keywords: '',
+  is_enabled: "", // 1:启用 0:停用
+  search_type: "",
+  keywords: "",
 });
 
 const statusOptions = ref([
   {
-    label: '全部状态',
-    value: '',
+    label: "全部状态",
+    value: "",
   },
   {
-    label: '启用',
-    value: '1',
+    label: "启用",
+    value: "1",
   },
   {
-    label: '停用',
-    value: '0',
+    label: "停用",
+    value: "0",
   },
 ]);
 const searchTypeOptions = [
   {
-    label: '渠道名称',
-    value: 'name',
+    label: "渠道名称",
+    value: "name",
   },
   {
-    label: '渠道代码',
-    value: 'code',
+    label: "渠道代码",
+    value: "code",
   },
 ];
 
 const tabColumns = [
   {
-    name: 'code',
-    label: '渠道代码',
-    align: 'left',
+    name: "code",
+    label: "渠道代码",
+    align: "left",
   },
   {
-    name: 'name',
-    label: '物流渠道名称',
-    align: 'left',
+    name: "name",
+    label: "物流渠道名称",
+    align: "left",
   },
   {
-    name: 'is_custom',
-    label: '物流商类型',
-    align: 'center',
+    name: "is_custom",
+    label: "物流商类型",
+    align: "center",
   },
   {
-    name: 'group',
-    label: '物流组',
-    align: 'center',
+    name: "group",
+    label: "物流组",
+    align: "center",
   },
   {
-    name: 'is_enabled', // 是否启用
-    label: '状态',
-    align: 'center',
+    name: "is_enabled", // 是否启用
+    label: "状态",
+    align: "center",
   },
   {
-    name: 'action',
-    label: '操作',
-    align: 'center',
+    name: "action",
+    label: "操作",
+    align: "center",
   },
 ];
 
@@ -245,11 +277,13 @@ const onToggleStatus = (row, val) => {
 
 // 批量选择启用||禁用
 const onEditStatus = (bool = true, ids = []) => {
-  const channel_ids = ids.length ? ids : selectedChannel.value.map((item) => item.id);
+  const channel_ids = ids.length
+    ? ids
+    : selectedChannel.value.map((item) => item.id);
   if (channel_ids.length === 0) {
     $q.notify({
-      title: '提示',
-      message: '请先勾选渠道',
+      title: "提示",
+      message: "请先勾选渠道",
     });
     return;
   }
@@ -268,18 +302,18 @@ const onEditStatus = (bool = true, ids = []) => {
 const onResetSearch = () => {
   pageParams.page = 1;
   pageParams.per_page = 10;
-  pageParams.status = '';
-  pageParams.search_type = 'custom_provider_name';
-  pageParams.search_mode = '';
-  pageParams.keywords = '';
+  pageParams.status = "";
+  pageParams.search_type = "custom_provider_name";
+  pageParams.search_mode = "";
+  pageParams.keywords = "";
 };
 
 // 批量多个添加到物流组, 并且新建物流组
 const onCreateGroup = () => {
   if (selectedChannel.value.length === 0) {
     $q.notify({
-      type: 'warning',
-      message: '请先选择渠道',
+      type: "warning",
+      message: "请先选择渠道",
     });
     return;
   }
@@ -297,8 +331,8 @@ const onAdd = (row) => {
 
 const onRemove = (row) => {
   $q.dialog({
-    title: '提示',
-    message: '确定要将该渠道移出物流组吗？',
+    title: "提示",
+    message: "确定要将该渠道移出物流组吗？",
     cancel: true,
     persistent: true,
   }).onOk(() => {

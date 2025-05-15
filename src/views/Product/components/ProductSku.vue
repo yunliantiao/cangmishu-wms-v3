@@ -37,7 +37,7 @@
       <template v-slot:header="props">
         <q-tr :props="props">
           <q-th style="padding: 0 8px">
-            <q-checkbox color="primary" v-model="props.selected" />
+            <q-checkbox size="sm" color="primary" v-model="props.selected" />
           </q-th>
           <q-th
             v-for="col in props.cols"
@@ -53,7 +53,7 @@
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td auto-width style="padding: 0 8px">
-            <q-checkbox color="primary" v-model="props.selected" />
+            <q-checkbox size="sm" color="primary" v-model="props.selected" />
           </q-td>
           <!-- SKU信息 -->
           <q-td key="skuInfo" :props="props">

@@ -109,10 +109,20 @@
             total: pageParams.total,
           }"
         >
+          <template v-slot:header="props">
+            <q-tr :props="props">
+              <q-th auto-width>
+                <q-checkbox v-model="props.selected" size="sm" />
+              </q-th>
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                {{ col.label }}
+              </q-th>
+            </q-tr>
+          </template>
           <template v-slot:body="props">
             <q-tr :props="props">
               <q-td auto-width>
-                <q-checkbox v-model="props.selected" />
+                <q-checkbox v-model="props.selected" size="sm" />
               </q-td>
               <q-td key="orderInfo" :props="props">
                 <div class="column">
@@ -1405,7 +1415,7 @@ const getSkuItems = (row) => {
       font-weight: 500;
       font-size: 14px;
       color: rgba(0, 0, 0, 0.85);
-      background-color: #f5f7fa;
+      //background-color: #f5f7fa;
       padding: 12px 16px;
     }
 

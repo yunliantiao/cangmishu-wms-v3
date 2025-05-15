@@ -117,6 +117,16 @@
         }"
         :loading="$store.state.btnLoading"
       >
+        <template v-slot:header="props">
+          <q-tr :props="props">
+            <q-th auto-width align="left">
+              <q-checkbox v-model="props.selected" size="sm" />
+            </q-th>
+            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+              {{ col.label }}
+            </q-th>
+          </q-tr>
+        </template>
         <template v-slot:body="props">
           <!-- 分组标题行 -->
           <template v-if="showGroupHeader(props.row, props.pageIndex)">
@@ -145,7 +155,7 @@
           <!-- 数据行 -->
           <q-tr :props="props">
             <q-td auto-width>
-              <q-checkbox v-model="props.selected" />
+              <q-checkbox v-model="props.selected" size="sm" />
             </q-td>
             <q-td key="packageInfo" :props="props">
               <div>

@@ -6,7 +6,6 @@ export default {
     getCountries: () => GET("countries"), // 国家/地区列表
     getTimezones: () => GET("warehouses/timezones"), // 时区列表
 
-
     // ds跳转wms 拿到临时token后 调获取登录信息
     quickLogin: (data) => POST('auth/auto-login', data),
 

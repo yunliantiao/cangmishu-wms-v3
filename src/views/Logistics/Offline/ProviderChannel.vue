@@ -43,7 +43,14 @@
           ></q-input>
         </div>
         <div class="col-auto">
-          <q-btn outline color="grey" padding="sm md" label="重置" class="q-mr-sm" @click="onResetSearch" />
+          <q-btn
+            outline
+            color="grey"
+            padding="sm md"
+            label="重置"
+            class="q-mr-sm"
+            @click="onResetSearch"
+          />
           <q-btn
             color="primary"
             icon="search"
@@ -60,9 +67,20 @@
       <div class="header-operation q-mb-md">
         <div>
           <span class="q-mr-xs">选择 {{ selectedChannel.length }}</span>
-          <q-btn flat text-color="blue" label="批量开启" @click="onEditStatus(true)" />
+          <q-btn
+            flat
+            text-color="blue"
+            label="批量开启"
+            @click="onEditStatus(true)"
+          />
         </div>
-        <q-btn icon="add" text-color="primary" padding="sm md" label="添加渠道" @click="onAdd"></q-btn>
+        <q-btn
+          icon="add"
+          text-color="primary"
+          padding="sm md"
+          label="添加渠道"
+          @click="onAdd"
+        ></q-btn>
       </div>
 
       <q-table
@@ -84,7 +102,7 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td auto-width>
-              <q-checkbox v-model="props.selected" />
+              <q-checkbox v-model="props.selected" size="sm" />
             </q-td>
             <q-td key="code" :props="props">
               {{ props.row.code }}
@@ -107,8 +125,17 @@
               /> -->
             </q-td>
             <q-td key="action" :props="props">
-              <q-btn icon="editor" color="primary" size="sm" flat round @click="onEdit(props.row)">
-                <q-tooltip anchor="top middle" :offset="[30, 30]">编辑</q-tooltip>
+              <q-btn
+                icon="editor"
+                color="primary"
+                size="sm"
+                flat
+                round
+                @click="onEdit(props.row)"
+              >
+                <q-tooltip anchor="top middle" :offset="[30, 30]"
+                  >编辑</q-tooltip
+                >
               </q-btn>
             </q-td>
           </q-tr>
@@ -145,12 +172,12 @@
 </template>
 
 <script setup>
-import logisticsApi from '@/api/logistics';
-import Pagination from '@/components/Pagination.vue';
-import { useQuasar } from 'quasar';
-import { onMounted, reactive, ref } from 'vue';
-import { useRoute } from 'vue-router';
-import ChannelDialog from './components/ChannelDialog.vue'; // 渠道修改表单
+import logisticsApi from "@/api/logistics";
+import Pagination from "@/components/Pagination.vue";
+import { useQuasar } from "quasar";
+import { onMounted, reactive, ref } from "vue";
+import { useRoute } from "vue-router";
+import ChannelDialog from "./components/ChannelDialog.vue"; // 渠道修改表单
 
 const $q = useQuasar();
 const route = useRoute();
@@ -166,58 +193,58 @@ const editItem = ref({}); // 编辑item
 const pageParams = reactive({
   page: 1,
   per_page: 10,
-  is_enabled: '', // 1:启用 0:停用
-  search_type: '',
-  keywords: '',
+  is_enabled: "", // 1:启用 0:停用
+  search_type: "",
+  keywords: "",
 });
 
 const statusOptions = ref([
   {
-    label: '全部状态',
-    value: '',
+    label: "全部状态",
+    value: "",
   },
   {
-    label: '启用',
-    value: '1',
+    label: "启用",
+    value: "1",
   },
   {
-    label: '停用',
-    value: '0',
+    label: "停用",
+    value: "0",
   },
 ]);
 const searchTypeOptions = ref([
   {
-    label: '渠道名称',
-    value: 'name',
+    label: "渠道名称",
+    value: "name",
   },
   {
-    label: '渠道代码',
-    value: 'code',
+    label: "渠道代码",
+    value: "code",
   },
 ]);
 
 const tabColumns = [
   {
-    name: 'code',
-    label: '渠道代码',
-    align: 'left',
+    name: "code",
+    label: "渠道代码",
+    align: "left",
   },
   {
-    name: 'name',
-    label: '物流渠道名称',
-    align: 'left',
+    name: "name",
+    label: "物流渠道名称",
+    align: "left",
     sortable: false,
-    style: 'width: 300px',
+    style: "width: 300px",
   },
   {
-    name: 'is_enabled', // 是否启用
-    label: '状态',
-    align: 'center',
+    name: "is_enabled", // 是否启用
+    label: "状态",
+    align: "center",
   },
   {
-    name: 'action',
-    label: '操作',
-    align: 'center',
+    name: "action",
+    label: "操作",
+    align: "center",
   },
 ];
 
@@ -229,11 +256,13 @@ const onToggleStatus = (row, val) => {
 
 // 批量选择启用||禁用
 const onEditStatus = (bool = true, ids = []) => {
-  const channel_ids = ids.length ? ids : selectedChannel.value.map((item) => item.id);
+  const channel_ids = ids.length
+    ? ids
+    : selectedChannel.value.map((item) => item.id);
   if (channel_ids.length === 0) {
     $q.notify({
-      title: '提示',
-      message: '请先勾选渠道',
+      title: "提示",
+      message: "请先勾选渠道",
     });
     return;
   }
@@ -252,10 +281,10 @@ const onEditStatus = (bool = true, ids = []) => {
 const onResetSearch = () => {
   pageParams.page = 1;
   pageParams.per_page = 10;
-  pageParams.status = '';
-  pageParams.search_type = 'custom_provider_name';
-  pageParams.search_mode = '';
-  pageParams.keywords = '';
+  pageParams.status = "";
+  pageParams.search_type = "custom_provider_name";
+  pageParams.search_mode = "";
+  pageParams.keywords = "";
 };
 
 const onAdd = () => {

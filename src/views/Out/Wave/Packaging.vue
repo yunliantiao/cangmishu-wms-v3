@@ -116,7 +116,7 @@
         <template v-slot:header="props">
           <q-tr :props="props">
             <q-th auto-width>
-              <q-checkbox v-model="props.selected" />
+              <q-checkbox v-model="props.selected" size="sm" />
             </q-th>
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
               {{ col.label }}
@@ -127,7 +127,7 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td auto-width>
-              <q-checkbox v-model="props.selected" />
+              <q-checkbox v-model="props.selected" size="sm" />
             </q-td>
 
             <q-td>{{ props.row.package_number }}</q-td>

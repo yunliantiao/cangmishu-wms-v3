@@ -7,7 +7,13 @@ const t = (key, value) => {
     en: EnTransform
   }
 
-  let language = store?.state?.language || localStorage.getItem('language') || 'zh_CN'
+  let language = 'zh_CN'
+  if (store) {
+    language = store?.state?.language || 'zh_CN'
+  } else {
+    language = localStorage.getItem('language') || 'zh_CN'
+  }
+
   const transformStr = obj[language][key] || key
   if (!value) {
     return transformStr

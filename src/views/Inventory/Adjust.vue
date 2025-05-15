@@ -20,45 +20,6 @@
             { label: trans('商品名称'), value: 'name' },
           ]"
         ></KeywordSearch>
-
-        <!-- <div class="col-auto">
-          <div class="row items-center no-wrap search-group q-ml-md">
-            <q-select
-              outlined
-              dense
-              v-model="pageParams.search_type"
-              :options="[
-                { label: trans('商品SKU'), value: 'sku' },
-                { label: trans('移货编号'), value: 'system_order_number' },
-                { label: trans('商品名称'), value: 'name' },
-              ]"
-              emit-value
-              map-options
-              option-value="value"
-              option-label="label"
-              class="search-type-select"
-            />
-            <q-input
-              outlined
-              dense
-              v-model="pageParams.keywords"
-              :placeholder="trans('批量搜索用逗号隔开')"
-              class="keywords-input"
-              style="min-width: 200px"
-            />
-            <q-select
-              outlined
-              dense
-              v-model="pageParams.search_mode"
-              :options="$store.state.searchModeOptions"
-              emit-value
-              map-options
-              option-value="value"
-              option-label="label"
-              class="search-mode-select"
-            />
-          </div>
-        </div> -->
         <div class="col-auto">
           <q-btn
             outline
@@ -108,11 +69,20 @@
           selection="multiple"
           separator="horizontal"
           :loading="$store.state.btnLoading"
-          hide-bottom
           :pagination="{
             rowsPerPage: 0,
           }"
         >
+          <template v-slot:header="props">
+            <q-tr :props="props">
+              <q-th auto-width>
+                <q-checkbox v-model="props.selected" size="sm" />
+              </q-th>
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                {{ col.label }}
+              </q-th>
+            </q-tr>
+          </template>
           <!-- 自定义行 -->
           <template v-slot:body="props">
             <!-- 分组标题行 -->
@@ -120,7 +90,7 @@
               <q-td colspan="7">
                 <div class="row group-header items-center">
                   <div>
-                    <q-checkbox v-model="props.selected" />
+                    <q-checkbox v-model="props.selected" size="sm" />
                     <span class="info-item q-mr-md"
                       >{{ trans("调整单号") }}:
                       {{ props.row.system_order_number }}</span
@@ -343,15 +313,15 @@ getAdjustList();
   }
   :deep(.q-table__card) {
     box-shadow: none;
-    border: 1px solid rgba(0, 0, 0, 0.12);
+    // border: 1px solid rgba(0, 0, 0, 0.12);
   }
   .group-header-row {
     background-color: #f8fafc;
 
     td {
       padding: 8px 16px;
-      border-top: 1px solid #ebeef5;
-      border-bottom: 1px solid #ebeef5;
+      // border-top: 1px solid #ebeef5;
+      // border-bottom: 1px solid #ebeef5;
     }
   }
 

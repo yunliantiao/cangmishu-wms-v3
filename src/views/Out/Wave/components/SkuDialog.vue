@@ -36,7 +36,7 @@
           <template v-slot:body="props">
             <q-tr :props="props">
               <q-td auto-width align="center">
-                <q-checkbox v-model="props.selected" />
+                <q-checkbox v-model="props.selected" size="sm" />
               </q-td>
               <q-td key="tags_sku_qty" :props="props">
                 {{ props.row.tags_sku_qty }}

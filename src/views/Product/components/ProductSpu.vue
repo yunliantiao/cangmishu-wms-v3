@@ -37,7 +37,7 @@
             />
           </q-th>
           <q-th auto-width style="padding: 0 8px">
-            <q-checkbox color="primary" v-model="props.selected" />
+            <q-checkbox size="sm" color="primary" v-model="props.selected" />
           </q-th>
           <q-th
             v-for="col in props.cols"
@@ -67,7 +67,7 @@
             />
           </q-td>
           <q-td auto-width style="padding: 0 8px">
-            <q-checkbox color="primary" v-model="props.selected" />
+            <q-checkbox size="sm" color="primary" v-model="props.selected" />
           </q-td>
           <!-- SPU信息 -->
           <q-td

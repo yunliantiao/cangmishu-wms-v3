@@ -113,10 +113,20 @@
             rowsPerPage: pageParams.per_page,
           }"
         >
+          <template v-slot:header="props">
+            <q-tr :props="props">
+              <q-th auto-width align="center">
+                <q-checkbox v-model="props.selected" size="sm" />
+              </q-th>
+              <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                {{ col.label }}
+              </q-th>
+            </q-tr>
+          </template>
           <template v-slot:body="props">
             <q-tr :props="props" align="center">
               <q-td auto-width>
-                <q-checkbox v-model="props.selected" />
+                <q-checkbox v-model="props.selected" size="sm" />
               </q-td>
               <q-td key="locationCode" :props="props">
                 {{ props.row.code }}
