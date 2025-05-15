@@ -3,23 +3,25 @@
     <!-- 顶部操作栏 -->
     <div class="header-bar">
       <div class="left">
-        <span class="title"
-          >{{ trans("扫描包装") }}&gt;{{ pageData.waveInfo.wave_number }}({{
-            getDesc(pageData.waveInfo.wave_type)
-          }})</span
-        >
+        <span class="title">
+          {{ trans("扫描包装") }}
+        </span>
+        <span class="wave-number">
+          {{ pageData.waveInfo.wave_number }}
+          ({{ getDesc(pageData.waveInfo.wave_type) }})
+        </span>
       </div>
       <div class="right">
         <q-btn
           color="primary"
-          flat
           :label="trans('挂起')"
-          class="mr-12"
+          outline
+          class="rt-btn"
           @click="handUp"
         />
         <q-btn
           color="negative"
-          flat
+          class="rt-btn"
           :label="trans('结束作业')"
           @click="handEnd"
         />
@@ -538,27 +540,40 @@ const handleNotPrint = (row) => {
 
 <style scoped lang="scss">
 .packaging-page {
-  background: #f5f6fa;
   min-height: 100vh;
-  padding: 0;
+  width: 100vw;
+  background: #f4f5f8;
   .header-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 24px 40px 0 40px;
+    height: 80px;
+    padding: 0 calc((100% - 1400px) / 2);
     font-size: 16px;
     font-weight: 500;
-    background: #fff;
-    .title {
-      font-size: 18px;
-      font-weight: bold;
+    background-color: #fff;
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      .title {
+        font-weight: 600;
+        font-size: 24px;
+        color: #1f1f1f;
+        line-height: 30px;
+      }
+      .wave-number {
+        font-weight: bold;
+        font-size: 16px;
+        color: #5745c5;
+      }
     }
     .right {
       display: flex;
       align-items: center;
       gap: 16px;
-      .mr-12 {
-        margin-right: 12px;
+      .rt-btn {
+        padding: 8px 16px;
       }
     }
   }

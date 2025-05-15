@@ -1,79 +1,78 @@
 <template>
   <div class="wave-info-page">
     <div class="page-header">
-      <div class="row items-center">
-        <q-btn
-          flat
-          round
-          dense
-          icon="arrow_back"
-          class="q-mr-sm"
-          @click="goBack"
-        />
-        <div class="text-h6">{{ trans("波次详情") }}</div>
-        <q-space />
+      <div class="back" @click="goBack">
+        <img src="@/assets/images/back.png" alt="" />
+        {{ trans("波次详情") }}
       </div>
+
+      <q-btn
+        class="btn"
+        @click="goBack"
+        style="color: #ff3a28; background-color: white; border-color: #ff3a28"
+        outline
+      >
+        {{ trans("关闭") }}
+      </q-btn>
     </div>
 
     <!-- 波次基本信息卡片 -->
-    <q-card flat bordered class="q-mb-md">
-      <q-card-section>
-        <div class="row justify-between">
-          <div class="col-auto info-left">
-            <div class="text-h6">{{ pageData.waveInfo?.wave_number }}</div>
-            <div class="text-subtitle2">
-              {{ getWaveTypeText(pageData.waveInfo?.wave_type) }}
-            </div>
-            <div
-              class="text-subtitle2"
-              :class="getStatusClass(pageData.waveInfo?.status)"
-            >
-              {{ pageData.status_name }}
-            </div>
 
-            <div
-              class="flex justify-center items-center"
-              style="gap: 10px"
-              v-if="pageData.waveInfo != 'cancelled'"
-            >
-              <q-btn
-                v-if="
-                  !['completed', 'cancelled'].includes(
-                    pageData.waveInfo?.status
-                  )
-                "
-                outline
-                :label="trans('作废波次')"
-                @click="abandonWave"
-              />
-              <q-btn
-                color="primary"
-                :label="trans('打印拣货单')"
-                @click="printPick"
-              />
-            </div>
-          </div>
-          <div class="col-auto info-right">
-            <div class="text-subtitle2 justify-between flex">
-              <div>
-                {{ trans("物流组") }}:
-                {{ pageData.waveInfo?.logistics_group || "-" }}
-              </div>
-              <div class="text-right">
-                {{ pageData.waveInfo?.warehouse || "-" }}
-              </div>
-            </div>
-
-            <div class="process-box">
-              <Process :step="pageData.step" />
-            </div>
-          </div>
+    <div class="info-card">
+      <div class="info-left">
+        <div class="info-title">{{ pageData.waveInfo?.wave_number }}</div>
+        <div class="info-type">
+          {{ getWaveTypeText(pageData.waveInfo?.wave_type) }}
         </div>
-      </q-card-section>
-    </q-card>
+        <div
+          class="info-status-name"
+          :class="getStatusClass(pageData.waveInfo?.status)"
+        >
+          {{ pageData.status_name }}
+        </div>
+
+        <div
+          class="flex justify-center items-center"
+          style="gap: 10px"
+          v-if="pageData.waveInfo != 'cancelled'"
+        >
+          <q-btn
+            v-if="
+              !['completed', 'cancelled'].includes(pageData.waveInfo?.status)
+            "
+            outline
+            flat
+            class="info-btn"
+            style="
+              border: 1px solid #f0f0f0;
+              border-radius: 9px;
+              height: 40px !important;
+            "
+            :label="trans('作废波次')"
+            @click="abandonWave"
+          />
+          <q-btn
+            color="primary"
+            class="info-btn"
+            :label="trans('打印拣货单')"
+            @click="printPick"
+          />
+        </div>
+      </div>
+      <div class="info-right">
+        <div class="group">
+          {{ trans("物流组") }}:
+          {{ pageData.waveInfo?.logistics_group || "-" }}
+        </div>
+
+        <div class="process-box">
+          <Process :step="pageData.step" />
+        </div>
+      </div>
+    </div>
 
     <!-- 标签页 -->
-    <div class="q-mb-md">
+    <div class="table-card">
       <q-tabs
         v-model="pageData.activeTab"
         class="text-grey"
@@ -91,26 +90,9 @@
       <q-tab-panels v-model="pageData.activeTab" animated>
         <!-- 包裹信息面板 -->
         <q-tab-panel name="packages">
-          <div class="row q-mb-md">
-            <div class="col-auto">
-              <q-select
-                outlined
-                dense
-                v-model="pageData.customerFilter"
-                multiple
-                clearable
-                :options="pageData.customerList"
-                @update:model-value="getWaveDetail"
-                :label="trans('全部客户')"
-                class="filter-select"
-                emit-value
-                map-options
-              />
-            </div>
-          </div>
-
           <CustomTable
             ref="customTableRef"
+            @updateFilter="getWaveDetail"
             :rows="pageData.packageData"
             row-key="id"
             @refresh="refresh"
@@ -224,7 +206,6 @@ const route = useRoute();
 const router = useRouter();
 const $q = useQuasar();
 const customTableRef = ref(null);
-import CustomerApi from "@/api/customer.js";
 
 // 所有数据都存储在pageData中
 const pageData = reactive({
@@ -243,9 +224,6 @@ const pageData = reactive({
 
   // 标签页
   activeTab: "packages",
-
-  // 筛选选项
-  customerFilter: [],
 
   // 表格数据
   selectedRows: [],
@@ -336,11 +314,11 @@ const getStatusClass = (status) => {
 };
 
 // 获取波次详情
-const getWaveDetail = async () => {
+const getWaveDetail = async (customerFilter) => {
   try {
     pageData.loading = true;
     let params = {
-      customer_ids: pageData.customerFilter,
+      customer_ids: customerFilter,
     };
     const { data } = await WaveApi.waveInfo(pageData.waveId, params);
     pageData.status_name = getStatusText(data.status);
@@ -434,18 +412,7 @@ onMounted(() => {
     getWaveDetail();
     getWaveLogs();
   }
-  getCustomerList();
 });
-
-const getCustomerList = async () => {
-  const { data } = await CustomerApi.getAllUser();
-  pageData.customerList = data.map((row) => {
-    return {
-      label: row.name,
-      value: row.id,
-    };
-  });
-};
 
 const refresh = () => {
   getWaveDetail();
@@ -498,10 +465,34 @@ const printPick = async () => {
 <style scoped lang="scss">
 .wave-info-page {
   width: 100%;
+  background: #f4f5f8;
+  min-height: 100vh;
 }
 
 .page-header {
   margin-bottom: 20px;
+  padding: 18px calc((100vw - 1400px) / 2);
+  display: flex;
+  justify-content: space-between;
+  background: white;
+  .back {
+    display: flex;
+    align-items: center;
+    height: 44px;
+    font-weight: 600;
+    font-size: 20px;
+    color: #1f1f1f;
+    gap: 6px;
+    cursor: pointer;
+    img {
+      width: 24px;
+      height: 24px;
+    }
+  }
+  .btn {
+    width: 100px;
+    height: 42px;
+  }
 }
 
 .filter-select {
@@ -548,21 +539,6 @@ const printPick = async () => {
 .text-red {
   color: #c10015;
 }
-.info-left {
-  width: 400px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  border-right: 1px solid #e0e0e0;
-}
-.info-right {
-  flex: 1;
-  padding: 0 20px;
-  .process-box {
-  }
-}
 
 .logs-box {
   display: flex;
@@ -596,5 +572,64 @@ const printPick = async () => {
   .right-table {
     flex: 1;
   }
+}
+
+.info-card {
+  width: 1400px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 16px 16px 16px 16px;
+  display: flex;
+  .info-left {
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-right: 1px solid #e0e0e0;
+    .info-title {
+      font-weight: 600;
+      font-size: 20px;
+      color: #1f1f1f;
+    }
+    .info-type {
+      font-weight: 400;
+      font-size: 12px;
+      color: #1f1f1f;
+      line-height: 16px;
+    }
+    .info-status-name {
+      font-weight: 500;
+      font-size: 16px;
+    }
+    .info-btn {
+      height: 38px !important;
+      padding: 0 20px;
+    }
+  }
+  .info-right {
+    flex: 1;
+    padding: 0 20px;
+    .group {
+      font-weight: 500;
+      font-size: 14px;
+      color: #1f1f1f;
+      line-height: 16px;
+      text-indent: 50px;
+    }
+    .process-box {
+    }
+  }
+}
+
+.table-card {
+  width: 1400px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 0 25px 25px;
+  border-radius: 16px 16px 16px 16px;
+  margin-top: 20px;
 }
 </style>

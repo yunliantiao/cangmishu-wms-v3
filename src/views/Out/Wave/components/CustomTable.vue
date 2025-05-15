@@ -2,7 +2,22 @@
   <div class="custom-table">
     <div class="row items-center q-mb-sm">
       <div class="col-auto">
-        <span>{{ trans("选择") }} {{ componentData.selectCount }}</span>
+        <q-select
+          outlined
+          dense
+          v-model="componentData.customerFilter"
+          multiple
+          clearable
+          :options="componentData.customerList"
+          @update:model-value="updateFilter"
+          :label="trans('全部客户')"
+          class="filter-item"
+          emit-value
+          map-options
+        />
+      </div>
+      <div class="col-auto select-text" v-if="showError">
+        <span>{{ trans("选择") }} {{ componentData.selectedRows.length }}</span>
       </div>
       <div class="col-auto q-ml-md" v-if="props.showError">
         <q-btn
@@ -14,147 +29,188 @@
       </div>
     </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th class="selection-cell" v-if="props.showError">
-            <q-checkbox
-              v-model="selectAll"
-              @update:model-value="toggleSelectAll"
-            />
-          </th>
-          <th>{{ trans("包裹信息") }}</th>
-          <th>{{ trans("物流方式/运单号") }}</th>
-          <th>{{ trans("收货人&地区") }}</th>
-          <th>{{ trans("状态&时间") }}</th>
-          <th>{{ trans("操作") }}</th>
-        </tr>
-      </thead>
+    <q-table
+      :rows="rows"
+      :columns="columns"
+      row-key="id"
+      :pagination="{ rowsPerPage: 0 }"
+      flat
+      hide-pagination
+      hide-bottom
+      v-model:selected="componentData.selectedRows"
+      selection="multiple"
+      separator="horizontal"
+      :selected-rows-label="getSelectedString"
+    >
+      <!-- 包裹行和商品行的组合展示 -->
+      <template v-slot:body="props">
+        <q-tr :props="props">
+          <!-- 选择框列 -->
+          <q-td auto-width align="center" v-if="showError">
+            <q-checkbox size="sm" v-model="props.selected" />
+          </q-td>
 
-      <tbody>
-        <template v-for="row in rows" :key="row[rowKey]">
-          <!-- 包裹行 -->
-          <tr class="package-row">
-            <td class="selection-cell" v-if="props.showError">
-              <!-- <input type="checkbox" v-model="selectedRows" :value="row" /> -->
-              <q-checkbox
-                v-model="row.checked"
-                @update:model-value="selectRow(row)"
-              />
-            </td>
-            <td>
-              <div>
-                {{ trans("包裹号") }}: {{ row.package_number }} ({{
-                  getWaveTypeText(row.package_type)
-                }})
-              </div>
-            </td>
-            <td>
-              <div>
-                {{ trans("客户") }}: {{ row.customer?.name }} [{{
-                  row.customer?.code
-                }}]
-              </div>
-            </td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
+          <!-- 包裹信息列 -->
+          <q-td key="package_info" :props="props">
+            <div class="package_info">
+              {{ trans("包裹号") }}: {{ props.row.package_number }} ({{
+                getWaveTypeText(props.row.package_type)
+              }})
+            </div>
+          </q-td>
 
-          <!-- 商品明细行 -->
-          <tr class="product-row" v-if="row.items && row.items.length">
-            <td v-if="props.showError"></td>
+          <!-- 物流方式列 -->
+          <q-td key="logistics" :props="props">
+            <div class="package_info">
+              {{ trans("客户") }}: {{ props.row.customer?.name }} [{{
+                props.row.customer?.code
+              }}]
+            </div>
+          </q-td>
 
-            <td>
-              <div class="product-details">
-                <div
-                  class="product-item"
-                  v-for="(product, pIndex) in row.items"
-                  :key="pIndex"
-                >
-                  <div class="product-image">
-                    <img
-                      :src="
-                        product.sku_image || 'https://via.placeholder.com/60'
-                      "
-                      width="60"
-                      height="60"
-                    />
+          <!-- 收货人列 -->
+          <q-td key="receiver" :props="props">
+            <!-- 包裹行未填充收货人 -->
+          </q-td>
+
+          <!-- 状态列 -->
+          <q-td key="status" :props="props">
+            <!-- 包裹行未填充状态 -->
+          </q-td>
+
+          <!-- 操作列 -->
+          <q-td key="actions" :props="props">
+            <!-- 包裹行未填充操作 -->
+          </q-td>
+        </q-tr>
+
+        <!-- 商品明细行 -->
+        <q-tr
+          v-if="props.row.items && props.row.items.length"
+          class="product-row"
+        >
+          <!-- 选择框列留空 -->
+          <q-td auto-width v-if="showError"></q-td>
+
+          <!-- 商品详情列 -->
+          <q-td key="package_info" :props="props">
+            <div class="product-details">
+              <div
+                class="product-item"
+                v-for="(product, pIndex) in props.row.items"
+                :key="pIndex"
+              >
+                <div class="product-image">
+                  <img :src="product.sku_image" width="70" height="70" />
+                </div>
+                <div class="product-info">
+                  <div class="product-code">
+                    {{ product.sku || "--" }}
                   </div>
-                  <div class="product-info">
-                    <div class="product-code">
-                      {{ product.sku || "--" }}
-                      <span style="font-size: 18px; margin-left: 10px"
-                        >x{{ product.quantity }}</span
-                      >
-                    </div>
-                    <div class="product-name">
-                      {{ product.product_name || "--" }}
-                    </div>
-                    <div class="product-sku">
-                      {{ product.sku_name || "--" }}
-                    </div>
+                  <div class="product-name">
+                    {{ product.product_name || "--" }}
+                  </div>
+                  <div class="product-sku">
+                    {{ product.sku_name || "--" }}
+                    <span>x{{ product.quantity }}</span>
                   </div>
                 </div>
               </div>
-            </td>
-            <td>
-              <div>
-                {{ trans("物流方式") }}:{{
-                  row.logistics_channels_name || "--"
-                }}
-              </div>
-              <div>{{ trans("单号") }}:{{ row.tracking_number || "--" }}</div>
-            </td>
-            <td>
-              <div>
-                {{ row.receive_city || "--" }}
-              </div>
-              <div>
-                {{ row.receive_name || "--" }}
-              </div>
-            </td>
-            <td>
-              <div>
-                {{ getStatusDesc(row.status) }}
-              </div>
-              <div>{{ trans("创建") }}:{{ row.created_at }}</div>
-              <div>{{ trans("波次") }}:{{ row.wave_at }}</div>
-            </td>
-            <td>
-              <q-btn
-                @click="handleErrorRow(row)"
-                flat
-                round
-                v-if="
-                  [
-                    'pending_transfer',
-                    'pending_print',
-                    'pending_pick',
-                    'pending_pack',
-                  ].includes(row.status)
-                "
-                size="sm"
-                class="table-icon"
-              >
-                <img src="@/assets/images/error.png" />
-                <q-tooltip>{{ trans("标记异常") }}</q-tooltip>
-              </q-btn>
+            </div>
+          </q-td>
 
-              <q-btn
-                @click="showOrderDialog(row)"
-                flat
-                round
-                class="table-icon"
-              >
-                <img src="@/assets/images/detail.png" />
-                <q-tooltip>{{ trans("详情") }}</q-tooltip>
-              </q-btn>
-            </td>
-          </tr>
-        </template>
-      </tbody>
-    </table>
+          <!-- 物流方式列 -->
+          <q-td key="logistics" :props="props">
+            <div class="status-text">
+              {{ trans("物流方式") }}:{{
+                props.row.logistics_channels_name || "--"
+              }}
+            </div>
+            <div class="status-text">
+              {{ trans("单号") }}:{{ props.row.tracking_number || "--" }}
+            </div>
+          </q-td>
+
+          <!-- 收货人列 -->
+          <q-td key="receiver" :props="props">
+            <div class="status-text">
+              {{ props.row.receive_city || "--" }}
+            </div>
+            <div class="status-text">
+              {{ props.row.receive_name || "--" }}
+            </div>
+          </q-td>
+
+          <!-- 状态列 -->
+          <q-td key="status" :props="props">
+            <div class="status-text">
+              {{ getStatusDesc(props.row.status) }}
+            </div>
+            <div class="status-text">
+              {{ trans("创建") }}:{{ props.row.created_at }}
+            </div>
+            <div class="status-text">
+              {{ trans("波次") }}:{{ props.row.wave_at }}
+            </div>
+          </q-td>
+
+          <!-- 操作列 -->
+          <q-td key="actions" :props="props">
+            <q-btn
+              @click="handleErrorRow(props.row)"
+              flat
+              round
+              v-if="
+                [
+                  'pending_transfer',
+                  'pending_print',
+                  'pending_pick',
+                  'pending_pack',
+                ].includes(props.row.status)
+              "
+              size="sm"
+              class="table-icon"
+            >
+              <img src="@/assets/images/error.png" />
+              <q-tooltip>{{ trans("标记异常") }}</q-tooltip>
+            </q-btn>
+
+            <q-btn
+              @click="showOrderDialog(props.row)"
+              flat
+              round
+              class="table-icon"
+            >
+              <img src="@/assets/images/detail.png" />
+              <q-tooltip>{{ trans("详情") }}</q-tooltip>
+            </q-btn>
+          </q-td>
+        </q-tr>
+      </template>
+
+      <!-- 表头插槽 -->
+      <template v-slot:header="props">
+        <q-tr :props="props">
+          <!-- 全选框 -->
+          <q-th auto-width v-if="showError" align="center">
+            <q-checkbox size="sm" v-model="props.selected" />
+          </q-th>
+
+          <!-- 其他表头 -->
+          <q-th v-for="col in props.cols" :key="col.name" :props="props">
+            {{ col.label }}
+          </q-th>
+        </q-tr>
+      </template>
+
+      <!-- 无数据显示 -->
+      <template v-slot:no-data>
+        <div class="full-width row flex-center q-gutter-sm q-pa-md">
+          <q-icon name="sentiment_dissatisfied" size="2em" color="grey-7" />
+          <span class="text-grey-7">{{ trans("暂无数据") }}</span>
+        </div>
+      </template>
+    </q-table>
 
     <OrderDetailsDialog
       v-model:visible="componentData.showOrderDialog"
@@ -166,16 +222,45 @@
 </template>
 
 <script setup>
-import { reactive, ref, watch } from "vue";
+import { reactive, ref, computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import OrderDetailsDialog from "../../components/OrderDetailsDialog.vue";
 import outApi from "@/api/out";
 import HandleError from "./HandleError.vue";
 import trans from "@/i18n";
+import { Notify } from "quasar";
+import CustomerApi from "@/api/customer.js";
+
+const NotifyUtils = {
+  notify: (message) => {
+    Notify.create({
+      message,
+      color: "negative",
+    });
+  },
+};
+
+onMounted(() => {
+  getCustomerList();
+});
+
+const getCustomerList = async () => {
+  const { data } = await CustomerApi.getAllUser();
+  componentData.customerList = data.map((row) => {
+    return {
+      label: row.name,
+      value: row.id,
+    };
+  });
+};
 
 const componentData = reactive({
   showOrderDialog: false,
   currentOrder: null,
+  // 筛选选项
+  customerFilter: [],
+  customerList: [],
+  selectedRows: [],
 });
 const handleErrorRef = ref(null);
 
@@ -198,9 +283,49 @@ const props = defineProps({
   },
 });
 
+// 列定义
+const columns = computed(() => {
+  return [
+    {
+      name: "package_info",
+      required: true,
+      label: trans("包裹信息"),
+      align: "left",
+      field: (row) => row.package_number,
+    },
+    {
+      name: "logistics",
+      required: true,
+      label: trans("物流方式/运单号"),
+      align: "left",
+      field: (row) => row.logistics_channels_name,
+    },
+    {
+      name: "receiver",
+      required: true,
+      label: trans("收货人&地区"),
+      align: "left",
+      field: (row) => row.receive_name,
+    },
+    {
+      name: "status",
+      required: true,
+      label: trans("状态&时间"),
+      align: "left",
+      field: (row) => row.status,
+    },
+    {
+      name: "actions",
+      required: true,
+      label: trans("操作"),
+      align: "center",
+      field: "actions",
+    },
+  ];
+});
+
 const route = useRoute();
-const emit = defineEmits(["refresh"]);
-const selectAll = ref(false);
+const emit = defineEmits(["refresh", "updateFilter"]);
 
 const showOrderDialog = async (row) => {
   const { data } = await outApi.getOrderInfo(row.order_id);
@@ -208,34 +333,9 @@ const showOrderDialog = async (row) => {
   componentData.showOrderDialog = true;
 };
 
-// 全选/取消全选
-const toggleSelectAll = () => {
-  props.rows.forEach((row) => {
-    row.checked = selectAll.value;
-  });
-
-  getSelectCount();
-};
-
-const getSelectCount = () => {
-  let num = 0;
-  props.rows.forEach((row) => {
-    if (row.checked) {
-      num += 1;
-    }
-  });
-  componentData.selectCount = num;
-};
-
-const selectRow = () => {
-  let bool = true;
-  props.rows.forEach((row) => {
-    if (!row.checked) {
-      bool = false;
-    }
-  });
-  selectAll.value = bool;
-  getSelectCount();
+const updateFilter = () => {
+  console.log(componentData.customerFilter);
+  emit("updateFilter", componentData.customerFilter);
 };
 
 // 获取波次类型文本
@@ -275,8 +375,12 @@ const getStatusDesc = (status) => {
   return statusMap[status] || status || trans("未知状态");
 };
 
+const getSelectedString = () => {
+  return `${componentData.selectedRows.length} ${trans("已选择")}`;
+};
+
 const getCheckedList = () => {
-  let ids = props.rows.filter((row) => row.checked).map((row) => row.id);
+  let ids = componentData.selectedRows.map((row) => row.id);
   return ids;
 };
 
@@ -299,57 +403,19 @@ const refresh = () => {
 };
 </script>
 
-
-<style scoped>
+<style scoped lang="scss">
 .custom-table {
   width: 100%;
   overflow-x: auto;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  border: 1px solid #ebeef5;
-}
-
-th,
-td {
-  padding: 12px 16px;
-  text-align: left;
-  border-bottom: 1px solid #ebeef5;
-}
-
-th {
-  background-color: #f5f7fa;
-  color: #606266;
-  font-weight: 500;
-  font-size: 14px;
-}
-
-td {
-  color: #606266;
-  font-size: 14px;
-}
-
-.package-row:hover {
-  background-color: #f5f7fa;
-}
-
 .product-row {
-  background-color: #f9f9f9;
-}
-
-.selection-cell {
-  width: 50px;
-  text-align: center;
-}
-
-.selected {
-  background-color: #f0f7ff;
+  // background-color: #f9f9f9;
+  // background: #fbfaff;
 }
 
 .product-details {
-  /* padding: 10px; */
+  padding: 6px 0;
 }
 
 .product-item {
@@ -357,36 +423,37 @@ td {
   align-items: center;
   margin-bottom: 10px;
   padding-bottom: 10px;
-  border-bottom: 1px dashed #ebeef5;
-}
 
-.product-item:last-child {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
 }
 
 .product-image {
-  margin-right: 15px;
-}
-
-.product-image img {
-  object-fit: contain;
-  border: 1px solid #ebeef5;
+  img {
+    object-fit: contain;
+    border: 1px solid #ebeef5;
+  }
 }
 
 .product-info {
-  /* flex: 1; */
+  flex: 1;
+  margin-left: 10px;
 }
 
 .product-code {
   font-weight: 500;
-  margin-bottom: 4px;
+  font-size: 14px;
+  color: #5745c5;
+  line-height: 16px;
+  margin-bottom: 10px;
 }
 
 .product-name {
   width: 200px;
-  margin-bottom: 4px;
+  margin-bottom: 10px;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -399,44 +466,39 @@ td {
   color: #909399;
 }
 
-.product-quantity {
-  font-size: 16px;
+/* 表格图标按钮样式 */
+.table-icon {
+  img {
+    width: 20px;
+    height: 20px;
+  }
+}
+.package_info {
   font-weight: 500;
-  margin-left: 15px;
-}
-
-.logistics-tag {
-  display: inline-block;
-  background-color: #1976d2;
-  color: white;
-  padding: 2px 8px;
-  border-radius: 4px;
   font-size: 12px;
-  margin-right: 5px;
+  color: #1f1f1f;
+  line-height: 16px;
 }
 
-.status-times {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.select-text {
+  margin-left: 20px;
 }
 
-.action-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
+.q-table thead {
+  // background: #fbfaff !important;
 }
+// .q-table thead,
+// .q-table tr,
+// .q-table th,
+// .q-table td {
+//   background: #fbfaff !important;
+// }
 
-.action-btn {
-  background: none;
-  border: none;
-  color: #1976d2;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 50%;
-}
-
-.action-btn:hover {
-  background-color: rgba(25, 118, 210, 0.1);
+.status-text {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f1f1f;
+  line-height: 16px;
+  margin-bottom: 10px;
 }
 </style>

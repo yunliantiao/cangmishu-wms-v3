@@ -6,7 +6,7 @@ const WaveList = () => import(`../views/Out/Wave/List.vue`)
 const WaveInfo = () => import(`../views/Out/Wave/Info.vue`)
 // const SortOut = () => import(`../views/Out/Wave/SortOut.vue`)
 const Pigeonholes = () => import(`../views/Out/Wave/Pigeonholes.vue`)
-const Packaging = () => import(`../views/Out/Wave/Packaging.vue`)
+// const Packaging = () => import(`../views/Out/Wave/Packaging.vue`)
 // const ScanPacking = () => import(`../views/Out/Wave/ScanPacking.vue`)
 import trans from "@/i18n";
 export default [
@@ -88,9 +88,10 @@ export default [
                 },
             },
             {
-                path: 'wave/info',
-                name: 'waveInfo',
-                component: WaveInfo,
+                path: 'wave/infomation',
+                name: 'waveInfomation',
+                redirect: '/wave/info',
+                // component: WaveInfo,
                 id: 1006,
                 meta: {
                     level: 3,
@@ -111,8 +112,9 @@ export default [
             },
             {
                 path: 'wave/packaging',
-                name: 'Packaging',
-                component: Packaging,
+                name: 'wavePackaging1',
+                redirect: '/wave/packaging',
+                // component: Packaging,
                 id: 1008,
                 meta: {
                     level: 3,

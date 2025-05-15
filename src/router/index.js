@@ -70,6 +70,18 @@ const constantRouterMap = [
         name: 'ExamineGoods',
         component: () => import('@/views/Deliver/ExamineGoods.vue'),
     },
+    // 扫描详情
+    {
+        path: '/out/wave/info',
+        name: 'waveInfo',
+        component: () => import('@/views/Out/Wave/Info.vue'),
+    },
+    // 扫描包装详情页
+    {
+        path: '/wave/packaging',
+        name: 'wavePackaging',
+        component: () => import('@/views/Out/Wave/Packaging.vue'),
+    },
     {
         path: '/Test',
         name: 'Test',
