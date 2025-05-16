@@ -29,4 +29,10 @@ export default {
 
     printTags: (data) => POST("packaging-materials/print", data), // 打印标签
 
+
+    //批量添加标签
+    batchAddTag: (data) => PUT("products/batch-update-tag", data), // 批量添加标签
+
+    // 批量取消标签
+    batchCancelTag: (data) => PUT("products/batch-remove-tag", data), // 批量取消标签
 }

@@ -1,5 +1,22 @@
 <template>
   <div class="product-spu">
+    <div class="btn-group">
+      <q-btn-dropdown
+        color="primary"
+        flat
+        :label="trans('批量操作')"
+        class="filter-btn"
+      >
+        <q-list>
+          <q-item clickable v-close-popup @click="addTag">
+            <q-item-section>{{ trans("添加标记") }}</q-item-section>
+          </q-item>
+          <q-item clickable v-close-popup @click="cancelTag">
+            <q-item-section>{{ trans("取消标记") }}</q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
+    </div>
     <!-- 表格 -->
     <q-table
       :rows="rows"
@@ -91,6 +108,23 @@
               </div>
             </div>
           </q-td>
+          <q-td auto-width style="padding: 0 8px">
+            <div class="flex-icon">
+              <span
+                v-for="tag in props.row.tags"
+                :key="tag.id"
+                class="table-icon"
+              >
+                <q-icon
+                  name="bookmark"
+                  class="tag-icon"
+                  size="xs"
+                  :color="tag.style"
+                />
+                <q-tooltip>{{ tag.name }}</q-tooltip>
+              </span>
+            </div>
+          </q-td>
           <q-td
             key="status"
             class="text-center"
@@ -161,7 +195,9 @@
                 :columns="skuColumns"
                 row-key="id"
                 flat
-                hide-pagination
+                :rows-per-page-options="[0]"
+                :rows-per-page="0"
+                :show-pagination="false"
                 class="sku-table"
               >
                 <template v-slot:body-cell-skuInfo="slotProps">
@@ -247,18 +283,40 @@
         </div>
       </template> -->
     </q-table>
+
+    <batchTag ref="batchTagRef" @confirm="handleTagConfirm"></batchTag>
   </div>
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits, defineExpose } from "vue";
+import { ref, defineProps, defineEmits, defineExpose, onMounted } from "vue";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import api from "@/api/index";
+import Message from "@/utils/message.js";
 import trans from "@/i18n";
+import batchTag from "./batchTag.vue";
+import ProductApi from "@/api/product";
 
 const router = useRouter();
 const $q = useQuasar();
+const batchTagRef = ref(null);
+const tagList = ref([]);
+
+onMounted(() => {
+  // batchTagRef.value.open();
+  getTagList();
+});
+
+const getTagList = async () => {
+  const { data } = await ProductApi.getTagList();
+  tagList.value = data.map((row) => {
+    return {
+      label: row.name,
+      value: row.id,
+    };
+  });
+};
 
 const props = defineProps({
   rows: {
@@ -295,6 +353,15 @@ const columns = [
     field: (row) => row.name,
     style: "width: 25%",
   },
+
+  {
+    name: "tag",
+    label: trans("标记"),
+    field: "tag",
+    align: "center",
+    style: "width: 20%",
+  },
+
   {
     name: "status",
     label: trans("状态"),
@@ -451,6 +518,53 @@ const handleSingleDelete = (row) => {
   });
 };
 
+const addTag = () => {
+  console.log("addTag");
+  if (selected.value.length === 0) {
+    Message.notify(trans("请选择商品"));
+    return;
+  }
+  batchTagRef.value.open(tagList.value);
+};
+
+const cancelTag = () => {
+  if (selected.value.length === 0) {
+    Message.notify(trans("请选择商品"));
+    return;
+  }
+  $q.dialog({
+    title: trans("确认取消标签"),
+    message: trans("确定要取消选中的 {count} 个商品的标签吗？", {
+      count: selected.value.length,
+    }),
+    cancel: {
+      label: trans("取消"),
+      flat: true,
+    },
+    ok: {
+      label: trans("确认"),
+      color: "primary",
+    },
+  }).onOk(async () => {
+    await ProductApi.batchCancelTag({
+      product_ids: selected.value.map((item) => item.id),
+      tag_ids: [],
+    });
+    Message.notify(trans("取消标签成功"));
+    emit("refresh"); // 刷新列表
+  });
+};
+
+const handleTagConfirm = async (tagIds) => {
+  console.log("handleTagConfirm", tagIds);
+  await ProductApi.batchAddTag({
+    product_ids: selected.value.map((item) => item.id),
+    tag_ids: tagIds,
+  });
+  Message.notify(trans("添加标签成功"));
+  emit("refresh"); // 刷新列表
+};
+
 // 暴露选中数据和方法给父组件
 defineExpose({
   selected,
@@ -495,5 +609,15 @@ defineExpose({
     text-overflow: ellipsis;
     max-width: 300px;
   }
+}
+
+.flex-icon {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  // .tag-icon {
+  //   cursor: pointer;
+  // }
 }
 </style>

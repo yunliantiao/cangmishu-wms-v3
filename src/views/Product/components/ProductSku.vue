@@ -133,6 +133,7 @@ import { useQuasar } from "quasar";
 import { defineEmits, defineExpose, defineProps, ref } from "vue";
 import { useRouter } from "vue-router";
 import trans from "@/i18n";
+import Message from "@/utils/message";
 // import { useI18n } from "vue-i18n";
 // import EditSkuDialog from './EditSkuDialog.vue';
 // import PrintLabelDialog from './PrintLabelDialog.vue';
@@ -363,5 +364,9 @@ defineExpose({
 
 .text-red {
   color: #ff0000;
+}
+
+.btn-group {
+  display: flex;
 }
 </style>

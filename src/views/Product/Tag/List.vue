@@ -247,7 +247,6 @@ const initList = async () => {
     // page_size: componentData.rowsPerPage,
     keyword: componentData.keyword,
   });
-  console.log("initList", data);
   componentData.list = data;
 };
 

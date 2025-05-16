@@ -221,7 +221,7 @@ export default {
 <style lang="scss" scoped>
 .fixed-sidebar {
   position: fixed;
-  top: 50px; /* 与顶部导航栏高度保持一致 */
+  top: 58px; /* 与顶部导航栏高度保持一致 */
   left: 0;
   width: 240px;
   height: calc(100vh - 50px);
@@ -231,7 +231,8 @@ export default {
   border-right: 1px solid rgba(0, 31, 77, 0.06);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
-  overflow: visible;
+  overflow-x: visible;
+  overflow-y: auto;
 
   .fix-menu {
     position: absolute;
@@ -279,6 +280,7 @@ export default {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   padding: 20px;
   transition: all 0.25s ease;
+  overflow-y: auto;
 
   // 父级菜单项,会与子级route-item重叠,所以用!important
   .menu-header {

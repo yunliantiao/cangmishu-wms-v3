@@ -83,7 +83,6 @@
                   dense
                   borderless
                   style="height: 34px; margin: 0 !important; width: 60px"
-                  size="sm"
                   type="number"
                   v-model="props.row.size_length"
                   class="input-spacing"
@@ -92,7 +91,6 @@
                   dense
                   borderless
                   style="height: 34px; margin: 0 !important; width: 60px"
-                  size="sm"
                   type="number"
                   v-model="props.row.size_width"
                   class="input-spacing"
@@ -100,7 +98,6 @@
                 <q-input
                   dense
                   borderless
-                  size="sm"
                   type="number"
                   style="height: 34px; margin: 0 !important; width: 60px"
                   v-model="props.row.size_height"
@@ -123,27 +120,12 @@
             </div>
           </q-td>
           <q-td key="weight" :props="props">
-            <!-- <div class="weight-row">
-              <div class="col mr-1">
-                <q-input
-                  dense
-                  outlined
-                  type="number"
-                  v-model="props.row.product_spec_actual_weight"
-                  @update:model-value="checkWeightDiff(props.row)"
-                  class="input-spacing"
-                />
-              </div>
-              <div class="col-auto px-1">g</div>
-            </div> -->
-
             <div class="flex">
               <div class="dimensions-row">
                 <q-input
                   dense
                   borderless
                   style="height: 34px; margin: 0 !important; width: 60px"
-                  size="sm"
                   type="number"
                   v-model="props.row.product_spec_actual_weight"
                   class="input-spacing"
@@ -172,23 +154,14 @@
             </div>
           </q-td>
           <q-td key="receivedQuantity" align="center" :props="props">
-            <!-- <q-input
-              dense
-              outlined
-              type="number"
-              v-model="props.row.put_away_quantity"
-              min="0"
-              :max="props.row.quantity"
-              class="input-spacing"
-            /> -->
             <div class="flex-center">
               <div class="dimensions-row">
                 <q-input
                   dense
                   borderless
                   style="height: 34px; margin: 0 !important; width: 100px"
-                  size="sm"
                   min="0"
+                  @blur="qtyInputBlur(props.row, index)"
                   type="number"
                   v-model="props.row.put_away_quantity"
                   class="input-spacing"
@@ -914,6 +887,29 @@ watch(
   },
   { immediate: true, deep: true }
 );
+
+const qtyInputBlur = async (row, index) => {
+  if (row.put_away_quantity > row.quantity) {
+    await $q
+      .dialog({
+        title: trans("提示"),
+        message: trans(`[{name}]总收货数量大于申报数量，确定继续?`, {
+          name: row.product_spec_sku,
+        }),
+        ok: {
+          label: trans("确定"),
+          color: "primary",
+        },
+        cancel: {
+          label: trans("取消"),
+          color: "grey-7",
+        },
+      })
+      .onCancel(() => {
+        row.put_away_quantity = "";
+      });
+  }
+};
 
 // 提供对象给父组件
 defineExpose({
