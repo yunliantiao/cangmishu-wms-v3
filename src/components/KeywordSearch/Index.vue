@@ -17,6 +17,7 @@
         <q-input
           outlined
           dense
+          :rules="rules"
           class="input-box"
           v-model="search_value"
           :placeholder="trans('请输入')"
@@ -60,6 +61,10 @@ const props = defineProps({
   showSearchType: {
     type: Boolean,
     default: true,
+  },
+  rules: {
+    type: Array,
+    default: () => [],
   },
   showSearchMode: {
     type: Boolean,

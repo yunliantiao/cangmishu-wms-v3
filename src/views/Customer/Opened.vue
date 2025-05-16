@@ -310,7 +310,7 @@
               <div class="text-negative">*</div>
             </div>
             <div class="row q-mt-xs">
-              <q-select
+              <!-- <q-select
                 outlined
                 dense
                 v-model="formData.phone_prefix"
@@ -329,6 +329,17 @@
                   (val) => !!val || trans('手机号不能为空'),
                   (val) => /^\d+$/.test(val) || trans('请输入有效的手机号'),
                 ]"
+              /> -->
+              <KeywordSearch
+                v-model:search_value="formData.phone_number"
+                v-model:search_type="formData.phone_prefix"
+                :searchTypeList="phoneCodes"
+                :showSearchMode="false"
+                :rules="[
+                  (val) => !!val || trans('手机号不能为空'),
+                  (val) => /^\d+$/.test(val) || trans('请输入有效的手机号'),
+                ]"
+                :placeholder="trans('请输入')"
               />
             </div>
           </div>
@@ -503,7 +514,7 @@ const formData = reactive({
   city: "",
   remark: "",
   phone_prefix: "",
-  phone_number: "",
+  phone_number: "+86",
   currency: "",
   billing_template_id: "",
 });
@@ -628,6 +639,7 @@ const handleAddCustomer = () => {
   Object.keys(formData).forEach((key) => {
     formData[key] = "";
   });
+  formData.phone_prefix = "+86";
   editCustomerId.value = null;
   dialogVisible.value = true;
 };
