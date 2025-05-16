@@ -20,20 +20,7 @@
       hide-pagination
       flat
       :loading="loading"
-      :pagination="{
-        rowsPerPage: 0,
-      }"
     >
-      <!-- 无数据时的显示 -->
-      <template v-slot:no-data>
-        <div
-          v-if="!loading && (!rows || rows.length === 0)"
-          class="full-width row flex-center q-my-lg"
-        >
-          <span class="text-grey">{{ trans("暂无数据") }}</span>
-        </div>
-      </template>
-
       <template v-slot:header="props">
         <q-tr :props="props">
           <q-th style="padding: 0 8px">
@@ -132,11 +119,11 @@
       </template>
 
       <!-- 底部选中记录数显示 -->
-      <template v-slot:bottom>
+      <!-- <template v-slot:bottom>
         <div v-if="selected.length > 0" class="q-pa-sm text-grey-8 text-center">
           {{ trans("已选择 {count} 条记录", { count: selected.length }) }}
         </div>
-      </template>
+      </template> -->
     </q-table>
   </div>
 </template>

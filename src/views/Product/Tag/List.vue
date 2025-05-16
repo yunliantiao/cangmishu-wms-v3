@@ -22,15 +22,14 @@
             v-model="componentData.keyword"
             clearable
             :placeholder="trans('请输入')"
-            class="search-input"
+            class="filter-item"
           />
         </div>
         <div class="col-auto">
           <q-btn
             color="primary"
-            icon="search"
             :label="trans('搜索')"
-            class="h-40"
+            class="filter-btn"
             @click="handleSearch"
           />
         </div>

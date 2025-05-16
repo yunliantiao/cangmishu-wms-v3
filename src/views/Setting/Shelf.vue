@@ -17,7 +17,6 @@
         flat
         separator="horizontal"
         class="shelf-table"
-        hide-bottom
         :loading="$store.state.btnLoading"
       >
         <template v-slot:body="props">

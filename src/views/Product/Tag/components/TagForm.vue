@@ -14,8 +14,8 @@
           <div class="form-row">
             <div class="form-label">
               <span class="text-subtitle2"
-                >{{ trans("标记名称") }} <span class="text-red">*</span></span
-              >
+                >{{ trans("标记名称") }} <span class="text-red">*</span>
+              </span>
             </div>
             <div class="form-field">
               <div class="row items-center">
@@ -37,7 +37,7 @@
                     style="width: 80px"
                   >
                     <template v-slot:selected>
-                      <q-icon name="bookmark" :color="formData.color" />
+                      <q-icon name="bookmark" :color="formData.style" />
                     </template>
                     <template v-slot:option="scope">
                       <q-item v-bind="scope.itemProps">

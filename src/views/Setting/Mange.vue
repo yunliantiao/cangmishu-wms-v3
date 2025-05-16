@@ -872,7 +872,6 @@ const hideTooltip = () => {
       font-size: 14px;
       color: rgba(0, 0, 0, 0.85);
       padding: 12px 16px;
-      background-color: #f5f7fa;
     }
 
     .q-table td {

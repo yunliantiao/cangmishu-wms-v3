@@ -50,7 +50,6 @@
               ref="weightRef"
               type="number"
               min="0"
-              :loading="$store.state.btnLoading"
               borderless
               :placeholder="trans('请输入重量')"
             />
@@ -97,6 +96,7 @@
         row-key="id"
         flat
         hide-pagination
+        :loading="$store.state.btnLoading"
         class="scan-table"
         :rows-per-page-options="[0]"
         :rows-per-page="0"
@@ -361,6 +361,7 @@ const handlePrint = async () => {
     gap: 12px;
     position: relative;
     overflow: hidden;
+    padding-left: 10px;
     img {
       width: 26px;
       height: 26px;

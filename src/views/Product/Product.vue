@@ -114,7 +114,7 @@ const filters = ref({
   end_date: "",
   search_type: "sku",
   keywords: "",
-  search_mode: "fuzzy",
+  search_mode: "exact",
 });
 
 // 日期类型选项

@@ -1128,7 +1128,7 @@ onMounted(() => {
   }
 
   .q-pa-md .row.items-center.justify-end {
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    // border-top: 1px solid rgba(0, 0, 0, 0.05);
     padding-top: 12px;
   }
 

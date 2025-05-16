@@ -110,7 +110,6 @@
           separator="horizontal"
           class="inventory-table-style"
           :loading="$store.state.btnLoading"
-          hide-bottom
           flat
         >
           <template v-slot:header="props">

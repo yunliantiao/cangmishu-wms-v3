@@ -241,11 +241,11 @@
       </template>
 
       <!-- 底部选中记录数显示 -->
-      <template v-slot:bottom>
+      <!-- <template v-slot:bottom>
         <div v-if="selected.length > 0" class="q-pa-sm text-grey-8 text-center">
           {{ trans("已选择 {count} 条记录", { count: selected.length }) }}
         </div>
-      </template>
+      </template> -->
     </q-table>
   </div>
 </template>
