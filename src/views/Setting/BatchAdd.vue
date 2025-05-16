@@ -47,7 +47,7 @@
                   outlined
                   dense
                   v-model="area_type"
-                  :options="$store.state.areaTypeOptions"
+                  :options="areaTypeOptions"
                   :placeholder="trans('请选择货区类型')"
                   @update:model-value="getGoodsAreaList"
                   emit-valu
@@ -55,7 +55,7 @@
                 >
                   <template v-slot:selected>
                     {{
-                      $store.state.areaTypeOptions.find(
+                      areaTypeOptions.find(
                         (item) => item.value === area_type.value
                       )?.label || trans("请选择货区类型")
                     }}
@@ -242,7 +242,10 @@ import { ref, computed } from "vue";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import settingApi from "@/api/setting";
+import { useStore } from "vuex";
+import trans from "@/i18n";
 
+const store = useStore();
 const $q = useQuasar();
 const router = useRouter();
 const area_type = ref("");
@@ -256,6 +259,16 @@ const formData = ref({
   sort: "",
   allow_mixed_products: 1,
   allow_mixed_batches: 1,
+});
+
+const areaTypeOptions = computed(() => {
+  let list = store.state.areaTypeOptions.map((item) => {
+    return {
+      label: trans(item.label),
+      value: item.value,
+    };
+  });
+  return list;
 });
 
 // 选项数据

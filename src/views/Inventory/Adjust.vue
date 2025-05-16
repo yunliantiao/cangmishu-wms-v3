@@ -6,19 +6,15 @@
           v-model:start_date="pageParams.start_date"
           v-model:end_date="pageParams.end_date"
           v-model:date_type="pageParams.date_type"
-          :dateList="$store.state.dateTypeOptions"
+          :dateList="dateTypeOptions"
         ></DatePicker>
 
         <KeywordSearch
           v-model:search_type="pageParams.search_type"
           v-model:search_value="pageParams.keywords"
           v-model:search_mode="pageParams.search_mode"
-          :searchModeList="$store.state.searchModeOptions"
-          :searchTypeList="[
-            { label: trans('商品SKU'), value: 'sku' },
-            { label: trans('移货编号'), value: 'system_order_number' },
-            { label: trans('商品名称'), value: 'name' },
-          ]"
+          :searchModeList="searchModeOptions"
+          :searchTypeList="searchTypeList"
         ></KeywordSearch>
         <div class="col-auto">
           <q-btn
@@ -169,13 +165,15 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import inventoryApi from "@/api/inventory";
 import { useRouter } from "vue-router";
 import Pagination from "@/components/Pagination.vue";
 import trans from "@/i18n";
 import DatePicker from "@/components/DatePickerNew/Index.vue";
 import KeywordSearch from "@/components/KeywordSearch/Index.vue";
+import { useStore } from "vuex";
+const store = useStore();
 const router = useRouter();
 const selectedRows = ref([]);
 const pageParams = ref({
@@ -194,44 +192,72 @@ const pageParams = ref({
 const adjustList = ref([]);
 
 // 表格列配置
-const columns = [
-  {
-    name: "info",
-    label: trans("商品信息/箱信息"),
-    align: "left",
-    field: (row) => row,
-  },
-  {
-    name: "type",
-    label: trans("调整类型"),
-    align: "left",
-    field: (row) => row.type,
-  },
-  {
-    name: "location",
-    label: trans("货架位"),
-    align: "left",
-    field: (row) => row.items?.[0]?.locations?.[0]?.location_code,
-  },
-  {
-    name: "quantity",
-    label: trans("调整数量"),
-    align: "center",
-    field: (row) => row.items?.[0]?.locations?.[0]?.adjustment_qty,
-  },
-  {
-    name: "operator",
-    label: trans("操作人"),
-    align: "left",
-    field: (row) => row.operator,
-  },
-  {
-    name: "created_at",
-    label: trans("时间"),
-    align: "left",
-    field: (row) => row.created_at,
-  },
-];
+const columns = computed(() => {
+  return [
+    {
+      name: "info",
+      label: trans("商品信息/箱信息"),
+      align: "left",
+      field: (row) => row,
+    },
+    {
+      name: "type",
+      label: trans("调整类型"),
+      align: "left",
+      field: (row) => row.type,
+    },
+    {
+      name: "location",
+      label: trans("货架位"),
+      align: "left",
+      field: (row) => row.items?.[0]?.locations?.[0]?.location_code,
+    },
+    {
+      name: "quantity",
+      label: trans("调整数量"),
+      align: "center",
+      field: (row) => row.items?.[0]?.locations?.[0]?.adjustment_qty,
+    },
+    {
+      name: "operator",
+      label: trans("操作人"),
+      align: "left",
+      field: (row) => row.operator,
+    },
+    {
+      name: "created_at",
+      label: trans("时间"),
+      align: "left",
+      field: (row) => row.created_at,
+    },
+  ];
+});
+
+const searchModeOptions = computed(() => {
+  return store.state.searchModeOptions.map((item) => {
+    return {
+      label: trans(item.label),
+      value: item.value,
+    };
+  });
+});
+
+const dateTypeOptions = computed(() => {
+  return store.state.dateTypeOptions.map((item) => {
+    return {
+      label: trans(item.label),
+      value: item.value,
+    };
+  });
+});
+
+const searchTypeList = computed(() => {
+  return [
+    { label: trans("商品SKU"), value: "sku" },
+    { label: trans("移货编号"), value: "system_order_number" },
+    { label: trans("商品名称"), value: "name" },
+  ];
+});
 
 // 选择相关
 const selectAll = ref(false);

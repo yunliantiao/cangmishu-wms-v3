@@ -10,18 +10,33 @@
         :icon="leftDrawerOpen ? 'menu_open' : 'read_more'"
       />
 
-      <q-btn-dropdown flat no-caps class="user-menu" auto-close :menu-anchor="'bottom left'" :menu-self="'top left'">
+      <q-btn-dropdown
+        flat
+        no-caps
+        class="user-menu"
+        auto-close
+        :menu-anchor="'bottom left'"
+        :menu-self="'top left'"
+      >
         <template v-slot:label>
           <div class="row items-center no-wrap">
             <q-toolbar-title shrink class="text-weight-bold">
-              {{ warehouseList.find((item) => item.id == currentWarehouse)?.name }}
+              {{
+                warehouseList.find((item) => item.id == currentWarehouse)?.name
+              }}
               -wms
             </q-toolbar-title>
           </div>
         </template>
 
         <q-list style="min-width: 220px">
-          <q-item clickable v-close-popup v-for="item in warehouseList" @click="changeWarehouse(item)" :key="item.id">
+          <q-item
+            clickable
+            v-close-popup
+            v-for="item in warehouseList"
+            @click="changeWarehouse(item)"
+            :key="item.id"
+          >
             <q-item-section avatar>
               <q-icon name="group" color="primary" />
             </q-item-section>
@@ -62,10 +77,21 @@
           <q-tooltip>Account</q-tooltip>
         </q-btn> -->
 
-        <q-btn-dropdown flat no-caps auto-close :menu-anchor="'bottom left'" :menu-self="'top left'">
+        <q-btn-dropdown
+          flat
+          no-caps
+          auto-close
+          :menu-anchor="'bottom left'"
+          :menu-self="'top left'"
+        >
           <template v-slot:label>
             <div class="row items-center no-wrap">
-              {{ '(' + $store.state.userInfo.name + ')' + $store.state.userInfo.email }}
+              {{
+                "(" +
+                $store.state.userInfo.name +
+                ")" +
+                $store.state.userInfo.email
+              }}
               <!-- <q-toolbar-title shrink class="">
                
               </q-toolbar-title> -->
@@ -75,7 +101,7 @@
           <q-list style="min-width: 220px">
             <q-item clickable v-close-popup @click="logout">
               <q-item-section>
-                <q-item-label>{{ trans('退出') }}</q-item-label>
+                <q-item-label>{{ trans("退出") }}</q-item-label>
               </q-item-section>
             </q-item>
             <q-separator />
@@ -102,46 +128,47 @@
 </template>
 
 <script>
-import api from '@/api';
-import warehouseApi from '@/api/warehouse';
-import trans from '@/i18n';
-import { fabYoutube } from '@quasar/extras/fontawesome-v6';
-import { Dialog, useQuasar } from 'quasar';
-import { computed, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useStore } from 'vuex';
+import api from "@/api";
+import warehouseApi from "@/api/warehouse";
+import trans from "@/i18n";
+import { fabYoutube } from "@quasar/extras/fontawesome-v6";
+import { Dialog, useQuasar } from "quasar";
+import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 export default {
-  name: 'HeaderComponent',
+  name: "HeaderComponent",
 
   setup() {
     const store = useStore();
     const $q = useQuasar();
     const router = useRouter();
-    let localLanguage = window.localStorage.getItem('language') || 'zh_CN';
+    let localLanguage = window.localStorage.getItem("language") || "zh_CN";
 
     const language = ref(localLanguage);
-    store.commit('changeLanguage', language.value);
+    store.commit("changeLanguage", language.value);
 
     const changeLanguage = () => {
-      if (language.value == 'zh_CN') {
-        language.value = 'en';
+      if (language.value == "zh_CN") {
+        language.value = "en";
       } else {
-        language.value = 'zh_CN';
+        language.value = "zh_CN";
       }
-      window.localStorage.setItem('language', language.value);
-      store.commit('changeLanguage', language.value);
+      window.localStorage.setItem("language", language.value);
+      store.commit("changeLanguage", language.value);
+      window.location.reload();
     };
 
     // 从Vuex获取侧边栏状态
     const leftDrawerOpen = computed(() => store.state.leftDrawerOpen);
 
     const toggleDrawer = () => {
-      store.dispatch('toggleLeftDrawer');
+      store.dispatch("toggleLeftDrawer");
     };
     const changeWarehouse = (item) => {
-      localStorage.setItem('warehouseId', item.id);
-      router.push('/');
+      localStorage.setItem("warehouseId", item.id);
+      router.push("/");
       window.location.reload();
     };
     const warehouseList = ref([]); //仓库列表
@@ -150,12 +177,12 @@ export default {
       warehouseApi.getWarehouseList().then((res) => {
         if (res.success) {
           warehouseList.value = res.data;
-          if (localStorage.getItem('warehouseId')) {
-            currentWarehouse.value = localStorage.getItem('warehouseId');
+          if (localStorage.getItem("warehouseId")) {
+            currentWarehouse.value = localStorage.getItem("warehouseId");
           } else {
             if (warehouseList.value.length) {
               currentWarehouse.value = warehouseList.value[0].id;
-              localStorage.setItem('warehouseId', warehouseList.value[0].id);
+              localStorage.setItem("warehouseId", warehouseList.value[0].id);
             }
           }
         }
@@ -164,23 +191,23 @@ export default {
     getWarehouseList();
     const logout = () => {
       Dialog.create({
-        title: trans('退出确认'),
-        message: trans('确定要退出登录吗？'),
+        title: trans("退出确认"),
+        message: trans("确定要退出登录吗？"),
         cancel: true,
         persistent: true,
         ok: {
-          label: trans('退出'),
-          color: 'primary',
+          label: trans("退出"),
+          color: "primary",
         },
         cancel: {
-          label: trans('取消'),
-          color: 'grey-8',
+          label: trans("取消"),
+          color: "grey-8",
         },
       })
         .onOk(() => {
           api.logout().then((res) => {
             if (res.success) {
-              store.dispatch('logout');
+              store.dispatch("logout");
             }
           });
         })

@@ -53,7 +53,7 @@
       <!-- 商品与面单打印信息 -->
       <div class="info-bar">
         <div>
-          商品编码：
+          {{ trans("商品编码") }}：
           <q-btn
             flat
             :color="pageData.codeFilter == 'all' ? 'primary' : '#1f1f1f'"

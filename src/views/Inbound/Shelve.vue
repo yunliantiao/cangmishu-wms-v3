@@ -49,36 +49,38 @@
     <!-- 订单信息区域 -->
     <template v-if="orderData">
       <!-- 顶部导航 -->
-      <div class="row scan-header q-mb-md q-pa-lg justify-between items-center">
-        <div class="text-h6">
-          {{ trans("扫描上架") }}
-          <span class="text-primary q-ml-sm"
-            >{{ trans("ERP单号/入库单号") }} {{ inboundInfo }}</span
-          >
+      <div class="scan-header">
+        <div class="head-box">
+          <span class="header-title">
+            {{ trans("扫描上架") }}
+          </span>
+          <span class="head-title-2">{{ trans("ERP单号/入库单号") }} </span>
+
+          <span class="head-number">
+            {{ inboundInfo }}
+          </span>
         </div>
-        <div class="row q-gutter-sm">
+        <div class="btn-box">
           <q-btn
-            color="grey-6"
+            color="primary"
             @click="resetOrder"
-            icon="restart_alt"
             :label="trans('重置')"
-            flat
-            class="bg-grey-2"
+            class="btn"
+            outline
           />
           <q-btn
             color="primary"
-            icon="print"
             :label="trans('打印上架单')"
-            outline
             :loading="$store.state.btnLoading"
             @click="handlePrint"
+            class="btn"
             :disable="!isSuccess"
           />
           <q-btn
             color="primary"
-            icon="check_circle"
             :label="trans('确认上架')"
             unelevated
+            class="btn"
             :loading="$store.state.btnLoading"
             @click="handleConfirm"
             :disable="isSuccess"
@@ -87,34 +89,35 @@
       </div>
 
       <!-- 订单详情 -->
-      <div class="order-info bg-white q-pa-md rounded-borders">
-        <div class="row q-col-gutter-lg">
-          <div class="col-6 col-md-3">
-            <div class="info-label">{{ trans("客户") }}</div>
-            <div class="info-value">{{ orderData.customer.name }}</div>
+      <div class="order-info">
+        <div class="info-item">
+          <div class="info-label">{{ trans("客户") }}</div>
+          <div class="info-value">{{ orderData.customer.name }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">{{ trans("运单号") }}</div>
+          <div class="info-value">
+            {{ orderData.tracking_number || "--" }}
           </div>
-          <div class="col-6 col-md-3">
-            <div class="info-label">{{ trans("运单号") }}</div>
-            <div class="info-value">
-              {{ orderData.tracking_number || "--" }}
-            </div>
-          </div>
-          <div class="col-6 col-md-3">
-            <div class="info-label">{{ trans("备注") }}</div>
-            <div class="info-value">{{ orderData.remark || "--" }}</div>
-          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">{{ trans("备注") }}</div>
+          <div class="info-value">{{ orderData.remark || "--" }}</div>
         </div>
       </div>
 
       <!-- 上架模式选择 -->
+
+      <!--  -->
       <div
-        class="shelve-mode bg-white rounded-borders"
+        class="products-section"
         v-if="orderData.arrival_method != 'express_parcel'"
       >
         <div class="row">
           <q-radio
             v-model="arrivalMethod"
             val="express_parcel"
+            size="xs"
             :label="trans('按商品上架')"
             class="q-mr-lg"
             @click="handleShelveMode"
@@ -124,6 +127,7 @@
             @click="handleShelveMode"
             v-model="arrivalMethod"
             val="box"
+            size="xs"
             :label="trans('按箱上架')"
             :disable="ShelfMode"
           />
@@ -131,17 +135,14 @@
       </div>
 
       <!-- 商品上架模式 -->
-      <div
-        v-if="arrivalMethod === 'express_parcel'"
-        class="product-shelve bg-white rounded-borders"
-      >
-        <div class="q-pa-md">
+      <div v-if="arrivalMethod === 'express_parcel'" class="product-shelve">
+        <div class="">
           <div class="row justify-between q-mb-md">
-            <div class="row items-center">
+            <!-- <div class="row items-center">
               <span class="q-mr-sm"
                 >{{ trans("选择") }} {{ selectedProducts.length }}
               </span>
-            </div>
+            </div> -->
             <div class="row items-center">
               <!-- <q-checkbox
                 v-model="showShelfedItems"
@@ -181,6 +182,7 @@
             v-model:selected="selectedProducts"
             selection="multiple"
             separator="horizontal"
+            flat
             :loading="loading"
             :no-data-label="trans('暂无数据')"
             binary-state-sort
@@ -217,81 +219,118 @@
             <!-- 上架货架位列 -->
             <template v-slot:header-cell-shelfLocation="props">
               <q-th :props="props" class="text-center">
-                {{ trans("上架货架位") }}
+                <div class="flex-center">
+                  {{ trans("上架货架位") }}*
+                  {{ trans("上架数量") }}
+                  <q-btn
+                    flat
+                    dense
+                    outline
+                    color="primary"
+                    class="all-btn"
+                    :label="trans('(全部)')"
+                    :disable="isSuccess"
+                    @click="applyBatchProductQuantity"
+                  />
+                </div>
               </q-th>
             </template>
 
             <template v-slot:body-cell-shelfLocation="props">
               <q-td :props="props" class="text-center">
-                <div
-                  v-for="(location, index) in props.row.shelfLocations"
-                  :key="index"
-                  class="shelf-location-item q-mb-sm"
-                >
-                  <q-select
-                    outlined
-                    dense
-                    v-model="location.location"
-                    :options="shelfOptions"
-                    option-value="code"
-                    option-label="code"
-                    :disable="isSuccess"
-                    use-input
-                    hide-selected
-                    fill-input
-                    map-options
-                    emit-value
-                    new-value-mode="add"
-                    class="location-select"
-                    style="width: 150px"
-                    :placeholder="trans('请选择')"
-                  />
-                  <q-btn
-                    :disabled="props.row.shelfLocations.length <= 1"
-                    flat
-                    round
-                    dense
-                    class="delete-btn"
-                    icon="close"
-                    size="xs"
-                    padding="none"
-                    v-if="!isSuccess"
-                    @click="removeShelfLocation(props.row, index)"
-                  />
+                <div class="shelf-location-cell">
+                  <div class="huogui-box">
+                    <div
+                      v-for="(location, index) in props.row.shelfLocations"
+                      :key="index"
+                      class="shelf-location-item q-mb-xs"
+                    >
+                      <div class="select-input">
+                        <q-select
+                          dense
+                          v-model="location.location"
+                          :options="shelfOptions"
+                          option-value="code"
+                          option-label="code"
+                          :disable="isSuccess"
+                          use-input
+                          hide-selected
+                          borderless
+                          fill-input
+                          map-options
+                          emit-value
+                          new-value-mode="add"
+                          class="huojia-select"
+                          :placeholder="trans('请选择')"
+                        />
+                        <q-input
+                          borderless
+                          dense
+                          v-model.number="location.quantity"
+                          type="number"
+                          class="huojia-input"
+                          :disable="isSuccess"
+                          @update:model-value="
+                            handleShelfQtyUpdate(
+                              props.row,
+                              location.maxQuantity,
+                              index
+                            )
+                          "
+                          style="width: 70px"
+                          :placeholder="trans('数量')"
+                        />
+                      </div>
+                      <q-btn
+                        :disabled="props.row.shelfLocations.length <= 1"
+                        flat
+                        round
+                        dense
+                        class="delete-btn"
+                        icon="close"
+                        size="xs"
+                        padding="none"
+                        v-if="!isSuccess"
+                        @click="removeShelfLocation(props.row, index)"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <q-btn
-                    flat
-                    dense
-                    color="primary"
-                    icon="add"
-                    :label="trans('添加货架位')"
-                    v-if="!isSuccess"
-                    class="q-mt-xs"
-                    @click="addShelfLocation(props.row)"
-                    padding="xs"
-                  />
-                </div>
-              </q-td>
-            </template>
 
-            <!-- 上架数量列 -->
-            <template v-slot:header-cell-shelfQty="props">
-              <q-th :props="props" class="text-center">
-                <div>{{ trans("上架数量") }}</div>
                 <q-btn
                   flat
                   dense
                   color="primary"
-                  class="all-btn"
-                  :label="trans('全部')"
-                  :disable="isSuccess"
-                  @click="applyBatchProductQuantity"
+                  icon="add"
+                  :label="trans('添加货架位')"
+                  v-if="!isSuccess"
+                  class="q-mt-xs"
+                  @click="addShelfLocation(props.row)"
+                  padding="xs"
                 />
-              </q-th>
+              </q-td>
             </template>
 
-            <template v-slot:body-cell-shelfQty="props">
+            <!-- 上架数量列 -->
+            <!-- <template v-slot:header-cell-shelfQty="props">
+              <q-th :props="props" class="text-center">
+                <div class="flex-center">
+                  <div>{{ trans("上架数量") }}</div>
+                  <q-btn
+                    flat
+                    dense
+                    outline
+                    color="primary"
+                    class="all-btn"
+                    :label="trans('(全部)')"
+                    :disable="isSuccess"
+                    @click="applyBatchProductQuantity"
+                  />
+                </div>
+              </q-th>
+            </template> -->
+
+            <!-- <template v-slot:body-cell-shelfQty="props">
               <q-td :props="props" class="text-center">
                 <div
                   v-for="(location, index) in props.row.shelfLocations"
@@ -317,16 +356,13 @@
                   />
                 </div>
               </q-td>
-            </template>
+            </template> -->
           </q-table>
         </div>
       </div>
 
       <!-- 按箱上架模式 -->
-      <div
-        v-if="arrivalMethod === 'box'"
-        class="box-shelve bg-white rounded-borders"
-      >
+      <div v-if="arrivalMethod === 'box'" class="box-shelve">
         <div class="q-pa-md">
           <div class="row justify-between q-mb-md">
             <!-- <div class="row items-center">
@@ -358,9 +394,9 @@
               </q-input>
             </div> -->
             <div class="row items-center">
-              <span class="q-mr-sm"
+              <!-- <span class="q-mr-sm"
                 >{{ trans("选择") }} {{ selectedProducts.length }}
-              </span>
+              </span> -->
             </div>
           </div>
 
@@ -370,6 +406,7 @@
             :columns="boxColumns"
             row-key="box_number"
             :pagination="boxPagination"
+            flat
             separator="horizontal"
             :loading="loading"
             :no-data-label="trans('暂无数据')"
@@ -468,6 +505,7 @@ import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 import trans from "@/i18n";
 import ScanTop from "@/components/ScanTop/Index.vue";
+import Message from "@/utils/message";
 
 const $q = useQuasar();
 const store = useStore();
@@ -525,92 +563,96 @@ const inboundInfo = computed(() => {
 });
 
 // 表格列定义
-const productColumns = [
-  {
-    name: "product",
-    required: true,
-    label: trans("商品"),
-    align: "left",
-    field: (row) => row,
-  },
-  {
-    name: "requestQty",
-    align: "center",
-    label: trans("申报数量"),
-    field: "quantity",
-  },
-  {
-    name: "receivedQty",
-    align: "center",
-    label: trans("收货数量"),
-    field: "received_quantity",
-  },
-  {
-    name: "shelvedQty",
-    align: "center",
-    label: trans("已上架"),
-    field: "shelf_quantity",
-  },
-  {
-    name: "shelfLocation",
-    align: "center",
-    label: trans("上架货架位"),
-    field: (row) => row.shelfLocations,
-  },
-  {
-    name: "shelfQty",
-    align: "center",
-    label: trans("上架数量"),
-    field: (row) => {
-      return row.shelfLocations.reduce(
-        (sum, loc) => sum + (loc.quantity || 0),
-        0
-      );
+const productColumns = computed(() => {
+  return [
+    {
+      name: "product",
+      required: true,
+      label: trans("商品"),
+      align: "left",
+      field: (row) => row,
     },
-  },
-];
+    {
+      name: "requestQty",
+      align: "center",
+      label: trans("申报数量"),
+      field: "quantity",
+    },
+    {
+      name: "receivedQty",
+      align: "center",
+      label: trans("收货数量"),
+      field: "received_quantity",
+    },
+    {
+      name: "shelvedQty",
+      align: "center",
+      label: trans("已上架"),
+      field: "shelf_quantity",
+    },
+    {
+      name: "shelfLocation",
+      align: "center",
+      label: trans("上架货架位"),
+      field: (row) => row.shelfLocations,
+    },
+    // {
+    //   name: "shelfQty",
+    //   align: "center",
+    //   label: trans("上架数量"),
+    //   field: (row) => {
+    //     return row.shelfLocations.reduce(
+    //       (sum, loc) => sum + (loc.quantity || 0),
+    //       0
+    //     );
+    //   },
+    // },
+  ];
+});
 
-const boxColumns = [
-  {
-    name: "boxNumber",
-    required: true,
-    label: trans("箱号"),
-    align: "left",
-    field: "box_number",
-  },
-  {
-    name: "dimensions",
-    align: "center",
-    label: trans("箱子尺寸"),
-    field: (row) => row,
-  },
-  {
-    name: "weight",
-    align: "center",
-    label: trans("箱子重量"),
-    field: "weight",
-    format: (val) => `${val || "--"} g`,
-  },
-  {
-    name: "items",
-    align: "center",
-    label: trans("商品SKU"),
-    field: (row) => row.items,
-  },
-  {
-    name: "shelfLocation",
-    align: "center",
-    label: trans("上架货架位"),
-    field: (row) => row.shelf_location,
-  },
-  //   {
-  //     name: "shelfQuantity",
-  //     align: "center",
-  //     label: "上架数量",
-  //     field: "shelf_quantity",
-  //     sortable: false,
-  //   },
-];
+const boxColumns = computed(() => {
+  return [
+    {
+      name: "boxNumber",
+      required: true,
+      label: trans("箱号"),
+      align: "left",
+      field: "box_number",
+    },
+    {
+      name: "dimensions",
+      align: "center",
+      label: trans("箱子尺寸"),
+      field: (row) => row,
+    },
+    {
+      name: "weight",
+      align: "center",
+      label: trans("箱子重量"),
+      field: "weight",
+      format: (val) => `${val || "--"} g`,
+    },
+    {
+      name: "items",
+      align: "center",
+      label: trans("商品SKU"),
+      field: (row) => row.items,
+    },
+    {
+      name: "shelfLocation",
+      align: "center",
+      label: trans("上架货架位"),
+      field: (row) => row.shelf_location,
+    },
+    //   {
+    //     name: "shelfQuantity",
+    //     align: "center",
+    //     label: "上架数量",
+    //     field: "shelf_quantity",
+    //     sortable: false,
+    //   },
+  ];
+});
 
 // 计算属性
 const orderInfo = computed(() => {
@@ -814,12 +856,22 @@ const batchId = ref("");
 const handleConfirm = async () => {
   let parasm = {};
   if (arrivalMethod.value === "box") {
+    let items = getProductsFromParcels();
+    if (items.length === 0) {
+      Message.notify(trans("请选择货架位列"));
+      return;
+    }
     parasm = await inboundApi.confirmShelfBoxes(orderData.value.id, {
-      items: getProductsFromParcels(),
+      items: items,
     });
   } else {
+    let items = formatProductShelfData();
+    if (items.length === 0) {
+      Message.notify(trans("请选择货架位列,并设置上架数量"));
+      return;
+    }
     parasm = await inboundApi.confirmShelfSkus(orderData.value.id, {
-      items: formatProductShelfData(),
+      items,
     });
   }
   if (parasm.success) {
@@ -977,43 +1029,8 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .shelve-page {
-  // 扫描区域样式
-  .scan-header {
-    background-color: #f5f7fa;
-
-    .scan-container {
-      .scan-input {
-        margin-bottom: 0.5rem;
-      }
-    }
-  }
-
-  // 订单头部样式
-  .order-header {
-    background-color: #f5f7fa;
-    padding: 24px;
-    margin-bottom: 16px;
-  }
-
-  // 订单信息样式
-  .order-info {
-    border: 1px solid #eaeaea;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    margin-bottom: 16px;
-
-    .info-label {
-      color: #8592a6;
-      font-size: 0.875rem;
-      margin-bottom: 0.25rem;
-    }
-
-    .info-value {
-      font-size: 1rem;
-      font-weight: 500;
-    }
-  }
-
+  background: #f4f5f8;
+  min-height: 100vh;
   // 模式选择样式
   .shelve-mode {
     border: 1px solid #eaeaea;
@@ -1030,10 +1047,11 @@ onMounted(() => {
   // 商品上架区域样式
   .product-shelve,
   .box-shelve {
-    border: 1px solid #eaeaea;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    margin-bottom: 16px;
+    width: 1400px;
+    background: #ffffff;
+    border-radius: 16px 16px 16px 16px;
+    padding: 10px 20px;
+    margin: 0 auto;
 
     // 商品图片
     .product-img {
@@ -1081,7 +1099,7 @@ onMounted(() => {
       font-size: 14px;
       color: rgba(0, 0, 0, 0.85);
       padding: 12px 16px;
-      background-color: #f5f7fa;
+      // background-color: #f5f7fa;
       white-space: nowrap;
     }
 
@@ -1158,18 +1176,170 @@ onMounted(() => {
     align-items: center;
     justify-content: space-between;
   }
+}
 
-  .all-btn {
-    min-height: unset;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 500;
-    background-color: rgba(25, 118, 210, 0.08);
-
-    &:hover {
-      background-color: rgba(25, 118, 210, 0.16);
+.scan-header {
+  padding: 0 calc((100vw - 1400px) / 2);
+  background: #ffffff;
+  border-radius: 0px 0px 0px 0px;
+  display: flex;
+  height: 80px;
+  justify-content: space-between;
+  align-items: center;
+  .head-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    .header-title {
+      font-weight: 600;
+      font-size: 24px;
+      color: #1f1f1f;
+    }
+    .head-title-2 {
+      font-weight: 500;
+      font-size: 14px;
+      color: #666666;
+    }
+    .head-number {
+      font-weight: bold;
+      font-size: 16px;
+      color: #5745c5;
     }
   }
+
+  .btn-box {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    .btn {
+      border-radius: 9px 9px 9px 9px;
+      padding: 0 32px;
+      height: 42px;
+    }
+  }
+}
+
+.order-info {
+  padding: 20px;
+  width: 1400px;
+  background: #ffffff;
+  border-radius: 16px 16px 16px 16px;
+  height: 60px;
+  display: flex;
+  gap: 20px;
+  margin: 20px auto;
+  .info-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    .info-label {
+      font-weight: 500;
+      font-size: 14px;
+      color: #666666;
+    }
+
+    .info-value {
+      font-weight: bold;
+      font-size: 16px;
+      color: #1f1f1f;
+      width: 200px;
+    }
+  }
+}
+
+.products-section {
+  width: 1400px;
+  background: #ffffff;
+  border-radius: 16px 16px 16px 16px;
+  padding: 10px 20px;
+  margin: 0 auto;
+  margin-bottom: 20px;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  .all-btn {
+    font-weight: bold;
+  }
+}
+
+.shelf-location-cell {
+  width: 100%;
+  text-align: center;
+  .shelf-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0 !important;
+
+    .shelf-select {
+      flex: 1;
+    }
+
+    .delete-btn {
+      margin-left: 4px;
+      margin-top: 4px;
+    }
+  }
+
+  .add-shelf-link {
+    cursor: pointer;
+    font-size: 12px;
+    margin-top: 4px;
+    display: inline-block;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.select-input {
+  display: flex;
+  border-radius: 9px 9px 9px 9px;
+  border: 1px solid #f0f0f0;
+  padding: 0 10px;
+  .huojia-select {
+    width: 182px;
+    height: 32px;
+    :deep(.q-field__native) {
+      min-height: 32px !important;
+      height: 32px;
+    }
+  }
+  .huojia-input {
+    width: 98px;
+    height: 34px;
+    border-left: 1px solid #f0f0f0;
+  }
+
+  .q-field__control {
+    padding: 0 !important;
+    height: 34px !important;
+  }
+  :deep(.q-field__native) {
+    padding: 0 10px !important;
+    height: 34px !important;
+  }
+  .q-field__control-container {
+    height: 34px !important;
+  }
+  :deep(.q-input) {
+    margin: 0 !important;
+  }
+  .q-field--dense .q-field__control {
+    height: 34px !important;
+  }
+  :deep(.q-select) {
+    margin: 0 !important;
+  }
+}
+
+.huogui-box {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 </style>

@@ -94,6 +94,13 @@ const constantRouterMap = [
         name: 'adjustCreate',
         component: () => import('@/views/Inventory/CreateAdjust.vue'),
     },
+    // 扫描发货
+    {
+        path: '/scan/shipment',
+        name: 'ScanShipment',
+        component: () => import('@/views/Deliver/ScanShipment.vue'),
+    },
+    // 扫描发货
     {
         path: '/Test',
         name: 'Test',

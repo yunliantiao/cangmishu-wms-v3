@@ -149,7 +149,7 @@
                       {{ props.row.warehouse_location_code }}
                       <div>
                         [{{
-                          $store.state.areaTypeOptions.find(
+                          areaTypeOptions.find(
                             (item) =>
                               item.value === props.row.warehouse_area_type
                           )?.label || "-"
@@ -196,6 +196,8 @@ import { ref, reactive, computed, watch } from "vue";
 import productApi from "@/api/product";
 import Pagination from "@/components/Pagination.vue";
 import trans from "@/i18n";
+import { useStore } from "vuex";
+const store = useStore();
 
 const props = defineProps({
   modelValue: {
@@ -219,6 +221,14 @@ const searchModeOptions = [
   { label: trans("前缀搜索"), value: "prefix" },
 ];
 
+const areaTypeOptions = computed(() => {
+  return store.state.areaTypeOptions.map((item) => {
+    return {
+      label: trans(item.label),
+      value: item.value,
+    };
+  });
+});
 // 商品列表数据
 const productList = ref([]);
 const selectedProducts = ref([]);

@@ -47,7 +47,7 @@
                   ? showBatchWeightDialog()
                   : col.name === 'receivedQuantity'
                   ? fillAllQuantities()
-                  : col.name === 'shelfQty'
+                  : col.name === 'shelfLocation'
                   ? fillAllShelfQuantities()
                   : null
               "
@@ -227,16 +227,14 @@
                         </q-item>
                       </template>
                     </q-select>
-                    <div class="shelf-qty-item">
-                      <q-input
-                        borderless
-                        dense
-                        :placeholder="trans('数量')"
-                        type="number"
-                        v-model="shelf.quantity"
-                        class="huojia-input"
-                      />
-                    </div>
+                    <q-input
+                      borderless
+                      dense
+                      :placeholder="trans('数量')"
+                      type="number"
+                      v-model="shelf.quantity"
+                      class="huojia-input"
+                    />
                   </div>
                   <q-btn
                     flat
@@ -485,54 +483,57 @@ const totalItems = computed(() => {
 });
 
 // 表格列定义
-const columns = [
-  {
-    name: "product",
-    required: true,
-    label: trans("商品"),
-    align: "left",
-    field: "product",
-  },
-  {
-    name: "dimensions",
-    align: "center",
-    label: trans("实际体积"),
-    subLabel: trans("全部"),
-    field: "dimensions",
-  },
-  {
-    name: "weight",
-    align: "center",
-    label: trans("实际重量"),
-    subLabel: trans("全部"),
-    field: "weight",
-  },
-  {
-    name: "quantityExpected",
-    align: "center",
-    label: trans("待收货数量"),
-    field: "quantity",
-  },
-  {
-    name: "receivedQuantity",
-    align: "center",
-    label: trans("本次收货数量"),
-    subLabel: trans("全部"),
-    field: "received_quantity",
-  },
-  {
-    name: "shelfLocation",
-    align: "center",
-    label: trans("上架货架位*数量"),
-  },
-  // {
-  //   name: "shelfQty",
-  //   align: "center",
-  //   label: trans("上架数量"),
-  //   subLabel: trans("全部"),
-  //   field: "shelfQty",
-  // },
-];
+const columns = computed(() => {
+  return [
+    {
+      name: "product",
+      required: true,
+      label: trans("商品"),
+      align: "left",
+      field: "product",
+    },
+    {
+      name: "dimensions",
+      align: "center",
+      label: trans("实际体积"),
+      subLabel: trans("全部"),
+      field: "dimensions",
+    },
+    {
+      name: "weight",
+      align: "center",
+      label: trans("实际重量"),
+      subLabel: trans("全部"),
+      field: "weight",
+    },
+    {
+      name: "quantityExpected",
+      align: "center",
+      label: trans("待收货数量"),
+      field: "quantity",
+    },
+    {
+      name: "receivedQuantity",
+      align: "center",
+      label: trans("本次收货数量"),
+      subLabel: trans("全部"),
+      field: "received_quantity",
+    },
+    {
+      name: "shelfLocation",
+      align: "center",
+      label: trans("上架货架位*数量"),
+      subLabel: trans("全部"),
+    },
+    // {
+    //   name: "shelfQty",
+    //   align: "center",
+    //   label: trans("上架数量"),
+    //   subLabel: trans("全部"),
+    //   field: "shelfQty",
+    // },
+  ];
+});
 
 const receivedAuantity = (receivedQuantity) => {
   let result = 0;
@@ -759,7 +760,9 @@ const applyBatchDimensions = () => {
 
   $q.notify({
     type: "positive",
-    message: trans(`已为${targetProducts.length}个商品设置尺寸`),
+    message: trans(`已为{count}个商品设置尺寸`, {
+      count: targetProducts.length,
+    }),
   });
 
   showDimensionsDialog.value = false;
@@ -1227,13 +1230,14 @@ defineExpose({
     border-left: 1px solid #f0f0f0;
   }
 
-  .q-field__control {
+  :deep(.q-field__control) {
     padding: 0 !important;
     height: 34px !important;
   }
+
   :deep(.q-field__native) {
     padding: 0 10px !important;
-    height: 34px !important;
+    height: 32px !important;
   }
   .q-field__control-container {
     height: 34px !important;

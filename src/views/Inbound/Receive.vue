@@ -102,10 +102,7 @@
       />
     </div>
     <!-- 包裹收货 -->
-    <div
-      v-if="orderData && arrivalMethod == 'box'"
-      class="products-section bg-white rounded-borders"
-    >
+    <div v-if="orderData && arrivalMethod == 'box'" class="products-section">
       <ParcelReceipt
         v-model:parcels="parcelData"
         @print="handleParcelPrint"

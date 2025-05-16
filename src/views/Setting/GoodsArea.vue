@@ -155,7 +155,7 @@
                     {{
                       areaTypeOptionsForm.find(
                         (item) => item.value === formData.type
-                      )?.label || "请选择"
+                      )?.label || trans("请选择")
                     }}
                   </div>
                 </template>

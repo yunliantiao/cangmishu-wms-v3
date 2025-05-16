@@ -23,7 +23,7 @@
                 class="img-icon"
               />
               <div class="menu-title">
-                {{ route.meta?.name || route.name || route.path }}
+                {{ trans(route.meta?.name || route.name || route.path) }}
               </div>
             </div>
           </template>
@@ -43,7 +43,7 @@
           >
             <q-item-section class="submenu-title">
               <q-item-label>{{
-                childRoute.meta?.name || childRoute.name
+                trans(childRoute.meta?.name || childRoute.name)
               }}</q-item-label>
             </q-item-section>
           </q-item>
@@ -66,7 +66,7 @@
               class="img-icon"
             />
             <div class="menu-title">
-              {{ route.meta?.name || route.name || route.path }}
+              {{ trans(route.meta?.name || route.name || route.path) }}
             </div>
           </div>
         </q-item>

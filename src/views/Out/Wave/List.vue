@@ -71,7 +71,7 @@
           v-model:search_value="pageData.filterOptions.keywords"
           v-model:search_mode="pageData.filterOptions.search_mode"
           :searchTypeList="pageData.waveNumberOptions"
-          :searchModeList="pageData.searchModeOptions"
+          :searchModeList="searchModeOptions"
         ></KeywordSearch>
 
         <div class="col-auto">
@@ -192,11 +192,19 @@
             </q-td>
 
             <q-td key="is_print_pick_label" :props="props">
-              {{
+              <!-- {{
                 props.row.is_print_pick_label
                   ? trans("已打印")
                   : trans("未打印")
-              }}
+              }} -->
+
+              <span class="table-icon">
+                <img
+                  src="@/assets/images/print-success.png"
+                  v-if="props.row.is_print_pick_label"
+                />
+                <img src="@/assets/images/print.png" v-else />
+              </span>
             </q-td>
             <q-td key="actions" :props="props">
               <div class="row justify-center q-gutter-xs">
@@ -304,6 +312,8 @@ import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 import Message from "@/utils/message.js";
 import trans from "@/i18n";
 import Pagination from "@/components/Pagination.vue";
+import { useStore } from "vuex";
+const store = useStore();
 
 const $q = useQuasar();
 const router = useRouter();
@@ -369,8 +379,12 @@ const pageData = reactive({
 
   // 列表数据
   waveData: [],
+});
 
-  searchModeOptions: [{ label: trans("精确查询"), value: "exact" }],
+const searchModeOptions = computed(() => {
+  return store.state.searchModeOptions.map((item) => {
+    return { label: trans(item.label), value: item.value };
+  });
 });
 
 const pickerUserRef = ref(null);

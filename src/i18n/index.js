@@ -1,19 +1,13 @@
 import EnTransform from '@/i18n/en.json'
 import ZhTransform from '@/i18n/zh.json'
-import store from '@/store'
 const t = (key, value) => {
   let obj = {
     zh_CN: ZhTransform,
     en: EnTransform
   }
 
-  let language = 'zh_CN'
-  if (store) {
-    language = store?.state?.language || 'zh_CN'
-  } else {
-    language = localStorage.getItem('language') || 'zh_CN'
-  }
-
+  let language = ''
+  language = localStorage.getItem('language') || 'zh_CN'
   const transformStr = obj[language][key] || key
   if (!value) {
     return transformStr
@@ -27,7 +21,6 @@ const t = (key, value) => {
     })
     return message
   }
-  return key
 }
 
 const parser = (message) => {

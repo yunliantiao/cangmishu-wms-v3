@@ -56,7 +56,7 @@
           v-model:start_date="pageParams.start_date"
           v-model:end_date="pageParams.end_date"
           v-model:date_type="pageParams.date_type"
-          :dateList="$store.state.dateTypeOptions"
+          :dateList="dateTypeOptions"
         ></DatePicker>
 
         <KeywordSearch
@@ -73,7 +73,7 @@
               value: 'number',
             },
           ]"
-          :searchModeList="$store.state.searchModeOptions"
+          :searchModeList="searchModeOptions"
         ></KeywordSearch>
         <div class="col-auto">
           <q-btn
@@ -405,7 +405,7 @@
                   props.row.warehouse_location_code
                 }}</q-td>
                 <q-td key="area_type" :props="props">{{
-                  $store.state.areaTypeOptions.find(
+                  areaTypeOptions.find(
                     (item) => item.value === props.row.warehouse_area_type
                   )?.label || props.row.warehouse_area_type
                 }}</q-td>
@@ -482,16 +482,47 @@ import Pagination from "@/components/Pagination.vue";
 import trans from "@/i18n";
 import DatePicker from "@/components/DatePickerNew/Index.vue";
 import KeywordSearch from "@/components/KeywordSearch/Index.vue";
+import { useStore } from "vuex";
+const store = useStore();
 
 const router = useRouter();
 const route = useRoute();
 const $q = useQuasar();
 
-const statusOptions = ref([
-  { label: trans("待盘点"), value: "pending" },
-  { label: trans("盘点中"), value: "processing" },
-  { label: trans("已完成"), value: "completed" },
-]);
+const statusOptions = computed(() => {
+  return [
+    { label: trans("待盘点"), value: "pending" },
+    { label: trans("盘点中"), value: "processing" },
+    { label: trans("已完成"), value: "completed" },
+  ];
+});
+
+const searchModeOptions = computed(() => {
+  return store.state.searchModeOptions.map((item) => {
+    return {
+      label: trans(item.label),
+      value: item.value,
+    };
+  });
+});
+
+const dateTypeOptions = computed(() => {
+  return store.state.dateTypeOptions.map((item) => {
+    return {
+      label: trans(item.label),
+      value: item.value,
+    };
+  });
+});
+
+const areaTypeOptions = computed(() => {
+  return store.state.areaTypeOptions.map((item) => {
+    return {
+      label: trans(item.label),
+      value: item.value,
+    };
+  });
+});
 
 const pageParams = ref({
   page: 1,
@@ -660,52 +691,54 @@ const handleExport = (row) => {
   });
 };
 
-const detailColumns = [
-  { name: "index", label: "#", field: "index", align: "center" },
-  {
-    name: "sku",
-    label: trans("商品SKU"),
-    field: "product_spec_sku",
-    align: "left",
-  },
-  {
-    name: "name",
-    label: trans("商品名称"),
-    field: "product_spec_name",
-    align: "left",
-  },
-  {
-    name: "customer",
-    label: trans("客户"),
-    field: "customer_name",
-    align: "left",
-  },
-  {
-    name: "location",
-    label: trans("货架位"),
-    field: "location_code",
-    align: "left",
-  },
-  {
-    name: "area_type",
-    label: trans("货区类型"),
-    field: "area_type_name",
-    align: "left",
-  },
-  {
-    name: "system_qty",
-    label: trans("账面库存"),
-    field: "system_qty",
-    align: "center",
-  },
-  {
-    name: "actual_qty",
-    label: trans("实盘库存"),
-    field: "actual_qty",
-    align: "center",
-  },
-  { name: "diff", label: trans("差异"), field: "diff_qty", align: "center" },
-];
+const detailColumns = computed(() => {
+  return [
+    { name: "index", label: "#", field: "index", align: "center" },
+    {
+      name: "sku",
+      label: trans("商品SKU"),
+      field: "product_spec_sku",
+      align: "left",
+    },
+    {
+      name: "name",
+      label: trans("商品名称"),
+      field: "product_spec_name",
+      align: "left",
+    },
+    {
+      name: "customer",
+      label: trans("客户"),
+      field: "customer_name",
+      align: "left",
+    },
+    {
+      name: "location",
+      label: trans("货架位"),
+      field: "location_code",
+      align: "left",
+    },
+    {
+      name: "area_type",
+      label: trans("货区类型"),
+      field: "area_type_name",
+      align: "left",
+    },
+    {
+      name: "system_qty",
+      label: trans("账面库存"),
+      field: "system_qty",
+      align: "center",
+    },
+    {
+      name: "actual_qty",
+      label: trans("实盘库存"),
+      field: "actual_qty",
+      align: "center",
+    },
+    { name: "diff", label: trans("差异"), field: "diff_qty", align: "center" },
+  ];
+});
 
 const searchType = ref("sku");
 const searchKeyword = ref("");

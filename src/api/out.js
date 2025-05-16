@@ -39,8 +39,10 @@ export default {
     // 验货
     examineGoods: (id) => POST(`packages/${id}/inspection`),
 
-    // 扫描发货  pda接口
-    scanShipment: (data) => POST(`packages/ship`, data),
+    // 扫描发货 
+    scanShipment: (id, data) => POST(`packages/${id}/ship`, data),
+
+
 
     // 拍照记录
     photoRecord: (data) => GET(`packages/ship-photos`, data),

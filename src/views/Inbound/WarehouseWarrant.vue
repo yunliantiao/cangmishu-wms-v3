@@ -127,7 +127,7 @@
               <q-td key="orderInfo" :props="props">
                 <div class="column">
                   <div>
-                    入库单号:
+                    {{ trans("入库单号") }}:
                     <span
                       class="hover-copy"
                       @click="$copy(props.row.system_order_number)"
@@ -135,7 +135,7 @@
                     >
                   </div>
                   <div>
-                    自定义单号:
+                    {{ trans("自定义单号") }}:
                     <span
                       class="hover-copy"
                       @click="$copy(props.row.custom_order_number)"
@@ -158,7 +158,11 @@
                 </div>
               </q-td>
               <q-td key="arrivalMethod" :props="props">
-                {{ props.row.arrival_method == "box" ? "箱子" : "快递包裹" }}
+                {{
+                  props.row.arrival_method == "box"
+                    ? trans("箱子")
+                    : trans("快递包裹")
+                }}
               </q-td>
               <q-td key="boxCount" :props="props">
                 <div class="text-primary text-weight-medium">
@@ -189,9 +193,9 @@
                             <table class="tooltip-table">
                               <thead>
                                 <tr>
-                                  <th>箱号</th>
-                                  <th>SKU</th>
-                                  <th>数量</th>
+                                  <th>{{ trans("箱号") }}</th>
+                                  <th>{{ trans("SKU") }}</th>
+                                  <th>{{ trans("数量") }}</th>
                                 </tr>
                               </thead>
                               <tbody v-if="!$store.state.btnLoading">
@@ -240,19 +244,18 @@
               </q-td>
               <q-td key="skuInfo" :props="props">
                 <div class="text-primary">
-                  <span v-if="props.row.total_sku_type_qty == 1">
+                  <!-- <span v-if="props.row.total_sku_type_qty == 1">
                     {{ props.row.first_items_sku_with_qty }}
-                  </span>
-                  <div
-                    v-else
-                    class="text-blue cursor-pointer position-relative"
-                  >
+                  </span> -->
+
+                  <!-- v-else -->
+                  <div class="text-blue cursor-pointer position-relative">
                     <q-btn
                       flat
                       dense
                       no-caps
                       color="primary"
-                      :label="`${trans('多个({count})', {
+                      :label="`${trans('{count}个', {
                         count: props.row.total_sku_type_qty,
                       })}`"
                       @mouseenter="showTooltip($event, props.row.id, 'sku')"
@@ -654,14 +657,16 @@ const $q = useQuasar();
 const router = useRouter();
 
 // 状态选项配置
-const statusOptions = [
-  { label: trans("全部"), value: "all" },
-  { label: trans("已预报"), value: "reported" },
-  { label: trans("运输中"), value: "in_transit" },
-  { label: trans("待入库"), value: "pending_inbound" },
-  { label: trans("入库中"), value: "inbound_processing" },
-  { label: trans("已完成"), value: "shelved" },
-];
+const statusOptions = computed(() => {
+  return [
+    { label: trans("全部"), value: "all" },
+    { label: trans("已预报"), value: "reported" },
+    { label: trans("运输中"), value: "in_transit" },
+    { label: trans("待入库"), value: "pending_inbound" },
+    { label: trans("入库中"), value: "inbound_processing" },
+    { label: trans("已完成"), value: "shelved" },
+  ];
+});
 
 const pageData = reactive({
   dateOptions: [
@@ -752,44 +757,48 @@ const filterOptions = [
 ];
 
 // 搜索字段选项
-const searchFieldOptions = [
-  {
-    label: trans("入库单号"),
-    value: "system_order_number",
-  },
-  {
-    label: trans("自定义单号"),
-    value: "custom_order_number",
-  },
-  {
-    label: trans("运单号"),
-    value: "tracking_number",
-  },
-  {
-    label: trans("ERP单号"),
-    value: "custom_order_number",
-  },
-  {
-    label: trans("商品SKU"),
-    value: "sku",
-  },
-  {
-    label: trans("商品名称"),
-    value: "product_name",
-  },
-];
+const searchFieldOptions = computed(() => {
+  return [
+    {
+      label: trans("入库单号"),
+      value: "system_order_number",
+    },
+    {
+      label: trans("自定义单号"),
+      value: "custom_order_number",
+    },
+    {
+      label: trans("运单号"),
+      value: "tracking_number",
+    },
+    {
+      label: trans("ERP单号"),
+      value: "custom_order_number",
+    },
+    {
+      label: trans("商品SKU"),
+      value: "sku",
+    },
+    {
+      label: trans("商品名称"),
+      value: "product_name",
+    },
+  ];
+});
 
 // 搜索模式选项
-const searchTypeOptions = [
-  {
-    label: trans("模糊搜索"),
-    value: "fuzzy",
-  },
-  {
-    label: trans("精确搜索"),
-    value: "exact",
-  },
-];
+const searchTypeOptions = computed(() => {
+  return [
+    {
+      label: trans("模糊搜索"),
+      value: "fuzzy",
+    },
+    {
+      label: trans("精确搜索"),
+      value: "exact",
+    },
+  ];
+});
 
 const printOrderDialogVisible = ref(false);
 const printType = ref("sku");
@@ -846,7 +855,6 @@ const customerList = ref([]);
 const getCustomerList = async () => {
   const res = await customerApi.getCustomerAll();
   if (res.success) {
-    // customerList.value = res.data;
     customerList.value = res.data.map((item) => ({
       label: item.name,
       value: item.id,
@@ -987,10 +995,15 @@ const putWay = (row) => {
 
 // 上架
 const putaway = (row) => {
-  router.push({
-    path: "/inbound/shelve",
-    query: { number: row.system_order_number },
-  });
+  // router.push({
+  //   path: "/inbound/shelve",
+  //   query: { number: row.system_order_number },
+  // });
+  let origin = window.location.origin;
+  window.open(
+    `${origin}/inbound/shelve?number=${row.system_order_number}`,
+    "_blank"
+  );
 };
 
 // 获取状态颜色
@@ -1001,11 +1014,11 @@ const getStatusColor = (status) => {
 // 获取订单时间信息
 const getOrderTimes = (order) => {
   return {
-    创建: order.created_at,
-    预计到达时间: order.estimated_arrival_date,
-    签收: order.sign_at,
-    首次上架时间: order.first_shelf_at,
-    完成时间: order.completed_at,
+    [trans("创建")]: order.created_at,
+    [trans("预计到达时间")]: order.estimated_arrival_date,
+    [trans("签收")]: order.sign_at,
+    [trans("首次上架时间")]: order.first_shelf_at,
+    [trans("完成时间")]: order.completed_at,
   };
 };
 

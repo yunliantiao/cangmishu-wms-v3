@@ -48,8 +48,7 @@
           <q-btn
             color="primary"
             :label="trans('查询')"
-            icon="search"
-            class="h-40"
+            class="filter-btn"
             :loading="$store.state.btnLoading"
             @click="getCustomerList"
           />
@@ -458,7 +457,7 @@
   </div>
 </template>
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, computed } from "vue";
 import Dialog from "@/components/Dialog.vue";
 import customerApi from "@/api/customer";
 import Pagination from "@/components/Pagination.vue";
@@ -469,6 +468,7 @@ import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 import { useStore } from "vuex";
 import Code from "./components/code.vue";
 import trans from "@/i18n";
+// import trans
 
 const billingOptions = ref([]);
 const getBillingTemplate = async () => {
@@ -479,13 +479,15 @@ const getBillingTemplate = async () => {
 };
 
 const store = useStore();
-const customerIdOptions = [
-  { label: trans("客户代码"), value: "code" },
-  { label: trans("邮箱"), value: "email" },
-  { label: trans("手机号"), value: "phone_number" },
-  { label: trans("客户姓名"), value: "name" },
-  { label: trans("公司名称"), value: "company" },
-];
+const customerIdOptions = computed(() => {
+  return [
+    { label: trans("客户代码"), value: "code" },
+    { label: trans("邮箱"), value: "email" },
+    { label: trans("手机号"), value: "phone_number" },
+    { label: trans("客户姓名"), value: "name" },
+    { label: trans("公司名称"), value: "company" },
+  ];
+});
 
 const dialogVisible = ref(false);
 // 标签页
@@ -565,51 +567,53 @@ const getCustomerList = () => {
 getCustomerList();
 getWarehouseList();
 // 表格配置
-const columns = [
-  {
-    name: "customerId",
-    label: trans("客户代码/姓名"),
-    field: (row) => ({ id: row.id, code: row.code, name: row.name }),
-    align: "center",
-    style: "width:200px",
-  },
-  {
-    name: "contactWay",
-    label: trans("联系方式"),
-    field: (row) => ({
-      id: row.id,
-      email: row.email,
-      phone_prefix: row.phone_prefix,
-      phone_number: row.phone_number,
-    }),
-    align: "center",
-    style: "width:200px",
-  },
-  {
-    name: "name",
-    label: trans("公司名称"),
-    field: "name",
-    align: "center",
-  },
-  {
-    name: "currency",
-    label: trans("结算币种"),
-    field: "currency",
-    align: "center",
-  },
-  {
-    name: "created_at",
-    label: trans("创建时间"),
-    field: "created_at",
-    align: "center",
-  },
-  {
-    name: "actions",
-    label: trans("操作"),
-    field: (row) => row,
-    align: "center",
-  },
-];
+const columns = computed(() => {
+  return [
+    {
+      name: "customerId",
+      label: trans("客户代码/姓名"),
+      field: (row) => ({ id: row.id, code: row.code, name: row.name }),
+      align: "center",
+      style: "width:200px",
+    },
+    {
+      name: "contactWay",
+      label: trans("联系方式"),
+      field: (row) => ({
+        id: row.id,
+        email: row.email,
+        phone_prefix: row.phone_prefix,
+        phone_number: row.phone_number,
+      }),
+      align: "center",
+      style: "width:200px",
+    },
+    {
+      name: "name",
+      label: trans("公司名称"),
+      field: "name",
+      align: "center",
+    },
+    {
+      name: "currency",
+      label: trans("结算币种"),
+      field: "currency",
+      align: "center",
+    },
+    {
+      name: "created_at",
+      label: trans("创建时间"),
+      field: "created_at",
+      align: "center",
+    },
+    {
+      name: "actions",
+      label: trans("操作"),
+      field: (row) => row,
+      align: "center",
+    },
+  ];
+});
 const editCustomerId = ref(null);
 //编辑
 const handleEditCustomer = (row) => {

@@ -5,14 +5,14 @@
       <div class="col-12 col-xs-12 col-sm-8 col-md-8">
         <div class="top-bar">
           <div class="item">
-            <div class="label">{{ trans('已预报') }}</div>
+            <div class="label">{{ trans("已预报") }}</div>
             <div class="value">
               {{ reportObj.inbound_orders_count.reported_count }}
             </div>
           </div>
           <div class="line"></div>
           <div class="item">
-            <div class="label">{{ trans('运输中') }}</div>
+            <div class="label">{{ trans("运输中") }}</div>
             <div class="value">
               {{ reportObj.inbound_orders_count.in_transit_count }}
             </div>
@@ -24,7 +24,7 @@
           </div> -->
           <div class="line"></div>
           <div class="item">
-            <div class="label">{{ trans('入库中') }}</div>
+            <div class="label">{{ trans("入库中") }}</div>
             <div class="value">
               {{ reportObj.inbound_orders_count.inbound_processing_count }}
             </div>
@@ -33,13 +33,19 @@
       </div>
       <div class="col-12 col-xs-12 col-sm-4 col-md-4">
         <div class="contact-box bg-white">
-          <div class="text-subtitle1 q-mb-md">{{ trans('联系我们') }}</div>
+          <div class="text-subtitle1 q-mb-md">{{ trans("联系我们") }}</div>
           <div class="line q-mb-md"></div>
-          <div class="q-mb-md row items-center" @click="onClickPhone('15576601706')">
+          <div
+            class="q-mb-md row items-center"
+            @click="onClickPhone('15576601706')"
+          >
             <q-icon name="phone" size="xs" class="q-mr-sm" />
             <span class="hover-copy">+86 15576601706</span>
           </div>
-          <div class="row items-center" @click="onClickEmail('Hubinjie@Tongxiao.Tech')">
+          <div
+            class="row items-center"
+            @click="onClickEmail('Hubinjie@Tongxiao.Tech')"
+          >
             <q-icon name="email" size="xs" class="q-mr-sm" />
             <span class="hover-copy">Hubinjie@Tongxiao.Tech</span>
           </div>
@@ -48,7 +54,11 @@
     </div>
 
     <div class="total-list row q-col-gutter-lg q-mb-md">
-      <div class="col-12 col-sm-6 col-md-2" v-for="item in totalList" :key="item.label">
+      <div
+        class="col-12 col-sm-6 col-md-2"
+        v-for="item in totalList"
+        :key="item.label"
+      >
         <q-card class="common-card b-rd-16">
           <q-card-section class="p-20">
             <div class="text-grey-8 text-subtitle2 q-mb-md">
@@ -67,8 +77,8 @@
           <q-card-section class="p-0 m-b-16">
             <div class="row items-center justify-between">
               <div>
-                <span class="text-h6 font-bold">{{ trans('单量统计') }}</span>
-                <span class="text-grey-7">({{ trans('单') }})</span>
+                <span class="text-h6 font-bold">{{ trans("单量统计") }}</span>
+                <span class="text-grey-7">({{ trans("单") }})</span>
               </div>
 
               <!-- <q-btn-toggle
@@ -92,7 +102,10 @@
                   <div
                     v-for="(item, index) in timeOptions"
                     :key="index"
-                    :class="['time-range-item', { active: timeRange === item.value }]"
+                    :class="[
+                      'time-range-item',
+                      { active: timeRange === item.value },
+                    ]"
                     @click="onChangeTimeRange(item)"
                   >
                     {{ item.label }}
@@ -105,7 +118,7 @@
             <div class="row type-btn q-col-gutter-sm">
               <div>
                 <div class="item item-1 col-12 col-sm-4 col-md-3">
-                  <div class="label">{{ trans('一件代发') }}</div>
+                  <div class="label">{{ trans("一件代发") }}</div>
                   <div class="value">
                     {{ chartDataObj.seriesData1.reduce((a, b) => a + b, 0) }}
                   </div>
@@ -113,7 +126,7 @@
               </div>
               <div>
                 <div class="item item-2 col-12 col-sm-4 col-md-3">
-                  <div class="label">{{ trans('标准入库') }}</div>
+                  <div class="label">{{ trans("标准入库") }}</div>
                   <div class="value">
                     {{ chartDataObj.seriesData2.reduce((a, b) => a + b, 0) }}
                   </div>
@@ -131,12 +144,22 @@
           <q-card-section class="p-20">
             <div class="flex-between-center">
               <div class="text-subtitle1 font-bold">
-                {{ trans('系统公告') }}
+                {{ trans("系统公告") }}
               </div>
-              <q-btn flat color="primary" size="sm" icon="chevron_right" dense />
+              <q-btn
+                flat
+                color="primary"
+                size="sm"
+                icon="chevron_right"
+                dense
+              />
             </div>
             <q-scroll-area class="notice-list">
-              <div v-for="item in noticeList" :key="item.label" class="notice-item">
+              <div
+                v-for="item in noticeList"
+                :key="item.label"
+                class="notice-item"
+              >
                 <div class="title text-overflow-1">{{ item.label }}</div>
                 <div class="time">{{ item.time }}</div>
               </div>
@@ -146,15 +169,21 @@
 
         <q-card class="common-card b-rd-16 p-20 down-box">
           <q-card-section class="p-0 m-b-20">
-            <div class="text-subtitle1 font-bold">{{ trans('下载') }} PDA</div>
+            <div class="text-subtitle1 font-bold">{{ trans("下载") }} PDA</div>
           </q-card-section>
           <q-card-section class="down-list p-0">
             <div class="item">
-              <img src="@/assets/images/home/apple.png" class="w-24 h-24 q-mr-sm" />
+              <img
+                src="@/assets/images/home/apple.png"
+                class="w-24 h-24 q-mr-sm"
+              />
               <div class="text-subtitle2">App Store</div>
             </div>
             <div class="item">
-              <img src="@/assets/images/home/android.png" class="w-24 h-24 q-mr-sm" />
+              <img
+                src="@/assets/images/home/android.png"
+                class="w-24 h-24 q-mr-sm"
+              />
               <div class="text-subtitle2">Android</div>
             </div>
           </q-card-section>
@@ -168,7 +197,7 @@
         <q-card class="capacity-box common-card b-rd-16 p-20">
           <q-card-section class="p-0 q-mb-md">
             <div class="flex-between-center">
-              <span class="text-h6 font-bold">{{ trans('库容') }}</span>
+              <span class="text-h6 font-bold">{{ trans("库容") }}</span>
               <q-select
                 v-model="selectedOption"
                 :options="[{ label: 'SKU数量', value: 'sku' }]"
@@ -184,21 +213,26 @@
           <q-card-section class="p-0">
             <div class="row">
               <div class="col-12 col-xs-12 col-sm-4 col-md-4">
-                <div class="statistic-label q-mb-md">{{ trans('在库总数') }} ({{ trans('个') }})</div>
+                <div class="statistic-label q-mb-md">
+                  {{ trans("在库总数") }} ({{ trans("个") }})
+                </div>
                 <div class="text-h5 font-bold q-mb-md">123</div>
 
                 <div class="capacity-item capacity-item-1">
-                  {{ trans('商品库存') }}
+                  {{ trans("商品库存") }}
                 </div>
                 <div class="capacity-item capacity-item-2">
-                  {{ trans('B2B库存') }}
+                  {{ trans("B2B库存") }}
                 </div>
                 <div class="capacity-item capacity-item-3">
-                  {{ trans('FBA退货库存') }}
+                  {{ trans("FBA退货库存") }}
                 </div>
               </div>
               <div class="col-12 col-xs-12 col-sm-8 col-md-8">
-                <div id="capacity-chart" style="width: 100%; height: 200px"></div>
+                <div
+                  id="capacity-chart"
+                  style="width: 100%; height: 200px"
+                ></div>
               </div>
             </div>
           </q-card-section>
@@ -209,12 +243,22 @@
           <q-card-section class="p-0">
             <div class="flex-between-center q-mb-md">
               <div class="text-subtitle1 font-bold">
-                {{ trans('帮助中心') }}
+                {{ trans("帮助中心") }}
               </div>
-              <q-btn flat color="primary" size="sm" icon="chevron_right" dense />
+              <q-btn
+                flat
+                color="primary"
+                size="sm"
+                icon="chevron_right"
+                dense
+              />
             </div>
             <q-scroll-area class="help-list">
-              <div v-for="item in noticeList" :key="item.label" class="help-item">
+              <div
+                v-for="item in noticeList"
+                :key="item.label"
+                class="help-item"
+              >
                 <div>{{ item.label }}</div>
               </div>
             </q-scroll-area>
@@ -225,38 +269,42 @@
     <!-- TODO: 改版结束 -->
 
     <!-- 仓库表单组件 -->
-    <WarehouseForm v-model="dialogVisible" :cancelShow="false" @created="handleWarehouseCreated" />
+    <WarehouseForm
+      v-model="dialogVisible"
+      :cancelShow="false"
+      @created="handleWarehouseCreated"
+    />
   </div>
 </template>
 
 <script>
-import homeApi from '@/api/home';
-import Dialog from '@/components/Dialog.vue';
-import WarehouseForm from '@/components/WarehouseForm.vue';
-import trans from '@/i18n';
-import * as echarts from 'echarts';
-import { Notify } from 'quasar';
-import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue';
+import homeApi from "@/api/home";
+import Dialog from "@/components/Dialog.vue";
+import WarehouseForm from "@/components/WarehouseForm.vue";
+import trans from "@/i18n";
+import * as echarts from "echarts";
+import { Notify } from "quasar";
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from "vue";
 
 export default {
-  name: 'PanelPage',
+  name: "PanelPage",
   components: {
     Dialog,
     WarehouseForm,
   },
   setup() {
     const dialogVisible = ref(false);
-    const isRegister = localStorage.getItem('isRegister'); //如果是注册，则需要建仓库选
-    if (isRegister == 'true') {
+    const isRegister = localStorage.getItem("isRegister"); //如果是注册，则需要建仓库选
+    if (isRegister == "true") {
       dialogVisible.value = true;
     }
     const handleWarehouseCreated = (data) => {
-      localStorage.setItem('isRegister', false); //建仓库后需要标记
-      localStorage.setItem('warehouseId', data.id);
+      localStorage.setItem("isRegister", false); //建仓库后需要标记
+      localStorage.setItem("warehouseId", data.id);
       dialogVisible.value = false;
       Notify.create({
-        message: trans('仓库创建成功'),
-        color: 'positive',
+        message: trans("仓库创建成功"),
+        color: "positive",
       });
       window.location.reload();
     };
@@ -264,27 +312,27 @@ export default {
     const totalList = computed(() => {
       return [
         {
-          label: trans('待发货'),
+          label: trans("待发货"),
           value: reportObj.outbound_orders_count.pending_shipment_count,
         },
         {
-          label: trans('待移货'),
+          label: trans("待移货"),
           value: reportObj.outbound_orders_count.pending_transfer_count,
         },
         {
-          label: trans('待拣货'),
+          label: trans("待拣货"),
           value: reportObj.outbound_orders_count.pending_pick_count,
         },
         {
-          label: trans('待包装'),
+          label: trans("待包装"),
           value: reportObj.outbound_orders_count.pending_pack_count,
         },
         {
-          label: trans('包装中'),
+          label: trans("包装中"),
           value: reportObj.outbound_orders_count.packing_count,
         },
         {
-          label: trans('异常订单'),
+          label: trans("异常订单"),
           value: reportObj.outbound_orders_count.exception_count,
         },
       ];
@@ -300,9 +348,9 @@ export default {
         containLabel: true,
       },
       tooltip: {
-        trigger: 'axis',
+        trigger: "axis",
         formatter: function (params) {
-          let result = params[0].axisValue + '<br/>';
+          let result = params[0].axisValue + "<br/>";
           params.forEach((item) => {
             result += `${item.marker} ${item.seriesName}: ${item.value}<br/>`;
           });
@@ -310,7 +358,7 @@ export default {
         },
       },
       xAxis: {
-        type: 'category',
+        type: "category",
         data: chartDataObj.value.xAxisData,
         axisTick: {
           alignWithLabel: true,
@@ -321,7 +369,7 @@ export default {
         },
       },
       yAxis: {
-        type: 'value',
+        type: "value",
         axisTick: {
           inside: true,
         },
@@ -331,54 +379,54 @@ export default {
       },
       series: [
         {
-          name: trans('一件代发'),
-          type: 'line',
+          name: trans("一件代发"),
+          type: "line",
           smooth: true,
           data: chartDataObj.value.seriesData1,
           areaStyle: {
             opacity: 0.7, // 增加不透明度以更好显示渐变
             color: {
               // 线性渐变配置
-              type: 'linear',
+              type: "linear",
               x: 0,
               y: 0, // 起点
               x2: 0,
               y2: 1, // 终点 (垂直向下)
               colorStops: [
-                { offset: 0, color: '#0E6CFA' }, // 曲线颜色
-                { offset: 1, color: 'rgba(255,255,255,0)' }, // 完全透明
+                { offset: 0, color: "#0E6CFA" }, // 曲线颜色
+                { offset: 1, color: "rgba(255,255,255,0)" }, // 完全透明
               ],
               global: false, // 不全局渐变
             },
           },
           lineStyle: {
             width: 2,
-            color: '#0E6CFA',
+            color: "#0E6CFA",
           },
         },
         {
-          name: trans('标准入库'),
-          type: 'line',
+          name: trans("标准入库"),
+          type: "line",
           smooth: true,
           data: chartDataObj.value.seriesData2,
           areaStyle: {
             opacity: 0.7,
             color: {
-              type: 'linear',
+              type: "linear",
               x: 0,
               y: 0,
               x2: 0,
               y2: 1,
               colorStops: [
-                { offset: 0, color: '#5745C5' },
-                { offset: 1, color: 'rgba(255,255,255,0)' },
+                { offset: 0, color: "#5745C5" },
+                { offset: 1, color: "rgba(255,255,255,0)" },
               ],
               global: false,
             },
           },
           lineStyle: {
             width: 2,
-            color: '#5745C5',
+            color: "#5745C5",
           },
         },
       ],
@@ -386,7 +434,7 @@ export default {
     const chartRef = ref(null);
     let chartInstance = null;
     const initChart = () => {
-      chartRef.value = document.getElementById('order-chart');
+      chartRef.value = document.getElementById("order-chart");
       if (!chartRef.value) return;
       chartInstance = echarts.init(chartRef.value);
       chartInstance.setOption(chartData.value);
@@ -402,42 +450,42 @@ export default {
     };
 
     // 图表数据-库存
-    const selectedOption = ref('sku');
+    const selectedOption = ref("sku");
 
     const chartRef2 = ref(null);
     let chartInstance2 = null;
     const chartData2 = reactive({
-      color: ['#5745C5', '#69C096', '#409EFF'], // 在这里定义颜色数组
+      color: ["#5745C5", "#69C096", "#409EFF"], // 在这里定义颜色数组
       series: [
         {
-          name: '库存分类',
-          type: 'pie',
-          radius: ['50%', '70%'],
+          name: "库存分类",
+          type: "pie",
+          radius: ["50%", "70%"],
           avoidLabelOverlap: false,
           label: {
             show: false,
-            position: 'center',
+            position: "center",
           },
           emphasis: {
             label: {
               show: true,
-              fontSize: '30',
-              fontWeight: 'bold',
+              fontSize: "30",
+              fontWeight: "bold",
             },
           },
           labelLine: {
             show: false,
           },
           data: [
-            { value: 800, name: '商品库存' },
-            { value: 100, name: 'B2B库存' },
-            { value: 229, name: 'FBA退货库存' },
+            { value: 800, name: "商品库存" },
+            { value: 100, name: "B2B库存" },
+            { value: 229, name: "FBA退货库存" },
           ],
         },
       ],
     });
     const initChart2 = () => {
-      chartRef2.value = document.getElementById('capacity-chart');
+      chartRef2.value = document.getElementById("capacity-chart");
       if (!chartRef2.value) return;
       chartInstance2 = echarts.init(chartRef2.value);
       chartInstance2.setOption(chartData2);
@@ -446,42 +494,42 @@ export default {
     // 公告列表
     const noticeList = ref([
       {
-        label: '如何设置仓库/货区/货位',
-        desc: '如何设置仓库/货区/货位',
-        time: '2022-07-01 12:00:00',
+        label: trans("如何设置仓库/货区/货位"),
+        desc: trans("如何设置仓库/货区/货位"),
+        time: "2022-07-01 12:00:00",
       },
       {
-        label: '如何设置仓租策略',
-        desc: '如何设置仓租策略',
-        time: '2022-07-01 12:00:00',
+        label: trans("如何设置仓租策略"),
+        desc: trans("如何设置仓租策略"),
+        time: "2022-07-01 12:00:00",
       },
       {
-        label: '如何在操作中再及操作库策略',
-        desc: '如何在操作中再及操作库策略',
-        time: '2022-07-01 12:00:00',
+        label: trans("如何在操作中再及操作库策略"),
+        desc: trans("如何在操作中再及操作库策略"),
+        time: "2022-07-01 12:00:00",
       },
       {
-        label: '如何设置计费模板',
-        desc: '如何设置计费模板',
-        time: '2022-07-01 12:00:00',
+        label: trans("如何设置计费模板"),
+        desc: trans("如何设置计费模板"),
+        time: "2022-07-01 12:00:00",
       },
       {
-        label: '如何创建客户',
-        desc: '如何创建客户',
-        time: '2022-07-01 12:00:00',
+        label: trans("如何创建客户"),
+        desc: trans("如何创建客户"),
+        time: "2022-07-01 12:00:00",
       },
       {
-        label: '其他问题',
-        desc: '其他问题',
-        time: '2022-07-01 12:00:00',
+        label: trans("其他问题"),
+        desc: trans("其他问题"),
+        time: "2022-07-01 12:00:00",
       },
     ]);
-    const timeRange = ref('week');
+    const timeRange = ref("week");
     // 时间选项
     const timeOptions = [
       {
-        label: trans('昨天'),
-        value: 'yesterday',
+        label: trans("昨天"),
+        value: "yesterday",
         getDateRange: () => {
           const yesterday = new Date();
           yesterday.setDate(yesterday.getDate() - 1);
@@ -490,16 +538,16 @@ export default {
         },
       },
       {
-        label: trans('今天'),
-        value: 'today',
+        label: trans("今天"),
+        value: "today",
         getDateRange: () => {
           const today = formatDate(new Date());
           return { start_date: today, end_date: today };
         },
       },
       {
-        label: trans('星期'),
-        value: 'week',
+        label: trans("星期"),
+        value: "week",
         getDateRange: () => {
           const now = new Date();
           const weekStart = new Date(now);
@@ -511,8 +559,8 @@ export default {
         },
       },
       {
-        label: trans('月'),
-        value: 'month',
+        label: trans("月"),
+        value: "month",
         getDateRange: () => {
           const now = new Date();
           const monthStart = new Date(now);
@@ -524,8 +572,8 @@ export default {
         },
       },
       {
-        label: trans('年'),
-        value: 'year',
+        label: trans("年"),
+        value: "year",
         getDateRange: () => {
           const now = new Date();
           const yearStart = new Date(now);
@@ -540,8 +588,8 @@ export default {
     // 日期格式化函数
     const formatDate = (date) => {
       const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
       return `${year}-${month}-${day}`;
     };
     // 修改图标的日期范围
@@ -608,16 +656,26 @@ export default {
       const outbound = chartObj.outbound_orders || [];
 
       // 获取所有不重复的日期，并按时间升序排列
-      const allDates = Array.from(new Set([...inbound.map((i) => i.date), ...outbound.map((i) => i.date)])).sort();
+      const allDates = Array.from(
+        new Set([...inbound.map((i) => i.date), ...outbound.map((i) => i.date)])
+      ).sort();
 
       // 将日期转为一个 Map 方便查找
-      const inboundMap = new Map(inbound.map((item) => [item.date, item.count]));
-      const outboundMap = new Map(outbound.map((item) => [item.date, item.count]));
+      const inboundMap = new Map(
+        inbound.map((item) => [item.date, item.count])
+      );
+      const outboundMap = new Map(
+        outbound.map((item) => [item.date, item.count])
+      );
 
       // 填充缺失值为 0
       chartDataObj.value.xAxisData = allDates;
-      chartDataObj.value.seriesData1 = allDates.map((date) => inboundMap.get(date) || 0);
-      chartDataObj.value.seriesData2 = allDates.map((date) => outboundMap.get(date) || 0);
+      chartDataObj.value.seriesData1 = allDates.map(
+        (date) => inboundMap.get(date) || 0
+      );
+      chartDataObj.value.seriesData2 = allDates.map(
+        (date) => outboundMap.get(date) || 0
+      );
       initChart();
       initChart2();
     };
@@ -628,7 +686,10 @@ export default {
 
     const onClickPhone = (phone) => {
       // 检查是否是移动设备
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isMobile =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        );
 
       if (isMobile) {
         // 移动设备使用 tel: 协议
@@ -637,8 +698,8 @@ export default {
         // PC端复制到剪贴板
         navigator.clipboard.writeText(phone).then(() => {
           Notify.create({
-            message: trans('电话号码已复制到剪贴板'),
-            color: 'positive',
+            message: trans("电话号码已复制到剪贴板"),
+            color: "positive",
           });
         });
       }
@@ -646,14 +707,18 @@ export default {
 
     onMounted(() => {
       getReport();
-      getHomeChart(timeOptions.find((item) => item.value === timeRange.value).getDateRange());
+      getHomeChart(
+        timeOptions
+          .find((item) => item.value === timeRange.value)
+          .getDateRange()
+      );
       nextTick(() => {
-        window.addEventListener('resize', handleResize);
+        window.addEventListener("resize", handleResize);
       });
     });
     onUnmounted(() => {
       if (chartInstance) {
-        window.removeEventListener('resize', handleResize);
+        window.removeEventListener("resize", handleResize);
         chartInstance.dispose();
         chartInstance = null;
       }
@@ -743,7 +808,7 @@ export default {
         height: 80px;
         box-sizing: border-box;
         &::before {
-          content: '';
+          content: "";
           position: absolute;
           top: 0;
           left: 0;
@@ -880,7 +945,7 @@ export default {
         margin-bottom: 20px;
       }
       &::before {
-        content: '';
+        content: "";
         display: inline-block;
         width: 8px;
         height: 8px;

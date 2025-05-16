@@ -195,9 +195,7 @@
                 <div>客户: {{ props.row.customer }}</div>
               </div>
             </q-td> -->
-            <q-td key="printStatus" :props="props">
-              {{ props.row.printStatus }}
-            </q-td>
+
             <q-td key="recipient" :props="props">
               <div>
                 <div>{{ props.row.recipient.first_name }}</div>
@@ -214,22 +212,18 @@
                 <div>{{ trans("创建") }}: {{ props.row.created_at }}</div>
               </div>
             </q-td>
+            <q-td key="printStatus" :props="props">
+              <span class="table-icon">
+                <img
+                  src="@/assets/images/print-success.png"
+                  v-if="isPrint(props.row, 'is_print_pick_label')"
+                />
+                <img src="@/assets/images/print.png" v-else />
+              </span>
+            </q-td>
             <q-td key="status" :props="props">
-              <div class="q-pa-sm">
-                <span class="table-icon">
-                  <img
-                    src="@/assets/images/print-success.png"
-                    v-if="isPrint(props.row, 'is_print_pick_label')"
-                  />
-                  <img src="@/assets/images/print.png" v-else />
-                </span>
-                <div>
-                  {{
-                    isPrint(props.row, "is_print_pick_label")
-                      ? trans("已打印")
-                      : trans("待打单")
-                  }}
-                </div>
+              <div>
+                {{ trans("待打单") }}
               </div>
             </q-td>
             <q-td key="actions" :props="props">
@@ -421,16 +415,16 @@ const interceptStatusOptions = ref([
     value: "no_intercept",
   },
 ]);
-const timeFilterOptions = [
+const timeFilterOptions = ref([
   {
     label: trans("创建时间"),
     value: "created_at",
   },
   { label: trans("发货时间"), value: "shipped_at" },
   { label: trans("取消时间"), value: "cancel_at" },
-];
+]);
 
-const searchFieldOptions = [
+const searchFieldOptions = ref([
   {
     label: "sku",
     value: "sku",
@@ -442,7 +436,7 @@ const searchFieldOptions = [
   },
   { label: trans("追踪号"), value: "tracking_number" },
   { label: trans("ERP单号"), value: "erp_package_number" },
-];
+]);
 
 const isPrint = (row, type) => {
   let printBool = false;
@@ -474,7 +468,7 @@ const pageParams = reactive({
 });
 
 // 表格数据
-const columns = [
+const columns = ref([
   {
     name: "packageInfo",
     label: trans("包裹信息"),
@@ -487,12 +481,7 @@ const columns = [
   //     field: "shippingInfo",
   //     align: "left",
   //   },
-  {
-    name: "printStatus",
-    label: trans("面单打印"),
-    field: "printStatus",
-    align: "center",
-  },
+
   {
     name: "recipient",
     label: trans("收货人&地区"),
@@ -506,6 +495,12 @@ const columns = [
     align: "left",
   },
   {
+    name: "printStatus",
+    label: trans("面单打印"),
+    field: "printStatus",
+    align: "center",
+  },
+  {
     name: "status",
     label: trans("状态"),
     field: "status",
@@ -517,7 +512,7 @@ const columns = [
     field: "actions",
     align: "center",
   },
-];
+]);
 
 // 产品详情表格列
 const productDetailColumns = [

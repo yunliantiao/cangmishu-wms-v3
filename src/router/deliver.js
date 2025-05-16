@@ -25,10 +25,11 @@ export default [
         },
       },
       {
-        path: "scan/shipment",
+        path: "scan/shipment1",
         id: 1902,
-        name: "ScanShipment",
-        component: () => import("@/views/Deliver/ScanShipment.vue"),
+        name: "ScanShipment1",
+        redirect: "/scan/shipment",
+        // component: () => import("@/views/Deliver/ScanShipment.vue"),
         meta: {
           level: 2,
           group: trans("发货管理"),

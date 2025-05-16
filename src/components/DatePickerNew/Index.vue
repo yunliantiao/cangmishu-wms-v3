@@ -123,7 +123,7 @@ watch(
   .filter-select {
     border-right: 1px solid rgba(0, 0, 0, 0.24);
 
-    width: 132px;
+    min-width: 132px;
     :deep(.q-field__control:before) {
       border: none;
     }

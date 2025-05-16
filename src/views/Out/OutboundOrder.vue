@@ -282,6 +282,15 @@
                 /> -->
               </div>
               <q-chip
+                v-if="props.row.ship_print_status == 'pending_print'"
+                dense
+                color="grey-4"
+                text-color="grey-8"
+              >
+                {{ trans("待打单") }}
+              </q-chip>
+              <q-chip
+                v-else
                 dense
                 :color="getStatusColor(props.row.status).bg"
                 :text-color="getStatusColor(props.row.status).text"
@@ -487,28 +496,30 @@ const interceptStatusOptions = ref([
     value: "no_intercept",
   },
 ]);
-const timeFilterOptions = [
+const timeFilterOptions = ref([
   {
     label: trans("创建时间"),
     value: "created_at",
   },
   { label: trans("发货时间"), value: "shipped_at" },
   { label: trans("取消时间"), value: "cancel_at" },
-];
+]);
 
-const searchFieldOptions = [
-  {
-    label: trans("sku"),
-    value: "sku",
-  },
-  { label: trans("订单号"), value: "order_number" },
-  {
-    label: trans("包裹号"),
-    value: "package_number",
-  },
-  { label: trans("追踪号"), value: "tracking_number" },
-  { label: trans("ERP单号"), value: "erp_package_number" },
-];
+const searchFieldOptions = computed(() => {
+  return [
+    {
+      label: trans("sku"),
+      value: "sku",
+    },
+    { label: trans("订单号"), value: "order_number" },
+    {
+      label: trans("包裹号"),
+      value: "package_number",
+    },
+    { label: trans("追踪号"), value: "tracking_number" },
+    { label: trans("ERP单号"), value: "erp_package_number" },
+  ];
+});
 // 选中行
 const selectedRows = ref([]);
 // 状态导航
@@ -532,7 +543,7 @@ const pageParams = reactive({
 });
 
 // 表格数据
-const columns = [
+const columns = ref([
   {
     name: "packageInfo",
     label: trans("包裹信息"),
@@ -575,7 +586,7 @@ const columns = [
     field: "actions",
     align: "center",
   },
-];
+]);
 // 状态颜色映射
 const statusColorMap = {
   pending_shipment: { bg: "blue-1", text: "blue" },

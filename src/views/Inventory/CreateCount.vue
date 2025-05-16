@@ -151,7 +151,7 @@
                 </q-td>
                 <q-td key="type" :props="props">
                   {{
-                    $store.state.areaTypeOptions.find(
+                    areaTypeOptions.find(
                       (item) => item.value == props.row.warehouse_area_type
                     )?.label || "-"
                   }}
@@ -190,7 +190,8 @@ import inventoryApi from "@/api/inventory";
 import settingApi from "@/api/setting";
 import { useRoute, useRouter } from "vue-router";
 import trans from "@/i18n";
-
+import { useStore } from "vuex";
+const store = useStore();
 const route = useRoute();
 const router = useRouter();
 const id = route.query.id;
@@ -206,6 +207,15 @@ const inventoryTypes = ref([
   { label: trans("商品+货架位"), value: "product_locatxion" },
   { label: trans("货架位"), value: "location_only" },
 ]);
+
+const areaTypeOptions = computed(() => {
+  return store.state.areaTypeOptions.map((item) => {
+    return {
+      label: trans(item.label),
+      value: item.value,
+    };
+  });
+});
 
 const formData = ref({
   type: "",

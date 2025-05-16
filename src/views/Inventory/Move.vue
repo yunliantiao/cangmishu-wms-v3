@@ -43,7 +43,7 @@
           v-model:search_type="searchParams.search_type"
           v-model:search_value="searchParams.keywords"
           v-model:search_mode="searchParams.search_mode"
-          :searchModeList="$store.state.searchModeOptions"
+          :searchModeList="searchModeOptions"
           :searchTypeList="[
             {
               label: trans('商品SKU'),
@@ -482,7 +482,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
+import { ref, computed } from "vue";
 import { useQuasar } from "quasar";
 import { useRouter } from "vue-router";
 import inventoryApi from "@/api/inventory";
@@ -490,7 +490,8 @@ import Pagination from "@/components/Pagination.vue";
 import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 import DatePicker from "@/components/DatePickerNew/Index.vue";
 import trans from "@/i18n";
-
+import { useStore } from "vuex";
+const store = useStore();
 const $q = useQuasar();
 const selectedRows = ref([]);
 const router = useRouter();
@@ -521,50 +522,63 @@ const statusOptions = [
   { label: trans("作废"), value: "cancelled" },
 ];
 
-const dateTypeOptions = [
-  { label: trans("创建时间"), value: "created_at" },
-  { label: trans("更新时间"), value: "updated_at" },
-];
+const searchModeOptions = computed(() => {
+  return store.state.searchModeOptions.map((item) => {
+    return {
+      label: trans(item.label),
+      value: item.value,
+    };
+  });
+});
+
+const dateTypeOptions = computed(() => {
+  return [
+    { label: trans("创建时间"), value: "created_at" },
+    { label: trans("更新时间"), value: "updated_at" },
+  ];
+});
 // 表格列定义
-const columns = [
-  {
-    name: "info",
-    required: true,
-    label: trans("商品信息/移库信息"),
-    align: "left",
-    field: (row) => row,
-    style: "width: 40%",
-  },
-  {
-    name: "move_type",
-    label: trans("移货类型"),
-    align: "center",
-    field: "move_type",
-  },
-  {
-    name: "operator",
-    label: trans("操作人"),
-    align: "center",
-    field: "operator",
-  },
-  {
-    name: "created_at",
-    label: trans("时间"),
-    align: "center",
-    field: "created_at",
-  },
-  {
-    name: "status",
-    label: trans("状态"),
-    align: "center",
-    field: "status",
-  },
-  {
-    name: "actions",
-    label: trans("操作"),
-    align: "center",
-  },
-];
+const columns = computed(() => {
+  return [
+    {
+      name: "info",
+      required: true,
+      label: trans("商品信息/移库信息"),
+      align: "left",
+      field: (row) => row,
+      style: "width: 40%",
+    },
+    {
+      name: "move_type",
+      label: trans("移货类型"),
+      align: "center",
+      field: "move_type",
+    },
+    {
+      name: "operator",
+      label: trans("操作人"),
+      align: "center",
+      field: "operator",
+    },
+    {
+      name: "created_at",
+      label: trans("时间"),
+      align: "center",
+      field: "created_at",
+    },
+    {
+      name: "status",
+      label: trans("状态"),
+      align: "center",
+      field: "status",
+    },
+    {
+      name: "actions",
+      label: trans("操作"),
+      align: "center",
+    },
+  ];
+});
 // 数据列表
 const moveList = ref([]);
 
@@ -596,50 +610,52 @@ const moveDetails = ref({
 const showDetail = ref(false); // 初始化为 false
 
 // 移货表格列配置
-const moveColumns = [
-  {
-    name: "info",
-    label: trans("商品信息"),
-    field: (row) => row,
-    style: "width: 200px",
-    align: "left",
-  },
-  {
-    name: "moveOut",
-    label: trans("移出货架位"),
-    field: (row) => row.transfer?.[0]?.from?.location_code,
-    style: "width: 150px",
-    align: "center",
-  },
-  {
-    name: "moveQuantity",
-    label: trans("待移货数量"),
-    field: (row) => row.transfer?.[0]?.from?.quantity,
-    style: "width: 100px",
-    align: "center",
-  },
-  {
-    name: "moveIn",
-    label: trans("移入货架位"),
-    field: (row) => row.transfer?.[0]?.to,
-    style: "width: 150px",
-    align: "center",
-  },
-  {
-    name: "planQuantity",
-    label: trans("待移入数量"),
-    field: (row) => row.transfer?.[0]?.to?.[0]?.quantity,
-    style: "width: 100px",
-    align: "center",
-  },
-  {
-    name: "actualQuantity",
-    label: trans("实际移入数量"),
-    field: (row) => row.transfer?.[0]?.to?.[0]?.qty,
-    style: "width: 150px",
-    align: "center",
-  },
-];
+const moveColumns = computed(() => {
+  return [
+    {
+      name: "info",
+      label: trans("商品信息"),
+      field: (row) => row,
+      style: "width: 200px",
+      align: "left",
+    },
+    {
+      name: "moveOut",
+      label: trans("移出货架位"),
+      field: (row) => row.transfer?.[0]?.from?.location_code,
+      style: "width: 150px",
+      align: "center",
+    },
+    {
+      name: "moveQuantity",
+      label: trans("待移货数量"),
+      field: (row) => row.transfer?.[0]?.from?.quantity,
+      style: "width: 100px",
+      align: "center",
+    },
+    {
+      name: "moveIn",
+      label: trans("移入货架位"),
+      field: (row) => row.transfer?.[0]?.to,
+      style: "width: 150px",
+      align: "center",
+    },
+    {
+      name: "planQuantity",
+      label: trans("待移入数量"),
+      field: (row) => row.transfer?.[0]?.to?.[0]?.quantity,
+      style: "width: 100px",
+      align: "center",
+    },
+    {
+      name: "actualQuantity",
+      label: trans("实际移入数量"),
+      field: (row) => row.transfer?.[0]?.to?.[0]?.qty,
+      style: "width: 150px",
+      align: "center",
+    },
+  ];
+});
 
 // 填充所有实际数量
 const fillAllQuantities = () => {

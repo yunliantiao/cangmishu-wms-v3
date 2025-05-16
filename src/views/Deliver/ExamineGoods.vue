@@ -34,7 +34,7 @@
               :loading="$store.state.btnLoading"
               borderless
               :placeholder="trans('请扫描商品标签')"
-              @keyup.enter="search"
+              @keyup.enter="examine"
             />
           </div>
         </div>
@@ -181,10 +181,15 @@
 </template>
 
 <script setup>
-import { reactive } from "vue";
+import { reactive, onMounted } from "vue";
 import outApi from "@/api/out";
 import Message from "@/utils/message";
 import trans from "@/i18n";
+
+onMounted(() => {
+  let language = localStorage.getItem("language");
+  console.log("language", language);
+});
 
 const pageData = reactive({
   group: "",
@@ -234,6 +239,7 @@ const search = async () => {
     Message.notify(trans("请输入运单号/包裹号"));
     return;
   }
+  pageData.sku = "";
   pageData.rows = [];
   pageData.loading = true;
   try {
@@ -325,20 +331,21 @@ const examine = async () => {
         background: #f7fbff;
       }
     }
-    .product-info-row {
-      display: flex;
-      align-items: center;
-      margin-bottom: 4px;
-      .product-img {
-        width: 40px;
-        height: 40px;
-        object-fit: contain;
-        margin-right: 8px;
-        border: 1px solid #eee;
-        border-radius: 4px;
-        background: #fafbfc;
-      }
-    }
+  }
+}
+
+.product-info-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+  .product-img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    margin-right: 8px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    background: #fafbfc;
   }
 }
 

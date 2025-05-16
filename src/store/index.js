@@ -1,7 +1,6 @@
 import { createStore } from 'vuex'
 import router from '../router'
 import { Notify } from 'quasar'
-
 // 创建store实例
 export default createStore({
   state: {

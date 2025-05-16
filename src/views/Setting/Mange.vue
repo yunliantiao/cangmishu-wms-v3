@@ -78,7 +78,7 @@
               <q-item clickable v-close-popup @click="showCreateForm">
                 <q-item-section>{{ trans("单个新建") }}</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup @click="handleExport(false)">
+              <q-item clickable v-close-popup @click="showBatchCreateForm">
                 <q-item-section>{{ trans("批量新建") }}</q-item-section>
               </q-item>
             </q-list>
@@ -445,12 +445,12 @@ const router = useRouter();
 // 筛选与搜索
 const area_type = ref("");
 
-const areaTypeOptions = [
+const areaTypeOptions = ref([
   { label: trans("拣货区"), value: "picking" },
   { label: trans("备货区"), value: "staging" },
   { label: trans("不良品区"), value: "defective" },
   { label: trans("转运区"), value: "transit" },
-]; //货区类型
+]); //货区类型
 const areaCodeOptions = ref([]);
 // 货架位
 const locationSpecOptions = ref([]);
@@ -469,7 +469,7 @@ const statusOptions = ref([
   },
 ]);
 const locationFilter = ref("货架位编号");
-const locationFilterOptions = [
+const locationFilterOptions = ref([
   {
     label: trans("货位编号"),
     value: "code",
@@ -482,10 +482,10 @@ const locationFilterOptions = [
     label: trans("货架位规格"),
     value: "shelf_spec",
   },
-];
+]);
 const searchText = ref("");
 const searchTypeFilter = ref("精确搜索");
-const searchTypeOptions = [
+const searchTypeOptions = ref([
   {
     label: trans("精确搜索"),
     value: "exact",
@@ -498,7 +498,7 @@ const searchTypeOptions = [
     label: trans("前缀搜索"),
     value: "prefix",
   },
-];
+]);
 
 // 表格数据与选择
 const selectedLocations = ref([]);
@@ -520,7 +520,7 @@ const formData = ref({
 });
 
 // 表格列定义
-const columns = [
+const columns = ref([
   {
     name: "locationCode",
     label: trans("货架位编号"),
@@ -576,7 +576,7 @@ const columns = [
     field: "actions",
     align: "center",
   },
-];
+]);
 
 // 货架位数据
 const shelfLocations = ref([]);
@@ -681,7 +681,7 @@ const showImportForm = () => {
 // 编辑货架位
 const handleEdit = (row) => {
   editMode.value = true;
-  area_type.value = areaTypeOptions.find(
+  area_type.value = areaTypeOptions.value.find(
     (item) => item.value === row.warehouse_area_type
   ).value;
   formData.value = {
