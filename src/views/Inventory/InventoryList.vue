@@ -97,6 +97,17 @@
             <div class="action-bar q-py-md">
               <div class="row items-center justify-between">
                 <div>
+                  <q-btn color="primary" @click="importExcel" flat>
+                    {{ trans("导入初始化库存") }}
+                  </q-btn>
+
+                  <q-btn
+                    color="primary"
+                    @click="printLabel"
+                    flat
+                    label="打印标签"
+                  />
+
                   <!-- <span class="q-mr-sm"
                     >{{ trans("选择") }} {{ selectedInventory.length }}</span
                   > -->
@@ -107,13 +118,7 @@
                   label="导出"
                   class="q-ml-sm"
                 />
-                <q-btn
-                  color="primary"
-                  flat
-                  icon="print"
-                  label="打印标签"
-                  class="q-ml-sm"
-                /> -->
+               -->
                 </div>
               </div>
             </div>
@@ -521,6 +526,13 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <ImportExcel ref="importExcelRef" @import="importSuccess" />
+    <print-label-dialog
+      v-model="pageData.labelVisible"
+      :sku-list="pageData.skuList"
+      printType="print_sku"
+    />
   </div>
 </template>
 
@@ -534,6 +546,9 @@ import { useQuasar } from "quasar";
 import { onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import trans from "@/i18n";
+import ImportExcel from "./components/ImportExcel.vue";
+import PrintLabelDialog from "@/components/PrintLabelDialog.vue";
+import Message from "@/utils/message";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -541,6 +556,13 @@ const router = useRouter();
 // 标签页切换控制
 const currentTab = ref("list"); // list: 库存清单, flow: 库存流水
 const inventoryTab = ref("all");
+
+const importExcelRef = ref(null);
+
+const pageData = reactive({
+  labelVisible: false,
+  skuList: [],
+});
 
 // 库存清单筛选
 const searchType = ref([
@@ -952,6 +974,41 @@ const showDrawer = async (type, row) => {
 
   // 调用统一的获取详情方法
   getStockDetail();
+};
+
+const importExcel = async () => {
+  console.log("importExcel");
+  // const data = await getFile({ fileType: "excel" });
+  // console.log("data", data);
+  importExcelRef.value.open();
+};
+
+const importSuccess = () => {
+  console.log("handleImport");
+  listParams.page = 1;
+  listParams.per_page = 10;
+  getInventoryList();
+};
+
+const printLabel = () => {
+  console.log("printLabel");
+  if (selectedInventory.value.length == 0) {
+    Message.notify(trans("请选择sku"));
+    return;
+  }
+  pageData.skuList = selectedInventory.value.map((item) => {
+    return {
+      product_spec_sku: item.sku,
+      received_quantity: 0,
+      quantity: 0,
+      product_spec_image: item.image,
+      product_name: item.name,
+      product_spec_sku: item.sku,
+      qty: 1,
+      name: item.product_name,
+    };
+  });
+  pageData.labelVisible = true;
 };
 
 onMounted(() => {

@@ -57,7 +57,6 @@
         <q-btn
           flat
           color="primary"
-          class="q-ml-md"
           icon="print"
           :label="trans('打印标签')"
           @click="printTags"

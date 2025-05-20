@@ -175,6 +175,13 @@
                       >{{ trans("包裹号") }}:
                       {{ props.row.system_order_number }}</span
                     >
+
+                    <span
+                      class="info-item q-mr-md hover-copy"
+                      @click="$copy(props.row.order_number)"
+                      >{{ trans("订单号") }}: {{ props.row.order_number }}</span
+                    >
+
                     <span class="info-item q-mr-md"
                       >{{ trans("客户") }}: {{ props.row.customer.name }}</span
                     >

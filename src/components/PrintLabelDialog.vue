@@ -9,9 +9,9 @@
 
       <q-card-section class="q-pt-none">
         <q-form @submit="handleSubmit" class="q-gutter-md">
-          <div class="row q-col-gutter-x-md">
+          <div class="row q-col-gutter-x-md dialog-body">
             <!-- 左侧参数设置 -->
-            <div class="col-4">
+            <div class="col-4 left-form">
               <div class="q-mb-md">
                 <div class="q-mb-sm">
                   {{ trans("模板名称") }} <span class="text-red">*</span>
@@ -259,7 +259,7 @@
             </div>
 
             <!-- 右侧商品列表 -->
-            <div class="col-8">
+            <div class="col-8 right-table">
               <div v-if="printType == 'goods_allocation'">
                 <div class="row items-center bg-grey-2 q-pa-sm">
                   <div class="col">{{ trans("货架位编号") }}</div>
@@ -340,17 +340,21 @@
                   class="row items-center q-py-md q-px-sm"
                 >
                   <div class="col">
-                    <div class="row items-center q-gutter-x-md">
+                    <div
+                      class="row items-center q-gutter-x-md"
+                      style="flex-wrap: nowrap"
+                    >
                       <q-img
                         :src="item.product_spec_image"
-                        style="width: 40px; height: 40px"
+                        @error="imgError"
+                        style="width: 40px; height: 40px; flex-shrink: 0"
                         class="rounded-borders"
                       />
                       <div class="column">
                         <div class="text-weight-medium">
                           {{ item.product_spec_sku }}
                         </div>
-                        <div class="text-caption text-grey-7">
+                        <div class="text-caption text-grey-7 text-overflow-2">
                           {{ item.product_name }}
                         </div>
                       </div>
@@ -383,6 +387,76 @@
                   </div>
                 </div>
               </div>
+
+              <!-- 库存列表页面打印sku -->
+              <div v-if="printType == 'print_sku'">
+                <div class="row bg-grey-2 q-pa-sm">
+                  <div class="col">{{ trans("商品SKU") }}</div>
+
+                  <div class="col-2 text-center">
+                    {{ trans("打印数量") }}
+                    <span class="batch" @click="batch"
+                      >({{ trans("批量") }})</span
+                    >
+                  </div>
+                  <div class="col-2 text-center">{{ trans("操作") }}</div>
+                </div>
+                <div
+                  v-for="(item, index) in form.specs"
+                  :key="index"
+                  class="row items-center q-py-md q-px-sm"
+                >
+                  <div class="col">
+                    <div
+                      class="row items-center q-gutter-x-md"
+                      style="flex-wrap: nowrap; width: 200pxs"
+                    >
+                      <q-img
+                        :src="item.product_spec_image"
+                        @error="imgError"
+                        style="width: 40px; height: 40px; flex-shrink: 0"
+                        class="rounded-borders"
+                      />
+                      <div class="column">
+                        <div class="text-weight-medium">
+                          {{ item.product_spec_sku }}
+                        </div>
+                        <div class="text-caption text-grey-7 text-overflow-2">
+                          {{ item.name }}
+                        </div>
+                        <div class="text-caption text-grey-7 text-overflow-2">
+                          {{ item.product_name }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-2">
+                    <q-input
+                      v-model.number="item.qty"
+                      type="number"
+                      outlined
+                      dense
+                      min="1"
+                    />
+                  </div>
+                  <div class="col-2 text-center">
+                    <q-btn
+                      flat
+                      round
+                      color="grey"
+                      size="sm"
+                      class="table-icon"
+                      @click="removePrintItem(index)"
+                    >
+                      <img src="@/assets/images/del.png" />
+                      <q-tooltip>
+                        {{ trans("删除") }}
+                      </q-tooltip>
+                    </q-btn>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </q-form>
@@ -406,6 +480,8 @@
         />
       </q-card-actions>
     </q-card>
+
+    <BatchSkuQty ref="batchSkuQtyRef" @confirm="handleBatchQty" />
   </q-dialog>
 </template>
 
@@ -415,8 +491,10 @@ import { useQuasar } from "quasar";
 import settingApi from "@/api/setting";
 import productApi from "@/api/product";
 import trans from "@/i18n";
+import BatchSkuQty from "./BatchSkuQty.vue";
 
 const $q = useQuasar();
+const batchSkuQtyRef = ref(null);
 
 const props = defineProps({
   modelValue: {
@@ -462,13 +540,16 @@ watch(
   (val) => {
     emit("update:modelValue", val);
     if (val) {
+      console.log("props.skuList", props.skuList);
+
       // 初始化打印规格
       if (props.printType == "goods_allocation") {
         form.value.specs = props.skuList.map((item) => ({
           code: item.code,
+          image: item.image,
           qty: 1,
         }));
-      } else {
+      } else if (props.printType == "inbound") {
         form.value.specs = props.skuList.map((item) => ({
           sku: item.product_spec_sku,
           received_quantity: item.received_quantity || 0,
@@ -478,6 +559,13 @@ watch(
           product_spec_sku: item.product_spec_sku,
           qty: 0,
           name: item.product_spec_name,
+        }));
+      } else if (props.printType == "print_sku") {
+        form.value.specs = props.skuList.map((item) => ({
+          sku: item.product_spec_sku,
+          qty: 1,
+          product_name: item.product_name,
+          name: item.name,
         }));
       }
     }
@@ -530,6 +618,17 @@ const handleSubmit = async () => {
       response = await settingApi.productsLabels({
         ...submitData,
         items: form.value.specs,
+      });
+    } else if (props.printType == "print_sku") {
+      submitData.template_type = "sku";
+      response = await productApi.printSku({
+        ...submitData,
+        specs: form.value.specs.map((item) => ({
+          sku: item.sku,
+          qty: item.qty,
+          product_name: item.product_name,
+          name: item.name,
+        })),
       });
     } else {
       submitData.template_type = "sku";
@@ -631,6 +730,23 @@ const fillAllPendingQuantity = () => {
       (props.skuList[index].received_quantity || 0),
   }));
 };
+
+const imgError = (e) => {
+  console.log("e", e);
+  // e.target.src = "@/assets/images/login/login-bg.png";
+};
+
+const batch = () => {
+  batchSkuQtyRef.value.open();
+};
+
+const handleBatchQty = (qty) => {
+  console.log("qty", qty);
+  form.value.specs = form.value.specs.map((spec, index) => {
+    spec.qty = qty;
+    return spec;
+  });
+};
 </script>
 
 <style lang="scss" scoped>
@@ -729,5 +845,21 @@ const fillAllPendingQuantity = () => {
 
 .text-red {
   color: #ff0000;
+}
+
+.batch {
+  color: #5745c5;
+  cursor: pointer;
+}
+.left-form {
+  border-right: 1px solid #ebeef5;
+  padding-right: 10px;
+  max-height: 700px;
+  overflow-y: auto;
+}
+
+.right-table {
+  max-height: 700px;
+  overflow-y: auto;
 }
 </style> 

@@ -1206,6 +1206,9 @@ const printLabel = (row) => {
         }
       });
       selectedLocations.value = mergeSameSkuItems(allItems); //去重
+
+      console.log('selectedLocations',selectedLocations);
+      
       labelVisible.value = true;
       console.log(allItems);
     }
