@@ -64,15 +64,24 @@
             <q-checkbox v-model="props.selected" size="sm" />
           </q-td>
           <q-td key="product" :props="props">
-            <div class="product-info">
-              <div class="product-name">
-                {{ props.row.product_name }}
-              </div>
-              <div class="product-sku">
-                {{ props.row.product_spec_sku }}
-              </div>
-              <div class="product-spec">
-                {{ props.row.product_spec_name }}
+            <div class="product-info-box">
+              <q-img
+                width="60px"
+                height="60px"
+                :src="props.row.product_spec_image"
+                class="img"
+              />
+
+              <div class="product-info">
+                <div class="product-name">
+                  {{ props.row.product_name }}
+                </div>
+                <div class="product-sku">
+                  {{ props.row.product_spec_sku }}
+                </div>
+                <div class="product-spec">
+                  {{ props.row.product_spec_name }}
+                </div>
               </div>
             </div>
           </q-td>
@@ -1123,26 +1132,36 @@ defineExpose({
   color: #5745c5;
 }
 
-.product-info {
+.product-info-box {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  .product-name {
-    font-weight: 500;
-    font-size: 14px;
-    color: #1f1f1f;
+  align-items: center;
+  gap: 5px;
+  .img {
+    flex-shrink: 1;
   }
-  .product-sku {
-    font-weight: 500;
-    font-size: 12px;
-    color: #666666;
-  }
-  .product-spec {
-    font-weight: 500;
-    font-size: 12px;
-    color: #666666;
+
+  .product-info {
+    display: flex;
+    flex-direction: column;
+    max-width: 150px;
+    .product-name {
+      font-weight: 500;
+      font-size: 14px;
+      color: #1f1f1f;
+    }
+    .product-sku {
+      font-weight: 500;
+      font-size: 12px;
+      color: #666666;
+    }
+    .product-spec {
+      font-weight: 500;
+      font-size: 12px;
+      color: #666666;
+    }
   }
 }
+
 .dimensions-row {
   display: flex;
   border: 1px solid #f0f0f0;
@@ -1257,5 +1276,11 @@ defineExpose({
   display: flex;
   flex-direction: column;
   gap: 5px;
+}
+
+.product-info-box {
+  display: flex;
+  gap: 5px;
+  align-items: center;
 }
 </style>

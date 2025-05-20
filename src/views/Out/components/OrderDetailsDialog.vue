@@ -27,7 +27,7 @@
                     {{ order?.system_order_number || "" }}
                   </div>
                   <div class="status-text q-mt-sm text-green">
-                    {{ order?.status }}
+                    {{ getStatus(order?.status) }}
                   </div>
                 </div>
               </div>
@@ -237,7 +237,11 @@
                     <div class="col-12 col-sm-6 info-row">
                       <div class="info-label">{{ trans("国家") }}</div>
                       <div class="info-value">
-                        {{ order?.recipient?.country || "" }}
+                        {{
+                          order?.recipient?.country_code ||
+                          order?.recipient?.country ||
+                          ""
+                        }}
                       </div>
                     </div>
                     <div class="col-12 col-sm-6 info-row">
@@ -324,6 +328,15 @@ watch(
 watch(dialogVisible, (newVal) => {
   emit("update:visible", newVal);
 });
+
+const getStatus = (status) => {
+  const statusMap = {
+    pending_shipment: trans("待发货"),
+    shipped: trans("已发货"),
+    exception: trans("异常"),
+  };
+  return statusMap[status] || "";
+};
 
 // 订单状态
 const isStatusActive = (status) => {

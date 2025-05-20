@@ -220,18 +220,34 @@
               </div>
             </q-td>
             <q-td key="printStatus" :props="props">
+              <div>
+                {{ trans("待打单") }}
+              </div>
+            </q-td>
+            <q-td key="status" :props="props">
               <span class="table-icon">
                 <img
                   src="@/assets/images/print-success.png"
                   v-if="isPrint(props.row, 'is_print_pick_label')"
                 />
                 <img src="@/assets/images/print.png" v-else />
+
+                <q-tooltip>
+                  {{
+                    isPrint(props.row, "is_print_pick_label")
+                      ? trans("已打印")
+                      : trans("未打印")
+                  }}
+
+                  {{
+                    trans("拣货单{status}", {
+                      status: isPrint(props.row, "is_print_pick_label")
+                        ? trans("已打印")
+                        : trans("未打印"),
+                    })
+                  }}
+                </q-tooltip>
               </span>
-            </q-td>
-            <q-td key="status" :props="props">
-              <div>
-                {{ trans("待打单") }}
-              </div>
             </q-td>
             <q-td key="actions" :props="props">
               <div class="row justify-center q-gutter-xs">

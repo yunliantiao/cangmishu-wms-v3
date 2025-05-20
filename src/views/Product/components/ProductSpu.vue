@@ -4,7 +4,7 @@
       <q-btn-dropdown
         color="primary"
         flat
-        :label="trans('批量操作')"
+        :label="trans('标记')"
         class="filter-btn"
       >
         <q-list>

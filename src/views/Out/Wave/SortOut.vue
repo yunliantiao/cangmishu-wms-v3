@@ -7,27 +7,6 @@
       v-model:scanValue="scanValue"
       @confirm="search"
     ></ScanTop>
-    <!-- <div class="scan-header">
-      <div class="title">{{ trans("扫描分拣") }}</div>
-    </div>
-
-    <div class="scan-input-container">
-      <div class="input-box">
-        <q-icon name="lightbulb" size="24px" class="light-icon" />
-        <input
-          type="text"
-          class="scan-input"
-          :placeholder="trans('请扫描或输入波次号')"
-          @keyup.enter="search"
-          v-model="scanValue"
-          ref="scanInput"
-        />
-      </div>
-      <div class="input-hint">
-        <q-icon name="info_outline" size="16px" color="grey-7" />
-        <span>{{ trans("请先切换为EN输入法") }}</span>
-      </div>
-    </div> -->
   </div>
 </template>
 
@@ -38,44 +17,45 @@ import Message from "@/utils/message.js";
 import { useRouter } from "vue-router";
 import trans from "@/i18n";
 import ScanTop from "@/components/ScanTop/Index.vue";
+import { playBeep } from "@/utils/voice";
 
 const router = useRouter();
 const scanInput = ref(null);
 const scanValue = ref("");
 
-onMounted(() => {
-  nextTick(() => {
-    scanInput.value.focus();
-  });
-});
-
 const search = async () => {
   // WA0042E900011
   if (scanValue.value.length == 0) {
     Message.notify(trans("请扫描或输入波次号"));
+    playBeep(false);
     return;
   }
-  const { data } = await outApi.getOrderInfoByWaveOrder({
-    number: scanValue.value,
-  });
-  console.log("data", data);
+  try {
+    const { data } = await outApi.getOrderInfoByWaveOrder({
+      number: scanValue.value,
+    });
+    playBeep(true);
 
-  if (data.wave_type == "mixed_items") {
-    router.push({
-      path: "/out/wave/pigeonholes",
-      query: {
-        number: data.wave_number,
-      },
-    });
-    return;
-  } else {
-    // 去往打包，选择包材页面
-    router.push({
-      path: "/out/wave/packaging",
-      query: {
-        wave_number: data.wave_number,
-      },
-    });
+    if (data.wave_type == "mixed_items") {
+      router.push({
+        path: "/out/wave/pigeonholes",
+        query: {
+          number: data.wave_number,
+        },
+      });
+      return;
+    } else {
+      // 去往打包，选择包材页面
+      router.push({
+        path: "/out/wave/packaging",
+        query: {
+          wave_number: data.wave_number,
+        },
+      });
+    }
+  } catch (error) {
+    playBeep(false);
+    // Message.notify(trans("波次号不存在"));
   }
 };
 </script>

@@ -1,10 +1,27 @@
 <template>
   <div class="sort-detail-page">
+    <!-- 全局加载效果 -->
+    <q-dialog v-model="pageData.loading" persistent>
+      <q-card class="bg-transparent shadow-0 no-border">
+        <q-card-section class="flex flex-center">
+          <q-spinner color="primary" size="50px" :thickness="5" />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <!-- 保留原来的内部loading -->
+    <q-inner-loading
+      :showing="pageData.loading"
+      label-class="text-primary"
+      label-style="font-size: 1.1em"
+    >
+      <q-spinner-dots size="40px" color="primary" />
+    </q-inner-loading>
     <!-- 顶部栏 -->
     <div class="header-bar">
       <div class="left">
         <span class="wave-no">{{ pageData.waveInfo.wave_number }}</span>
-        <span class="wave-type">{{ trans("（多品混包）") }}</span>
+        <span class="wave-type">{{ trans("多品混包") }}</span>
       </div>
       <div class="right">
         <span class="progress"
@@ -55,7 +72,13 @@
               {{ index + 1 }}
             </span>
             <div class="operation-btn" v-if="item.status > 0">
-              <q-btn-dropdown flat color="primary" icon="print" size="sm">
+              <q-btn-dropdown
+                style="padding: 0; margin: 0"
+                flat
+                color="primary"
+                icon="print"
+                size="sm"
+              >
                 <q-list>
                   <q-item
                     clickable
@@ -95,6 +118,10 @@
             <div class="package-no" v-if="item.status > 0">
               {{ item.package_number }}
             </div>
+
+            <div class="process" v-if="getInPackage(item) > 0">
+              {{ getInPackage(item) }} / <span>{{ getTotal(item) }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -111,7 +138,7 @@
 </template>
 
 <script setup>
-import { reactive, onMounted, watch, ref } from "vue";
+import { reactive, onMounted, watch, ref, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import OutApi from "@/api/out";
 import ProductApi from "@/api/product";
@@ -122,6 +149,8 @@ import NotPacking from "./components/NotPacking.vue";
 import CheckMaterial from "./components/CheckMaterial.vue";
 import trans from "@/i18n";
 import ScanTop from "@/components/ScanTop/Index.vue";
+import { playVoice } from "@/utils/voice";
+import { QSpinnerBars } from "quasar";
 
 const $q = useQuasar();
 const route = useRoute();
@@ -139,6 +168,7 @@ const pageData = reactive({
   materialsList: [],
   showIndex: "",
   currentPackage: null,
+  loading: false,
 });
 
 watch(
@@ -251,54 +281,74 @@ const handleEndWave = async () => {
 };
 
 const getWaveInfo = async () => {
-  const { data } = await OutApi.scanSortOut({ number: pageData.number });
-  pageData.waveInfo = data;
-  pageData.packages = data.boxes.map((item, index) => {
-    return {
-      status: 0,
-      package_number: item.package_number,
-      package_id: item.package_id,
-      // 用来在弹窗里面显示分拣框 别的没什么作用
-      index,
-      material_id: "",
-      boxes: item.items.map((rpw) => {
-        return {
-          ...rpw,
-          inFrame: 0,
-          // index用来标记是第几个框
-          index,
-        };
-      }),
-    };
-  });
+  pageData.loading = true;
+  try {
+    const { data } = await OutApi.scanSortOut({ number: pageData.number });
+    pageData.waveInfo = data;
+    pageData.packages = data.boxes.map((item, index) => {
+      return {
+        status: 0,
+        package_number: item.package_number,
+        package_id: item.package_id,
+        // 用来在弹窗里面显示分拣框 别的没什么作用
+        index,
+        material_id: "",
+        boxes: item.items.map((rpw) => {
+          return {
+            ...rpw,
+            inFrame: 0,
+            // index用来标记是第几个框
+            index,
+          };
+        }),
+      };
+    });
+    setTimeout(() => {
+      pageData.loading = false;
+    }, 500);
+  } catch (error) {
+    setTimeout(() => {
+      pageData.loading = false;
+    }, 500);
+  }
 };
 
 const search = async () => {
   if (!pageData.keyword.length) {
     return Message.notify(trans("请输入商品标签"));
   }
-  let boxes = [];
-  pageData.packages.forEach((item) => {
-    item.boxes.forEach((box) => {
-      boxes.push(box);
+  pageData.loading = true;
+  setTimeout(() => {
+    let boxes = [];
+    pageData.packages.forEach((item) => {
+      item.boxes.forEach((box) => {
+        boxes.push(box);
+      });
     });
-  });
-  let box = boxes.find(
-    (item) =>
-      item.product_spec_sku == pageData.keyword && item.inFrame < item.quantity
-  );
-  if (!box) {
-    Message.notify(trans("该商品标签不存在"));
-    return;
-  }
-  box.inFrame++;
-  let index = box.index + 1;
-  pageData.logs.push({
-    index: index,
-    code: pageData.keyword,
-    qty: 1,
-  });
-  pageData.showIndex = index;
+    let box = boxes.find(
+      (item) =>
+        item.product_spec_sku == pageData.keyword &&
+        item.inFrame < item.quantity
+    );
+    if (!box) {
+      Message.errorMessage(trans("该商品标签不存在"));
+      // 语音提示标签不存在
+      playVoice(trans("扫描异常"));
+      pageData.loading = false;
+      return;
+    }
+    box.inFrame++;
+    let index = box.index + 1;
+    pageData.logs.push({
+      index: index,
+      code: pageData.keyword,
+      qty: 1,
+    });
+    pageData.showIndex = index;
+    // 提示 第index个箱子
+    playVoice(index + trans("号"));
+    pageData.loading = false;
+  }, 500);
 };
 
 const showLogs = () => {
@@ -349,6 +399,16 @@ const handleEnd = () => {
   } else {
     successWave();
   }
+};
+
+// 获取已经扫描的商品数量
+const getInPackage = (item) => {
+  return item.boxes.reduce((total, box) => total + box.inFrame, 0);
+};
+
+// 获取总的商品数量
+const getTotal = (item) => {
+  return item.boxes.reduce((total, box) => total + box.quantity, 0);
 };
 </script>
 
@@ -485,11 +545,11 @@ const handleEnd = () => {
 
           .package-no {
             font-weight: 500;
-            font-size: 10px;
+            font-size: 12px;
             color: #5745c5;
             position: absolute;
             left: 10px;
-            bottom: 10px;
+            bottom: 4px;
           }
           .operation-btn {
             position: absolute;
@@ -510,5 +570,17 @@ const handleEnd = () => {
 .success {
   background: #f2f0ff;
   color: white;
+}
+
+.process {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  font-size: 12px;
+  color: #888;
+  span {
+    color: #5745c5;
+    padding: 0 !important;
+  }
 }
 </style>

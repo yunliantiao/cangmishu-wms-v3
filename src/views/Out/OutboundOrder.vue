@@ -15,6 +15,7 @@
       </div>
     </div> -->
     <!-- 搜索过滤区域 - 第一行 -->
+
     <div class="search-bar">
       <div class="tabs-section q-mb-md">
         <q-tabs
@@ -188,6 +189,13 @@
                     <span class="info-item q-mr-md">
                       {{ props.row.source }}</span
                     >
+
+                    <span v-if="props.row.remark">
+                      <q-icon name="info" />
+                      <q-tooltip>
+                        {{ trans("备注") }} : {{ props.row.remark }}
+                      </q-tooltip>
+                    </span>
                   </div>
                 </div>
               </q-td>
@@ -228,9 +236,7 @@
                 <div>客户: {{ props.row.customer }}</div>
               </div>
             </q-td> -->
-            <q-td key="printStatus" :props="props">
-              {{ props.row.printStatus }}
-            </q-td>
+
             <q-td key="recipient" :props="props">
               <div>
                 <div>{{ props.row.recipient.first_name }}</div>
@@ -247,6 +253,18 @@
                 <div>{{ trans("创建") }} : {{ props.row.created_at }}</div>
               </div>
             </q-td>
+
+            <q-td key="is_print_shipping_label" :props="props">
+              <span
+                class="is-print"
+                v-if="isPrint(props.row, 'is_print_shipping_label')"
+              >
+                {{ trans("已打印") }}
+              </span>
+              <span v-else>
+                {{ trans("未打印") }}
+              </span>
+            </q-td>
             <q-td key="status" :props="props">
               <div class="icons">
                 <span class="table-icon">
@@ -255,6 +273,15 @@
                     v-if="isPrint(props.row, 'is_print_pick_label')"
                   />
                   <img src="@/assets/images/print.png" v-else />
+                  <q-tooltip>
+                    {{
+                      trans("拣货单{status}", {
+                        status: isPrint(props.row, "is_print_pick_label")
+                          ? trans("已打印")
+                          : trans("未打印"),
+                      })
+                    }}
+                  </q-tooltip>
                 </span>
 
                 <span class="table-icon">
@@ -263,6 +290,15 @@
                     v-if="isPrint(props.row, 'is_print_shipping_label')"
                   />
                   <img src="@/assets/images/sign-not.png" v-else />
+                  <q-tooltip>
+                    {{
+                      trans("面单{status}", {
+                        status: isPrint(props.row, "is_print_shipping_label")
+                          ? trans("已打印")
+                          : trans("未打印"),
+                      })
+                    }}
+                  </q-tooltip>
                 </span>
 
                 <span class="table-icon">
@@ -271,6 +307,13 @@
                     v-if="isPrint(props.row, 'shipped')"
                   />
                   <img src="@/assets/images/shipped-not.png" v-else />
+                  <q-tooltip>
+                    {{
+                      isPrint(props.row, "shipped")
+                        ? trans("已发货")
+                        : trans("未发货")
+                    }}
+                  </q-tooltip>
                 </span>
                 <!--                 
                 <q-icon
@@ -353,6 +396,31 @@
                 >
                   <img src="@/assets/images/detail.png" />
                   <q-tooltip>{{ trans("详情") }}</q-tooltip>
+                </q-btn>
+
+                <q-btn flat round color="grey-7" class="table-icon" size="sm">
+                  <img src="@/assets/images/more.png" />
+                  <q-menu>
+                    <q-list style="min-width: 120px">
+                      <q-item
+                        clickable
+                        v-close-popup
+                        @click="handlePrint(props.row)"
+                      >
+                        <q-item-section>{{ trans("打印面单") }}</q-item-section>
+                      </q-item>
+
+                      <q-item
+                        clickable
+                        v-close-popup
+                        @click="handlePicking(props.row)"
+                      >
+                        <q-item-section>{{
+                          trans("打印拣货单")
+                        }}</q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-menu>
                 </q-btn>
               </div>
             </q-td>
@@ -563,12 +631,7 @@ const columns = ref([
   //     field: "shippingInfo",
   //     align: "left",
   //   },
-  {
-    name: "printStatus",
-    label: trans("面单打印"),
-    field: "printStatus",
-    align: "center",
-  },
+
   {
     name: "recipient",
     label: trans("收货人&地区"),
@@ -580,6 +643,12 @@ const columns = ref([
     label: trans("时间"),
     field: "time",
     align: "left",
+  },
+  {
+    name: "is_print_shipping_label",
+    label: trans("面单打印"),
+    field: "is_print_shipping_label",
+    align: "center",
   },
   {
     name: "status",
@@ -669,11 +738,33 @@ const handleSendOutboundOrder = (type) => {
   });
 };
 
-const handlePicking = (type) => {
-  outApi.getOutboundOrderPicking(type.id, { is_printed: true }).then((res) => {
-    if (res.success) {
-    }
+const handlePicking = async (type) => {
+  const { data } = await outApi.getOutboundOrderPicking(type.id, {
+    is_printed: true,
   });
+  window.open(data.data, "_blank");
+  let bool = type.packages[0].is_print_pick_label;
+  if (!bool) {
+    $q.dialog({
+      title: trans("提示"),
+      message: trans("拣货单已成功生成，如果已成功打印，请点击”标记为已打印“"),
+      cancel: true,
+      persistent: true,
+      ok: {
+        label: trans("标记为已打印"),
+        color: "primary",
+      },
+      cancel: {
+        label: trans("取消"),
+        color: "grey-7",
+      },
+    }).onOk(async () => {
+      await outApi.getOutboundOrderPickingResult(type.id, {
+        is_printed: true,
+      });
+      getOutboundOrder();
+    });
+  }
 };
 
 const isPrint = (row, type) => {
@@ -686,10 +777,38 @@ const isPrint = (row, type) => {
   return printBool;
 };
 
-const handlePrint = (type) => {
-  outApi.getOutboundOrderPrint(type.id).then((res) => {
-    console.log(res);
-  });
+const handlePrint = async (type) => {
+  let packageId = type.packages[0].id;
+  const { data } = await outApi.getOutboundOrderPrint(packageId);
+  window.open(data.data, "_blank");
+  let bool = type.packages[0].is_print_shipping_label;
+
+  if (!bool) {
+    $q.dialog({
+      title: trans("提示"),
+      message: trans("面单已成功生成，如果已成功打印，请点击”标记为已打印“"),
+      cancel: true,
+      persistent: true,
+      ok: {
+        label: trans("标记为已打印"),
+        color: "primary",
+      },
+      cancel: {
+        label: trans("取消"),
+        color: "grey-7",
+      },
+    }).onOk(() => {
+      outApi
+        .signExpressSheet(packageId, {
+          is_printed: true,
+        })
+        .then((res) => {
+          if (res.success) {
+            getOutboundOrder();
+          }
+        });
+    });
+  }
 };
 
 const toggleSortByTime = () => {
@@ -873,5 +992,10 @@ onMounted(() => {
 
 .main-table {
   padding-top: 10px;
+}
+
+.is-print {
+  color: green;
+  font-weight: bold;
 }
 </style>

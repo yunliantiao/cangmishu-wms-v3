@@ -677,7 +677,7 @@
   "客户取消": "Client cancelled",
   "称重异常": "Weighing anomaly",
   "请选择理由": "Select reason",
-  "分拣记录": "Sorting records",
+  "分拣记录": "Records",
   "分拣框": "Sorting box",
   "商品标签": "Product tags",
   "存在以下未分拣完成/未打印的包裹": "Unsorted/unprinted packages:",
@@ -936,5 +936,6 @@
   "预计到达时间": "ETA",
   "商品编码": "Product code",
   "请输入重量": "Enter weight",
-  "[{name}]总收货数量大于申报数量，确定继续?": "[{name}] Total received > declared, continue?"
+  "[{name}]总收货数量大于申报数量，确定继续?": "[{name}] Total received > declared, continue?",
+  "扫描异常":"Scan Error"
 }
