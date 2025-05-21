@@ -53,8 +53,13 @@ const focus = () => {
   inputRef.value.focus();
 };
 
+const resetInputValue = () => {
+  scanValue.value = "";
+  focus();
+};
 defineExpose({
   focus,
+  resetInputValue,
 });
 </script>
 

@@ -58,6 +58,13 @@
   }
 }
 
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 // 扫描页面公共表格卡片样式
 .scan-main-table {
   width: 1400px;

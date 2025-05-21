@@ -236,6 +236,8 @@ const emit = defineEmits(["handleRefresh"]);
 
 onMounted(() => {
   getPikerUserList();
+
+  // console.log("store", store.state.userInfo.id);
 });
 
 const getLabel = (value) => {
@@ -279,6 +281,7 @@ const initList = async () => {
     componentData.list = data.map((item) => {
       return {
         ...item,
+        picker_user_id: store.state.userInfo.id,
       };
     });
     componentData.isOpen = true;

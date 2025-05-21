@@ -574,7 +574,6 @@ onMounted(() => {
   getCategoryList();
   getWarehouseAreas();
   initList();
-  // getSkuList();
 });
 
 const getCustomerList = async () => {

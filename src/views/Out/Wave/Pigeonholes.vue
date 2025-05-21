@@ -64,18 +64,21 @@
             :class="{
               'sort-box': true,
               success: item.status == 2,
+              pending:
+                (item.status == 0 && getInPackage(item) > 0) ||
+                item.status == 1,
             }"
             v-for="(item, index) in pageData.packages"
             :key="item.id"
           >
-            <span>
+            <div class="sort-index flex-center">
               {{ index + 1 }}
-            </span>
+            </div>
             <div class="operation-btn" v-if="item.status > 0">
               <q-btn-dropdown
                 style="padding: 0; margin: 0"
                 flat
-                color="primary"
+                color="black"
                 icon="print"
                 size="sm"
               >
@@ -119,8 +122,8 @@
               {{ item.package_number }}
             </div>
 
-            <div class="process" v-if="getInPackage(item) > 0">
-              {{ getInPackage(item) }} / <span>{{ getTotal(item) }}</span>
+            <div class="process">
+              {{ getInPackage(item) }} / {{ getTotal(item) }}
             </div>
           </div>
         </div>
@@ -529,37 +532,57 @@ const getTotal = (item) => {
         gap: 0;
 
         .sort-box {
-          width: 180px;
-          height: 50px;
+          width: 200px;
+          height: 90px;
           border: 1px solid #e0e0e0;
           display: flex;
-          font-weight: 600;
-          font-size: 12px;
+          justify-content: center;
+          align-items: center;
+          font-size: 16px;
           color: #000000;
-          line-height: 14px;
           position: relative;
-          span {
-            padding-top: 9px;
-            padding-left: 10px;
+          .sort-index {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 34px;
+            font-size: 14px;
+            height: 20px;
+            border: 1px solid #e0e0e0;
+            border-top: none;
+            border-left: none;
+            background: white;
+            border-radius: 2px;
+            font-weight: 600;
           }
 
           .package-no {
             font-weight: 500;
-            font-size: 12px;
-            color: #5745c5;
             position: absolute;
-            left: 10px;
-            bottom: 4px;
+            left: 4px;
+            bottom: 2px;
+            line-height: 16px;
+            font-size: 14px;
           }
           .operation-btn {
             position: absolute;
             right: 0px;
+            top: 0;
             .pack-select {
               width: 100px;
             }
             :deep(.q-btn-dropdown__arrow) {
               margin-left: 0 !important;
             }
+          }
+          .process {
+            position: absolute;
+            font-size: 18px;
+            color: black;
+            top: 50%;
+            font-weight: 600;
+            left: 50%;
+            transform: translate(-50%, -50%);
           }
         }
       }
@@ -568,19 +591,24 @@ const getTotal = (item) => {
 }
 
 .success {
-  background: #f2f0ff;
-  color: white;
+  background: #3ea765;
+  color: black;
+  .sort-index {
+    color: #3ea765;
+    left: 2px !important;
+    top: 2px !important;
+    border: 1px solid #3ea765;
+  }
 }
 
-.process {
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  font-size: 12px;
-  color: #888;
-  span {
-    color: #5745c5;
-    padding: 0 !important;
+.pending {
+  background: #ed8b2a;
+  color: black;
+  .sort-index {
+    color: #ed8b2a;
+    left: 2px !important;
+    top: 2px !important;
+    border: 1px solid #ed8b2a;
   }
 }
 </style>

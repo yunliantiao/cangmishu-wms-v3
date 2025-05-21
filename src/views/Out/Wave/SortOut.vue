@@ -20,22 +20,38 @@ import ScanTop from "@/components/ScanTop/Index.vue";
 import { playBeep } from "@/utils/voice";
 
 const router = useRouter();
-const scanInput = ref(null);
+const scanTopRef = ref(null);
 const scanValue = ref("");
+
+// 清除输入框的值，并聚焦
+const inputErrorAndInputFocus = () => {
+  playBeep(false);
+  scanTopRef.value.resetInputValue();
+};
 
 const search = async () => {
   // WA0042E900011
   if (scanValue.value.length == 0) {
     Message.notify(trans("请扫描或输入波次号"));
-    playBeep(false);
+    inputErrorAndInputFocus();
     return;
   }
   try {
     const { data } = await outApi.getOrderInfoByWaveOrder({
       number: scanValue.value,
     });
-    playBeep(true);
 
+    if (data.status == "completed") {
+      Message.notify(trans("该波次已完成"));
+      inputErrorAndInputFocus();
+      return;
+    }
+    if (!data.pick_by.is_self) {
+      Message.notify(trans("您无法对该波次进行分拣"));
+      inputErrorAndInputFocus();
+      return;
+    }
+    playBeep(true);
     if (data.wave_type == "mixed_items") {
       router.push({
         path: "/out/wave/pigeonholes",
