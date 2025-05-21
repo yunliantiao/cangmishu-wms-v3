@@ -70,7 +70,24 @@
             }"
             v-for="(item, index) in pageData.packages"
             :key="item.id"
+            @mouseenter="showMenu(index)"
+            @mouseleave="startHideTimer(index)"
           >
+            <q-menu
+              v-model="menuVisible[index]"
+              anchor="top middle"
+              self="bottom middle"
+              :offset="[0, 10]"
+              persistent
+              transition-show="jump-down"
+              transition-hide="jump-up"
+              class="bg-white text-dark sort-sku-menu"
+              @mouseenter="clearHideTimer"
+              @mouseleave="hideAllMenus"
+            >
+              <SortSkuTable :box-data="item" :box-index="index" />
+            </q-menu>
+
             <div class="sort-index flex-center">
               {{ index + 1 }}
             </div>
@@ -152,8 +169,9 @@ import NotPacking from "./components/NotPacking.vue";
 import CheckMaterial from "./components/CheckMaterial.vue";
 import trans from "@/i18n";
 import ScanTop from "@/components/ScanTop/Index.vue";
-import { playVoice } from "@/utils/voice";
+import { playVoice, playBeep } from "@/utils/voice";
 import { QSpinnerBars } from "quasar";
+import SortSkuTable from "./components/SortSkuTable.vue";
 
 const $q = useQuasar();
 const route = useRoute();
@@ -172,6 +190,55 @@ const pageData = reactive({
   showIndex: "",
   currentPackage: null,
   loading: false,
+});
+
+// 添加菜单显示状态控制
+const menuVisible = ref([]);
+let hideTimer = null;
+
+// 当鼠标进入分拣框时，显示对应的菜单
+const showMenu = (index) => {
+  // 先隐藏所有菜单
+  menuVisible.value = menuVisible.value.map(() => false);
+  // 显示当前悬停的菜单
+  menuVisible.value[index] = true;
+  // 清除任何现有的隐藏计时器
+  clearHideTimer();
+};
+
+// 开始隐藏计时器（当鼠标离开分拣框时）
+const startHideTimer = () => {
+  clearHideTimer();
+  hideTimer = setTimeout(() => {
+    hideAllMenus();
+  }, 300); // 300ms 延迟，允许鼠标移入菜单
+};
+
+// 清除隐藏计时器（当鼠标进入菜单时）
+const clearHideTimer = () => {
+  if (hideTimer) {
+    clearTimeout(hideTimer);
+    hideTimer = null;
+  }
+};
+
+// 隐藏所有菜单
+const hideAllMenus = () => {
+  menuVisible.value = menuVisible.value.map(() => false);
+};
+
+// 初始化菜单显示状态数组
+watch(
+  () => pageData.packages,
+  (newVal) => {
+    menuVisible.value = Array(newVal.length).fill(false);
+  },
+  { immediate: true }
+);
+
+// 确保组件卸载时清除计时器
+onUnmounted(() => {
+  clearHideTimer();
 });
 
 watch(
@@ -541,6 +608,7 @@ const getTotal = (item) => {
           font-size: 16px;
           color: #000000;
           position: relative;
+          cursor: pointer;
           .sort-index {
             position: absolute;
             top: 0px;
@@ -609,6 +677,17 @@ const getTotal = (item) => {
     left: 2px !important;
     top: 2px !important;
     border: 1px solid #ed8b2a;
+  }
+}
+
+// 添加菜单样式
+:deep(.sort-sku-menu) {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  padding: 0;
+
+  .q-menu__focus-target {
+    opacity: 0;
   }
 }
 </style>
