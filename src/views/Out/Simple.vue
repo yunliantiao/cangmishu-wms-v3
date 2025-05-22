@@ -106,6 +106,7 @@
         <span class="print-text">
           {{ trans("批量打印") }}
         </span>
+        <q-icon name="arrow_drop_down"></q-icon>
         <q-menu>
           <q-list style="min-width: 120px">
             <q-item clickable v-close-popup @click="handleBatchPrint">

@@ -124,6 +124,8 @@
           <span class="print-text">
             {{ trans("导出") }}
           </span>
+          <q-icon name="arrow_drop_down"></q-icon>
+
           <q-menu>
             <q-list style="min-width: 120px">
               <div class="btn-group-desc">{{ trans("按勾选导出") }}</div>
@@ -1056,7 +1058,7 @@ const handleExportByType = async (type) => {
 .btn-group-desc {
   color: #86909c;
   font-size: 14px;
-  text-align: center;
+  text-indent: 16px;
   padding-top: 10px;
 }
 </style>
