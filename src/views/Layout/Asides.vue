@@ -1,8 +1,12 @@
 <template>
   <div class="fixed-sidebar" :class="{ 'sidebar-hidden': !isOpen }">
-    <q-list v-show="isOpen" padding class="rounded-borders route-menu">
+    <q-list
+      v-show="isOpen"
+      padding
+      class="rounded-borders route-menu main-menu"
+    >
       <!-- 遍历路由 -->
-      <template v-for="route in routerMap" :key="route.path">
+      <template v-for="route in showRoute" :key="route.path">
         <!-- 当有多个子菜单时显示可展开的父菜单 -->
         <q-expansion-item
           v-if="hasMultipleChildren(route)"
@@ -76,6 +80,28 @@
     <!-- <div v-if="isOpen" class="fix-menu" @click="toggleLeftDrawer">
       <q-icon name="chevron_left" />
     </div> -->
+
+    <q-list v-show="isOpen" padding class="rounded-borders route-menu">
+      <q-item
+        v-ripple
+        clickable
+        to="/setting"
+        class="menu-header route-item setting-route"
+        active-class="q-item--active"
+      >
+        <div class="menu-header-content">
+          <img
+            :src="getImg(settingRoute)"
+            alt=""
+            class="img-icon"
+            style="margin-left: 20px"
+          />
+          <div class="menu-title">
+            {{ trans("设置") }}
+          </div>
+        </div>
+      </q-item>
+    </q-list>
   </div>
 </template>
 
@@ -201,11 +227,21 @@ export default {
       }
     };
 
+    // 将设置排除出去  单独展示在列表最下方
+    const showRoute = computed(() => {
+      return routerMap.filter((route) => route.path != "setting");
+    });
+
+    const settingRoute = computed(() => {
+      return routerMap.find((route) => route.path == "setting");
+    });
+
     return {
       isOpen,
       isCollapse,
       isMobile,
-      routerMap,
+      showRoute,
+      settingRoute,
       toPath,
       getImg,
       toggleLeftDrawer,
@@ -227,12 +263,10 @@ export default {
   height: calc(100vh - 50px);
   background-color: white;
   z-index: 2000;
-  overflow-y: auto;
   border-right: 1px solid rgba(0, 31, 77, 0.06);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
   overflow-x: visible;
-  overflow-y: auto;
 
   .fix-menu {
     position: absolute;
@@ -286,8 +320,8 @@ export default {
   .menu-header {
     min-height: 44px !important;
     padding: 12px !important;
-    margin: 20px 0 !important;
-    border-radius: 8px;
+    // margin: 20px 0 !important;
+    // border-radius: 8px;
     transition: all 0.25s ease;
     cursor: pointer;
 
@@ -306,7 +340,7 @@ export default {
     padding: 6px 12px 6px 16px;
     min-height: 40px;
     margin: 10px 0;
-    border-radius: 6px;
+    // border-radius: 6px;
     transition: background-color 0.2s ease;
     &:last-child {
       margin-bottom: 0;
@@ -463,6 +497,33 @@ export default {
   /* 移动端不折叠菜单项，而是完全隐藏侧边栏 */
   .menu-title {
     display: block !important;
+  }
+}
+
+.setting-route {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+  margin: 10px 0 !important;
+
+  .menu-header {
+    min-height: 44px !important;
+    padding: 12px !important;
+    margin: 0 20px !important;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+    cursor: pointer;
+  }
+}
+
+.main-menu {
+  height: calc(100% - 50px);
+  .menu-header {
+    border-radius: 8px;
+  }
+  .route-item {
+    border-radius: 6px;
   }
 }
 </style>
