@@ -119,7 +119,34 @@
     <!-- 数据表格 -->
     <div class="main-table">
       <div class="btn-group">
-        <q-btn-dropdown
+        <q-btn flat color="primary" class="table-icon">
+          <q-icon name="print"></q-icon>
+          <span class="print-text">
+            {{ trans("导出") }}
+          </span>
+          <q-menu>
+            <q-list style="min-width: 120px">
+              <div class="btn-group-desc">{{ trans("按勾选导出") }}</div>
+              <q-item
+                clickable
+                v-close-popup
+                @click="handleExportByType('sku')"
+              >
+                <q-item-section>{{ trans("商品维度") }}</q-item-section>
+              </q-item>
+
+              <q-item
+                clickable
+                v-close-popup
+                @click="handleExportByType('package')"
+              >
+                <q-item-section>{{ trans("包裹维度") }}</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </q-btn>
+
+        <!-- <q-btn-dropdown
           color="primary"
           flat
           icon="print"
@@ -134,7 +161,7 @@
               <q-item-section>{{ trans("导出全部") }}</q-item-section>
             </q-item>
           </q-list>
-        </q-btn-dropdown>
+        </q-btn-dropdown> -->
       </div>
 
       <q-table
@@ -190,8 +217,11 @@
                       {{ props.row.source }}</span
                     >
 
-                    <span v-if="props.row.remark">
-                      <q-icon name="info" />
+                    <span v-if="props.row.remark" class="table-icon">
+                      <img
+                        src="@/assets/images/remark.png"
+                        style="margin-bottom: -5px"
+                      />
                       <q-tooltip>
                         {{ trans("备注") }} : {{ props.row.remark }}
                       </q-tooltip>
@@ -315,21 +345,6 @@
                     }}
                   </q-tooltip>
                 </span>
-                <!--                 
-                <q-icon
-                  name="receipt"
-                  size="20px"
-                  :color="
-                    isPrint(props.row, 'is_print_shipping_label')
-                      ? 'green'
-                      : 'grey-7'
-                  "
-                /> -->
-                <!-- <q-icon
-                  name="receipt_long"
-                  size="20px"
-                  :color="props.row.status == 'shipped' ? 'green' : 'grey-7'"
-                /> -->
               </div>
               <q-chip
                 v-if="props.row.ship_print_status == 'pending_print'"
@@ -351,6 +366,15 @@
                   )?.label || trans("草稿")
                 }}
               </q-chip>
+
+              <div v-if="getIsExamine(props.row)">
+                <span class="table-icon">
+                  <img src="@/assets/images/examine.png" />
+                  <q-tooltip>
+                    {{ getIsExamine(props.row) }}
+                  </q-tooltip>
+                </span>
+              </div>
             </q-td>
             <q-td key="actions" :props="props">
               <div class="row justify-center q-gutter-xs">
@@ -466,6 +490,7 @@ import customerApi from "@/api/customer";
 import DatePicker from "@/components/DatePickerNew/Index.vue";
 import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 import trans from "@/i18n";
+import Message from "@/utils/message";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -840,9 +865,38 @@ onMounted(() => {
   getOutboundOrder();
   // getCustomerList();
 });
+
+const getIsExamine = (row) => {
+  let firstPackage = row.packages[0];
+  if (firstPackage.intercept_status == "completed") {
+    return `${trans("验货时间")}:${firstPackage.intercept_time}`;
+  }
+};
+
+const handleExportByType = async (type) => {
+  console.log("导出", type);
+  let res = null;
+  let ids = selectedRows.value.map((item) => item.id);
+
+  if (!ids.length) {
+    Message.notify(trans("请选择订单"));
+    return;
+  }
+
+  if (type == "sku") {
+    res = await outApi.handleExportBySku({ ids });
+  } else {
+    res = await outApi.handleExportByPackage({ ids });
+  }
+
+  window.open(res.data.data, "_blank");
+};
 </script>
 
 <style lang="scss">
+.print-text {
+  margin-left: 10px;
+}
 .simple-print-page {
   .search-bar {
     .select-width {
@@ -997,5 +1051,12 @@ onMounted(() => {
 .is-print {
   color: green;
   font-weight: bold;
+}
+
+.btn-group-desc {
+  color: #86909c;
+  font-size: 14px;
+  text-align: center;
+  padding-top: 10px;
 }
 </style>

@@ -101,7 +101,29 @@
 
     <!-- 数据表格 -->
     <div class="main-table">
-      <q-btn
+      <q-btn flat color="primary" class="table-icon">
+        <q-icon name="print"></q-icon>
+        <span class="print-text">
+          {{ trans("批量打印") }}
+        </span>
+        <q-menu>
+          <q-list style="min-width: 120px">
+            <q-item clickable v-close-popup @click="handleBatchPrint">
+              <q-item-section>{{ trans("物流单") }}</q-item-section>
+            </q-item>
+
+            <q-item clickable v-close-popup @click="handlePickPrint">
+              <q-item-section>{{ trans("拣货单") }}</q-item-section>
+            </q-item>
+
+            <q-item clickable v-close-popup @click="handlePrintAll">
+              <q-item-section>{{ trans("物流+拣货单") }}</q-item-section>
+            </q-item>
+          </q-list>
+        </q-menu>
+      </q-btn>
+      <!-- 物流单 配货单  物流+配货单 -->
+      <!-- <q-btn
         color="primary"
         icon="print"
         :label="trans('批量打印')"
@@ -110,6 +132,17 @@
         :loading="$store.state.btnLoading"
         @click="handleBatchPrint"
       />
+
+      
+      <q-btn
+        color="primary"
+        icon="print"
+        :label="trans('批量打印')"
+        outline
+        flat
+        :loading="$store.state.btnLoading"
+        @click="handleBatchPrint"
+      /> -->
       <q-table
         :rows="packages"
         :columns="columns"
@@ -323,6 +356,7 @@ import { useRouter } from "vue-router";
 import Pagination from "@/components/Pagination.vue";
 import OrderDetailsDialog from "./components/OrderDetailsDialog.vue";
 import outApi from "@/api/out";
+import waveApi from "@/api/wave";
 import DatePickerNew from "@/components/DatePickerNew/Index.vue";
 import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 import trans from "@/i18n";
@@ -610,6 +644,7 @@ const resetSearch = () => {
 const packages = ref([]);
 
 const getOutboundOrder = () => {
+  selectedRows.value = [];
   let params = {
     ...pageParams,
   };
@@ -776,6 +811,116 @@ const handleBatchPrint = async () => {
   const { data } = await outApi.batchPrintOrder(params);
   console.log("data", data);
   window.open(data.data, "_blank");
+
+  $q.dialog({
+    title: trans("提示"),
+    message: trans("面单打印结果确认是否打印成功？"),
+    ok: {
+      label: trans("是"),
+      color: "primary",
+    },
+    cancel: {
+      label: trans("否"),
+      color: "grey",
+    },
+    persistent: true,
+  }).onOk(() => {
+    batchSerIsPrint({
+      is_print_shipping_label: true,
+      is_print_pick_label: false,
+    });
+  });
+};
+
+const batchSerIsPrint = async (params) => {
+  let packageIds = [];
+  selectedRows.value.forEach((item) => {
+    item.packages.forEach((ele) => {
+      packageIds.push(ele.id);
+    });
+  });
+  await outApi.setPendingShipment({
+    package_ids: packageIds,
+    is_print_shipping_label: params.is_print_shipping_label,
+    is_print_pick_label: params.is_print_pick_label,
+  });
+  getOutboundOrder();
+};
+
+const handlePickPrint = async () => {
+  let ids = [];
+  selectedRows.value.forEach((item) => {
+    item.packages.forEach((ele) => {
+      ids.push(ele.id);
+    });
+  });
+  if (!ids.length) {
+    Message.notify("请选择包裹");
+    return;
+  }
+  let params = {
+    ids: ids,
+  };
+  const { data } = await outApi.handleBatchPrintPickLabel(params);
+  console.log("data", data);
+  window.open(data.data, "_blank");
+
+  $q.dialog({
+    title: trans("提示"),
+    message: trans("拣货单打印结果确认是否打印成功？"),
+    ok: {
+      label: trans("是"),
+      color: "primary",
+    },
+    cancel: {
+      label: trans("否"),
+      color: "grey",
+    },
+    persistent: true,
+  }).onOk(async () => {
+    batchSerIsPrint({
+      is_print_shipping_label: false,
+      is_print_pick_label: true,
+    });
+  });
+};
+const handlePrintAll = async () => {
+  console.log("批量打印");
+  let ids = [];
+  selectedRows.value.forEach((item) => {
+    item.packages.forEach((ele) => {
+      ids.push(ele.id);
+    });
+  });
+  if (!ids.length) {
+    Message.notify("请选择包裹");
+    return;
+  }
+  let params = {
+    ids: ids,
+  };
+  const { data } = await outApi.handlePrintAll(params);
+  console.log("data", data);
+  window.open(data.data, "_blank");
+
+  $q.dialog({
+    title: trans("提示"),
+    message: trans("面单打印结果确认是否打印成功？"),
+    ok: {
+      label: trans("是"),
+      color: "primary",
+    },
+    cancel: {
+      label: trans("否"),
+      color: "grey",
+    },
+    persistent: true,
+  }).onOk(() => {
+    batchSerIsPrint({
+      is_print_shipping_label: true,
+      is_print_pick_label: false,
+    });
+  });
 };
 </script>
 
@@ -895,6 +1040,10 @@ const handleBatchPrint = async () => {
 
 .main-table {
   padding-top: 10px;
+}
+
+.print-text {
+  margin-left: 10px;
 }
 </style>
 

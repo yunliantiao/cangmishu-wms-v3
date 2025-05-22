@@ -106,8 +106,8 @@ export default [
                 },
             },
             {
-                path: 'wave',
-                name: 'wave',
+                path: 'waveSetting',
+                name: 'waveSetting',
                 component: WaveSetting,
                 id: 1001,
                 meta: {

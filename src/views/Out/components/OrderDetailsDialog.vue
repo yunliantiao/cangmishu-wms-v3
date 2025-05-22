@@ -11,7 +11,12 @@
     <q-card class="order-details-dialog" style="width: 80vw; max-width: 1400px">
       <!-- 对话框头部 -->
       <q-card-section class="dialog-header row items-center bg-white">
-        <div class="text-subtitle1">{{ trans("包裹详情") }}</div>
+        <div class="text-subtitle1">
+          {{ trans("包裹详情") }}
+          <span class="wave-number" v-if="getWaveNumber(order)">
+            {{ getWaveNumber(order) }}
+          </span>
+        </div>
         <q-space />
         <q-btn flat round dense icon="close" @click="dialogVisible = false" />
       </q-card-section>
@@ -413,6 +418,16 @@ const productDetailColumns = [
 const onDialogHide = () => {
   emit("update:visible", false);
 };
+
+const getWaveNumber = (order) => {
+  console.log("order", order);
+  let waveNumber = "";
+  order.packages.forEach((row) => {
+    waveNumber = row.wave_number;
+  });
+
+  return waveNumber;
+};
 </script>
 
 <style lang="scss">
@@ -569,5 +584,11 @@ const onDialogHide = () => {
       vertical-align: middle;
     }
   }
+}
+
+.wave-number {
+  font-size: 14px;
+  color: #5745c5;
+  margin-left: 2px;
 }
 </style> 

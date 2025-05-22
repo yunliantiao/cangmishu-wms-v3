@@ -32,15 +32,21 @@
       <ScanBatchPrint
         :waveInfo="pageData.waveInfo"
         :materialsList="pageData.materialsList"
-        :rows="pageData.rows"
         :loading="pageData.loading"
         v-model:successPackage="pageData.successPackage"
       ></ScanBatchPrint>
     </div>
 
-    <!-- <div v-if="pageData.packageType == 'oneByOnePrint'">
-      <OneByOnePrint></OneByOnePrint>
-    </div> -->
+    <div v-if="pageData.packageType == 'oneByOnePrint'">
+      <OneByOnePrint
+        :waveInfo="pageData.waveInfo"
+        :materialsList="pageData.materialsList"
+        :loading="pageData.loading"
+        v-model:successPackage="pageData.successPackage"
+      ></OneByOnePrint>
+    </div>
+
+    <HandEnd ref="handEndRef"></HandEnd>
   </div>
 </template>
 
@@ -52,7 +58,8 @@ import ProductApi from "@/api/product.js";
 import { useQuasar } from "quasar";
 import trans from "@/i18n";
 import ScanBatchPrint from "./components/packaging/ScanBatchPrint.vue";
-// import OneByOnePrint from "./components/packaging/OneByOnePrint.vue";
+import OneByOnePrint from "./components/packaging/OneByOnePrint.vue";
+import HandEnd from "./components/HandEnd.vue";
 
 const $q = useQuasar();
 const route = useRoute();
@@ -60,7 +67,6 @@ const handEndRef = ref(null);
 
 const pageData = reactive({
   wave_number: "",
-  rows: [],
   loading: false,
   materialsList: [],
   waveInfo: {},
@@ -69,7 +75,7 @@ const pageData = reactive({
   // 包裹总数
   packageCount: 0,
   // 包裹类型 oneByOnePrint 扫描商品逐个打印  scanBatchPrint 批量打印
-  packageType: "scanBatchPrint",
+  packageType: "oneByOnePrint",
 });
 
 const router = useRouter();
@@ -113,6 +119,7 @@ const getMaterialsList = async () => {
     return {
       label: row.name,
       value: row.id,
+      code: row.code,
     };
   });
 };
@@ -162,7 +169,7 @@ const handUp = () => {
   });
 };
 const handEnd = () => {
-  let notPrintList = pageData.rows.filter((row) => {
+  let notPrintList = pageData.waveInfo.packages.filter((row) => {
     return !row.is_print_shipping_label;
   });
   // 如果还有没标记打印的包裹  需要弹窗提示

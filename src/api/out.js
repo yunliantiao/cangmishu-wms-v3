@@ -58,4 +58,16 @@ export default {
 
     // 简易打单批量打印
     batchPrintOrder: (data) => POST(`packages/batch-print-shipping-label`, data),
+
+    // 批量打印物流+配货单
+    handlePrintAll: (data) => POST(`packages/batch-print-shipping-with-pick-label`, data),
+
+    // 勾选按商品维度导出
+    handleExportBySku: (data) => POST(`orders/export-by-package-items`, data),
+
+    // 勾选按包裹维度导出
+    handleExportByPackage: (data) => POST(`orders/export-by-packages`, data),
+
+    // 批量打印拣货单
+    handleBatchPrintPickLabel: (data) => POST(`packages/batch-print-pick-label`, data),
 }

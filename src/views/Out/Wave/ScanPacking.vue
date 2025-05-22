@@ -7,27 +7,6 @@
       v-model:scanValue="pageData.scanValue"
       @confirm="search"
     ></ScanTop>
-    <!-- <div class="scan-header">
-      <div class="title">{{ trans("扫描包装") }}</div>
-    </div>
-
-    <div class="scan-input-container">
-      <div class="input-box">
-        <q-icon name="lightbulb" size="24px" class="light-icon" />
-        <input
-          type="text"
-          class="scan-input"
-          :placeholder="trans('请扫描或输入波次号')"
-          @keyup.enter="search"
-          v-model="pageData.scanValue"
-          ref="scanInput"
-        />
-      </div>
-      <div class="input-hint">
-        <q-icon name="info_outline" size="16px" color="grey-7" />
-        <span>{{ trans("请先切换为EN输入法") }}</span>
-      </div>
-    </div> -->
 
     <div class="scan-main-table">
       <q-table
@@ -35,7 +14,6 @@
         :columns="pageData.columns"
         row-key="id"
         flat
-        style="width: 100%"
         separator="horizontal"
         :loading="pageData.loading"
         :hide-pagination="true"
@@ -44,7 +22,9 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="wave_number" :props="props">
-              {{ props.row.wave_number }}
+              <span class="hover-copy" @click="$copy(props.row.wave_number)">
+                {{ props.row.wave_number }}
+              </span>
             </q-td>
 
             <q-td key="wave_type" :props="props">
@@ -230,8 +210,28 @@ const search = async () => {
   const { data } = await outApi.getOrderInfoByWaveOrder({
     number: pageData.scanValue,
   });
+  if (data.status == "completed") {
+    Message.notify(trans("该波次已完成"));
+    return;
+  }
+
+  if (data.status == "cancelled") {
+    Message.notify(trans("该波次已作废"));
+    return;
+  }
+
   if (!data.is_print_pick_label) {
-    Message.notify(trans("该波次未打印拣货标签"));
+    Message.notify(trans("未打印拣货单，无法打包"));
+    return;
+  }
+
+  if (data.wave_type == "mixed_items") {
+    router.push({
+      path: "/out/wave/pigeonholes",
+      query: {
+        number: data.wave_number,
+      },
+    });
     return;
   }
 

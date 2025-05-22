@@ -52,8 +52,8 @@
 
           <!-- 包裹信息列 -->
           <q-td key="package_info" :props="props">
-            <div class="package_info">
-              {{ trans("包裹号") }}:
+            <span class="package_info">
+              {{ trans("订单号") }}:
               <span
                 class="hover-copy"
                 @click="$copy(props.row.system_order_number)"
@@ -61,7 +61,14 @@
                 {{ props.row.system_order_number }}
               </span>
               ({{ getWaveTypeText(props.row.package_type) }})
-            </div>
+            </span>
+
+            <span class="package_info" style="margin-left: 10px">
+              {{ trans("包裹号") }}:
+              <span class="hover-copy" @click="$copy(props.row.package_number)">
+                {{ props.row.package_number }}
+              </span>
+            </span>
           </q-td>
 
           <!-- 物流方式列 -->
