@@ -1,5 +1,6 @@
 <template>
   <div class="categories-page">
+    <TopBack :title="trans('分类管理')"></TopBack>
     <div class="main-table">
       <q-btn
         color="primary"

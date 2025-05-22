@@ -1,5 +1,6 @@
 <template>
   <div class="warehouse-page">
+    <TopBack :title="trans('仓库管理')"></TopBack>
     <div class="main-table">
       <q-btn
         color="primary"

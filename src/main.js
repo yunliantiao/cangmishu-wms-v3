@@ -6,6 +6,7 @@ import store from './store'
 import './style.css'
 import Message from './utils/message'
 import trans from '@/i18n';
+import TopBack from '@/components/TopBack/Index.vue'
 
 // Import Quasar
 import { Dialog, Notify, Quasar } from 'quasar'
@@ -46,7 +47,7 @@ app.use(Quasar, {
       gray: '#dcdfe6'
     }
   }
-}).use(router).use(store)
+}).use(router).use(store).component('TopBack', TopBack)
 
 app.mount('#app')
 

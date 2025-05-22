@@ -1,5 +1,7 @@
 <template>
   <div class="shelf-location-page">
+    <TopBack :title="trans('货位管理')"></TopBack>
+
     <!-- 筛选区域 -->
     <div class="search-bar">
       <div class="row q-col-gutter-sm">
@@ -987,5 +989,8 @@ const hideTooltip = () => {
 
 .main-table {
   padding-top: 20px;
+}
+.search-bar {
+  margin-top: 10px;
 }
 </style>

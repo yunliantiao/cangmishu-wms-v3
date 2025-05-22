@@ -1,9 +1,6 @@
 <template>
   <div class="wave-setting-page">
-    <span class="breadcrumb cursor-pointer" @click="$router.back()">
-      <q-icon name="arrow_back" size="20px" class="cursor-pointer q-mr-sm" />
-      <span class="text-h6 cursor-pointer">{{ trans("设置") }}</span>
-    </span>
+    <TopBack :title="trans('波次管理')"></TopBack>
 
     <!-- 单品波次设置区域 -->
     <div class="main-table">

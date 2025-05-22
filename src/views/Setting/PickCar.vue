@@ -1,6 +1,7 @@
 <template>
   <div class="warehouse-page">
-    <div class="row justify-end"></div>
+    <TopBack :title="trans('拣货车管理')"></TopBack>
+    <!-- <div class="row justify-end"></div> -->
 
     <div class="main-table">
       <div class="row q-mb-md">

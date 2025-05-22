@@ -1,5 +1,7 @@
 <template>
   <div class="goods-area-page">
+    <TopBack :title="trans('货区管理')"></TopBack>
+
     <!-- 筛选区域 -->
     <div class="search-bar">
       <div class="row q-col-gutter-sm">
@@ -424,5 +426,9 @@ const handleSubmit = async () => {
 }
 .main-table {
   padding-top: 10px;
+}
+
+.search-bar {
+  margin-top: 10px;
 }
 </style>

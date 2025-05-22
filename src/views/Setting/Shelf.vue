@@ -1,5 +1,7 @@
 <template>
   <div class="shelf-page">
+    <TopBack :title="trans('货架管理')"></TopBack>
+
     <div class="main-table">
       <q-btn
         color="primary"
