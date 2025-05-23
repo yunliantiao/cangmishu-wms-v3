@@ -63,6 +63,24 @@
             class="filter-item"
           />
         </div>
+
+        <div class="col-auto">
+          <q-select
+            outlined
+            dense
+            v-model="pageParams.logistics_channels_ids"
+            :options="logisticsOptions"
+            option-label="label"
+            option-value="value"
+            map-options
+            emit-value
+            multiple
+            clearable
+            :label="trans('物流')"
+            class="filter-item"
+          />
+        </div>
+
         <div class="col-auto">
           <DatePickerNew
             v-model:start_date="pageParams.start_date"
@@ -248,6 +266,27 @@
                 <div>{{ props.row.recipient.address1 }}</div>
               </div>
             </q-td>
+
+            <q-td key="logistics_channels_name" :props="props">
+              <div
+                class="logistics-item"
+                v-for="item in props.row.packages"
+                :key="item.id"
+              >
+                <div>{{ item.logistics_channels_name }}</div>
+                <div>
+                  <span
+                    v-if="item.tracking_number"
+                    class="hover-copy"
+                    style="color: #5745c5"
+                    @click="$copy(item.tracking_number)"
+                    >{{ item.tracking_number }}</span
+                  >
+                  <span v-else>--</span>
+                </div>
+              </div>
+            </q-td>
+
             <q-td key="time" :props="props">
               <div class="text-grey-8">
                 <div>{{ trans("创建") }}: {{ props.row.created_at }}</div>
@@ -362,6 +401,7 @@ import DatePickerNew from "@/components/DatePickerNew/Index.vue";
 import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 import trans from "@/i18n";
 import Message from "@/utils/message.js";
+import logisticsApi from "@/api/logistics";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -509,11 +549,14 @@ const isPrint = (row, type) => {
 // 选中行
 const selectedRows = ref([]);
 
+const logisticsOptions = ref([]);
+
 // 分页参数
 const pageParams = reactive({
   page: 1,
   per_page: 10,
   total: 0,
+  logistics_channels_ids: [],
   source: "",
   platform: "",
   order_status: "",
@@ -544,6 +587,12 @@ const columns = ref([
     name: "recipient",
     label: trans("收货人&地区"),
     field: "recipient",
+    align: "left",
+  },
+  {
+    name: "logistics_channels_name",
+    label: trans("物流"),
+    field: "logistics_channels_name",
     align: "left",
   },
   {
@@ -637,6 +686,7 @@ const resetSearch = () => {
   pageParams.order_status = "";
   pageParams.intercept_status = "";
   pageParams.date_type = "created_at";
+  pageParams.logistics_channels_ids = [];
 
   getOutboundOrder();
 };
@@ -649,6 +699,9 @@ const getOutboundOrder = () => {
   let params = {
     ...pageParams,
   };
+  if (!pageParams.logistics_channels_ids) {
+    params.logistics_channels_ids = [];
+  }
   outApi.getShipments(params).then((res) => {
     if (res.success) {
       packages.value = res.data.items;
@@ -792,7 +845,16 @@ const handleDeletePackage = (row) => {
 onMounted(() => {
   // 初始化逻辑，可以加载数据等
   getOutboundOrder();
+  getLogistics();
 });
+
+const getLogistics = async () => {
+  const { data } = await logisticsApi.getAllLogistics();
+  logisticsOptions.value = data.map((item) => ({
+    label: item.name,
+    value: item.id,
+  }));
+};
 
 const handleBatchPrint = async () => {
   console.log("批量打印");
@@ -1045,6 +1107,10 @@ const handlePrintAll = async () => {
 
 .print-text {
   margin-left: 10px;
+}
+
+.logistics-item {
+  max-width: 120px;
 }
 </style>
 

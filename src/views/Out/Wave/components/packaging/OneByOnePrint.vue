@@ -215,7 +215,7 @@
                 v-if="props.row.is_print_shipping_label"
                 @click="handleNotPrint(props.row)"
               >
-                <img src="@/assets/images/set-not-print.png" />
+                <img src="@/assets/images/set-print.png" />
                 <q-tooltip>{{ trans("标记为未打印") }}</q-tooltip>
               </q-btn>
               <q-btn
@@ -483,8 +483,15 @@ const handlePrint = async (row) => {
     },
   }).onOk(async () => {
     setPrint(row, true);
-    componentData.successList.push(row);
-    componentData.pendingList = [];
+    let isSuccessItem = componentData.successList.find(
+      (row) => row.package_number == row.package_number
+    );
+    if (isSuccessItem) {
+      row.is_print_shipping_label = true;
+    } else {
+      componentData.successList.push(row);
+      componentData.pendingList = [];
+    }
   });
 };
 

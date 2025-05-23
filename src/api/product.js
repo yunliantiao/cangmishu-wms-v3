@@ -35,4 +35,7 @@ export default {
 
     // 批量取消标签
     batchCancelTag: (data) => PUT("products/batch-remove-tag", data), // 批量取消标签
+
+    // 批量绑定包材
+    batchBindMaterial: (data) => PUT("products/batch-update-material", data), // 批量绑定包材
 }

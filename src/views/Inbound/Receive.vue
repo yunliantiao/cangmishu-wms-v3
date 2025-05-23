@@ -166,6 +166,11 @@ const products = ref([]);
 // 货架位选项
 const shelfLocationOptions = ref([]);
 
+// const enableLocationOptions = computed(() => {
+
+//   return shelfLocationOptions.value.filter((item) => !item.ignore);
+// });
+
 // 添加批量设置尺寸和重量对话框状态
 const showDimensionsDialog = ref(false);
 const showWeightDialog = ref(false);

@@ -81,6 +81,23 @@
             class="filter-item"
           />
         </div>
+
+        <div class="col-auto">
+          <q-select
+            outlined
+            dense
+            v-model="pageParams.logistics_channels_ids"
+            :options="logisticsOptions"
+            option-label="label"
+            option-value="value"
+            map-options
+            emit-value
+            multiple
+            clearable
+            :label="trans('物流')"
+            class="filter-item"
+          />
+        </div>
         <DatePicker
           v-model:date_type="pageParams.date_type"
           v-model:start_date="pageParams.start_date"
@@ -147,6 +164,16 @@
             </q-list>
           </q-menu>
         </q-btn>
+
+        <q-btn
+          color="primary"
+          :label="trans('批量发货')"
+          flat
+          icon="local_shipping"
+          class="table-icon"
+          v-if="statusNav == 'pending_shipment'"
+          @click="handleBatchSendOutboundOrder"
+        />
 
         <!-- <q-btn-dropdown
           color="primary"
@@ -280,6 +307,27 @@
                 <div>{{ props.row.recipient.address1 }}</div>
               </div>
             </q-td>
+
+            <q-td key="logistics_channels_name" :props="props">
+              <div
+                class="logistics-item"
+                v-for="item in props.row.packages"
+                :key="item.id"
+              >
+                <div>{{ item.logistics_channels_name }}</div>
+                <div>
+                  <span
+                    v-if="item.tracking_number"
+                    class="hover-copy"
+                    style="color: #5745c5"
+                    @click="$copy(item.tracking_number)"
+                    >{{ item.tracking_number }}</span
+                  >
+                  <span v-else>--</span>
+                </div>
+              </div>
+            </q-td>
+
             <q-td key="time" :props="props">
               <div class="text-grey-8">
                 <div>{{ trans("创建") }} : {{ props.row.created_at }}</div>
@@ -493,6 +541,7 @@ import DatePicker from "@/components/DatePickerNew/Index.vue";
 import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 import trans from "@/i18n";
 import Message from "@/utils/message";
+import logisticsApi from "@/api/logistics";
 
 const $q = useQuasar();
 const router = useRouter();
@@ -627,6 +676,9 @@ const selectedRows = ref([]);
 // 状态导航
 const statusNav = ref("");
 
+// 物流组
+const logisticsOptions = ref([]);
+
 // 分页参数
 const pageParams = reactive({
   page: 1,
@@ -642,6 +694,7 @@ const pageParams = reactive({
   end_date: "",
   search_type: "package_number",
   keywords: "",
+  logistics_channels_ids: [],
 });
 
 // 表格数据
@@ -665,6 +718,14 @@ const columns = ref([
     field: "recipient",
     align: "left",
   },
+
+  {
+    name: "logistics_channels_name",
+    label: trans("物流"),
+    field: "logistics_channels_name",
+    align: "left",
+  },
+
   {
     name: "time",
     label: trans("时间"),
@@ -699,6 +760,14 @@ const statusColorMap = {
   exception: { bg: "green-1", text: "green" },
 };
 
+const getLogistics = async () => {
+  const { data } = await logisticsApi.getAllLogistics();
+  logisticsOptions.value = data.map((item) => ({
+    label: item.name,
+    value: item.id,
+  }));
+};
+
 // 处理状态导航切换
 const handleStatusNav = (status) => {
   statusNav.value = status;
@@ -716,6 +785,7 @@ const resetSearch = () => {
   pageParams.order_status = "";
   pageParams.intercept_status = "";
   pageParams.date_type = "created_at";
+  pageParams.logistics_channels_ids = [];
 
   getOutboundOrder();
 };
@@ -729,6 +799,11 @@ const getOutboundOrder = () => {
   let params = {
     ...pageParams,
   };
+
+  if (!pageParams.logistics_channels_ids) {
+    params.logistics_channels_ids = [];
+  }
+
   outApi.getOutboundOrder(params).then((res) => {
     if (res.success) {
       packages.value = res.data.items;
@@ -865,7 +940,7 @@ const getCustomerList = async () => {
 onMounted(() => {
   // 初始化逻辑，可以加载数据等
   getOutboundOrder();
-  // getCustomerList();
+  getLogistics();
 });
 
 const getIsExamine = (row) => {
@@ -892,6 +967,35 @@ const handleExportByType = async (type) => {
   }
 
   window.open(res.data.data, "_blank");
+};
+
+const handleBatchSendOutboundOrder = () => {
+  console.log("批量发货");
+  if (!selectedRows.value.length) {
+    Message.notify(trans("请选择订单"));
+    return;
+  }
+  $q.dialog({
+    title: trans("提示"),
+    message: trans("确定批量发货吗？"),
+    cancel: true,
+    persistent: true,
+    ok: {
+      label: trans("确定"),
+      color: "primary",
+    },
+    cancel: {
+      label: trans("取消"),
+      color: "grey-7",
+    },
+  }).onOk(async () => {
+    let package_ids = [];
+    selectedRows.value.forEach((item) => {
+      package_ids.push(...item.packages.map((pa) => pa.id));
+    });
+    await outApi.handleBatchSendOutboundOrder({ package_ids });
+    getOutboundOrder();
+  });
 };
 </script>
 
@@ -1060,5 +1164,9 @@ const handleExportByType = async (type) => {
   font-size: 14px;
   text-indent: 16px;
   padding-top: 10px;
+}
+
+.logistics-item {
+  max-width: 120px;
 }
 </style>

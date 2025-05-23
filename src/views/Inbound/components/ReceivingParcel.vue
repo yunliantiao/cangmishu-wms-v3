@@ -1,13 +1,30 @@
 <template>
   <div class="products-section bg-white rounded-borders">
     <div class="table-head">
-      <span>
-        {{ trans("收货商品") }}
-      </span>
+      <div class="left-title">
+        <div>
+          {{ trans("收货商品") }}
+        </div>
+        <span class="table-number">
+          {{ trans("商品类目/商品总数") }} : {{ totalItems }} /{{ totalItems }}
+        </span>
+      </div>
 
-      <span class="table-number">
+      <div class="right_input">
+        <img src="@/assets/images/scan.png" alt="" />
+        <q-input
+          v-model="keywords"
+          :placeholder="trans('请扫描商品编码')"
+          dense
+          @keyup.enter="handleScan"
+          borderless
+          class="input-spacing"
+        />
+      </div>
+
+      <!-- <span>
         {{ trans("商品类目/商品总数") }} : {{ totalItems }} /{{ totalItems }}
-      </span>
+      </span> -->
     </div>
 
     <!-- 商品表格 -->
@@ -401,6 +418,7 @@
 import { ref, reactive, computed, defineProps, defineEmits, watch } from "vue";
 import { useQuasar } from "quasar";
 import trans from "@/i18n";
+import { playBeep } from "@/utils/voice.js";
 
 const props = defineProps({
   products: {
@@ -436,7 +454,7 @@ const productScanCode = ref("");
 const scanType = ref(trans("逐个扫描"));
 const scanTypeOptions = [trans("逐个扫描"), trans("批量扫描")];
 const selectedProducts = ref([]);
-const viewMode = ref("list");
+const keywords = ref("");
 const productScanning = ref(false);
 const showDimensionsDialog = ref(false);
 const showWeightDialog = ref(false);
@@ -898,7 +916,7 @@ watch(
 );
 
 const qtyInputBlur = async (row, index) => {
-  if (row.put_away_quantity > row.quantity) {
+  if (row.put_away_quantity > row.quantity && !row.ignore) {
     await $q
       .dialog({
         title: trans("提示"),
@@ -914,10 +932,31 @@ const qtyInputBlur = async (row, index) => {
           color: "grey-7",
         },
       })
+      .onOk(() => {
+        row.ignore = true;
+      })
       .onCancel(() => {
         row.put_away_quantity = "";
       });
   }
+};
+
+const handleScan = () => {
+  let bool = false;
+
+  console.log("props.products", props.products);
+
+  props.products.forEach((product) => {
+    if (product.product_spec_sku === keywords.value) {
+      bool = true;
+      if (!product.put_away_quantity) {
+        product.put_away_quantity = 0;
+      }
+      product.put_away_quantity = Number(product.put_away_quantity) + 1;
+    }
+  });
+
+  playBeep(bool);
 };
 
 // 提供对象给父组件
@@ -962,6 +1001,7 @@ defineExpose({
 .products-section {
   // border: 1px solid rgba(0, 0, 0, 0.12);
   // box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  // padding-top: 10px;
 
   .product-scan-input {
     .q-field__control {
@@ -1110,18 +1150,34 @@ defineExpose({
 .table-head {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
   margin-bottom: 20px;
-  span {
-    &:nth-child(1) {
-      font-weight: bold;
-      font-size: 16px;
-      color: #1f1f1f;
-    }
-    &:nth-child(2) {
+  .left-title {
+    font-size: 16px;
+    font-weight: bold;
+    span {
+      font-size: 14px;
       font-weight: 500;
-      font-size: 12px;
       color: #5745c5;
+    }
+  }
+
+  .right_input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 500px;
+    border: 2px solid #5745c5;
+    padding: 2px 10px;
+    border-radius: 9px;
+    img {
+      width: 26px;
+      height: 26px;
+    }
+    .input-spacing {
+      flex: 1;
+      font-size: 16px;
     }
   }
 }

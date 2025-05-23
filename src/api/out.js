@@ -70,4 +70,7 @@ export default {
 
     // 批量打印拣货单
     handleBatchPrintPickLabel: (data) => POST(`packages/batch-print-pick-label`, data),
+
+    // 批量发货
+    handleBatchSendOutboundOrder: (data) => POST(`packages/batch-ships`, data),
 }

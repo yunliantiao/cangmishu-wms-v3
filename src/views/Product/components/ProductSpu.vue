@@ -16,6 +16,22 @@
           </q-item>
         </q-list>
       </q-btn-dropdown>
+
+      <q-btn-dropdown
+        color="primary"
+        flat
+        :label="trans('包材')"
+        class="filter-btn"
+      >
+        <q-list>
+          <q-item clickable v-close-popup @click="bindMaterial">
+            <q-item-section>{{ trans("绑定包材") }}</q-item-section>
+          </q-item>
+          <q-item clickable v-close-popup @click="cancelMaterial">
+            <q-item-section>{{ trans("取消包材") }}</q-item-section>
+          </q-item>
+        </q-list>
+      </q-btn-dropdown>
     </div>
     <!-- 表格 -->
     <q-table
@@ -170,11 +186,15 @@
             <q-btn
               flat
               round
+              class="table-icon"
               color="primary"
-              icon="edit"
               size="sm"
               @click="handleEdit(props.row)"
-            />
+            >
+              <img src="@/assets/images/edit.png" />
+              <q-tooltip>{{ trans("编辑") }}</q-tooltip>
+            </q-btn>
+
             <!-- <q-btn
               flat
               round
@@ -285,6 +305,10 @@
     </q-table>
 
     <batchTag ref="batchTagRef" @confirm="handleTagConfirm"></batchTag>
+    <batchMaterial
+      ref="batchMaterialRef"
+      @confirm="handleMaterialConfirm"
+    ></batchMaterial>
   </div>
 </template>
 
@@ -297,16 +321,31 @@ import Message from "@/utils/message.js";
 import trans from "@/i18n";
 import batchTag from "./batchTag.vue";
 import ProductApi from "@/api/product";
+import batchMaterial from "./batchMaterial.vue";
 
 const router = useRouter();
 const $q = useQuasar();
 const batchTagRef = ref(null);
 const tagList = ref([]);
+const batchMaterialRef = ref(null);
 
 onMounted(() => {
+  getMaterialList();
   // batchTagRef.value.open();
   getTagList();
 });
+
+const materialList = ref([]);
+
+const getMaterialList = async () => {
+  const { data } = await ProductApi.getMaterialsList();
+  materialList.value = data.map((row) => {
+    return {
+      label: row.name,
+      value: row.id,
+    };
+  });
+};
 
 const getTagList = async () => {
   const { data } = await ProductApi.getTagList();
@@ -533,7 +572,7 @@ const cancelTag = () => {
     return;
   }
   $q.dialog({
-    title: trans("确认取消标签"),
+    title: trans("提示"),
     message: trans("确定要取消选中的 {count} 个商品的标签吗？", {
       count: selected.value.length,
     }),
@@ -563,6 +602,49 @@ const handleTagConfirm = async (tagIds) => {
   });
   Message.notify(trans("添加标签成功"));
   emit("refresh"); // 刷新列表
+};
+
+const bindMaterial = () => {
+  if (selected.value.length === 0) {
+    Message.notify(trans("请选择商品"));
+    return;
+  }
+  batchMaterialRef.value.open(materialList.value);
+};
+
+const cancelMaterial = () => {
+  if (selected.value.length === 0) {
+    Message.notify(trans("请选择商品"));
+    return;
+  }
+  $q.dialog({
+    title: trans("提示"),
+    message: trans("确定要取消选中的 {count} 个商品的包材吗？", {
+      count: selected.value.length,
+    }),
+    cancel: {
+      label: trans("取消"),
+      flat: true,
+    },
+    ok: {
+      label: trans("确认"),
+      color: "primary",
+    },
+  }).onOk(async () => {
+    await ProductApi.batchBindMaterial({
+      product_ids: selected.value.map((item) => item.id),
+      material_id: 0,
+    });
+    emit("refresh"); // 刷新列表
+  });
+};
+
+const handleMaterialConfirm = async (materialId) => {
+  await ProductApi.batchBindMaterial({
+    product_ids: selected.value.map((item) => item.id),
+    material_id: materialId,
+  });
+  emit("refresh");
 };
 
 // 暴露选中数据和方法给父组件

@@ -67,4 +67,6 @@ export default {
   // updateSpecial: (id, data) => PUT(`logistics/special-rules/${id}`, data), // 修改特殊计费
   // delSpecial: (id) => DEL(`logistics/special-rules/${id}`), // 删除特殊计费
   // getSpecialInfo: (id) => GET(`logistics/special-rules/${id}`), // 特殊计费详情
+
+  getAllLogistics: (data) => GET(`logistics/providers/all-channels`, data), // 获取所有物流
 };

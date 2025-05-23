@@ -1,18 +1,18 @@
 <template>
   <div class="parcel-receipt">
-    <div class="section-header q-px-lg q-py-md">
+    <!-- <div class="section-header">
       <div class="row justify-between items-center q-mb-md">
         <div class="text-subtitle1 text-weight-medium">
           {{ trans("包裹收货") }}
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- 收货列表 -->
-    <div class="q-pa-md">
-      <div class="row justify-between items-center q-mb-sm">
+    <div>
+      <!-- <div class="row justify-between items-center q-mb-sm">
         <div class="row items-center">
-          <!-- <span>选择 {{ selectedBoxes.length }} </span>
+          <span>选择 {{ selectedBoxes.length }} </span>
           <q-btn-dropdown
             color="primary"
             label="批量操作"
@@ -29,25 +29,22 @@
                 <q-item-section>打印全部</q-item-section>
               </q-item>
             </q-list>
-          </q-btn-dropdown> -->
+          </q-btn-dropdown>
         </div>
 
         <div class="row items-center">
-          <!-- <div class="q-mr-md">
-            <q-checkbox v-model="showReceived" label="显示已收货箱子" />
-          </div> -->
+         
           <span class="text-weight-medium q-mr-sm"
             >{{ trans("箱子总数") }}: {{ parcels.length }}</span
           >
         </div>
-      </div>
+      </div> -->
 
       <q-table
         :rows="filteredParcels"
         :columns="columns"
         row-key="id"
         flat
-        bordered
         selection="multiple"
         v-model:selected="selectedBoxes"
         :pagination="{ rowsPerPage: 50 }"
@@ -60,13 +57,13 @@
             </q-th>
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
               {{ col.label }}
-              <div
+              <span
                 v-if="col.subLabel"
-                class="text-caption text-primary q-mt-xs cursor-pointer"
+                class="text-caption text-primary cursor-pointer font-bold"
                 @click="fillAllQuantities"
               >
-                {{ col.subLabel }}
-              </div>
+                ({{ col.subLabel }})
+              </span>
             </q-th>
           </q-tr>
         </template>
@@ -354,7 +351,6 @@ defineExpose({
   :deep(.q-table th) {
     font-weight: 500;
     font-size: 14px;
-    background-color: #f5f7fa;
   }
 
   :deep(.q-table td) {
@@ -364,6 +360,7 @@ defineExpose({
 
   .product-item {
     padding: 8px 0;
+    height: 80px;
 
     &:not(:last-child) {
       border-bottom: 1px dashed rgba(0, 0, 0, 0.1);

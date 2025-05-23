@@ -172,6 +172,23 @@
           </div>
 
           <div class="col-12 info-row">
+            <div class="info-label">{{ trans("包材") }}</div>
+            <div class="info-value">
+              <q-select
+                v-model="product.packaging_material_id"
+                :options="materialList"
+                clearable
+                :label="trans('请选择包材')"
+                outlined
+                dense
+                emit-value
+                style="width: 300px"
+                map-options
+              />
+            </div>
+          </div>
+
+          <div class="col-12 info-row">
             <div class="info-label">{{ trans("客户") }}</div>
             <div class="info-value">{{ product.customer?.name || "" }}</div>
           </div>
@@ -282,6 +299,7 @@ const product = ref({
   customs_currency: "",
   customs_type: "",
   specs: [],
+  packaging_material_id: "",
 });
 
 // 实际尺寸和重量，用于避免直接修改可能不存在的嵌套对象
@@ -330,6 +348,7 @@ const categoryTreeOptions = computed(() => {
 const categoryOptions = ref([]);
 const selectedCategory = ref(null);
 const activeSubCategory = ref(null);
+const materialList = ref([]);
 
 // 获取根分类
 const rootCategories = computed(() => {
@@ -502,11 +521,22 @@ const checkMenuPosition = () => {
   );
 };
 
+const getMaterialList = async () => {
+  const { data } = await productApi.getMaterialsList();
+  materialList.value = data.map((row) => {
+    return {
+      label: row.name,
+      value: row.id,
+    };
+  });
+};
+
 // 组件挂载和卸载时添加/移除事件监听
 onMounted(() => {
   getProduct();
   getCategoryTree();
   customsTypes();
+  getMaterialList();
 
   // 添加全局点击事件监听
   document.addEventListener("click", handleOutsideClick);
@@ -531,6 +561,10 @@ const getProduct = () => {
       }
       if (typeof res.data.allow_order === "boolean") {
         res.data.allow_order = res.data.allow_order ? "true" : "false";
+      }
+
+      if (!res.data.packaging_material_id) {
+        res.data.packaging_material_id = "";
       }
 
       product.value = res.data;
@@ -623,6 +657,7 @@ const saveProduct = async () => {
     customs_name_en: product.value.customs_name_en,
     customs_price: product.value.customs_price,
     customs_currency: product.value.customs_currency,
+    packaging_material_id: product.value.packaging_material_id || "",
   });
   if (res.success) {
     $q.notify({
