@@ -772,7 +772,7 @@ const statusColorMap = {
   picking: { bg: "orange-1", text: "orange" },
   picked: { bg: "purple-1", text: "purple" },
   shipped: { bg: "teal-1", text: "teal" },
-  exception: { bg: "green-1", text: "green" },
+  exception: { bg: "red", text: "white" },
 };
 
 const getLogistics = async () => {
