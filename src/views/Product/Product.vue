@@ -1,5 +1,7 @@
 <template>
   <div class="product">
+    <TopBack :title="trans('商品')"></TopBack>
+
     <div class="search-bar">
       <!-- 搜索过滤区域 -->
       <div class="row q-col-gutter-sm">

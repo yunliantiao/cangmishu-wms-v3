@@ -2,9 +2,8 @@
   <div class="move-create-page">
     <div class="page-header">
       <div class="left-back">
-        <!-- <q-btn flat dense icon="arrow_back" @click="$router.back()" /> -->
-        <img src="@/assets/images/back.png" />
-        <div class="text-h6 q-ml-sm">{{ trans("创建调整单") }}</div>
+        <q-btn flat dense icon="arrow_back" @click="$router.back()" />
+        <div class="text-h6">{{ trans("创建调整单") }}</div>
       </div>
       <div class="right-btn">
         <q-btn
@@ -777,8 +776,7 @@ const handleBatchSetQuantity = () => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 calc((100vw - 1400px) / 2);
-    height: 80px;
+    padding: 16px;
     background: #ffffff;
     border-radius: 0px 0px 0px 0px;
 
@@ -798,7 +796,7 @@ const handleBatchSetQuantity = () => {
       display: flex;
       gap: 20px;
       .btn {
-        width: 130px;
+        min-width: 130px;
         height: 44px;
         border-radius: 9px 9px 9px 9px;
       }
@@ -807,7 +805,6 @@ const handleBatchSetQuantity = () => {
 
   .form-box {
     padding: 20px;
-    width: 1400px;
     margin: 20px auto;
     background: #ffffff;
     border-radius: 16px 16px 16px 16px;

@@ -1,5 +1,7 @@
 <template>
   <div class="signing-record-page">
+    <TopBack :title="trans('签单记录')"></TopBack>
+
     <!-- 筛选栏 -->
     <div class="search-bar">
       <div class="row q-col-gutter-sm">
@@ -42,7 +44,9 @@
       >
         <template v-slot:body="props">
           <q-tr :props="props">
-            <q-td>{{ props.row.deliver_sign_number }}</q-td>
+            <q-td>
+              <Copy :text="props.row.deliver_sign_number"></Copy>
+            </q-td>
             <q-td>{{ props.row.logistics_group_name || "--" }}</q-td>
             <q-td>{{ props.row.package_quantity }}</q-td>
             <q-td>{{ props.row.created_at }}</q-td>

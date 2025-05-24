@@ -59,11 +59,17 @@
                 class="flex-c-start-start gap-10"
                 style="white-space: normal; width: 300px"
               >
-                <div
+                <!-- <div
                   class="text-primary hover-copy"
                   @click="$copy(props.row.sku)"
                 >
                   SKU: {{ props.row?.sku || "-" }}
+                </div> -->
+
+                <div class="text-primary">
+                  SKU:
+                  <Copy v-if="props.row?.sku" :text="props.row?.sku"></Copy>
+                  <span v-else>--</span>
                 </div>
                 <div class="text-overflow-1">
                   {{ props.row?.product?.name || "-" }}

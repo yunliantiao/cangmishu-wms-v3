@@ -1,5 +1,7 @@
 <template>
   <div class="wave-list-page">
+    <TopBack :title="trans('波次列表')"></TopBack>
+
     <!-- 顶部标签页 -->
     <div class="search-bar" style="padding-top: 10px">
       <div class="q-mb-md">
@@ -155,9 +157,10 @@
               <q-checkbox v-model="props.selected" size="sm" />
             </q-td>
             <q-td key="wave_number" :props="props">
-              <span class="hover-copy" @click="$copy(props.row.wave_number)">
+              <Copy :text="props.row.wave_number"></Copy>
+              <!-- <span class="hover-copy" @click="$copy(props.row.wave_number)">
                 {{ props.row.wave_number }}
-              </span>
+              </span> -->
             </q-td>
             <!-- <q-td key="warehouse" :props="props">
             {{ props.row.warehouse }}

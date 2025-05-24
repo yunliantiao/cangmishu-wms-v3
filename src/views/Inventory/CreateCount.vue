@@ -7,17 +7,17 @@
           {{ id ? trans("编辑盘点单") : trans("创建盘点单") }}
         </div>
       </div>
-      <div>
+      <div class="right-btn">
         <q-btn
           outline
           :label="trans('取消')"
           color="grey"
-          class="q-mr-sm"
+          class="btn"
           @click="$router.back()"
         />
         <q-btn
           outline
-          class="q-mr-sm"
+          class="btn"
           :label="trans('保存')"
           color="primary"
           :loading="$store.state.btnLoading"
@@ -27,15 +27,16 @@
           unelevated
           :label="trans('开始盘点')"
           color="primary"
+          class="btn"
           :loading="$store.state.btnLoading"
           @click="handleSave('start')"
         />
       </div>
     </div>
-    <div class="q-mb-md">
+    <div class="form-box">
       <!-- 基本信息 -->
-      <div class="bg-white rounded-borders q-pa-lg q-mb-md">
-        <div class="text-subtitle1 q-mb-md">{{ trans("基本信息") }}</div>
+      <div class="bg-white rounded-borders q-mb-md">
+        <div class="form-title">{{ trans("基本信息") }}</div>
         <q-form ref="formRef" class="q-gutter-md" @submit="handleSave">
           <div class="row q-mb-md">
             <div class="col-4">
@@ -46,6 +47,8 @@
                 :label="trans('盘点类型')"
                 @update:model-value="handleTypeChange"
                 :rules="rules.type"
+                class="filter-item global-mt"
+                dense
                 emit-value
                 map-options
               >
@@ -54,7 +57,7 @@
                 </template>
               </q-select>
             </div>
-            <div class="col-4 q-ml-xl">
+            <div class="col-4 q-ml-xl global-mt">
               <div>{{ trans("0库存是否参加盘点") }}</div>
               <q-radio
                 v-model="formData.is_zero_counting"
@@ -82,14 +85,14 @@
           </div>
         </q-form>
       </div>
-      <div class="bg-white rounded-borders q-pa-lg">
-        <div class="row items-center justify-between q-mb-lg">
-          <div class="text-subtitle1">{{ trans("盘点信息") }}</div>
+      <div class="bg-white rounded-borders">
+        <div class="row items-center justify-between">
+          <!-- <div class="text-subtitle1">{{ trans("盘点信息") }}</div> -->
           <q-btn
             outline
             color="primary"
+            flat
             :label="trans('选择商品')"
-            icon="add"
             @click="selectGoods"
           />
         </div>
@@ -421,7 +424,6 @@ onMounted(() => {
       font-weight: 500;
       font-size: 14px;
       color: rgba(0, 0, 0, 0.85);
-      background-color: #f5f7fa;
       padding: 16px;
     }
   }
@@ -446,6 +448,28 @@ onMounted(() => {
   background-color: #f5f7fa;
   border-radius: 4px;
   font-weight: 500;
+}
+
+.right-btn {
+  display: flex;
+  gap: 20px;
+  .btn {
+    min-width: 130px;
+    height: 44px;
+    border-radius: 9px 9px 9px 9px;
+  }
+}
+
+.form-box {
+  padding: 20px;
+  margin: 20px auto;
+  background: #ffffff;
+  border-radius: 16px 16px 16px 16px;
+  .form-title {
+    font-weight: 600;
+    font-size: 20px;
+    color: #1f1f1f;
+  }
 }
 </style>
 

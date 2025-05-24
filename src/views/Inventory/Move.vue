@@ -1,5 +1,7 @@
 <template>
   <div class="move-page">
+    <TopBack :title="trans('库内移货')"></TopBack>
+
     <!-- 搜索过滤区域 -->
     <div class="search-bar">
       <div class="row q-col-gutter-sm">
@@ -109,7 +111,7 @@
           selection="multiple"
           separator="horizontal"
           class="inventory-table-style"
-          :loading="$store.state.btnLoading"
+          :loading="loading"
           flat
         >
           <template v-slot:header="props">
@@ -129,10 +131,10 @@
                 <q-td colspan="8">
                   <div class="row group-header items-center">
                     <div class="col-12">
-                      <span class="info-item q-mr-md"
-                        >{{ trans("移库单号") }}:
-                        {{ props.row.system_order_number }}</span
-                      >
+                      <span class="info-item q-mr-md">
+                        {{ trans("移库单号") }}:
+                        <Copy :text="props.row.system_order_number"></Copy>
+                      </span>
                     </div>
                   </div>
                 </q-td>
@@ -510,7 +512,7 @@ const searchParams = ref({
   total: 0,
 });
 
-const operatorOptions = [];
+const loading = ref(false);
 
 const moveTypeOptions = [{ label: trans("商品移货"), value: "normal" }];
 
@@ -591,11 +593,13 @@ const handleExpand = (row) => {
 };
 
 const getMoveOrderList = () => {
+  loading.value = true;
   inventoryApi.getMoveOrderList(searchParams.value).then((res) => {
     if (res.success) {
       moveList.value = res.data.items;
       searchParams.value.total = res.data.meta.total;
     }
+    loading.value = false;
   });
 };
 getMoveOrderList();

@@ -20,4 +20,7 @@ export default {
 
     // 强制完结
     inboundFaceClose: (id) => POST(`inbound/${id}/force-complete`),
+
+    // 入库单统计
+    getInboundStatistics: (data) => GET(`inbound/count`, data),
 }

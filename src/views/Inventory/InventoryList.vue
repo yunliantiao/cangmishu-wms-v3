@@ -1,5 +1,6 @@
 <template>
   <div class="inventory-page">
+    <TopBack :title="trans('库存列表')"></TopBack>
     <!-- 顶部标签页 -->
     <div class="tabs-container q-pa-none">
       <div class="search-bar q-pa-md">
@@ -174,11 +175,8 @@
                           class="product-img"
                         />
                         <div class="info-container">
-                          <div
-                            class="text-primary hover-copy"
-                            @click="$copy(props.row.sku)"
-                          >
-                            SKU: {{ props.row?.sku }}
+                          <div class="text-primary">
+                            SKU: <Copy :text="props.row?.sku"></Copy>
                           </div>
                           <div class="text-overflow-1">
                             {{ props.row?.product_name }}

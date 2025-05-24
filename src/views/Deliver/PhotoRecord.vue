@@ -1,5 +1,7 @@
 <template>
   <div class="photo-record-page">
+    <TopBack :title="trans('拍照记录')"></TopBack>
+
     <div class="search-bar">
       <div class="row q-col-gutter-sm">
         <q-select
@@ -68,19 +70,23 @@
                 </template>
               </q-img>
             </q-td>
-            <q-td>{{ props.row.package_number }}</q-td>
+            <q-td>
+              <Copy :text="props.row.package_number"></Copy>
+            </q-td>
             <!-- <q-td>{{ props.row.warehouse }}</q-td> -->
             <q-td>{{ props.row.customer?.name }}</q-td>
             <q-td>
               <div>{{ props.row.logistics_providers_code }}</div>
               <div class="text-grey-7">
-                {{ props.row.system_order_number }}
+                <Copy :text="props.row.system_order_number"></Copy>
               </div>
               <div v-if="props.row.extra_logistics" class="text-grey-7">
                 {{ props.row.extra_logistics }}
               </div>
             </q-td>
-            <q-td>{{ props.row.order_number }}</q-td>
+            <q-td>
+              <Copy :text="props.row.order_number"></Copy>
+            </q-td>
             <q-td>{{ props.row.photo_time }}</q-td>
             <q-td>{{ props.row.created_at }}</q-td>
           </q-tr>

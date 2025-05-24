@@ -88,12 +88,12 @@ const constantRouterMap = [
         name: 'wavePigeonholes',
         component: () => import('@/views/Out/Wave/Pigeonholes.vue'),
     },
-    // 创建调整单
-    {
-        path: '/adjust/create',
-        name: 'adjustCreate',
-        component: () => import('@/views/Inventory/CreateAdjust.vue'),
-    },
+    // // 创建调整单
+    // {
+    //     path: '/adjust/create',
+    //     name: 'adjustCreate',
+    //     component: () => import('@/views/Inventory/CreateAdjust.vue'),
+    // },
     // 扫描发货
     {
         path: '/scan/shipment',

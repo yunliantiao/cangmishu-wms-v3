@@ -71,7 +71,7 @@
           <template v-slot:body="props">
             <q-tr :props="props">
               <q-td key="areaCode" :props="props">
-                {{ props.row.code }}
+                <Copy :text="props.row.code"></Copy>
               </q-td>
               <q-td key="areaType" :props="props">
                 {{

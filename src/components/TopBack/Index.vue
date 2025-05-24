@@ -31,6 +31,8 @@ const handleBack = () => {
 
 <style scoped lang="scss">
 .back-btn {
+  margin: 20px 0;
+  display: flex;
   span {
     cursor: pointer;
     display: flex;

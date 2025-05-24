@@ -51,7 +51,8 @@
               <q-checkbox v-model="props.selected" size="sm" />
             </q-td>
             <q-td key="code" :props="props">
-              {{ props.row.code }}
+              <!-- {{ props.row.code }} -->
+              <Copy :text="props.row.code"></Copy>
             </q-td>
             <q-td key="name" :props="props">
               {{ props.row.name }}

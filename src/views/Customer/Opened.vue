@@ -10,6 +10,8 @@
       </div>
     </div> -->
 
+    <TopBack :title="trans('客户')"></TopBack>
+
     <!-- 搜索栏 -->
     <div class="search-bar">
       <div class="row q-col-gutter-sm">

@@ -5,17 +5,18 @@
         <q-btn flat dense icon="arrow_back" @click="$router.back()" />
         <div class="text-h6 q-ml-sm">{{ trans("创建移货单") }}</div>
       </div>
-      <div>
+      <div class="right-btn">
         <q-btn
           outline
           :label="trans('取消')"
-          color="grey"
-          class="q-mr-sm"
+          color="primary"
+          class="btn"
           @click="$router.back()"
         />
         <q-btn
           unelevated
           color="primary"
+          class="btn"
           :label="trans('保存')"
           :loading="loading"
           @click="handleSave"
@@ -23,11 +24,11 @@
       </div>
     </div>
 
-    <div class="q-mb-md">
+    <div class="form-box">
       <!-- 基本信息 -->
-      <div class="bg-white rounded-borders q-pa-lg q-mb-md">
-        <div class="text-subtitle1 q-mb-md">{{ trans("基本信息") }}</div>
-        <div class="row q-col-gutter-x-lg q-mb-md">
+      <div class="bg-white rounded-borders">
+        <div class="form-title">{{ trans("基本信息") }}</div>
+        <div class="row q-col-gutter-x-lg">
           <div class="col-4">
             <q-select
               outlined
@@ -36,6 +37,8 @@
               :label="trans('库存类型')"
               :rules="[(val) => !!val || trans('请选择库存类型')]"
               emit-value
+              class="filter-item global-mt"
+              dense
               map-options
             >
               <template v-slot:append>
@@ -44,7 +47,7 @@
             </q-select>
           </div>
         </div>
-        <div class="row">
+        <div class="row" style="margin-top: -2px">
           <div class="col-8">
             <q-input
               outlined
@@ -58,14 +61,14 @@
       </div>
 
       <!-- 移货信息 -->
-      <div class="bg-white rounded-borders q-pa-lg">
-        <div class="row items-center justify-between q-mb-lg">
-          <div class="text-subtitle1">{{ trans("移货信息") }}</div>
+      <div class="bg-white rounded-borders global-mt">
+        <div class="row items-center justify-between">
+          <!-- <div class="text-subtitle1">{{ trans("移货信息") }}</div> -->
           <q-btn
             outline
+            flat
             color="primary"
             :label="trans('选择商品')"
-            icon="add"
             @click="showProductSelector = true"
           />
         </div>
@@ -826,7 +829,6 @@ const getTotalRowspan = (row) => {
       font-weight: 500;
       font-size: 14px;
       color: rgba(0, 0, 0, 0.85);
-      background-color: #f5f7fa;
       height: 54px;
       padding: 16px;
     }
@@ -911,6 +913,28 @@ const getTotalRowspan = (row) => {
     &:last-child {
       border-bottom: none;
     }
+  }
+}
+
+.right-btn {
+  display: flex;
+  gap: 20px;
+  .btn {
+    min-width: 130px;
+    height: 44px;
+    border-radius: 9px 9px 9px 9px;
+  }
+}
+
+.form-box {
+  padding: 20px;
+  margin: 20px auto;
+  background: #ffffff;
+  border-radius: 16px 16px 16px 16px;
+  .form-title {
+    font-weight: 600;
+    font-size: 20px;
+    color: #1f1f1f;
   }
 }
 </style>

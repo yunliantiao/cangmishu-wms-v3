@@ -1,5 +1,7 @@
 <template>
   <div class="simple-print-page">
+    <TopBack :title="trans('全部订单')"></TopBack>
+
     <!-- 状态筛选导航 -->
     <!-- <div class="search-bar top-status-nav">
       <div class="row q-gutter-x-md">
@@ -31,7 +33,11 @@
             :label="item.label"
             v-for="item in orderStatusOptions"
             :key="item.value"
-          />
+          >
+            <q-badge color="red" floating rounded v-if="getBadge(item)">
+              {{ getBadge(item) }}
+            </q-badge>
+          </q-tab>
         </q-tabs>
       </div>
 
@@ -207,7 +213,7 @@
           rowsPerPage: pageParams.per_page,
           total: pageParams.total,
         }"
-        :loading="$store.state.btnLoading"
+        :loading="loading"
       >
         <template v-slot:header="props">
           <q-tr :props="props">
@@ -226,18 +232,15 @@
               <q-td colspan="8">
                 <div class="row group-header items-center">
                   <div class="col-12">
-                    <span
-                      class="info-item q-mr-md hover-copy"
-                      @click="$copy(props.row.system_order_number)"
-                      >{{ trans("包裹号") }}:
-                      {{ props.row.system_order_number }}</span
-                    >
+                    <span class="info-item q-mr-md">
+                      {{ trans("包裹号") }}:
+                      <Copy :text="props.row.system_order_number"></Copy>
+                    </span>
 
-                    <span
-                      class="info-item q-mr-md hover-copy"
-                      @click="$copy(props.row.order_number)"
-                      >{{ trans("订单号") }}: {{ props.row.order_number }}</span
-                    >
+                    <span class="info-item q-mr-md">
+                      {{ trans("订单号") }}:
+                      <Copy :text="props.row.order_number"></Copy>
+                    </span>
 
                     <span class="info-item q-mr-md"
                       >{{ trans("客户") }}: {{ props.row.customer.name }}</span
@@ -316,13 +319,12 @@
               >
                 <div>{{ item.logistics_channels_name || "--" }}</div>
                 <div>
-                  <span
+                  <Copy
+                    class="text-primary"
+                    :text="item.tracking_number"
                     v-if="item.tracking_number"
-                    class="hover-copy"
-                    style="color: #5745c5"
-                    @click="$copy(item.tracking_number)"
-                    >{{ item.tracking_number }}</span
-                  >
+                  ></Copy>
+
                   <span v-else>--</span>
                 </div>
               </div>
@@ -549,6 +551,7 @@ const router = useRouter();
 // 抽屉相关状态
 const showOrderDialog = ref(false);
 const currentOrder = ref(null);
+const loading = ref(false);
 
 // 检查订单状态
 const isStatusActive = (status) => {
@@ -622,18 +625,22 @@ const orderStatusOptions = ref([
   {
     label: trans("全部"),
     value: "",
+    otherValue: "all",
   },
   {
     label: trans("待发货"),
     value: "pending_shipment",
+    otherValue: "pending_ship",
   },
   {
     label: trans("已发货"),
     value: "shipped",
+    otherValue: "shipped",
   },
   {
     label: trans("异常"),
     value: "exception",
+    otherValue: "exception",
   },
 ]);
 
@@ -669,6 +676,14 @@ const searchFieldOptions = computed(() => {
     },
     { label: trans("追踪号"), value: "tracking_number" },
     { label: trans("ERP单号"), value: "erp_package_number" },
+    {
+      label: trans("平台单号"),
+      value: "platform_order_number ",
+    },
+    {
+      label: trans("平台编号"),
+      value: "platform_order_id",
+    },
   ];
 });
 // 选中行
@@ -795,7 +810,9 @@ const getStatusColor = (status) => {
 };
 
 const packages = ref([]);
-const getOutboundOrder = () => {
+const statistics = reactive({});
+const getOutboundOrder = async () => {
+  loading.value = true;
   let params = {
     ...pageParams,
   };
@@ -810,6 +827,17 @@ const getOutboundOrder = () => {
       pageParams.total = res.data.meta.total;
     }
   });
+
+  const { data } = await outApi.getOrderStatistics(params);
+  // statistics = data;
+  for (const key in data) {
+    statistics[key] = data[key];
+  }
+  loading.value = false;
+};
+
+const getBadge = (tab) => {
+  return statistics[tab.otherValue];
 };
 
 // 添加 showGroupHeader 函数
@@ -1168,5 +1196,12 @@ const handleBatchSendOutboundOrder = () => {
 
 .logistics-item {
   max-width: 120px;
+}
+
+.q-tab__content {
+  padding: 0 12px !important;
+}
+:deep(.q-tab__content) {
+  padding: 0 12px !important;
 }
 </style>

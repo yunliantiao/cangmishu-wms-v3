@@ -108,6 +108,7 @@
                 <q-input
                   dense
                   borderless
+                  :placeholder="trans('长')"
                   style="height: 34px; margin: 0 !important; width: 60px"
                   type="number"
                   v-model="props.row.size_length"
@@ -118,6 +119,7 @@
                   borderless
                   style="height: 34px; margin: 0 !important; width: 60px"
                   type="number"
+                  :placeholder="trans('宽')"
                   v-model="props.row.size_width"
                   class="input-spacing"
                 />
@@ -125,6 +127,7 @@
                   dense
                   borderless
                   type="number"
+                  :placeholder="trans('高')"
                   style="height: 34px; margin: 0 !important; width: 60px"
                   v-model="props.row.size_height"
                   class="input-spacing"

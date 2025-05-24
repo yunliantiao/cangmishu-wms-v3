@@ -73,4 +73,7 @@ export default {
 
     // 批量发货
     handleBatchSendOutboundOrder: (data) => POST(`packages/batch-ships`, data),
+
+    // 获取订单统计
+    getOrderStatistics: (data) => GET(`orders/count`, data),
 }

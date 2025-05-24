@@ -1,5 +1,7 @@
 <template>
   <div class="simple-print-page">
+    <TopBack :title="trans('简易打单')"></TopBack>
+
     <!-- 搜索过滤区域 - 第一行 -->
     <div class="search-bar">
       <div class="row q-col-gutter-sm">
@@ -176,7 +178,7 @@
           rowsPerPage: pageParams.per_page,
           total: pageParams.total,
         }"
-        :loading="$store.state.btnLoading"
+        :loading="loading"
       >
         <template v-slot:header="props">
           <q-tr :props="props">
@@ -195,18 +197,15 @@
               <q-td colspan="8">
                 <div class="row group-header items-center">
                   <div class="col-12">
-                    <span
-                      class="info-item q-mr-md hover-copy"
-                      @click="$copy(props.row.system_order_number)"
-                      >{{ trans("包裹号") }}:
-                      {{ props.row.system_order_number }}</span
-                    >
+                    <span class="info-item q-mr-md">
+                      {{ trans("包裹号") }}:
+                      <Copy :text="props.row.system_order_number"></Copy>
+                    </span>
 
-                    <span
-                      class="info-item q-mr-md hover-copy"
-                      @click="$copy(props.row.order_number)"
-                      >{{ trans("订单号") }}: {{ props.row.order_number }}</span
-                    >
+                    <span class="info-item q-mr-md">
+                      {{ trans("订单号") }}:
+                      <Copy :text="props.row.order_number"></Copy>
+                    </span>
 
                     <span class="info-item q-mr-md"
                       >{{ trans("客户") }}: {{ props.row.customer.name }}</span
@@ -405,6 +404,7 @@ import logisticsApi from "@/api/logistics";
 
 const $q = useQuasar();
 const router = useRouter();
+const loading = ref(false);
 
 // 抽屉相关状态
 const showOrderDialog = ref(false);
@@ -695,6 +695,7 @@ const resetSearch = () => {
 const packages = ref([]);
 
 const getOutboundOrder = () => {
+  loading.value = true;
   selectedRows.value = [];
   let params = {
     ...pageParams,
@@ -707,6 +708,7 @@ const getOutboundOrder = () => {
       packages.value = res.data.items;
       pageParams.total = res.data.meta.total;
     }
+    loading.value = false;
   });
 };
 //批量设置待发货

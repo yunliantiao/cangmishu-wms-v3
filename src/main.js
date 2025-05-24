@@ -7,6 +7,7 @@ import './style.css'
 import Message from './utils/message'
 import trans from '@/i18n';
 import TopBack from '@/components/TopBack/Index.vue'
+import HoverCopy from '@/components/HoverCopy/Index.vue'
 
 // Import Quasar
 import { Dialog, Notify, Quasar } from 'quasar'
@@ -47,7 +48,7 @@ app.use(Quasar, {
       gray: '#dcdfe6'
     }
   }
-}).use(router).use(store).component('TopBack', TopBack)
+}).use(router).use(store).component('TopBack', TopBack).component('Copy', HoverCopy)
 
 app.mount('#app')
 

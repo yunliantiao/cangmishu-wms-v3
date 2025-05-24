@@ -14,6 +14,9 @@
         />
       </div>
     </div> -->
+
+    <TopBack :title="trans('库存盘点')"></TopBack>
+
     <div class="bg-white rounded-borders q-pa-md q-mb-md">
       <div class="tabs-section q-mb-md">
         <q-tabs
@@ -156,7 +159,7 @@
           row-key="id"
           :pagination="{ rowsPerPage: 0 }"
           hide-pagination
-          :loading="$store.state.btnLoading"
+          :loading="loading"
           separator="horizontal"
         >
           <template v-slot:body="props">
@@ -488,6 +491,7 @@ const store = useStore();
 const router = useRouter();
 const route = useRoute();
 const $q = useQuasar();
+const loading = ref(false);
 
 const statusOptions = computed(() => {
   return [
@@ -551,11 +555,13 @@ const handleStatusNav = (status) => {
 };
 
 const getCountList = () => {
+  loading.value = true;
   inventoryApi.getCountOrderList(pageParams.value).then((res) => {
     if (res.success) {
       tableData.value = res.data.items;
       pageParams.value.total = res.data.meta.total;
     }
+    loading.value = false;
   });
 };
 

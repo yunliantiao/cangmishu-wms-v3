@@ -15,6 +15,8 @@
       </div>
     </div> -->
 
+    <TopBack :title="trans('入库管理')"></TopBack>
+
     <!-- 搜索过滤区域 -->
     <div class="search-bar global-mt">
       <div class="tabs-section q-mb-md">
@@ -31,7 +33,11 @@
             :label="item.label"
             v-for="item in statusOptions"
             :key="item.value"
-          />
+          >
+            <q-badge color="red" floating rounded v-if="getBadge(item)">
+              {{ getBadge(item) }}
+            </q-badge>
+          </q-tab>
         </q-tabs>
       </div>
       <div class="row q-col-gutter-sm">
@@ -128,20 +134,22 @@
                 <div class="column">
                   <div>
                     {{ trans("入库单号") }}:
-                    <span
+                    <Copy :text="props.row.system_order_number" />
+                    <!-- <span
                       class="hover-copy"
-                      @click="$copy(props.row.system_order_number)"
-                      >{{ props.row.system_order_number }}</span
-                    >
+                      @click="$copy(props.row.system_order_number)">
+                      {{ props.row.system_order_number }}
+                    </span> -->
                   </div>
                   <div>
                     {{ trans("自定义单号") }}:
-                    <span
+                    <Copy :text="props.row.custom_order_number"></Copy>
+                    <!-- <span
                       class="hover-copy"
                       @click="$copy(props.row.custom_order_number)"
                     >
                       {{ props.row.custom_order_number }}
-                    </span>
+                    </span> -->
                   </div>
                 </div>
               </q-td>
@@ -150,11 +158,16 @@
               </q-td>
               <q-td key="trackingNumber" :props="props">
                 <div class="text-primary">
-                  <span
+                  <Copy
+                    :text="props.row.tracking_number"
+                    v-if="props.row.tracking_number"
+                  ></Copy>
+                  <span v-else>--</span>
+                  <!-- <span
                     class="hover-copy"
                     @click="$copy(props.row.tracking_number)"
                     >{{ props.row.tracking_number || "--" }}</span
-                  >
+                  > -->
                 </div>
               </q-td>
               <q-td key="arrivalMethod" :props="props">
@@ -288,7 +301,13 @@
                                 v-for="(item, index) in getSkuItems(props.row)"
                                 :key="index"
                               >
-                                <td>{{ item.product_spec_sku || "-" }}</td>
+                                <td>
+                                  <Copy
+                                    v-if="item.product_spec_sku"
+                                    :text="item.product_spec_sku"
+                                  ></Copy>
+                                  <span v-else>--</span>
+                                </td>
                                 <td class="text-center">
                                   {{ item.quantity }}
                                 </td>
@@ -935,6 +954,8 @@ const printForm = ref({
   additional_info: [],
 });
 
+const statistics = reactive({});
+
 const printBoxLabel = (row) => {
   printForm.value = {
     start_box: 1,
@@ -1147,6 +1168,15 @@ const getList = async () => {
     pageParams.total = res.data.meta.total;
     selectedRows.value = [];
   }
+  const { data } = await inboundApi.getInboundStatistics(params);
+  console.log("data", data);
+  for (const key in data) {
+    statistics[key] = data[key];
+  }
+};
+
+const getBadge = (tab) => {
+  return statistics[tab.value];
 };
 
 // 重置搜索
@@ -1575,5 +1605,9 @@ const forcedClose = (row) => {
   .q-tab {
     min-height: 38px;
   }
+}
+
+:deep(.q-tab__content) {
+  padding: 0 12px;
 }
 </style>

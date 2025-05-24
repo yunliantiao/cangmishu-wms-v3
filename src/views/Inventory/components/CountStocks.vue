@@ -25,7 +25,7 @@
               emit-value
               clearable
               map-options
-              class="search-type-select"
+              class="filter-item"
             />
           </div>
           <div class="col-12 col-sm-auto">
@@ -40,10 +40,16 @@
               emit-value
               map-options
               :label="trans('货架位')"
-              class="search-type-select"
+              class="filter-item"
             />
           </div>
-          <div class="col-12 col-sm-auto">
+          <KeywordSearch
+            :showSearchType="false"
+            :search_value="params.keywords"
+            :search_mode="params.search_mode"
+            :searchModeList="searchTypeOptions"
+          ></KeywordSearch>
+          <!-- <div class="col-12 col-sm-auto">
             <q-input
               outlined
               dense
@@ -65,13 +71,13 @@
               :label="trans('搜索模式')"
               class="select-width"
             />
-          </div>
+          </div> -->
           <div class="col-12 col-sm-auto">
             <q-btn
               color="primary"
               :label="trans('搜索')"
               @click="getShelfLocationList"
-              class="full-width"
+              class="filter-btn"
             />
           </div>
           <div class="col-12 col-sm-grow">
@@ -199,6 +205,7 @@
 import { ref, reactive, computed, watch } from "vue";
 import settingApi from "@/api/setting";
 import Pagination from "@/components/Pagination.vue";
+import KeywordSearch from "@/components/KeywordSearch/Index.vue";
 import trans from "@/i18n";
 
 const props = defineProps({

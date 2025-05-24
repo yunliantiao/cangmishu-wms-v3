@@ -12,6 +12,8 @@
       </div>
     </div> -->
 
+    <TopBack :title="trans('商品标记')"></TopBack>
+
     <!-- 搜索区域 -->
     <div class="search-bar">
       <div class="row q-col-gutter-sm">
@@ -44,6 +46,7 @@
         @click="handleAddTag"
       />
 
+      {{ loading }}
       <!-- 数据表格 -->
       <q-table
         :rows="componentData.list"
@@ -242,12 +245,14 @@ const handlePageChange = ({ page, rowsPerPage }) => {
 };
 
 const initList = async () => {
+  loading.value = true;
   const { data } = await productApi.getTagList({
     // page: componentData.page,
     // page_size: componentData.rowsPerPage,
     keyword: componentData.keyword,
   });
   componentData.list = data;
+  loading.value = false;
 };
 
 const handleTagSubmit = async (params) => {
@@ -263,9 +268,7 @@ const handleTagSubmit = async (params) => {
 };
 
 const handleDelete = async (row) => {
-  console.log("删除标记:", row);
   try {
-    loading.value = true;
     const { data } = await productApi.deleteTag(row.id);
     initList();
   } catch (error) {

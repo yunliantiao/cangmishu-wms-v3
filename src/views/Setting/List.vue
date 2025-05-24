@@ -1,14 +1,6 @@
 <template>
   <div class="setting-list-page">
-    <div class="breadcrumb">
-      <!-- <q-icon
-        name="arrow_back"
-        size="20px"
-        class="cursor-pointer q-mr-sm"
-        @click="$router.back()"
-      /> -->
-      <span class="text-h6">{{ trans("设置") }}</span>
-    </div>
+    <TopBack :title="trans('设置')"></TopBack>
 
     <div class="setting-cards">
       <router-link

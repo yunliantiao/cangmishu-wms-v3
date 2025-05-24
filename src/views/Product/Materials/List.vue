@@ -13,6 +13,8 @@
       </div>
     </div> -->
 
+    <TopBack :title="trans('包材')"></TopBack>
+
     <!-- 搜索栏 -->
     <div class="search-bar">
       <!-- <q-select
@@ -77,7 +79,8 @@
         :columns="pageData.columns"
         row-key="id"
         flat
-        hide-bottom
+        hide-pagination
+        :loading="pageData.loading"
         :rows-per-page-options="[0]"
         :rows-per-page="0"
         :show-pagination="false"
@@ -119,7 +122,9 @@
                 </div>
                 <div class="ml-8">
                   <div class="">{{ props.row.name }}</div>
-                  <div class="material-code">[{{ props.row.code }}]</div>
+                  <div class="material-code">
+                    [ <Copy :text="props.row.code"></Copy>]
+                  </div>
                 </div>
               </div>
             </q-td>
@@ -180,6 +185,7 @@ import Message from "@/utils/message.js";
 
 const $q = useQuasar();
 const pageData = reactive({
+  loading: false,
   search: {
     keywords: "",
     search_type: "name",
@@ -242,6 +248,7 @@ onMounted(() => {
 });
 
 const initList = async () => {
+  pageData.loading = true;
   let params = {
     ...pageData.search,
   };
@@ -251,6 +258,7 @@ const initList = async () => {
     row.size = `${row.dimensions.length}*${row.dimensions.width}*${row.dimensions.height}`;
     return row;
   });
+  pageData.loading = false;
 };
 
 const edit = (row) => {

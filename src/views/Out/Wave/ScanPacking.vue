@@ -22,9 +22,7 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="wave_number" :props="props">
-              <span class="hover-copy" @click="$copy(props.row.wave_number)">
-                {{ props.row.wave_number }}
-              </span>
+              <Copy :text="props.row.wave_number"></Copy>
             </q-td>
 
             <q-td key="wave_type" :props="props">

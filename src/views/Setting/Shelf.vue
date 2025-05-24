@@ -24,7 +24,7 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="sizeName" :props="props">
-              {{ props.row.name }}
+              <Copy :text="props.row.name"></Copy>
             </q-td>
             <q-td key="size_length" :props="props">
               {{ props.row.size_length }} cm

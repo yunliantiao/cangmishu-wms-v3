@@ -36,7 +36,7 @@
               <div class="detail-item">
                 <div class="detail-label">{{ trans("入库单号") }}</div>
                 <div class="detail-value">
-                  {{ orderDetails.system_order_number }}
+                  <Copy :text="orderDetails.system_order_number"></Copy>
                 </div>
               </div>
             </div>
@@ -44,7 +44,11 @@
               <div class="detail-item">
                 <div class="detail-label">{{ trans("运单号") }}</div>
                 <div class="detail-value">
-                  {{ orderDetails.tracking_number || "--" }}
+                  <Copy
+                    v-if="orderDetails.tracking_number"
+                    :text="orderDetails.tracking_number"
+                  ></Copy>
+                  <span v-else>--</span>
                 </div>
               </div>
             </div>
@@ -129,7 +133,11 @@
                         </div>
                         <div class="product-details">
                           <div class="product-sku">
-                            {{ item.product_spec_sku || "--" }}
+                            <Copy
+                              v-if="item.product_spec_sku"
+                              :text="item.product_spec_sku"
+                            ></Copy>
+                            <span v-else>--</span>
                           </div>
                           <div class="product-code text-grey-8">
                             {{ item.product_code }}

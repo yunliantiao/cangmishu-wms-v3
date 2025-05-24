@@ -24,7 +24,8 @@
         <template v-slot:body="props">
           <q-tr :props="props">
             <q-td key="warehouseId" :props="props">
-              {{ props.row.code }}
+              <!-- {{ props.row.code }} -->
+              <Copy :text="props.row.code"></Copy>
             </q-td>
             <q-td key="warehouseName" :props="props">
               {{ props.row.name }}

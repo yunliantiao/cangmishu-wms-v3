@@ -1,5 +1,7 @@
 <template>
   <div class="adjust-page">
+    <TopBack :title="trans('库存调整')"></TopBack>
+
     <div class="bg-white rounded-borders q-pa-md q-mb-md">
       <div class="row q-col-gutter-sm">
         <DatePicker
@@ -64,7 +66,7 @@
           row-key="id"
           selection="multiple"
           separator="horizontal"
-          :loading="$store.state.btnLoading"
+          :loading="loading"
           :pagination="{
             rowsPerPage: 0,
           }"
@@ -87,10 +89,10 @@
                 <div class="row group-header items-center">
                   <div>
                     <q-checkbox v-model="props.selected" size="sm" />
-                    <span class="info-item q-mr-md"
-                      >{{ trans("调整单号") }}:
-                      {{ props.row.system_order_number }}</span
-                    >
+                    <span class="info-item q-mr-md">
+                      {{ trans("调整单号") }}:
+                      <Copy :text="props.row.system_order_number"></Copy>
+                    </span>
                   </div>
                   <div>{{ trans("备注") }}:{{ props.row.remark || "-" }}</div>
                 </div>
@@ -104,7 +106,9 @@
                 </q-td>
                 <q-td key="info" class="product-info-cell">
                   <div class="product-info">
-                    <div>{{ item.product_spec_sku }}</div>
+                    <div>
+                      <Copy :text="item.product_spec_sku"></Copy>
+                    </div>
                     <div>{{ item.product_spec_name }}</div>
                     <div>{{ item.product_name }}</div>
                   </div>
@@ -188,6 +192,7 @@ const pageParams = ref({
   search_type: "sku",
   search_mode: "exact",
 });
+const loading = ref(false);
 
 const adjustList = ref([]);
 
@@ -277,6 +282,7 @@ const onRequest = (props) => {
 
 // 获取列表数据
 const getAdjustList = () => {
+  loading.value = true;
   inventoryApi.getAdjustOrderList(pageParams.value).then((res) => {
     if (res.success) {
       adjustList.value = res.data.items.map((item) => ({
@@ -285,6 +291,7 @@ const getAdjustList = () => {
       }));
       pageParams.value.total = res.data.meta.total;
     }
+    loading.value = false;
   });
 };
 
