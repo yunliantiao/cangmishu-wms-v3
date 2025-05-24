@@ -28,6 +28,7 @@ export const ax = axios.create({
 ax.defaults.withCredentials = false
 let currentProcessingCount = 0
 function interceptorsRequestSuccess(config) {
+
   store.commit('updateGlobalBtnLoading', true)
   const token =
     localStorage.getItem('updateToken') === null ? '' : localStorage.getItem('updateToken')
@@ -48,7 +49,9 @@ function interceptorsRequestError(error) {
 }
 
 function interceptorsResponse(config) {
+
   --currentProcessingCount
+
   store.commit('updateGlobalBtnLoading', false)
   if (config.data && !config.data.success) {
     if (config.data.code === 1001) {
@@ -87,6 +90,8 @@ function interceptorsResponse(config) {
 }
 
 function interceptorsResponseError(error) {
+  console.log('errorerrorerror', error);
+
   const { response } = error
   let msg
   // nprogress.done()
@@ -96,6 +101,9 @@ function interceptorsResponseError(error) {
     store.commit('DESTROY_TOKEN')
   } else if (response && response.status === 500 && response.code === 10500) {
     msg = response.data.message || 'Service Error'
+  } else if (response && response.data.code == 1001) {
+    let errData = Object.values(response.data.data)
+    msg = errData.join(',')
   } else {
     msg = response.data.message
   }

@@ -133,6 +133,7 @@ import NewProductDialog from "./components/NewProductDialog.vue";
 import { useRoute, useRouter } from "vue-router";
 import trans from "@/i18n";
 import ScanTop from "@/components/ScanTop/Index.vue";
+import { playBeep } from "@/utils/voice.js";
 
 const $q = useQuasar();
 const route = useRoute();
@@ -235,9 +236,12 @@ const handleScan = () => {
             handleConfirm();
           }
         }
-
+        playBeep(true);
         scanTopRef.value.focus();
       }
+    })
+    .catch(() => {
+      playBeep(false);
     });
 };
 

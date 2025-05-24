@@ -157,6 +157,7 @@ import { reactive, ref } from "vue";
 import outApi from "@/api/out";
 import trans from "@/i18n";
 import Message from "@/utils/message";
+import { playBeep } from "@/utils/voice.js";
 
 const weightRef = ref(null);
 
@@ -224,13 +225,17 @@ const handleSearch = async () => {
   let params = {
     number: pageData.orderNo,
   };
-  const orderInfo = await outApi.getOrderInfoByNumber(params);
-  console.log("orderInfo", orderInfo);
+  try {
+    const orderInfo = await outApi.getOrderInfoByNumber(params);
+    await outApi.scanShipment(orderInfo.data.id, {
+      actual_weight: pageData.actual_weight,
+    });
+    playBeep(true);
+  } catch (error) {
+    console.log("error", error);
 
-  const { data } = await outApi.scanShipment(orderInfo.data.id, {
-    actual_weight: pageData.actual_weight,
-  });
-  console.log("data", data);
+    playBeep(false);
+  }
   // pageData.rows = [data];
 };
 

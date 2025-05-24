@@ -9,41 +9,6 @@
         v-model:scanValue="scanCode"
         @confirm="handleScan"
       ></ScanTop>
-      <!-- <div class="text-h5 text-center text-weight-medium q-mb-lg">
-        {{ trans("扫描上架") }}
-      </div>
-      <div class="scan-container q-mx-auto" style="max-width: 800px">
-        <q-input
-          outlined
-          v-model="scanCode"
-          :placeholder="trans('请扫描入库单号、ERP单号、运单号或箱唛')"
-          class="scan-input"
-          ref="scanInput"
-          @keyup.enter="handleScan"
-          :loading="$store.state.btnLoading"
-          bg-color="white"
-        >
-          <template v-slot:prepend>
-            <q-icon
-              name="qr_code_scanner"
-              class="cursor-pointer"
-              size="sm"
-              @click="handleScan"
-            />
-          </template>
-          <template v-slot:append>
-            <q-icon name="help_outline" class="cursor-pointer" size="sm">
-              <q-tooltip>{{
-                trans("支持扫描入库单号、ERP单号、运单号或箱唛编号")
-              }}</q-tooltip>
-            </q-icon>
-          </template>
-        </q-input>
-        <div class="text-caption text-grey q-mt-sm">
-          <q-icon name="info_outline" size="xs" class="q-mr-xs" />
-          {{ trans("请先切换成[EN]输入法") }}
-        </div>
-      </div> -->
     </div>
 
     <!-- 订单信息区域 -->
@@ -506,6 +471,7 @@ import { useRoute, useRouter } from "vue-router";
 import trans from "@/i18n";
 import ScanTop from "@/components/ScanTop/Index.vue";
 import Message from "@/utils/message";
+import { playBeep } from "@/utils/voice.js";
 
 const $q = useQuasar();
 const store = useStore();
@@ -796,7 +762,11 @@ const handleScan = async () => {
         });
         boxes.value = res.data.boxes;
         products.value = mergedItems;
+        playBeep(true);
       }
+    })
+    .catch(() => {
+      playBeep(false);
     });
 };
 

@@ -91,6 +91,7 @@ import Message from "@/utils/message.js";
 import { useRouter } from "vue-router";
 import trans from "@/i18n";
 import ScanTop from "@/components/ScanTop/Index.vue";
+import { playBeep } from "@/utils/voice.js";
 
 const router = useRouter();
 const scanInput = ref(null);
@@ -205,41 +206,48 @@ const search = async () => {
     return;
   }
 
-  const { data } = await outApi.getOrderInfoByWaveOrder({
-    number: pageData.scanValue,
-  });
-  if (data.status == "completed") {
-    Message.notify(trans("该波次已完成"));
-    return;
-  }
+  try {
+    const { data } = await outApi.getOrderInfoByWaveOrder({
+      number: pageData.scanValue,
+    });
+    if (data.status == "completed") {
+      playBeep(false);
+      Message.notify(trans("该波次已完成"));
+      return;
+    }
 
-  if (data.status == "cancelled") {
-    Message.notify(trans("该波次已作废"));
-    return;
-  }
+    if (data.status == "cancelled") {
+      playBeep(false);
+      Message.notify(trans("该波次已作废"));
+      return;
+    }
 
-  if (!data.is_print_pick_label) {
-    Message.notify(trans("未打印拣货单，无法打包"));
-    return;
-  }
+    if (!data.is_print_pick_label) {
+      playBeep(false);
+      Message.notify(trans("未打印拣货单，无法打包"));
+      return;
+    }
+    playBeep(true);
+    if (data.wave_type == "mixed_items") {
+      router.push({
+        path: "/out/wave/pigeonholes",
+        query: {
+          number: data.wave_number,
+        },
+      });
+      return;
+    }
 
-  if (data.wave_type == "mixed_items") {
+    // 去往打包，选择包材页面
     router.push({
-      path: "/out/wave/pigeonholes",
+      path: "/out/wave/packaging",
       query: {
-        number: data.wave_number,
+        wave_number: data.wave_number,
       },
     });
-    return;
+  } catch (error) {
+    playBeep(false);
   }
-
-  // 去往打包，选择包材页面
-  router.push({
-    path: "/out/wave/packaging",
-    query: {
-      wave_number: data.wave_number,
-    },
-  });
 };
 
 const getStatusDesc = (status) => {

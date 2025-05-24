@@ -185,6 +185,7 @@ import { reactive, onMounted } from "vue";
 import outApi from "@/api/out";
 import Message from "@/utils/message";
 import trans from "@/i18n";
+import { playBeep } from "@/utils/voice.js";
 
 onMounted(() => {
   let language = localStorage.getItem("language");
@@ -263,7 +264,9 @@ const search = async () => {
       });
       return row;
     });
+    playBeep(true);
   } catch (error) {
+    playBeep(false);
   } finally {
     pageData.loading = false;
   }
@@ -288,14 +291,17 @@ const examine = async () => {
     return false;
   });
   if (!row) {
+    playBeep(false);
+
     Message.notify(trans("商品编码不正确"));
     return;
   }
-
   let bool = row.items.every((item) => item.checked_qty === item.quantity);
   if (bool) {
     row.status = 2;
     await outApi.examineGoods(row.id);
+    playBeep(true);
+    return;
   }
 };
 </script>

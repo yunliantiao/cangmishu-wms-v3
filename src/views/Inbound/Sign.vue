@@ -13,26 +13,6 @@
     />
 
     <div class="scan-container q-mx-auto" style="max-width: 1400px">
-      <!-- 扫描输入框 -->
-      <!-- <q-input
-        outlined
-        v-model="scanCode"
-        :placeholder="
-          trans('请扫描入库单号/退货单号/运单号/ERP单号/平台订单号/箱唛')
-        "
-        class="q-mb-xs"
-        ref="scanInput"
-        @keyup.enter="handleScan"
-      >
-        <template v-slot:prepend>
-          <q-icon name="qr_code_scanner" />
-        </template>
-      </q-input>
-
-      <div class="text-caption text-grey q-mb-lg">
-        <q-icon name="info" size="xs" /> {{ trans("请先切换成[EN]输入法") }}
-      </div> -->
-
       <!-- 结果展示区 -->
       <div
         v-if="scanSuccess"
@@ -164,6 +144,7 @@ import { useRoute } from "vue-router";
 import inboundApi from "@/api/inbound";
 import trans from "@/i18n";
 import ScanTop from "@/components/ScanTop/Index.vue";
+import { playBeep } from "@/utils/voice.js";
 
 const $q = useQuasar();
 const scanCode = ref("");
@@ -244,7 +225,11 @@ const handleScan = () => {
             scanTopRef.value.focus();
           });
         }, 500);
+        playBeep(true);
       }
+    })
+    .catch(() => {
+      playBeep(false);
     });
 };
 
