@@ -65,9 +65,8 @@
         <div class="row items-center justify-between">
           <!-- <div class="text-subtitle1">{{ trans("移货信息") }}</div> -->
           <q-btn
-            outline
-            flat
             color="primary"
+            class="filter-btn"
             :label="trans('选择商品')"
             @click="showProductSelector = true"
           />

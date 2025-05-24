@@ -419,11 +419,11 @@
                 }}
               </q-chip>
 
-              <div v-if="getIsExamine(props.row)">
-                <span class="table-icon">
+              <div v-if="getExamine(props.row)">
+                <span class="table-icon examine-icon">
                   <img src="@/assets/images/examine.png" />
                   <q-tooltip>
-                    {{ getIsExamine(props.row) }}
+                    {{ trans("已验货") }}
                   </q-tooltip>
                 </span>
               </div>
@@ -783,8 +783,12 @@ const getLogistics = async () => {
   }));
 };
 
+// 解决数据统计 切换的时候数据闪一下的问题
+const isRequesting = ref(false);
+
 // 处理状态导航切换
 const handleStatusNav = (status) => {
+  isRequesting.value = true;
   statusNav.value = status;
   pageParams.order_status = status;
   getOutboundOrder();
@@ -826,18 +830,57 @@ const getOutboundOrder = async () => {
       packages.value = res.data.items;
       pageParams.total = res.data.meta.total;
     }
+    isRequesting.value = false;
+    loading.value = false;
   });
+};
 
-  const { data } = await outApi.getOrderStatistics(params);
-  // statistics = data;
+const getStatistics = async () => {
+  const { data } = await outApi.getOrderStatistics();
   for (const key in data) {
     statistics[key] = data[key];
   }
-  loading.value = false;
 };
 
+const all = computed(() => {
+  if (statusNav.value == "all" && !isRequesting.value) {
+    return pageParams.total;
+  }
+  return statistics.all;
+});
+const pending_ship = computed(() => {
+  if (statusNav.value == "pending_shipment" && !isRequesting.value) {
+    return pageParams.total;
+  }
+  return statistics.pending_ship;
+});
+
+const shipped = computed(() => {
+  if (statusNav.value == "shipped" && !isRequesting.value) {
+    return pageParams.total;
+  }
+  return statistics.shipped;
+});
+
+const exception = computed(() => {
+  console.log("pageParams.total", pageParams.total);
+
+  if (statusNav.value == "exception" && !isRequesting.value) {
+    return pageParams.total;
+  }
+  return statistics.exception;
+});
+
 const getBadge = (tab) => {
-  return statistics[tab.otherValue];
+  if (tab.otherValue == "all") {
+    return all.value;
+  } else if (tab.otherValue == "pending_ship") {
+    return pending_ship.value;
+  } else if (tab.otherValue == "shipped") {
+    return shipped.value;
+  } else if (tab.otherValue == "exception") {
+    return exception.value;
+  }
 };
 
 // 添加 showGroupHeader 函数
@@ -969,13 +1012,20 @@ onMounted(() => {
   // 初始化逻辑，可以加载数据等
   getOutboundOrder();
   getLogistics();
+  getStatistics();
 });
 
-const getIsExamine = (row) => {
+const getExamine = (row) => {
   let firstPackage = row.packages[0];
-  if (firstPackage.intercept_status == "completed") {
-    return `${trans("验货时间")}:${firstPackage.intercept_time}`;
+  if (firstPackage.inspection_status == "completed") {
+    return firstPackage.inspection_status;
   }
+  // if (firstPackage.inspection_status == "completed") {
+  //   // return `${trans("验货时间")}:${firstPackage.intercept_time}`;
+  //   return trans("已验货");
+  // } else if (firstPackage.inspection_status == "pending") {
+  //   return trans("待验货");
+  // }
 };
 
 const handleExportByType = async (type) => {
@@ -1023,6 +1073,7 @@ const handleBatchSendOutboundOrder = () => {
     });
     await outApi.handleBatchSendOutboundOrder({ package_ids });
     getOutboundOrder();
+    getStatistics();
   });
 };
 </script>
@@ -1203,5 +1254,8 @@ const handleBatchSendOutboundOrder = () => {
 }
 :deep(.q-tab__content) {
   padding: 0 12px !important;
+}
+.examine-icon {
+  margin-top: 5px;
 }
 </style>

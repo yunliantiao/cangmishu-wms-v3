@@ -248,6 +248,12 @@ const search = async () => {
       number: pageData.packageNo,
     });
     pageData.loading = false;
+
+    if (data.status != "pending_shipment") {
+      Message.notify(trans("待发货订单才能验货"));
+      return;
+    }
+
     pageData.rows = data.packages.map((row) => {
       if (row.is_exception) {
         row.status = 2;
@@ -292,7 +298,6 @@ const examine = async () => {
   });
   if (!row) {
     playBeep(false);
-
     Message.notify(trans("商品编码不正确"));
     return;
   }

@@ -1054,8 +1054,13 @@ const getOrderTimes = (order) => {
   };
 };
 
+// 解决数据统计 切换的时候数据闪一下的问题
+const isRequesting = ref(false);
+
 // 处理状态导航切换
 const handleStatusNav = (status) => {
+  isRequesting.value = true;
+
   statusNav.value = status;
   searchParams.inbound_status = status === "all" ? "" : status;
   resetPage();
@@ -1167,16 +1172,88 @@ const getList = async () => {
     warehouseOrders.value = res.data.items;
     pageParams.total = res.data.meta.total;
     selectedRows.value = [];
+    isRequesting.value = false;
   }
-  const { data } = await inboundApi.getInboundStatistics(params);
+};
+
+const getStatistics = async () => {
+  const { data } = await inboundApi.getInboundStatistics();
   console.log("data", data);
   for (const key in data) {
     statistics[key] = data[key];
   }
 };
 
+/**
+ *   return [
+    { label: trans("全部"), value: "all" },
+    { label: trans("已预报"), value: "reported" },
+    { label: trans("运输中"), value: "in_transit" },
+    { label: trans("待入库"), value: "pending_inbound" },
+    { label: trans("入库中"), value: "inbound_processing" },
+    { label: trans("已完成"), value: "shelved" },
+  ];
+ * 
+ */
+
+const all = computed(() => {
+  if (statusNav.value == "all" && !isRequesting.value) {
+    return pageParams.total;
+  }
+  return statistics.all;
+});
+
+const reported = computed(() => {
+  if (statusNav.value == "reported" && !isRequesting.value) {
+    return pageParams.total;
+  }
+  console.log("statistics.reported", typeof statistics.reported);
+
+  return statistics.reported;
+});
+
+const in_transit = computed(() => {
+  if (statusNav.value == "in_transit" && !isRequesting.value) {
+    return pageParams.total;
+  }
+  return statistics.in_transit;
+});
+
+const pending_inbound = computed(() => {
+  if (statusNav.value == "pending_inbound" && !isRequesting.value) {
+    return pageParams.total;
+  }
+  return statistics.pending_inbound;
+});
+
+const inbound_processing = computed(() => {
+  if (statusNav.value == "inbound_processing" && !isRequesting.value) {
+    return pageParams.total;
+  }
+  return statistics.inbound_processing;
+});
+
+const shelved = computed(() => {
+  if (statusNav.value == "shelved" && !isRequesting.value) {
+    return pageParams.total;
+  }
+  return statistics.shelved;
+});
+
 const getBadge = (tab) => {
-  return statistics[tab.value];
+  if (tab.value == "all") {
+    return all.value;
+  } else if (tab.value == "reported") {
+    return reported.value;
+  } else if (tab.value == "in_transit") {
+    return in_transit.value;
+  } else if (tab.value == "pending_inbound") {
+    return pending_inbound.value;
+  } else if (tab.value == "inbound_processing") {
+    return inbound_processing.value;
+  } else if (tab.value == "shelved") {
+    return shelved.value;
+  }
 };
 
 // 重置搜索
@@ -1383,6 +1460,7 @@ onMounted(() => {
 
   // 获取列表数据
   getList();
+  getStatistics();
 });
 
 // 在script部分添加新函数
@@ -1422,6 +1500,7 @@ const forcedClose = (row) => {
   }).onOk(async () => {
     await inboundApi.inboundFaceClose(row.id);
     getList();
+    getStatistics();
   });
 };
 </script>

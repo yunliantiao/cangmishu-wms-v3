@@ -103,7 +103,7 @@ function interceptorsResponseError(error) {
     msg = response.data.message || 'Service Error'
   } else if (response && response.data.code == 1001) {
     let errData = Object.values(response.data.data)
-    msg = errData.join(',')
+    msg = errData.join(',') || response.data.message || 'Service Error'
   } else {
     msg = response.data.message
   }

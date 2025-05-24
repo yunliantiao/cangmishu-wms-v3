@@ -63,8 +63,8 @@
       <div class="bg-white rounded-borders global-mt">
         <div class="row items-center justify-between">
           <q-btn
-            flat
             color="primary"
+            class="filter-btn"
             :label="trans('选择商品')"
             @click="showProductSelector = true"
           />
