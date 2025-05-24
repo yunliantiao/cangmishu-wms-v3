@@ -16,4 +16,8 @@ export default {
     inboundPrintBox: (id) => GET(`inbound/${id}/boxes/label`),   // 打印入库单按箱打印
     inboundPrintSku: (id) => GET(`inbound/${id}/skus/label`),   // 打印入库单按箱打印
     inboundPrintShelf: (id) => GET(`inbound/${id}/shelf/label`), // 打印上架单
+
+
+    // 强制完结
+    inboundFaceClose: (id) => POST(`inbound/${id}/force-complete`),
 }

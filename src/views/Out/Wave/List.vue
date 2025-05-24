@@ -178,6 +178,13 @@
               {{ props.row.item_count }}
             </q-td>
             <q-td key="picker" :props="props">
+              <div v-if="props.row.pick_source == 'pda'">
+                <q-icon
+                  name="edgesensor_low"
+                  size="sm"
+                  color="primary"
+                ></q-icon>
+              </div>
               {{ props.row.pick_by?.name }}
             </q-td>
             <q-td key="status" :props="props">

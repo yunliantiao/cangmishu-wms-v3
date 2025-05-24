@@ -461,6 +461,17 @@
                             trans("打印箱唛")
                           }}</q-item-section>
                         </q-item>
+
+                        <q-item
+                          clickable
+                          v-close-popup
+                          v-if="statusNav == 'inbound_processing'"
+                          @click="forcedClose(props.row)"
+                        >
+                          <q-item-section>{{
+                            trans("强制完结")
+                          }}</q-item-section>
+                        </q-item>
                       </q-list>
                     </q-menu>
                   </q-btn>
@@ -1207,8 +1218,8 @@ const printLabel = (row) => {
       });
       selectedLocations.value = mergeSameSkuItems(allItems); //去重
 
-      console.log('selectedLocations',selectedLocations);
-      
+      console.log("selectedLocations", selectedLocations);
+
       labelVisible.value = true;
       console.log(allItems);
     }
@@ -1360,6 +1371,28 @@ const getSkuItems = (row) => {
   }
 
   return [];
+};
+
+const forcedClose = (row) => {
+  $q.dialog({
+    title: trans("提示"),
+    message: trans(
+      "强制完成后，按照当前上架数量入库，计费，未上架的部分将没有库存，且无法再次上架，确定要强制完结吗？"
+    ),
+    cancel: true,
+    persistent: true,
+    ok: {
+      label: trans("确认"),
+      color: "primary",
+    },
+    cancel: {
+      label: trans("取消"),
+      color: "grey-7",
+    },
+  }).onOk(async () => {
+    await inboundApi.inboundFaceClose(row.id);
+    getList();
+  });
 };
 </script>
 

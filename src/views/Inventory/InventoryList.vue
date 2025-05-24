@@ -671,6 +671,7 @@ const inventoryColumns = [
     label: trans("可用数"),
     field: "available_qty",
     align: "center",
+    sortable: true,
   },
   {
     name: "defective_qty",
@@ -683,6 +684,7 @@ const inventoryColumns = [
     label: trans("库存总数"),
     field: "total_qty",
     align: "center",
+    sortable: true,
   },
 ];
 

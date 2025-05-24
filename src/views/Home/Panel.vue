@@ -169,7 +169,7 @@
 
         <q-card class="common-card b-rd-16 p-20 down-box">
           <q-card-section class="p-0 m-b-20">
-            <div class="text-subtitle1 font-bold">{{ trans("下载") }} PDA</div>
+            <div class="text-subtitle1 font-bold">{{ trans("下载") }} APP</div>
           </q-card-section>
           <q-card-section class="down-list p-0">
             <div class="item">

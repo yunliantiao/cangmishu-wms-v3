@@ -261,9 +261,9 @@
                 <div>
                   {{ props.row.recipient.province }}
                   {{ props.row.recipient.city }}
-                  {{ props.row.recipient.district }}
+                  <!-- {{ props.row.recipient.district }} -->
                 </div>
-                <div>{{ props.row.recipient.address1 }}</div>
+                <!-- <div>{{ props.row.recipient.address1 }}</div> -->
               </div>
             </q-td>
 
@@ -273,7 +273,7 @@
                 v-for="item in props.row.packages"
                 :key="item.id"
               >
-                <div>{{ item.logistics_channels_name }}</div>
+                <div>{{ item.logistics_channels_name || "--" }}</div>
                 <div>
                   <span
                     v-if="item.tracking_number"

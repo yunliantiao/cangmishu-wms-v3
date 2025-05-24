@@ -209,7 +209,7 @@
                   /> -->
 
                   <KeywordSearch
-                    :options="[
+                    :searchTypeList="[
                       { label: trans('增加'), value: 'add' },
                       { label: trans('减少'), value: 'sub' },
                     ]"
@@ -328,7 +328,18 @@
                 </q-td>
                 <q-td key="quantity">
                   <div class="row items-center justify-center q-gutter-x-sm">
-                    <q-select
+                    <KeywordSearch
+                      :searchTypeList="[
+                        { label: trans('增加'), value: 'add' },
+                        { label: trans('减少'), value: 'sub' },
+                      ]"
+                      :showSearchMode="false"
+                      :placeholder="trans('请输入')"
+                      v-model:search_value="location.quantity"
+                      v-model:search_type="location.quantity_type"
+                    />
+
+                    <!-- <q-select
                       outlined
                       dense
                       v-model="location.quantity_type"
@@ -347,7 +358,7 @@
                       type="number"
                       style="width: 100px"
                       :placeholder="trans('请输入')"
-                    />
+                    /> -->
                   </div>
                 </q-td>
               </q-tr>
